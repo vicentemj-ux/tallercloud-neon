@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
-import { createAdminClient } from "@/lib/supabase/admin"
 import { OnboardingForm } from "./onboarding-form"
 import { getCurrentUser } from "@/lib/auth"
+import { getPrismaClient } from "@/lib/prisma"
 
 export default async function OnboardingPage() {
   const user = await getCurrentUser()
@@ -10,14 +10,13 @@ export default async function OnboardingPage() {
     redirect("/auth/login")
   }
 
-  const admin = await createAdminClient()
-  const { data: existing } = await admin
-    .from("taller_users")
-    .select("id")
-    .eq("id", (user as any).id)
-    .maybeSingle()
+  const prisma = getPrismaClient()
+  const existing = await prisma.user.findUnique({
+    where: { id: (user as any).id },
+    select: { tenantId: true },
+  })
 
-  if (existing) {
+  if (existing?.tenantId) {
     redirect("/dashboard")
   }
 
