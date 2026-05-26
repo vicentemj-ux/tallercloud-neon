@@ -12,20 +12,10 @@ export type RepairWelcomeWhatsAppPayload = {
   reportedFault: string
 }
 
-function getWhatsAppTrackingBaseUrl(): string {
-  if (typeof window !== "undefined" && window.location?.origin) {
-    const host = window.location.hostname
-    if (host === "localhost" || host === "127.0.0.1") {
-      return window.location.origin
-    }
-  }
-  return getPublicAppBaseUrl()
-}
-
 export function buildRepairWelcomeWhatsAppMessage(p: RepairWelcomeWhatsAppPayload): string {
   const clienteNombre = (p.customerName || "cliente").trim()
   const equipoMarcaModelo = `${p.deviceBrand || ""} ${p.deviceModel || ""}`.trim() || "tu equipo"
-  const baseUrl = getWhatsAppTrackingBaseUrl()
+  const baseUrl = getPublicAppBaseUrl()
   const trackingUrl = `${baseUrl}/track/${encodeURIComponent(p.repairId)}`
   return `Hola ${clienteNombre}, te informamos que tu equipo ${equipoMarcaModelo} (Ticket #${p.folio}) se encuentra en estado: RECIBIDO. Puedes consultar el avance aquí: ${trackingUrl}`
 }

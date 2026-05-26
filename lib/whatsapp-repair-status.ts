@@ -47,14 +47,8 @@ export function buildRepairStatusWhatsAppUrl(params: {
       const motivo = params.notaTecnica?.trim() || "—"
       body = `${nombreTaller}\nHola ${cliente}, lamentamos informar que tu equipo ${equipo} (#${folio}) se marcó como No Reparable.\n\n📝 Motivo: ${motivo}\n💵 Costo revisión: ${formatMoneyMx(params.costoRevision)}\n\n_Organizado con TallerCloud.net_`
     } else {
-      const localOrigin =
-        typeof window !== "undefined" &&
-        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-          ? window.location.origin
-          : ""
       const base =
         safeStr(params.baseUrl, "").replace(/\/$/, "") ||
-        localOrigin ||
         getPublicAppBaseUrl() ||
         "https://tallercloud.net"
       const track = repairId ? `${base}/track/${repairId}` : base

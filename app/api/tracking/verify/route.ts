@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     }
 
     const fotos = reparacion.archivos
-      .map((a) => ({
+      .map((a: { id: string; publicUrl: string | null; storageKey: string | null; key: string }) => ({
         id: a.id,
         url: getArchivoDisplayUrl(a),
       }))
