@@ -5,6 +5,7 @@ import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { calcDiasRestantes } from "@/lib/utils/subscription"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
+import { getPrismaClient } from "@/lib/prisma"
 
 const createClient = async () => (await createCurrentTenantClient()).supabase
 
@@ -203,29 +204,18 @@ export type TallerPlanTipo = "prueba" | "activo" | "suspendido"
 
 export async function getTallerPlanType(): Promise<TallerPlanTipo> {
   const tallerId = await getCurrentTallerId()
-  const admin = await createAdminClient()
-  const { data } = await admin
-    .from("taller_users")
-    .select("plan_tipo, plan_activo, is_pro, fecha_vencimiento_plan, created_at")
-    .eq("id", tallerId)
-    .maybeSingle()
-  const p = ((data?.plan_tipo as string) || "prueba").trim().toLowerCase()
-  if (p === "suspendido") return "suspendido"
-  if (p === "activo" || data?.plan_activo || data?.is_pro) return "activo"
+  const prisma = getPrismaClient()
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tallerId },
+    select: { plan: true, trialEndsAt: true },
+  })
+  if (!tenant) return "prueba"
 
-  const diasDesdeVenc = calcDiasRestantes(data?.fecha_vencimiento_plan as string | null | undefined)
-  if (diasDesdeVenc !== null) return diasDesdeVenc > 0 ? "activo" : "prueba"
+  const trialIso = tenant.trialEndsAt?.toISOString() ?? null
+  const diasRestantesTrial = calcDiasRestantes(trialIso)
+  if (diasRestantesTrial !== null && diasRestantesTrial > 0) return "prueba"
 
-  const createdAt = data?.created_at as string | null | undefined
-  if (createdAt) {
-    const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate())
-    const createdDate = new Date(createdAt)
-    const startUtc = Date.UTC(createdDate.getUTCFullYear(), createdDate.getUTCMonth(), createdDate.getUTCDate())
-    const daysSince = Math.floor((todayUtc - startUtc) / (1000 * 60 * 60 * 24))
-    if (Math.max(0, 30 - daysSince) > 0) return "activo"
-  }
-
-  return "prueba"
+  return "activo"
 }
 
 /**
@@ -249,28 +239,21 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
   unstable_noStore() // evita caché de request memoization; la suscripción cambia en tiempo real
 
   const tallerId = await getCurrentTallerId()
-  const admin = await createAdminClient()
-
-  // PERF: ambas queries en paralelo — evita waterfall de round-trips
-  const [{ data, error }, { supabase }] = await Promise.all([
-    admin
-      .from("taller_users")
-      // created_at needed as fallback for prueba plans without fecha_vencimiento_plan
-      .select("plan_tipo, plan_activo, is_pro, fecha_vencimiento_plan, created_at")
-      .eq("id", tallerId)
-      .maybeSingle(),
-    createCurrentTenantClient(),
+  const prisma = getPrismaClient()
+  const [tenant, configuracion] = await Promise.all([
+    prisma.tenant.findUnique({
+      where: { id: tallerId },
+      select: { plan: true, trialEndsAt: true, createdAt: true },
+    }),
+    prisma.configuracionTaller.findUnique({
+      where: { tenantId: tallerId },
+      select: { timezone: true },
+    }),
   ])
 
-  // Zona horaria en paralelo con el procesamiento de suscripción
-  const zonaRes = await supabase
-    .from("configuracion_taller")
-    .select("zona_horaria")
-    .eq("taller_id", tallerId)
-    .maybeSingle()
-  const zonaHoraria = (zonaRes.data?.zona_horaria as string | null) ?? null
+  const zonaHoraria = configuracion?.timezone ?? null
 
-  if (error || !data) {
+  if (!tenant) {
     return {
       showBanner: true,
       isPro: false,
@@ -282,25 +265,11 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
     }
   }
 
-  const row = data as Record<string, unknown>
-
   const precioPlanMensual = null
 
-  const planTipoRaw = ((row.plan_tipo as string | null) || "prueba").trim().toLowerCase()
-  const hasProFlag = Boolean((row.plan_activo as boolean | null) || (row.is_pro as boolean | null))
-  const fechaVenc = (row.fecha_vencimiento_plan as string | null) ?? null
+  const fechaVenc = tenant.trialEndsAt?.toISOString() ?? null
   const diasDesdeVenc = calcDiasRestantes(fechaVenc)
-  const hasActiveExpiry = diasDesdeVenc !== null && diasDesdeVenc > 0
-  // Fallback: si plan_activo es true pero plan_tipo no refleja activo (datos desfasados
-  // por bug anterior de actualizarPlanActivo), corregir la lectura para evitar
-  // mostrar "prueba" a usuarios con suscripción activa.
-  const planTipo = (
-    planTipoRaw === "activo" || planTipoRaw === "suspendido"
-      ? planTipoRaw
-      : hasProFlag || hasActiveExpiry
-        ? "activo"
-        : "prueba"
-  ) as TallerPlanTipo
+  let planTipo: TallerPlanTipo = diasDesdeVenc !== null && diasDesdeVenc > 0 ? "prueba" : "activo"
 
   // Debug temporal: ayuda a diagnosticar discrepancias de suscripción en producción
 
@@ -311,7 +280,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
   if (diasDesdeVenc !== null) {
     diasRestantes = diasDesdeVenc
   } else if (planTipo === "prueba") {
-    const createdAt = (row.created_at as string | null) ?? null
+    const createdAt = tenant.createdAt?.toISOString() ?? null
     if (createdAt) {
       const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate())
       const createdUtc = new Date(createdAt)
@@ -325,18 +294,6 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
     diasRestantes = 0
   }
   const tieneVencimiento = fechaVenc !== null
-
-  if (planTipo === "suspendido") {
-    return {
-      showBanner: true,
-      isPro: false,
-      diasRestantes,
-      tieneVencimiento,
-      planTipo: "suspendido",
-      precioPlanMensual,
-      zonaHoraria,
-    }
-  }
 
   if (planTipo === "prueba") {
     return {
