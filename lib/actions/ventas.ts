@@ -163,6 +163,27 @@ function normalizeCajaRow(row: Record<string, unknown> | null | undefined): Caja
   }
 }
 
+async function ensureCajaTableExists() {
+  const prisma = getPrismaClient()
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS caja (
+      id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+      taller_id text NOT NULL,
+      monto_inicial numeric(12,2) NOT NULL DEFAULT 0,
+      monto_cierre numeric(12,2),
+      fecha_apertura timestamptz NOT NULL DEFAULT now(),
+      fecha_cierre timestamptz,
+      estado text NOT NULL DEFAULT 'abierta',
+      total_efectivo numeric(12,2) NOT NULL DEFAULT 0,
+      total_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
+      total_transferencia numeric(12,2) NOT NULL DEFAULT 0,
+      total_ventas numeric(12,2) NOT NULL DEFAULT 0,
+      nota_cierre text,
+      numero_corte integer
+    );
+  `)
+}
+
 async function getOwnerAlertContext(supabase: Awaited<ReturnType<typeof createCurrentTenantClient>>["supabase"], tallerId: string) {
   const { data: config } = await supabase
     .from("configuracion_taller")
@@ -851,11 +872,19 @@ export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: s
     if (!shouldFallbackToPrisma(error)) throw error
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-      tallerId
-    )
-    return { caja: normalizeCajaRow(rows[0]), error: null }
+    try {
+      const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+        "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
+        tallerId
+      )
+      return { caja: normalizeCajaRow(rows[0]), error: null }
+    } catch (fallbackError) {
+      const msg = fallbackError instanceof Error ? fallbackError.message.toLowerCase() : String(fallbackError).toLowerCase()
+      if (msg.includes("relation") || msg.includes("does not exist") || msg.includes("42p01")) {
+        return { caja: null, error: null }
+      }
+      throw fallbackError
+    }
   }
 }
 
@@ -969,11 +998,16 @@ export async function abrirCaja(
             return { caja: normalizeCajaRow(inserted[0]), error: null }
           }
           if (msg.includes("relation") || msg.includes("does not exist") || msg.includes("42p01")) {
-            return {
-              caja: null,
-              error:
-                "La tabla de caja no existe en la base de datos activa. Aplica las migraciones pendientes antes de abrir caja.",
-            }
+            await ensureCajaTableExists()
+            const inserted = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+              `INSERT INTO caja (taller_id, monto_inicial, estado, numero_corte)
+               VALUES ($1, $2, 'abierta', $3)
+               RETURNING *`,
+              tallerId,
+              montoInicial,
+              numeroCorte
+            )
+            return { caja: normalizeCajaRow(inserted[0]), error: null }
           }
           return { caja: null, error: insertErr instanceof Error ? insertErr.message : String(insertErr) }
         }
