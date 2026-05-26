@@ -17,6 +17,8 @@ import { getArchivoDisplayUrl } from "@/lib/archivo-url"
 import { last4 as phoneLast4, onlyDigits } from "@/lib/phone"
 
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
+type ArchivoRow = { publicUrl: string | null; storageKey: string | null; key: string | null }
+type TechnicianRow = { id: string; nombre: string | null }
 
 function getPrismaErrorCode(error: unknown): string | null {
   if (!error || typeof error !== "object") return null
@@ -486,7 +488,7 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
       orderBy: { createdAt: "asc" },
       select: { publicUrl: true, storageKey: true, key: true },
     })
-    const fotos = archivos.map((a) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
+    const fotos = archivos.map((a: ArchivoRow) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
     const detail: RepairDetail = {
       ...toBitacoraRepair({ ...rep, cliente: { nombre: rep.cliente.nombre, telefono: rep.cliente.telefono } }),
       status: asStatus(rep.estado),
@@ -588,7 +590,7 @@ export async function getTrackingPhotoUrls(ticketId: string, last4: string): Pro
     })
     if (!rep) return []
     if (phoneLast4(rep.cliente?.telefono) !== expectedLast4) return []
-    return rep.archivos.map((a) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
+    return rep.archivos.map((a: ArchivoRow) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
   } catch (e) {
     console.error("getTrackingPhotoUrls prisma:", e)
     return []
@@ -699,7 +701,7 @@ export async function getAllActiveTechnicians() {
       orderBy: { nombre: "asc" },
       take: 100,
     })
-    const technicians = users.map((u) => ({ id: u.id, nombre: u.nombre || "Sin nombre" }))
+    const technicians = users.map((u: TechnicianRow) => ({ id: u.id, nombre: u.nombre || "Sin nombre" }))
     return { technicians, error: null as string | null }
   } catch (e) {
     console.error("getAllActiveTechnicians prisma:", e)
