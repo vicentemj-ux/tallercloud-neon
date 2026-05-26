@@ -1,0 +1,70 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+.vercel
+.env*.local
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# Build
+dist/
+build/
+
+# Tauri
+src-tauri/target/
+src-tauri/server/
+target/
+
+# Local test logs
+test-stderr.txt
+test-stdout.txt
+
+# Claude / AI local tooling
+.claude/
+~/.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+node_modules/
+.next/
+src-tauri/server/
+src-tauri/target/
+target/
+test-stdout.txt
+test-stderr.txt
+.claude/
+/lib/generated/prisma

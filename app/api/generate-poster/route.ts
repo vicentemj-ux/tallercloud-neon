@@ -1,0 +1,388 @@
+import { readFile } from "fs/promises"
+import path from "path"
+import { cookies } from "next/headers"
+import { NextResponse } from "next/server"
+import satori from "satori"
+import { Resvg } from "@resvg/resvg-js"
+import type { ProductoRow } from "@/lib/actions/productos"
+import { createTenantClient } from "@/lib/supabase/tenant-client"
+import {
+  PosterExhibicionSatoriTemplate,
+  POSTER_SQUARE_PX,
+  POSTER_VERTICAL_WIDTH,
+  POSTER_VERTICAL_HEIGHT,
+  type PosterImageFormat,
+} from "@/lib/print/poster-exhibicion-satori"
+import type { SatoriFont } from "@/lib/print/poster-satori-fonts"
+import { resolvePosterProductImageUrl } from "@/lib/print/poster-exhibicion-utils"
+import { BUCKETS, getPublicUrl } from "@/lib/storage"
+
+export const dynamic = "force-static"
+export const runtime = "nodejs"
+
+const LOG = "[api/generate-poster]"
+
+function bufferToArrayBuffer(buf: Buffer): ArrayBuffer {
+  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer
+}
+
+/** Copia los bytes a un ArrayBuffer dedicado (evita vistas sobre el pool de Buffer). */
+function cloneArrayBuffer(ab: ArrayBuffer): ArrayBuffer {
+  const src = new Uint8Array(ab)
+  const dst = new Uint8Array(src.byteLength)
+  dst.set(src)
+  return dst.buffer
+}
+
+/** Fuentes servidas en producción como /fonts/*.woff (también en public/fonts). */
+const POSTER_FONT_FILES: { file: string; weight: 400 | 600 | 700 | 900 }[] = [
+  { file: "inter-latin-400-normal.woff", weight: 400 },
+  { file: "inter-latin-600-normal.woff", weight: 600 },
+  { file: "inter-latin-700-normal.woff", weight: 700 },
+  { file: "inter-latin-900-normal.woff", weight: 900 },
+]
+
+/**
+ * Carga robusta: primero fetch desde el sitio público; si falla, lectura local (Vercel incluye `public/`).
+ */
+async function loadPosterFonts(): Promise<SatoriFont[]> {
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://tallercloud.net").replace(/\/$/, "")
+  const fonts: SatoriFont[] = []
+
+  for (const { file, weight } of POSTER_FONT_FILES) {
+    let data: ArrayBuffer | null = null
+    let fetchError: Error | null = null
+
+    try {
+      const fontUrl = new URL(`/fonts/${file}`, `${baseUrl}/`)
+      const fontRes = await fetch(fontUrl, { cache: "no-store" })
+      if (!fontRes.ok) {
+        throw new Error(`Falló la carga de fuente: ${fontRes.status} ${fontRes.statusText}`)
+      }
+      data = await fontRes.arrayBuffer()
+      if (data.byteLength === 0) throw new Error("La fuente está vacía")
+    } catch (e) {
+      fetchError = e instanceof Error ? e : new Error(String(e))
+      const diskPath = path.join(process.cwd(), "public", "fonts", file)
+      try {
+        const buf = await readFile(diskPath)
+        data = bufferToArrayBuffer(buf)
+        if (data.byteLength === 0) throw new Error("La fuente en disco está vacía")
+      } catch {
+        const msg = fetchError.message
+        throw new Error(`Error al cargar recursos estáticos: ${msg}`)
+      }
+    }
+
+    const fontData = cloneArrayBuffer(data!)
+    fonts.push({
+      name: "Inter",
+      data: fontData,
+      weight,
+      style: "normal",
+    })
+  }
+
+  return fonts
+}
+
+type FetchImageStep = "fetch-images:logo" | "fetch-images:product"
+
+async function fetchAsDataUrl(
+  url: string,
+  step: FetchImageStep
+): Promise<{ success: true; dataUrl: string } | { success: false; reason: string }> {
+  const trimmed = url.trim()
+  if (!trimmed) return { success: false, reason: "URL vacía" }
+  if (trimmed.startsWith("data:image/")) {
+    return { success: true, dataUrl: trimmed }
+  }
+  if (trimmed.startsWith("blob:")) {
+    return { success: false, reason: "blob: no disponible en el servidor" }
+  }
+
+  try {
+    const res = await fetch(trimmed, {
+      cache: "no-store",
+      headers: {
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "User-Agent": "TallerCloudPoster/1.0 (+https://tallercloud.net)",
+      },
+    })
+    if (!res.ok) {
+      return { success: false, reason: `HTTP ${res.status} ${res.statusText}` }
+    }
+    const buf = Buffer.from(await res.arrayBuffer())
+    if (buf.length === 0) {
+      return { success: false, reason: "Respuesta vacía" }
+    }
+    const ct = res.headers.get("content-type") || "image/jpeg"
+    const mime = ct.startsWith("image/") ? ct.split(";")[0].trim() : "image/jpeg"
+    const dataUrl = `data:${mime};base64,${buf.toString("base64")}`
+    return { success: true, dataUrl }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error(LOG, step, "fetch error", { urlPreview: trimmed.slice(0, 80), error: msg })
+    return { success: false, reason: msg }
+  }
+}
+
+function resolveTallerLogoUrl(raw: string | null | undefined): string | null {
+  if (raw == null || !String(raw).trim()) return null
+  const s = String(raw).trim()
+  if (s.startsWith("http://") || s.startsWith("https://")) return s
+  if (s.startsWith("data:")) return s
+  return getPublicUrl(BUCKETS.TALLER, s.replace(/^\/+/, ""))
+}
+
+function parseIsOffer(v: string | null | undefined): boolean {
+  if (!v) return false
+  const t = v.toLowerCase()
+  return t === "1" || t === "true" || t === "yes"
+}
+
+function parsePrecioOferta(v: string | null | undefined): number | null {
+  if (v == null || v === "") return null
+  const n = Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+function parseFormat(v: string | null | undefined): PosterImageFormat {
+  const t = (v || "").trim().toLowerCase()
+  if (t === "vertical" || t === "story" || t === "stories" || t === "9:16") return "vertical"
+  return "square"
+}
+
+function jsonError(
+  status: number,
+  payload: {
+    error: string
+    step?: string
+    code?: string
+    details?: string
+    cause?: string
+  }
+) {
+  return NextResponse.json(payload, { status })
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get("id")?.trim()
+  if (!id) {
+    return NextResponse.json({ error: "Falta parámetro id" }, { status: 400 })
+  }
+  const isOffer = parseIsOffer(searchParams.get("isOffer"))
+  const precioOferta = parsePrecioOferta(searchParams.get("precioOferta"))
+  const format = parseFormat(searchParams.get("format"))
+  return generatePosterResponse(id, isOffer, precioOferta, format, {
+    method: "GET",
+    searchParams: Object.fromEntries(searchParams),
+  })
+}
+
+export async function POST(request: Request) {
+  let body: Record<string, unknown> = {}
+  try {
+    body = (await request.json()) as Record<string, unknown>
+  } catch {
+    return NextResponse.json({ error: "JSON inválido" }, { status: 400 })
+  }
+  const id = typeof body.id === "string" ? body.id.trim() : ""
+  if (!id) {
+    return NextResponse.json({ error: "Falta id" }, { status: 400 })
+  }
+  const isOffer =
+    body.isOffer === true || body.isOffer === "true" || body.isOffer === 1 || body.isOffer === "1"
+  const precioRaw = body.precioOferta
+  let precioOferta: number | null = null
+  if (typeof precioRaw === "number" && Number.isFinite(precioRaw)) {
+    precioOferta = precioRaw
+  } else if (typeof precioRaw === "string" && precioRaw.trim() !== "") {
+    const n = Number(precioRaw)
+    precioOferta = Number.isFinite(n) ? n : null
+  }
+  const format =
+    typeof body.format === "string" ? parseFormat(body.format) : parseFormat(null)
+  return generatePosterResponse(id, isOffer, precioOferta, format, {
+    method: "POST",
+    bodyKeys: Object.keys(body),
+  })
+}
+
+async function generatePosterResponse(
+  productId: string,
+  isOffer: boolean,
+  precioOferta: number | null,
+  format: PosterImageFormat,
+  debugMeta: { method: string } & Record<string, unknown>
+): Promise<NextResponse> {
+  let step = "init"
+  try {
+    step = "cookies"
+    const cookieStore = await cookies()
+    const tallerId = cookieStore.get("tallerId")?.value
+    if (!tallerId?.trim()) {
+      return jsonError(401, { error: "No autorizado: falta cookie de sesión (tallerId) o sesión expirada.", step })
+    }
+
+    step = "supabase-client"
+    const supabase = await createTenantClient(tallerId)
+
+    step = "plan-check"
+    const { data: planRow, error: planErr } = await supabase
+      .from("taller_users")
+      .select("is_pro, plan_activo")
+      .eq("id", tallerId)
+      .maybeSingle()
+
+    if (planErr) {
+      console.warn(LOG, step, planErr.message)
+    }
+    const isProTaller = Boolean(
+      (planRow as { is_pro?: boolean; plan_activo?: boolean } | null)?.is_pro ??
+        (planRow as { plan_activo?: boolean } | null)?.plan_activo
+    )
+
+    if (format === "vertical" && !isProTaller) {
+      return jsonError(403, {
+        code: "PLAN_PRO_REQUIRED",
+        error:
+          "El formato vertical (WhatsApp / Stories) está disponible en el Plan Pro. Actualiza tu plan en Configuración para descargarlo.",
+        step,
+      })
+    }
+
+    step = "db-producto"
+    const { data: producto, error: pErr } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("id", productId)
+      .eq("taller_id", tallerId)
+      .maybeSingle()
+
+    if (pErr || !producto) {
+      return jsonError(404, {
+        error: "Producto no encontrado o sin acceso.",
+        step,
+        details: pErr?.message,
+      })
+    }
+
+    step = "db-config"
+    const { data: cfg, error: cfgErr } = await supabase
+      .from("configuracion_taller")
+      .select("nombre_taller, logo_url, taller_id")
+      .eq("taller_id", tallerId)
+      .maybeSingle()
+
+    if (cfgErr) {
+      console.warn(LOG, step, "configuracion_taller", cfgErr.message)
+    }
+
+    const rowProducto = producto as ProductoRow
+    if (String(rowProducto.taller_id) !== String(tallerId)) {
+      console.error(LOG, "metadata mismatch", { tallerId, productTallerId: rowProducto.taller_id })
+      return jsonError(403, { error: "El producto no pertenece a este taller.", step: "metadata" })
+    }
+
+    const cfgTallerId = (cfg as { taller_id?: string } | null)?.taller_id
+    if (cfg && cfgTallerId != null && String(cfgTallerId) !== String(tallerId)) {
+      console.error(LOG, "config taller_id mismatch", { tallerId, cfgTallerId })
+    }
+
+    const businessName = String((cfg?.nombre_taller as string) || "Mi Taller").trim() || "Mi Taller"
+    const logoUrl = resolveTallerLogoUrl(cfg?.logo_url as string | null | undefined)
+    const productImgUrl = resolvePosterProductImageUrl(producto as ProductoRow)
+
+    step = "fetch-images"
+    const [logoResult, productResult] = await Promise.all([
+      logoUrl ? fetchAsDataUrl(logoUrl, "fetch-images:logo") : Promise.resolve(null),
+      productImgUrl ? fetchAsDataUrl(productImgUrl, "fetch-images:product") : Promise.resolve(null),
+    ])
+
+    const logoDataUrl = logoResult?.success ? logoResult.dataUrl : undefined
+    const productImageDataUrl = productResult?.success ? productResult.dataUrl : undefined
+
+    if (logoUrl && logoResult && !logoResult.success) {
+      console.warn(LOG, "logo fetch skipped", { reason: logoResult.reason })
+    }
+    if (productImgUrl && productResult && !productResult.success) {
+      console.warn(LOG, "product image fetch skipped", { reason: productResult.reason })
+    }
+
+    step = "fonts"
+    let fonts: SatoriFont[]
+    try {
+      fonts = await loadPosterFonts()
+    } catch (fontErr) {
+      const msg = fontErr instanceof Error ? fontErr.message : String(fontErr)
+      console.error(LOG, step, msg)
+      return jsonError(500, {
+        error: msg.startsWith("Error al cargar recursos estáticos:")
+          ? msg
+          : `Error al cargar recursos estáticos: ${msg}`,
+        step,
+      })
+    }
+
+    const width = format === "vertical" ? POSTER_VERTICAL_WIDTH : POSTER_SQUARE_PX
+    const height = format === "vertical" ? POSTER_VERTICAL_HEIGHT : POSTER_SQUARE_PX
+
+    step = "satori"
+    const svg = await satori(
+      PosterExhibicionSatoriTemplate({
+        producto: producto as ProductoRow,
+        precio_oferta: precioOferta,
+        isOffer,
+        businessName,
+        logoDataUrl: logoDataUrl ?? undefined,
+        productImageDataUrl: productImageDataUrl ?? undefined,
+        format,
+      }),
+      {
+        width,
+        height,
+        fonts: fonts.map((f) => ({
+          name: f.name,
+          data: f.data,
+          weight: f.weight,
+          style: f.style,
+        })),
+      }
+    )
+
+    step = "resvg"
+    const resvg = new Resvg(svg, {
+      background: "#ffffff",
+    })
+    const pngBuffer = resvg.render().asPng()
+
+    const row = producto as ProductoRow
+    const sku = row.sku || productId
+    const safeName = String(sku).replace(/[^a-zA-Z0-9-_]/g, "_")
+    const suffix = format === "vertical" ? "whatsapp-stories" : "facebook-1080"
+    const filename = `poster-${suffix}-${safeName}.png`
+
+    return new NextResponse(pngBuffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "image/png",
+        "Content-Disposition": `attachment; filename="${filename}"`,
+        "Cache-Control": "no-store",
+      },
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : undefined
+    const full = stack ? `${message}\n\n${stack}` : message
+    console.error(LOG, "FAIL", { step, message, stack })
+
+    return jsonError(500, {
+      error: message || "Error al generar el poster",
+      step,
+      details: full,
+      cause: err instanceof Error ? err.name : undefined,
+    })
+  }
+}

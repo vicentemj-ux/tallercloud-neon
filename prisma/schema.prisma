@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PlanType {
+  NORMAL
+  PRO
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+enum ArchivoTipo {
+  REPAIR_PHOTO
+  REPAIR_INTAKE_PHOTO
+  REPAIR_EVIDENCE_PHOTO
+  PRODUCT_PHOTO
+  BUDGET_ATTACHMENT
+  SIGNATURE
+  HIKVISION_SNAPSHOT
+  VISIT_PHOTO
+  OTHER
+}
+
+enum ArchivoVisibility {
+  PUBLIC_TRACK
+  PRIVATE
+  TRACKING_VERIFIED
+  PUBLIC
+  PRO_PRIVATE
+}
+
+model Tenant {
+  id            String   @id @default(cuid())
+  nombre        String
+  slug          String   @unique
+  plan          PlanType @default(NORMAL)
+  trialEndsAt   DateTime?
+  timezone      String   @default("America/Mexico_City")
+  currency      String   @default("MXN")
+  logoUrl       String?
+  paperSize     String?  @default("80mm")
+  printSettings Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users         User[]
+  clientes      Cliente[]
+  reparaciones  Reparacion[]
+  archivos      Archivo[]
+  configuracion ConfiguracionTaller?
+}
+
+model User {
+  id        String   @id @default(cuid())
+  tenantId  String
+  email     String   @unique
+  nombre    String
+  passwordHash String
+  emailVerified Boolean @default(true)
+  sessionVersion Int @default(1)
+  role      UserRole @default(STAFF)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  accounts Account[]
+  sessions Session[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  tenantId          String?
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  tenantId     String?
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  tenantId  String
+  nombre    String
+  telefono  String?
+  telefonoSecundario String?
+  email     String?
+  notas     String?
+  rfc       String?
+  razonSocial String?
+  codigoPostalFiscal String?
+  regimenFiscal String?
+  usoCfdi   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparaciones Reparacion[]
+
+  @@index([tenantId])
+  @@index([tenantId, telefono])
+}
+
+model Reparacion {
+  id           String   @id @default(cuid())
+  tenantId     String
+  clienteId    String
+  folio        String
+  estado       String   @default("RECIBIDO")
+  tipoEquipo   String?
+  equipoMarca  String?
+  equipoModelo String?
+  numeroSerie  String?
+  color        String?
+  falla        String?
+  tecnico      String?
+  costoEstimado Decimal? @db.Decimal(10, 2)
+  anticipo     Decimal? @db.Decimal(10, 2)
+  securityType String?
+  securityValue String?
+  pinContrasena String?
+  patronDesbloqueo String?
+  notasInternas String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  archivos Archivo[]
+
+  @@unique([tenantId, folio])
+  @@index([tenantId])
+  @@index([clienteId])
+}
+
+model Archivo {
+  id           String   @id @default(cuid())
+  tenantId     String
+  reparacionId String?
+  productoId   String?
+  tipo         ArchivoTipo?
+  visibility   ArchivoVisibility?
+  bucket       String
+  key          String
+  storageKey   String?
+  publicUrl    String?
+  fileName     String?
+  mimeType     String?
+  sizeBytes    Int?
+  size         Int?
+  sortOrder    Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparacion Reparacion? @relation(fields: [reparacionId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([reparacionId])
+  @@index([productoId])
+}
+
+model ConfiguracionTaller {
+  id                   String   @id @default(cuid())
+  tenantId             String   @unique
+  nombreComercial      String?
+  direccion            String?
+  telefono             String?
+  emailContacto        String?
+  ciudad               String?
+  estado               String?
+  pais                 String?
+  moneda               String?  @default("MXN")
+  timezone             String?  @default("America/Mexico_City")
+  logoUrl              String?
+  logoStorageKey       String?
+  whatsapp             String?
+  paperSize            String?  @default("80mm")
+  labelSize            String?  @default("2x1")
+  printSettings        Json?
+  terminosGarantia     String?
+  diasGarantia         Int?     @default(30)
+  mensajeDespedida     String?
+  alertasStockBajo     Boolean? @default(false)
+  reportesCierreCaja   Boolean? @default(true)
+  alertaUrgentes       Boolean? @default(false)
+  prefijoFolio         String?  @default("REP")
+  siguienteFolio       Int?     @default(1)
+  facebook             String?
+  instagram            String?
+  tiktok               String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
