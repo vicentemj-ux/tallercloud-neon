@@ -3,8 +3,10 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { z } from "zod"
-import { createClient } from "@/lib/supabase/server"
-import { createAdminClient } from "@/lib/supabase/admin"
+import { getCurrentUser } from "@/lib/auth"
+import { getPrismaClient } from "@/lib/prisma"
+
+type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 
 const nombreSchema = z.string().min(2, "El nombre del taller es obligatorio (mínimo 2 caracteres)").max(100).trim()
 
@@ -21,10 +23,6 @@ async function setTallerSessionCookies(tallerId: string, nombreTaller: string) {
   cookieStore.set("tallerName", encodeURIComponent(nombreTaller), cookieBase)
 }
 
-/**
- * Completa el alta del taller tras OAuth (Google): crea la fila en taller_users
- * con id = auth.users.id, prueba 30 días y cookies de sesión del producto.
- */
 export async function completeOnboardingTaller(
   nombreTallerRaw: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -34,69 +32,92 @@ export async function completeOnboardingTaller(
   }
   const nombreTaller = parsed.data
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user?.email) {
-    return { success: false, error: "Sesión no válida. Inicia sesión con Google de nuevo." }
+  const user = await getCurrentUser()
+  const userId = (user as any)?.id as string | undefined
+  const userEmail = user?.email?.toLowerCase().trim()
+  if (!userId || !userEmail) {
+    return { success: false, error: "Sesión no válida. Inicia sesión nuevamente." }
   }
 
-  const admin = await createAdminClient()
+  const prisma = getPrismaClient()
+  const existingById = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { tenant: true },
+  })
 
-  const { data: existingById } = await admin
-    .from("taller_users")
-    .select("id, nombre_taller")
-    .eq("id", user.id)
-    .maybeSingle()
-
-  if (existingById) {
-    await setTallerSessionCookies(existingById.id, existingById.nombre_taller as string)
+  if (existingById?.tenantId && existingById.tenant) {
+    await setTallerSessionCookies(existingById.tenantId, existingById.tenant.nombre)
     redirect("/dashboard")
   }
 
-  const emailLower = user.email.toLowerCase().trim()
-  const { data: existingByEmail } = await admin
-    .from("taller_users")
-    .select("id")
-    .eq("email", emailLower)
-    .maybeSingle()
+  const targetUser =
+    existingById ??
+    (await prisma.user.findFirst({
+      where: {
+        email: { equals: userEmail, mode: "insensitive" },
+      },
+    }))
 
-  if (existingByEmail) {
-    return {
-      success: false,
-      error:
-        "Ya existe una cuenta con este correo. Inicia sesión con email y contraseña o contacta a soporte.",
-    }
+  if (!targetUser) {
+    return { success: false, error: "No se encontró una cuenta de usuario para completar onboarding." }
   }
 
-  const nombrePropietario =
-    (user.user_metadata?.full_name as string | undefined) ||
-    (user.user_metadata?.name as string | undefined) ||
-    emailLower.split("@")[0] ||
-    "Propietario"
+  const baseSlug = nombreTaller
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50) || "taller"
 
-  const fechaVencimiento = new Date()
-  fechaVencimiento.setDate(fechaVencimiento.getDate() + 30)
+  let slug = baseSlug
+  let i = 1
+  while (await prisma.tenant.findUnique({ where: { slug }, select: { id: true } })) {
+    i += 1
+    slug = `${baseSlug}-${i}`
+  }
 
-  const { error: insertError } = await admin.from("taller_users").insert({
-    id: user.id,
-    email: emailLower,
-    nombre_propietario: nombrePropietario,
-    nombre_taller: nombreTaller,
-    password_hash: null,
-    email_verified: true,
-    plan_tipo: "prueba",
-    fecha_vencimiento_plan: fechaVencimiento.toISOString(),
+  const trialEndsAt = new Date()
+  trialEndsAt.setDate(trialEndsAt.getDate() + 30)
+
+  const result = await prisma.$transaction(async (tx: TxClient) => {
+    const tenant = await tx.tenant.create({
+      data: {
+        nombre: nombreTaller,
+        slug,
+        plan: "PRO",
+        trialEndsAt,
+        currency: "MXN",
+        timezone: "America/Mexico_City",
+        paperSize: "80mm",
+        printSettings: {},
+      },
+    })
+
+    await tx.user.update({
+      where: { id: targetUser.id },
+      data: {
+        tenantId: tenant.id,
+        role: "OWNER",
+        emailVerified: true,
+        activo: true,
+      },
+    })
+
+    await tx.configuracionTaller.create({
+      data: {
+        tenantId: tenant.id,
+        nombreComercial: nombreTaller,
+        moneda: "MXN",
+        timezone: "America/Mexico_City",
+        paperSize: "80mm",
+        printSettings: {},
+      },
+    })
+
+    return { tenantId: tenant.id }
   })
 
-  if (insertError) {
-    console.error("[completeOnboardingTaller]", insertError)
-    return { success: false, error: "No se pudo crear tu taller. Intenta de nuevo." }
-  }
-
-  await setTallerSessionCookies(user.id, nombreTaller)
+  await setTallerSessionCookies(result.tenantId, nombreTaller)
   redirect("/dashboard")
 }
