@@ -2,7 +2,6 @@
 
 import { getCurrentTenant } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
-import { Prisma } from "@prisma/client"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
 import type { SecurityTab } from "@/lib/reparaciones/security"
@@ -16,6 +15,14 @@ import {
 } from "@/lib/r2"
 import { getArchivoDisplayUrl } from "@/lib/archivo-url"
 import { last4 as phoneLast4, onlyDigits } from "@/lib/phone"
+
+type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
+
+function getPrismaErrorCode(error: unknown): string | null {
+  if (!error || typeof error !== "object") return null
+  const maybeCode = (error as { code?: unknown }).code
+  return typeof maybeCode === "string" ? maybeCode : null
+}
 
 export interface CreateRepairInput {
   folio?: string | null
@@ -232,7 +239,7 @@ export async function createRepair(input: CreateRepairInput) {
       return { success: false, error: "Faltan campos requeridos." }
     }
 
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await prisma.$transaction(async (tx: TxClient) => {
       const nextFolioForTenant = async () => {
         const rows = await tx.$queryRaw<Array<{ max_folio_num: number }>>`
           SELECT COALESCE(
@@ -310,8 +317,7 @@ export async function createRepair(input: CreateRepairInput) {
         } catch (err) {
           if (
             !folio &&
-            err instanceof Prisma.PrismaClientKnownRequestError &&
-            err.code === "P2002" &&
+            getPrismaErrorCode(err) === "P2002" &&
             attempt < 2
           ) {
             continue
@@ -402,13 +408,14 @@ export async function createRepair(input: CreateRepairInput) {
     }
   } catch (e) {
     console.error("createRepair prisma:", e)
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
+    const prismaCode = getPrismaErrorCode(e)
+    if (prismaCode) {
+      if (prismaCode === "P2002") {
         return { success: false, error: "Folio duplicado detectado. Intenta de nuevo." }
       }
       return {
         success: false,
-        error: `Prisma ${e.code}: ${e.message}`,
+        error: `Prisma ${prismaCode}: ${e instanceof Error ? e.message : "Error desconocido"}`,
       }
     }
     return {
@@ -621,7 +628,7 @@ export async function updateRepairFull(input: {
     })
     if (!existing) return { success: false, error: "No se encontró la reparación." }
 
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx: TxClient) => {
       let clientId = input.clienteId?.trim() || existing.clienteId
       if (input.clienteId?.trim()) {
         const c = await tx.cliente.findFirst({ where: { id: input.clienteId.trim(), tenantId }, select: { id: true } })

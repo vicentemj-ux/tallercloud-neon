@@ -3,9 +3,10 @@
 import bcrypt from "bcryptjs"
 import { headers } from "next/headers"
 import { z } from "zod"
-import { Prisma } from "@prisma/client"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
 import { getPrismaClient } from "@/lib/prisma"
+
+type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 
 const emailSchema = z.string().email("Email invalido").max(254)
 const passwordSchema = z.string().min(8, "La contrasena debe tener al menos 8 caracteres").max(128)
@@ -63,7 +64,7 @@ export async function registerWithPrisma(data: {
 
   const baseSlug = slugify(data.nombreTaller) || "taller"
 
-  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const result = await prisma.$transaction(async (tx: TxClient) => {
     let slug = baseSlug
     let i = 1
     while (await tx.tenant.findUnique({ where: { slug }, select: { id: true } })) {
