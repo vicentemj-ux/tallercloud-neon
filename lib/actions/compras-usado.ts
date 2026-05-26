@@ -3,6 +3,7 @@
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { revalidatePath } from "next/cache"
+import { requireOpenCajaForFinancialOperation } from "@/lib/caja/guard"
 
 export interface CompraUsadoInput {
   vendedor: string
@@ -61,31 +62,18 @@ export async function registrarCompraUsado(input: CompraUsadoInput): Promise<{
   const { supabase, tallerId } = await createCurrentTenantClient()
   const actorNombre = await getCurrentActorDisplayName()
 
-  // 1. Validar caja abierta
-  const { data: cajaRow, error: cajaErr } = await supabase
-    .from("caja")
-    .select("id, saldo_actual")
-    .eq("taller_id", tallerId)
-    .eq("estado", "abierta")
-    .order("fecha_apertura", { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (cajaErr) {
-    console.error("[registrarCompraUsado] Error buscando caja:", cajaErr)
-    return { success: false, folio: "", error: "Error al verificar caja." }
-  }
-
-  if (!cajaRow?.id) {
-    return { success: false, folio: "", error: "No hay caja abierta. Abre caja antes de registrar una compra." }
-  }
-
-  const saldoActual = Number(cajaRow.saldo_actual ?? 0)
   const montoAbs = Math.abs(input.monto)
-
-  if (saldoActual < montoAbs) {
-    return { success: false, folio: "", error: `Saldo insuficiente en caja ($${saldoActual.toLocaleString("es-MX", { minimumFractionDigits: 2 })}).` }
+  const cajaGuard = await requireOpenCajaForFinancialOperation({
+    supabase,
+    tallerId,
+    requiredAmount: montoAbs,
+    requireSufficientBalance: true,
+  })
+  if (!cajaGuard.ok) {
+    return { success: false, folio: "", error: cajaGuard.error }
   }
+  const cajaId = cajaGuard.caja.id
+  const saldoActual = Number(cajaGuard.caja.saldo_actual ?? 0)
 
   const folio = `CU-${Date.now().toString().slice(-6)}`
   const nowIso = new Date().toISOString()
@@ -118,7 +106,7 @@ export async function registrarCompraUsado(input: CompraUsadoInput): Promise<{
   // 3. Insertar movimiento de caja (egreso)
   const { error: movError } = await supabase.from("movimientos_caja").insert({
     taller_id:    tallerId,
-    caja_id:      cajaRow.id,
+    caja_id:      cajaId,
     tipo:         "compra_equipo_usado",
     referencia_id: folio,
     descripcion:  `Compra equipo usado — ${input.marca} ${input.modelo} (Vendedor: ${input.vendedor})`,
@@ -137,7 +125,7 @@ export async function registrarCompraUsado(input: CompraUsadoInput): Promise<{
   const { error: saldoError } = await supabase
     .from("caja")
     .update({ saldo_actual: saldoActual - montoAbs })
-    .eq("id", cajaRow.id)
+    .eq("id", cajaId)
 
   if (saldoError) {
     console.error("[registrarCompraUsado] Error actualizando saldo:", saldoError)

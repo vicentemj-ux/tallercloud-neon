@@ -9,6 +9,7 @@ import { getInventoryPublicUrl } from "@/lib/storage"
 import { formatCurrency } from "@/lib/utils/currency"
 import { formatDate } from "@/lib/utils/date"
 import { verificarVisitasPendientesCierre } from "@/lib/actions/bitacora-visitas"
+import { requireOpenCajaForFinancialOperation } from "@/lib/caja/guard"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -798,18 +799,21 @@ export interface VentaCreada {
 
 export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
+  const guard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+  if (!guard.ok) {
+    if (guard.error.includes("No hay caja abierta")) return { caja: null, error: null }
+    return { caja: null, error: guard.error }
+  }
 
   const { data, error } = await supabase
     .from("caja")
     .select("*")
+    .eq("id", guard.caja.id)
     .eq("taller_id", tallerId)
-    .eq("estado", "abierta")
-    .order("fecha_apertura", { ascending: false })
-    .limit(1)
     .maybeSingle()
 
   if (error) return { caja: null, error: error.message }
-  return { caja: data as CajaRow | null, error: null }
+  return { caja: (data as CajaRow | null) ?? null, error: null }
 }
 
 // ─── requireCajaAbierta ───────────────────────────────────────────────────────
@@ -1934,6 +1938,10 @@ export async function anularVenta(
   }
 
   const { supabase, tallerId } = await createCurrentTenantClient()
+  const cajaGuard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+  if (!cajaGuard.ok) {
+    return { success: false, error: cajaGuard.error }
+  }
 
   const { data, error } = await supabase.rpc("anular_venta_pdv", {
     p_venta_id: ventaId,

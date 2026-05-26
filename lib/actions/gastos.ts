@@ -3,6 +3,7 @@
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { revalidatePath } from "next/cache"
+import { requireOpenCajaForFinancialOperation } from "@/lib/caja/guard"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -74,20 +75,11 @@ export async function addGastoTicket(
   const actorNombre = await getCurrentActorDisplayName()
   const usuarioReal = actorNombre || "Sistema"
 
-  const { data: cajaCheck } = await supabase
-    .from("caja")
-    .select("id")
-    .eq("taller_id", tallerId)
-    .eq("estado", "abierta")
-    .order("fecha_apertura", { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (!cajaCheck?.id) {
+  const cajaGuard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+  if (!cajaGuard.ok) {
     return { data: null, error: "No hay caja abierta. Abre la caja antes de registrar un gasto." }
   }
-
-  const cajaId = cajaCheck.id as string
+  const cajaId = cajaGuard.caja.id
 
   const { data: repairRow } = await supabase
     .from("reparaciones")
@@ -280,6 +272,19 @@ export async function addGastoOperativo(
   input: AddGastoOperativoInput
 ): Promise<{ data: GastoOperativo | null; error: string | null; cajaAplicada?: boolean }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
+  const requiresCaja = input.metodo_pago === "efectivo"
+  let cajaGuard: Awaited<ReturnType<typeof requireOpenCajaForFinancialOperation>> | null = null
+  if (requiresCaja) {
+    cajaGuard = await requireOpenCajaForFinancialOperation({
+      supabase,
+      tallerId,
+      requiredAmount: Math.abs(input.monto),
+      requireSufficientBalance: true,
+    })
+    if (!cajaGuard.ok) {
+      return { data: null, error: cajaGuard.error, cajaAplicada: false }
+    }
+  }
 
   const { data: gasto, error: gastoErr } = await supabase
     .from("bitacora_gastos")
@@ -299,21 +304,9 @@ export async function addGastoOperativo(
 
   let cajaAplicada = false
 
-  if (input.metodo_pago === "efectivo") {
-    const { data: cajaRow, error: cajaErr } = await supabase
-      .from("caja")
-      .select("id, saldo_actual")
-      .eq("taller_id", tallerId)
-      .eq("estado", "abierta")
-      .order("fecha_apertura", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    if (cajaErr) {
-      console.error("[addGastoOperativo] Error buscando caja abierta:", cajaErr)
-    }
-
-    if (cajaRow?.id) {
+  if (input.metodo_pago === "efectivo" && cajaGuard?.ok) {
+    const cajaRow = cajaGuard.caja
+    if (cajaRow.id) {
       const { data: movRow, error: movError } = await supabase
         .from("movimientos_caja")
         .insert({

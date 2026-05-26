@@ -11,6 +11,7 @@ import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { BUCKETS } from "@/lib/storage"
 import { getSignedUrls } from "@/lib/storage-server"
 import type { ReparacionGasto } from "@/lib/actions/gastos"
+import { requireOpenCajaForFinancialOperation } from "@/lib/caja/guard"
 import {
   mapRecordToSecurityDisplay,
   normalizeSecurityForDb,
@@ -1844,27 +1845,14 @@ export async function registrarAbono(input: {
     return { success: false, error: `El abono excede el saldo pendiente de $${(presupuesto - currentAnticipo).toLocaleString("es-MX")}.` }
   }
 
-  // Require an open caja before recording any payment
-  const { data: cajaCheck, error: cajaErr } = await supabase
-    .from("caja")
-    .select("id")
-    .eq("taller_id", tallerId)
-    .eq("estado", "abierta")
-    .order("fecha_apertura", { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (cajaErr) {
-    console.error("[registrarAbono] Error al buscar caja:", cajaErr)
-  }
-
-  if (!cajaCheck?.id) {
+  const cajaGuard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+  if (!cajaGuard.ok) {
     return {
       success: false,
-      error: "No hay caja abierta. Abre la caja antes de registrar un abono.",
+      error: cajaGuard.error,
     }
   }
-  const cajaId = (cajaCheck as Record<string, unknown>).id as string
+  const cajaId = cajaGuard.caja.id
 
   // 2. Get actor name for denormalized vendedor_nombre field
   const actorNombre = await getCurrentActorDisplayName()
@@ -2240,39 +2228,34 @@ export async function entregarSinReparacionConAjuste(input: {
 
     let cajaId: string | null = null
     if (montoEf > 0.01) {
-      const { data: cajaRow } = await supabase
-        .from("caja")
-        .select("id, saldo_actual")
-        .eq("taller_id", tallerId)
-        .eq("estado", "abierta")
-        .order("fecha_apertura", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-
-      if (!cajaRow?.id) {
-        refundWarning = `No se pudo registrar el reembolso en efectivo de ${fmtMoney(montoEf)}: no hay caja abierta.`
-      } else {
-        cajaId = cajaRow.id
-        const { error: movErr } = await supabase.from("movimientos_caja").insert({
-          taller_id: tallerId,
-          caja_id: cajaRow.id,
-          tipo: "reembolso",
-          descripcion: `Reembolso anticipo — Folio ${String(rec.folio ?? "")}`,
-          monto: -Math.abs(montoEf),
-          metodo_pago: "efectivo",
-          fecha: new Date().toISOString(),
-          actor_nombre: actor,
-        })
-        if (movErr) {
-          refundWarning = `Error al registrar reembolso en efectivo: ${movErr.message}`
-        } else {
-          // Actualizar saldo de caja
-          await supabase
-            .from("caja")
-            .update({ saldo_actual: Number(cajaRow.saldo_actual ?? 0) - Math.abs(montoEf) })
-            .eq("id", cajaRow.id)
-        }
+      const cajaGuard = await requireOpenCajaForFinancialOperation({
+        supabase,
+        tallerId,
+        requiredAmount: montoEf,
+        requireSufficientBalance: true,
+      })
+      if (!cajaGuard.ok) {
+        return { success: false, error: cajaGuard.error }
       }
+      cajaId = cajaGuard.caja.id
+      const { error: movErr } = await supabase.from("movimientos_caja").insert({
+        taller_id: tallerId,
+        caja_id: cajaId,
+        tipo: "reembolso",
+        descripcion: `Reembolso anticipo — Folio ${String(rec.folio ?? "")}`,
+        monto: -Math.abs(montoEf),
+        metodo_pago: "efectivo",
+        fecha: new Date().toISOString(),
+        actor_nombre: actor,
+      })
+      if (movErr) {
+        return { success: false, error: `Error al registrar reembolso en efectivo: ${movErr.message}` }
+      }
+      // Actualizar saldo de caja
+      await supabase
+        .from("caja")
+        .update({ saldo_actual: Number(cajaGuard.caja.saldo_actual ?? 0) - Math.abs(montoEf) })
+        .eq("id", cajaId)
     }
 
     if (montoTr > 0.01) {
@@ -2287,9 +2270,7 @@ export async function entregarSinReparacionConAjuste(input: {
         actor_nombre: actor,
       })
       if (movErr) {
-        refundWarning = refundWarning
-          ? `${refundWarning}; Error en transferencia: ${movErr.message}`
-          : `Error al registrar reembolso por transferencia: ${movErr.message}`
+        return { success: false, error: `Error al registrar reembolso por transferencia: ${movErr.message}` }
       }
     }
   }
@@ -2860,13 +2841,17 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
     const { movements } = await getCancelacionSummary(repairId)
 
     if (movements.length > 0) {
+      const cajaGuard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+      if (!cajaGuard.ok) {
+        return { success: false, error: cajaGuard.error }
+      }
       const reversals = movements.map((m) => ({
         taller_id: tallerId,
         tipo: "devolucion_cancelacion" as const,
         monto: -Math.abs(Number(m.monto)),
         metodo_pago: m.metodo_pago,
         referencia_id: repairId,
-        caja_id: m.caja_id ?? null,
+        caja_id: cajaGuard.caja.id,
         descripcion: `Devolución por cancelación de reparación #${repair.folio}`,
       }))
 
