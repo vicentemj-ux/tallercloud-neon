@@ -36,6 +36,8 @@ function normalizePhone(value?: string | null) {
   return (value ?? "").replace(/\D/g, "")
 }
 
+type ReparacionCountRow = { clienteId: string; _count: { _all: number } }
+
 function toClientDto(row: {
   id: string
   nombre: string
@@ -90,7 +92,7 @@ export async function getClientes(): Promise<{ clients: Client[]; error: string 
       }),
     ])
 
-    const counts = new Map(countRows.map((r) => [r.clienteId, r._count._all]))
+    const counts = new Map(countRows.map((r: ReparacionCountRow) => [r.clienteId, r._count._all]))
     return {
       clients: clientes.map((c) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
       error: null,
@@ -133,7 +135,7 @@ export async function searchClientes(query: string): Promise<{ clients: Client[]
         })
       : []
 
-    const counts = new Map(countRows.map((r) => [r.clienteId, r._count._all]))
+    const counts = new Map((countRows as ReparacionCountRow[]).map((r: ReparacionCountRow) => [r.clienteId, r._count._all]))
     return {
       clients: clientes.map((c) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
       error: null,
