@@ -21,7 +21,7 @@ import {
   type CotizacionInput,
   updateCotizacion,
 } from "@/lib/actions/cotizaciones"
-import { getEsUsuarioPro } from "@/lib/actions/auth"
+import { getEsUsuarioPro } from "@/lib/actions/auth-prisma"
 
 export default function CotizacionesPage() {
   const [isPro, setIsPro] = useState(false)

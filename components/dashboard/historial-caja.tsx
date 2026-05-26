@@ -25,7 +25,7 @@ import {
   type CortePrintData,
 } from "@/lib/actions/ventas"
 import { getTallerSettings } from "@/lib/actions/settings"
-import { getCurrentOwnerIdentity } from "@/lib/actions/auth"
+import { getCurrentOwnerIdentity } from "@/lib/actions/auth-prisma"
 import {
   buildWaMeUrl,
   formatCorteOwnerWhatsAppMessage,

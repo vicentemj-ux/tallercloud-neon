@@ -36,10 +36,6 @@ const OfflineSyncListener = dynamic(
   () => import("@/components/dashboard/offline-sync-listener").then((m) => m.OfflineSyncListener),
   { ssr: false }
 )
-const VisitaDetector = dynamic(
-  () => import("@/components/visitas/visita-detector").then((m) => m.VisitaDetector),
-  { ssr: false }
-)
 
 // ─── Skeleton para sidebar mientras carga DnD ─────────────────────────────────
 
@@ -177,7 +173,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <OfflineSyncListener />
-      <VisitaDetector />
       <CajaProvider>
         <DashboardContent>{children}</DashboardContent>
       </CajaProvider>

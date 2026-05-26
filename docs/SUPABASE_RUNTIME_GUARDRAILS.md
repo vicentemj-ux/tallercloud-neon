@@ -22,3 +22,4 @@ rg -n "@/lib/actions/(auth-prisma|clients-prisma|repairs-prisma|settings-prisma|
 - Rutas MVP solo pueden importar `*-prisma.ts`.
 - Archivos `auth.ts`, `clients.ts`, `repairs.ts`, `settings.ts` quedan como **LEGACY SUPABASE**.
 - Si una ruta MVP necesita función nueva, crearla primero en archivo Prisma oficial.
+- Ningun archivo bajo `app/dashboard`, `components/dashboard`, `components/auth` o `hooks` puede importar `lib/supabase/*` ni `@supabase/*`.

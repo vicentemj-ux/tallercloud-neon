@@ -21,7 +21,6 @@ import {
 } from "react"
 import { getCajaAbierta, abrirCaja } from "@/lib/actions/ventas"
 import type { CajaRow } from "@/lib/actions/ventas"
-import { createClient } from "@/lib/supabase/client"
 import { AlertCircle, Loader2, Store } from "lucide-react"
 
 type CajaStatus = "open" | "closed" | "loading"
@@ -98,30 +97,6 @@ function CajaProviderInner({ children }: { children: ReactNode }) {
     const handler = () => void checkCaja()
     window.addEventListener("caja:abierta", handler)
     return () => window.removeEventListener("caja:abierta", handler)
-  }, [checkCaja])
-
-  useEffect(() => {
-    const supabase = createClient()
-    const channel = supabase
-      .channel("caja-context-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "caja" },
-        () => {
-          void checkCaja()
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "caja" },
-        () => {
-          void checkCaja()
-        }
-      )
-      .subscribe()
-    return () => {
-      void supabase.removeChannel(channel)
-    }
   }, [checkCaja])
 
   const open = useCallback(() => setShowOpenModal(true), [])

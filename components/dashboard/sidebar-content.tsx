@@ -32,7 +32,7 @@ import {
   Wrench,
 } from "lucide-react"
 import { useTallerNegocioNombre } from "@/lib/hooks/use-taller-negocio-nombre"
-import { getEsUsuarioPro, logoutTaller } from "@/lib/actions/auth"
+import { getEsUsuarioPro, logoutTaller } from "@/lib/actions/auth-prisma"
 import {
   DndContext,
   type DragEndEvent,

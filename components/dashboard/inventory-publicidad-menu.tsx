@@ -24,7 +24,7 @@ import {
 import { PosterExhibicion } from "@/components/print-templates/PosterExhibicion"
 import type { ProductoRow } from "@/lib/actions/productos"
 import { getTallerSettings } from "@/lib/actions/settings"
-import { getEsUsuarioPro } from "@/lib/actions/auth"
+import { getEsUsuarioPro } from "@/lib/actions/auth-prisma"
 import { toast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Megaphone, Download, Printer, ImageIcon } from "lucide-react"

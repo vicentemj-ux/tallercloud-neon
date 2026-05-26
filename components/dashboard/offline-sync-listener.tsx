@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { createRepair } from "@/lib/actions/repairs"
+import { createRepair } from "@/lib/actions/repairs-prisma"
 import {
   getRepairQueueOrdered,
   mergeFallbackQueueIntoIdb,

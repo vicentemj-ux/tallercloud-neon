@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 import { headers } from "next/headers"
 import { z } from "zod"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
-import { getCurrentUser } from "@/lib/auth"
+import { clearLegacySessionCookies, getCurrentTenant, getCurrentUser } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
 
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
@@ -177,4 +177,61 @@ export async function changeOwnerPassword(
     console.error("[auth-prisma] changeOwnerPassword:", e)
     return { success: false, error: "No se pudo actualizar la contraseña" }
   }
+}
+
+export async function getEsUsuarioPro(): Promise<boolean> {
+  try {
+    const tenant = await getCurrentTenant()
+    if (!tenant?.id) return false
+    const prisma = getPrismaClient()
+    const row = await prisma.tenant.findUnique({
+      where: { id: tenant.id },
+      select: { plan: true, trialEndsAt: true },
+    })
+    if (!row) return false
+    if (row.plan === "PRO") return true
+    if (row.trialEndsAt && row.trialEndsAt.getTime() > Date.now()) return true
+    return false
+  } catch (e) {
+    console.error("[auth-prisma] getEsUsuarioPro:", e)
+    return false
+  }
+}
+
+export async function getCurrentOwnerIdentity(): Promise<{
+  nombre: string
+  email: string
+  error: string | null
+}> {
+  try {
+    const user = await getCurrentUser()
+    const userId = (user as any)?.id as string | undefined
+    if (!userId) {
+      return { nombre: "Usuario activo", email: "", error: "No autenticado" }
+    }
+
+    const prisma = getPrismaClient()
+    const row = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { nombre: true, email: true },
+    })
+
+    if (!row) {
+      return { nombre: "Usuario activo", email: "", error: "No se pudo cargar el usuario activo" }
+    }
+
+    return {
+      nombre: row.nombre?.trim() || "Usuario activo",
+      email: row.email?.trim() || "",
+      error: null,
+    }
+  } catch (e) {
+    console.error("[auth-prisma] getCurrentOwnerIdentity:", e)
+    return { nombre: "Usuario activo", email: "", error: "No se pudo cargar el usuario activo" }
+  }
+}
+
+export async function logoutTaller() {
+  await clearLegacySessionCookies()
+  return { success: true }
 }

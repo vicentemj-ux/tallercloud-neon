@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 
 /** Nombre del negocio desde `configuracion_taller`, con fallback a cookie. */
 export function useTallerNegocioNombre() {
