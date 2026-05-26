@@ -37,6 +37,7 @@ function normalizePhone(value?: string | null) {
 }
 
 type ReparacionCountRow = { clienteId: string; _count: { _all: number } }
+type ClienteRow = Parameters<typeof toClientDto>[0]
 
 function toClientDto(row: {
   id: string
@@ -94,7 +95,7 @@ export async function getClientes(): Promise<{ clients: Client[]; error: string 
 
     const counts = new Map(countRows.map((r: ReparacionCountRow) => [r.clienteId, r._count._all]))
     return {
-      clients: clientes.map((c) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
+      clients: clientes.map((c: ClienteRow) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
       error: null,
     }
   } catch (error) {
@@ -126,7 +127,7 @@ export async function searchClientes(query: string): Promise<{ clients: Client[]
       take: 200,
     })
 
-    const ids = clientes.map((c) => c.id)
+    const ids = clientes.map((c: ClienteRow) => c.id)
     const countRows = ids.length
       ? await prisma.reparacion.groupBy({
           by: ["clienteId"],
@@ -137,7 +138,7 @@ export async function searchClientes(query: string): Promise<{ clients: Client[]
 
     const counts = new Map((countRows as ReparacionCountRow[]).map((r: ReparacionCountRow) => [r.clienteId, r._count._all]))
     return {
-      clients: clientes.map((c) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
+      clients: clientes.map((c: ClienteRow) => ({ ...toClientDto(c), ordenes_count: counts.get(c.id) ?? 0 })),
       error: null,
     }
   } catch (error) {
