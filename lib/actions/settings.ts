@@ -1,4 +1,7 @@
 "use server"
+// LEGACY SUPABASE ACTIONS.
+// No importar desde rutas MVP (usar settings-prisma.ts).
+// Pendiente migración completa de módulos legacy/PRO.
 
 import { unstable_noStore } from "next/cache"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"

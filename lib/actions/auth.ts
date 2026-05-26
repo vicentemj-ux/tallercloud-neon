@@ -1,4 +1,7 @@
 "use server"
+// LEGACY SUPABASE ACTIONS.
+// No importar desde rutas MVP (usar auth-prisma.ts).
+// Pendiente migración completa de módulos legacy/PRO.
 
 import { createClient } from "@/lib/supabase/server"
 import bcrypt from "bcryptjs"

@@ -1,4 +1,7 @@
 "use server"
+// LEGACY SUPABASE ACTIONS.
+// No importar desde rutas MVP (usar repairs-prisma.ts / dashboard-prisma.ts / tracking-prisma.ts).
+// Pendiente migración completa de módulos legacy/PRO.
 
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"

@@ -224,3 +224,77 @@ export async function getTallerPlanType(): Promise<TallerPlanTipo> {
   }
 }
 
+export async function getDashboardSubscriptionBannerContext(): Promise<{
+  showBanner: boolean
+  isPro: boolean
+  diasRestantes: number
+  tieneVencimiento: boolean
+  planTipo: TallerPlanTipo
+  precioPlanMensual: number | null
+  zonaHoraria: string | null
+}> {
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const [tenant, cfg] = await Promise.all([
+      prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { plan: true, trialEndsAt: true, createdAt: true },
+      }),
+      prisma.configuracionTaller.findUnique({
+        where: { tenantId },
+        select: { timezone: true },
+      }),
+    ])
+    const zonaHoraria = cfg?.timezone ?? null
+    if (!tenant) {
+      return {
+        showBanner: true,
+        isPro: false,
+        diasRestantes: 0,
+        tieneVencimiento: false,
+        planTipo: "prueba",
+        precioPlanMensual: null,
+        zonaHoraria,
+      }
+    }
+
+    const trialEndsAt = tenant.trialEndsAt
+    const tieneVencimiento = Boolean(trialEndsAt)
+    const diasRestantes = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0
+    const planTipo: TallerPlanTipo = diasRestantes > 0 ? "prueba" : "activo"
+
+    if (planTipo === "prueba") {
+      return {
+        showBanner: true,
+        isPro: true,
+        diasRestantes,
+        tieneVencimiento,
+        planTipo,
+        precioPlanMensual: null,
+        zonaHoraria,
+      }
+    }
+
+    return {
+      showBanner: false,
+      isPro: true,
+      diasRestantes: 0,
+      tieneVencimiento,
+      planTipo: "activo",
+      precioPlanMensual: null,
+      zonaHoraria,
+    }
+  } catch (e) {
+    console.error("[settings-prisma] getDashboardSubscriptionBannerContext:", e)
+    return {
+      showBanner: true,
+      isPro: false,
+      diasRestantes: 0,
+      tieneVencimiento: false,
+      planTipo: "prueba",
+      precioPlanMensual: null,
+      zonaHoraria: null,
+    }
+  }
+}

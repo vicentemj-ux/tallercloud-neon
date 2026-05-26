@@ -1,9 +1,8 @@
 import { OrdersTable } from "@/components/dashboard/orders-table"
-import type { Order } from "@/components/dashboard/orders-table"
 import { NewRepairButton } from "@/components/dashboard/new-repair-button"
 import { VerificationGate } from "@/components/dashboard/equipo/VerificationGate"
-import { getRepairsByTallerId } from "@/lib/actions/repairs-prisma"
-import { getDashboardSubscriptionBannerContext } from "@/lib/actions/settings"
+import { getDashboardMvpData } from "@/lib/actions/dashboard-prisma"
+import { getDashboardSubscriptionBannerContext } from "@/lib/actions/settings-prisma"
 import { Button } from "@/components/ui/button"
 import {
   Zap, Globe, ArrowRight, TrendingUp, Wrench,
@@ -13,60 +12,22 @@ import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
-function toOrderStatus(status: string): Order["status"] {
-  if (status === "Recibido" || status === "Diagnostico" || status === "En Reparacion" || status === "Listo" || status === "Entregado") {
-    return status
-  }
-  return "Recibido"
-}
-
 /**
  * Métricas (`getDashboardStats`) vienen de la RPC sobre **reparaciones / ventas / caja**, no de la tabla `productos`.
  * El inventario vive en **`productos`**; no existe tabla `inventario` en el esquema usado por la app.
  */
 export default async function DashboardPage() {
   // Datos del dashboard sobre Prisma/Neon para no depender del stack legacy de Supabase.
-  const [repairsResult, subCtx] = await Promise.all([
-    getRepairsByTallerId(0, 200),
+  const [dashboardData, subCtx] = await Promise.all([
+    getDashboardMvpData(),
     getDashboardSubscriptionBannerContext(),
   ])
-
-  const orders: Order[] = repairsResult.data.map((r) => ({
-    id: r.id,
-    folio: r.folio,
-    customer: r.clienteName,
-    phone: r.clientePhone || "",
-    device: `${r.deviceBrand || ""} ${r.deviceModel || ""}`.trim() || "Equipo",
-    tipo_equipo: r.tipo_equipo || "Equipo",
-    status: toOrderStatus(r.status),
-    date: r.createdAt,
-    problem: r.falla || "Sin falla reportada",
-    price: r.estimatedPrice == null ? "Pendiente" : `$${Number(r.estimatedPrice).toLocaleString("es-MX")}`,
-    technician: r.tecnico || "Sin asignar",
-  }))
-
-  const now = Date.now()
-  const month = new Date().getMonth()
-  const year = new Date().getFullYear()
-  const isClosed = (s: string) => s === "Entregado" || s === "Cancelado" || s === "Sin Reparacion"
-  const isInProgress = (s: string) => !isClosed(s) && s !== "Listo"
-  const stats = repairsResult.data.reduce(
-    (acc, r) => {
-      if (r.status === "Listo") acc.listos += 1
-      if (isInProgress(r.status)) acc.enProceso += 1
-      const updated = r.updatedAtRaw ? new Date(r.updatedAtRaw).getTime() : NaN
-      if (isInProgress(r.status) && Number.isFinite(updated)) {
-        const days = (now - updated) / (1000 * 60 * 60 * 24)
-        if (days >= 7) acc.urgentes += 1
-      }
-      const created = r.createdAt ? new Date(r.createdAt) : null
-      if (created && !Number.isNaN(created.getTime()) && created.getMonth() === month && created.getFullYear() === year) {
-        acc.ventasMes += r.estimatedPrice == null ? 0 : Number(r.estimatedPrice)
-      }
-      return acc
-    },
-    { enProceso: 0, listos: 0, ventasMes: 0, urgentes: 0 },
-  )
+  const stats = {
+    enProceso: dashboardData.stats.diagnostico + dashboardData.stats.enReparacion + dashboardData.stats.recibidas,
+    listos: dashboardData.stats.listas,
+    ventasMes: dashboardData.stats.ingresosBasicosMes,
+    urgentes: dashboardData.stats.urgentes,
+  }
 
   const showTimezoneBanner = !subCtx.zonaHoraria || subCtx.zonaHoraria === "UTC"
 
@@ -341,7 +302,7 @@ export default async function DashboardPage() {
           <h2 id="dashboard-actividad-heading" className="sr-only">
             Actividad reciente de reparaciones
           </h2>
-          <OrdersTable orders={orders} />
+          <OrdersTable orders={dashboardData.orders} />
         </section>
 
       </div>

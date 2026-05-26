@@ -1,4 +1,7 @@
 "use server"
+// LEGACY SUPABASE ACTIONS.
+// No importar desde rutas MVP (usar clients-prisma.ts).
+// Pendiente migración completa de módulos legacy/PRO.
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"

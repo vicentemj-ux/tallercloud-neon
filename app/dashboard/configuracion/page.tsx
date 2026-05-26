@@ -16,7 +16,7 @@ import {
   Settings2,
 } from "lucide-react"
 import { getTallerSettings, updateTallerSettings, getTallerPlanType, type TallerSettings, type TallerPlanTipo } from "@/lib/actions/settings-prisma"
-import { getOwnerLoginEmail, changeOwnerPassword } from "@/lib/actions/auth"
+import { getOwnerLoginEmail, changeOwnerPassword } from "@/lib/actions/auth-prisma"
 import { getAjustesTallerFlujoPro, updateAjustesTallerFlujoPro, type AjustesTallerFlujoPro } from "@/lib/actions/flujo-pro"
 import { toast } from "@/hooks/use-toast"
 import { Empresa } from "@/components/configuracion/Empresa"

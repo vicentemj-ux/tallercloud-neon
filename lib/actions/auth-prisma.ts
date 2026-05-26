@@ -1,9 +1,11 @@
 "use server"
 
 import bcrypt from "bcryptjs"
+import { cookies } from "next/headers"
 import { headers } from "next/headers"
 import { z } from "zod"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
+import { getCurrentUser } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
 
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
@@ -115,5 +117,64 @@ export async function registerWithPrisma(data: {
     success: true,
     message: "Registro exitoso.",
     data: result,
+  }
+}
+
+export async function getOwnerLoginEmail(): Promise<{ email: string; error: string | null }> {
+  try {
+    const user = await getCurrentUser()
+    const userId = (user as any)?.id as string | undefined
+    if (!userId) return { email: "", error: "No autenticado" }
+    const prisma = getPrismaClient()
+    const row = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+    if (!row?.email) return { email: "", error: "No se pudo cargar el email de acceso" }
+    return { email: row.email, error: null }
+  } catch (e) {
+    console.error("[auth-prisma] getOwnerLoginEmail:", e)
+    return { email: "", error: "No se pudo cargar el email de acceso" }
+  }
+}
+
+export async function changeOwnerPassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getCurrentUser()
+    const userId = (user as any)?.id as string | undefined
+    if (!userId) return { success: false, error: "No autenticado" }
+
+    if (!newPassword || newPassword.length < 8) {
+      return { success: false, error: "La nueva contraseña debe tener al menos 8 caracteres" }
+    }
+
+    const prisma = getPrismaClient()
+    const row = await prisma.user.findUnique({ where: { id: userId }, select: { passwordHash: true } })
+    if (!row?.passwordHash) return { success: false, error: "No se pudo cargar tu usuario" }
+
+    const match = await bcrypt.compare(currentPassword, row.passwordHash)
+    if (!match) return { success: false, error: "La contraseña actual no es correcta" }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+    const newSessionVersion = Math.floor(Date.now() / 1000)
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash, sessionVersion: newSessionVersion },
+    })
+
+    const cookieStore = await cookies()
+    cookieStore.set("session_version", String(newSessionVersion), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+
+    return { success: true }
+  } catch (e) {
+    console.error("[auth-prisma] changeOwnerPassword:", e)
+    return { success: false, error: "No se pudo actualizar la contraseña" }
   }
 }
