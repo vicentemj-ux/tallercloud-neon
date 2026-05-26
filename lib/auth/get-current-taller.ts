@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
+import { getCurrentTenant } from "@/lib/auth"
 import { calcDiasRestantes } from "@/lib/utils/subscription"
 
 /** Días de prueba gratuita desde la creación del perfil (fallback para cuentas sin fecha_vencimiento_plan) */
@@ -16,11 +16,31 @@ export async function getCurrentTallerId(): Promise<string> {
   const cookieStore = await cookies()
   const tallerId = cookieStore.get("tallerId")?.value
 
-  if (!tallerId) {
-    redirect("/auth/login")
+  if (tallerId) {
+    return tallerId
   }
 
-  return tallerId
+  const tenant = await getCurrentTenant()
+  if (tenant?.id) {
+    // Backfill legacy cookies for actions still using getCurrentTallerId.
+    cookieStore.set("tallerId", tenant.id, {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+    if (tenant.nombre_taller) {
+      cookieStore.set("tallerName", encodeURIComponent(tenant.nombre_taller), {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      })
+    }
+    return tenant.id
+  }
+
+  redirect("/auth/login")
 }
 
 /**
@@ -52,12 +72,14 @@ export async function getCurrentTallerTrialInfo(): Promise<{
   created_at: string | null
   diasRestantes: number
 }> {
-  const { supabase } = await createCurrentTenantClient()
+  const tallerId = await getCurrentTallerId()
+  const { createTenantClient } = await import("@/lib/supabase/tenant-client")
+  const supabase = await createTenantClient(tallerId)
 
   const { data, error } = await supabase
     .from("taller_users")
     .select("created_at, fecha_vencimiento_plan")
-    .eq("id", await getCurrentTallerId())
+    .eq("id", tallerId)
     .single()
 
   if (error || !data) {
