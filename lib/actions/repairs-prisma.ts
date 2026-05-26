@@ -488,7 +488,9 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
       orderBy: { createdAt: "asc" },
       select: { publicUrl: true, storageKey: true, key: true },
     })
-    const fotos = archivos.map((a: ArchivoRow) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
+    const fotos = archivos
+      .map((a: ArchivoRow) => getArchivoDisplayUrl(a))
+      .filter((u: string | null | undefined): u is string => Boolean(u))
     const detail: RepairDetail = {
       ...toBitacoraRepair({ ...rep, cliente: { nombre: rep.cliente.nombre, telefono: rep.cliente.telefono } }),
       status: asStatus(rep.estado),
@@ -590,7 +592,9 @@ export async function getTrackingPhotoUrls(ticketId: string, last4: string): Pro
     })
     if (!rep) return []
     if (phoneLast4(rep.cliente?.telefono) !== expectedLast4) return []
-    return rep.archivos.map((a: ArchivoRow) => getArchivoDisplayUrl(a)).filter((u): u is string => Boolean(u))
+    return rep.archivos
+      .map((a: ArchivoRow) => getArchivoDisplayUrl(a))
+      .filter((u: string | null | undefined): u is string => Boolean(u))
   } catch (e) {
     console.error("getTrackingPhotoUrls prisma:", e)
     return []
