@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
+import { getPrismaClient } from "@/lib/prisma"
 import { Resend } from "resend"
 import { getInventoryPublicUrl } from "@/lib/storage"
 import { formatCurrency } from "@/lib/utils/currency"
@@ -130,6 +131,37 @@ export interface CortePrintData {
 }
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+
+function shouldFallbackToPrisma(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? "")
+  return (
+    message.includes("Missing env vars: NEXT_PUBLIC_SUPABASE_URL") ||
+    message.includes("NEXT_PUBLIC_SUPABASE_ANON_KEY") ||
+    message.includes("SUPABASE_JWT_SECRET")
+  )
+}
+
+function normalizeCajaRow(row: Record<string, unknown> | null | undefined): CajaRow | null {
+  if (!row || typeof row !== "object") return null
+  const fechaApertura = row.fecha_apertura
+  const fechaCierre = row.fecha_cierre
+  return {
+    id: String(row.id ?? ""),
+    taller_id: String(row.taller_id ?? ""),
+    monto_inicial: Number(row.monto_inicial ?? 0),
+    monto_cierre: row.monto_cierre == null ? null : Number(row.monto_cierre),
+    fecha_apertura: fechaApertura instanceof Date ? fechaApertura.toISOString() : String(fechaApertura ?? ""),
+    fecha_cierre:
+      fechaCierre == null ? null : fechaCierre instanceof Date ? fechaCierre.toISOString() : String(fechaCierre),
+    estado: row.estado === "cerrada" ? "cerrada" : "abierta",
+    total_efectivo: Number(row.total_efectivo ?? 0),
+    total_tarjeta: Number(row.total_tarjeta ?? 0),
+    total_transferencia: Number(row.total_transferencia ?? 0),
+    total_ventas: Number(row.total_ventas ?? 0),
+    nota_cierre: row.nota_cierre == null ? null : String(row.nota_cierre),
+    numero_corte: row.numero_corte == null ? null : Number(row.numero_corte),
+  }
+}
 
 async function getOwnerAlertContext(supabase: Awaited<ReturnType<typeof createCurrentTenantClient>>["supabase"], tallerId: string) {
   const { data: config } = await supabase
@@ -798,22 +830,33 @@ export interface VentaCreada {
 // ─── getCajaAbierta ──────────────────────────────────────────────────────────
 
 export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: string | null }> {
-  const { supabase, tallerId } = await createCurrentTenantClient()
-  const guard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
-  if (!guard.ok) {
-    if (guard.error.includes("No hay caja abierta")) return { caja: null, error: null }
-    return { caja: null, error: guard.error }
+  try {
+    const { supabase, tallerId } = await createCurrentTenantClient()
+    const guard = await requireOpenCajaForFinancialOperation({ supabase, tallerId })
+    if (!guard.ok) {
+      if (guard.error.includes("No hay caja abierta")) return { caja: null, error: null }
+      return { caja: null, error: guard.error }
+    }
+
+    const { data, error } = await supabase
+      .from("caja")
+      .select("*")
+      .eq("id", guard.caja.id)
+      .eq("taller_id", tallerId)
+      .maybeSingle()
+
+    if (error) return { caja: null, error: error.message }
+    return { caja: (data as CajaRow | null) ?? null, error: null }
+  } catch (error) {
+    if (!shouldFallbackToPrisma(error)) throw error
+    const prisma = getPrismaClient()
+    const tallerId = await getCurrentTallerId()
+    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+      "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
+      tallerId
+    )
+    return { caja: normalizeCajaRow(rows[0]), error: null }
   }
-
-  const { data, error } = await supabase
-    .from("caja")
-    .select("*")
-    .eq("id", guard.caja.id)
-    .eq("taller_id", tallerId)
-    .maybeSingle()
-
-  if (error) return { caja: null, error: error.message }
-  return { caja: (data as CajaRow | null) ?? null, error: null }
 }
 
 // ─── requireCajaAbierta ───────────────────────────────────────────────────────
@@ -893,6 +936,53 @@ export async function abrirCaja(
 
     return { caja: null, error: withNumero.error.message }
   } catch (e) {
+    if (shouldFallbackToPrisma(e)) {
+      try {
+        const prisma = getPrismaClient()
+        const tallerId = await getCurrentTallerId()
+        const countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
+          "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
+          tallerId
+        )
+        const numeroCorte = (countRows[0]?.total ?? 0) + 1
+
+        try {
+          const inserted = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+            `INSERT INTO caja (taller_id, monto_inicial, estado, numero_corte)
+             VALUES ($1, $2, 'abierta', $3)
+             RETURNING *`,
+            tallerId,
+            montoInicial,
+            numeroCorte
+          )
+          return { caja: normalizeCajaRow(inserted[0]), error: null }
+        } catch (insertErr) {
+          const msg = insertErr instanceof Error ? insertErr.message.toLowerCase() : String(insertErr).toLowerCase()
+          if (msg.includes("numero_corte") || msg.includes("42703")) {
+            const inserted = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+              `INSERT INTO caja (taller_id, monto_inicial, estado)
+               VALUES ($1, $2, 'abierta')
+               RETURNING *`,
+              tallerId,
+              montoInicial
+            )
+            return { caja: normalizeCajaRow(inserted[0]), error: null }
+          }
+          if (msg.includes("relation") || msg.includes("does not exist") || msg.includes("42p01")) {
+            return {
+              caja: null,
+              error:
+                "La tabla de caja no existe en la base de datos activa. Aplica las migraciones pendientes antes de abrir caja.",
+            }
+          }
+          return { caja: null, error: insertErr instanceof Error ? insertErr.message : String(insertErr) }
+        }
+      } catch (fallbackErr) {
+        console.error("[abrirCaja] prisma fallback fatal:", fallbackErr)
+        return { caja: null, error: "Error al abrir caja. Revisa conexión y estructura de base de datos." }
+      }
+    }
+
     console.error("[abrirCaja] fatal:", e)
     return { caja: null, error: "Error al abrir caja. Revisa conexión y estructura de base de datos." }
   }
