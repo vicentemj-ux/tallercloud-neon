@@ -232,7 +232,7 @@ export async function createRepair(input: CreateRepairInput) {
       return { success: false, error: "Faltan campos requeridos." }
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const nextFolioForTenant = async () => {
         const rows = await tx.$queryRaw<Array<{ max_folio_num: number }>>`
           SELECT COALESCE(
@@ -621,7 +621,7 @@ export async function updateRepairFull(input: {
     })
     if (!existing) return { success: false, error: "No se encontró la reparación." }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       let clientId = input.clienteId?.trim() || existing.clienteId
       if (input.clienteId?.trim()) {
         const c = await tx.cliente.findFirst({ where: { id: input.clienteId.trim(), tenantId }, select: { id: true } })

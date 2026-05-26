@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs"
 import { headers } from "next/headers"
 import { z } from "zod"
+import { Prisma } from "@prisma/client"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
 import { getPrismaClient } from "@/lib/prisma"
 
@@ -62,7 +63,7 @@ export async function registerWithPrisma(data: {
 
   const baseSlug = slugify(data.nombreTaller) || "taller"
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     let slug = baseSlug
     let i = 1
     while (await tx.tenant.findUnique({ where: { slug }, select: { id: true } })) {
