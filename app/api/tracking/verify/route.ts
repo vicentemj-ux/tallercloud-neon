@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         id: a.id,
         url: getArchivoDisplayUrl(a),
       }))
-      .filter((a): a is { id: string; url: string } => Boolean(a.url))
+      .filter((a: { id: string; url: string | null }): a is { id: string; url: string } => Boolean(a.url))
 
     return NextResponse.json({
       ok: true,
