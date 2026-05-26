@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin"
+import { getPrismaClient } from "@/lib/prisma"
 
 export type RateLimitAction =
   | "login"
@@ -32,33 +32,32 @@ export async function checkRateLimit(
   action: RateLimitAction
 ): Promise<{ allowed: boolean; retryAfterMinutes?: number }> {
   const { maxAttempts, windowMinutes } = LIMITS[action]
-  const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString()
+  const windowStart = new Date(Date.now() - windowMinutes * 60 * 1000)
+  const normalizedIdentifier = identifier.toLowerCase()
 
-  const supabase = await createAdminClient()
+  try {
+    const prisma = getPrismaClient()
+    const result = await prisma.$queryRaw<Array<{ count: bigint | number }>>`
+      SELECT COUNT(*)::bigint AS count
+      FROM auth_rate_limits
+      WHERE identifier = ${normalizedIdentifier}
+        AND action = ${action}
+        AND attempt_at >= ${windowStart}
+    `
+    const attempts = Number(result?.[0]?.count ?? 0)
+    if (attempts >= maxAttempts) {
+      return { allowed: false, retryAfterMinutes: windowMinutes }
+    }
 
-  // Contar intentos en la ventana
-  const { count, error } = await supabase
-    .from("auth_rate_limits")
-    .select("*", { count: "exact", head: true })
-    .eq("identifier", identifier.toLowerCase())
-    .eq("action", action)
-    .gte("attempt_at", windowStart)
+    await prisma.$executeRaw`
+      INSERT INTO auth_rate_limits (identifier, action)
+      VALUES (${normalizedIdentifier}, ${action})
+    `
 
-  if (error) {
-    // Fail-closed: si no se puede verificar el rate limit, bloquear el acceso
-    console.error("[rate-limit] Error checking rate limit:", error.message)
-    return { allowed: false, retryAfterMinutes: windowMinutes }
+    return { allowed: true }
+  } catch (error) {
+    // Fail-open temporal: evita bloquear login/registro por dependencia de rate limit.
+    console.error("[rate-limit] Prisma fallback failed:", error)
+    return { allowed: true }
   }
-
-  if ((count ?? 0) >= maxAttempts) {
-    return { allowed: false, retryAfterMinutes: windowMinutes }
-  }
-
-  // Registrar este intento
-  await supabase.from("auth_rate_limits").insert({
-    identifier: identifier.toLowerCase(),
-    action,
-  })
-
-  return { allowed: true }
 }
