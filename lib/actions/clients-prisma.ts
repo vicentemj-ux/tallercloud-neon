@@ -38,6 +38,16 @@ function normalizePhone(value?: string | null) {
 
 type ReparacionCountRow = { clienteId: string; _count: { _all: number } }
 type ClienteRow = Parameters<typeof toClientDto>[0]
+type ClienteReparacionRow = {
+  id: string
+  folio: string
+  equipoMarca: string | null
+  equipoModelo: string | null
+  falla: string | null
+  estado: string
+  costoEstimado: unknown
+  createdAt: Date
+}
 
 function toClientDto(row: {
   id: string
@@ -166,7 +176,7 @@ export async function getClienteById(clientId: string): Promise<{ client: Client
     return {
       client: {
         ...toClientDto(client),
-        ordenes: client.reparaciones.map((r) => ({
+        ordenes: client.reparaciones.map((r: ClienteReparacionRow) => ({
           id: r.id,
           folio: r.folio,
           marca: r.equipoMarca ?? "",
