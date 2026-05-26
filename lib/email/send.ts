@@ -3,7 +3,14 @@
 import { Resend } from "resend"
 import { MemberVerificationPinTemplate, VerifyEmailTemplate, ResetPasswordTemplate } from "./templates"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.error("[email] RESEND_API_KEY is missing")
+    return null
+  }
+  return new Resend(apiKey)
+}
 
 export async function sendVerificationEmail(
   email: string,
@@ -15,6 +22,9 @@ export async function sendVerificationEmail(
   const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-email?token=${verificationToken}${signature ? `&sig=${signature}` : ""}`
 
   try {
+    const resend = getResendClient()
+    if (!resend) return { success: false, error: "Servicio de correo no configurado" }
+
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
@@ -44,6 +54,9 @@ export async function sendPasswordResetEmail(
   const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${resetToken}${signature ? `&sig=${signature}` : ""}`
 
   try {
+    const resend = getResendClient()
+    if (!resend) return { success: false, error: "Servicio de correo no configurado" }
+
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
@@ -69,6 +82,9 @@ export async function sendWelcomeEmail(
   tallerName: string
 ) {
   try {
+    const resend = getResendClient()
+    if (!resend) return { success: false, error: "Servicio de correo no configurado" }
+
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
@@ -119,6 +135,9 @@ export async function sendWelcomeEmail(
 
 export async function sendAdminOTPEmail(email: string, code: string) {
   try {
+    const resend = getResendClient()
+    if (!resend) return { success: false, error: "Servicio de correo no configurado" }
+
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
@@ -174,6 +193,9 @@ export async function sendMemberVerificationPinEmail(
   pin: string
 ) {
   try {
+    const resend = getResendClient()
+    if (!resend) return { success: false, error: "Servicio de correo no configurado" }
+
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
