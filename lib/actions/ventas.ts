@@ -830,29 +830,72 @@ export async function requireCajaAbierta(): Promise<{ caja: CajaRow; error: null
 export async function abrirCaja(
   montoInicial: number
 ): Promise<{ caja: CajaRow | null; error: string | null }> {
-  const { supabase, tallerId } = await createCurrentTenantClient()
+  try {
+    const { supabase, tallerId } = await createCurrentTenantClient()
 
-  // Compute next numero_corte for this taller
-  const { count } = await supabase
-    .from("caja")
-    .select("id", { count: "exact", head: true })
-    .eq("taller_id", tallerId)
+    // Compute next numero_corte for this taller (best effort).
+    const { count } = await supabase
+      .from("caja")
+      .select("id", { count: "exact", head: true })
+      .eq("taller_id", tallerId)
 
-  const numeroCorte = (count ?? 0) + 1
+    const numeroCorte = (count ?? 0) + 1
 
-  const { data, error } = await supabase
-    .from("caja")
-    .insert({
+    const payloadBase = {
       taller_id: tallerId,
       monto_inicial: montoInicial,
       estado: "abierta",
-      numero_corte: numeroCorte,
-    })
-    .select()
-    .single()
+    }
 
-  if (error) return { caja: null, error: error.message }
-  return { caja: data as CajaRow, error: null }
+    // Attempt with numero_corte first.
+    const withNumero = await supabase
+      .from("caja")
+      .insert({
+        ...payloadBase,
+        numero_corte: numeroCorte,
+      })
+      .select()
+      .single()
+
+    if (!withNumero.error) {
+      return { caja: withNumero.data as CajaRow, error: null }
+    }
+
+    // Backward-compatible fallback when DB still lacks numero_corte.
+    const needsFallback =
+      withNumero.error.code === "42703" ||
+      withNumero.error.message?.toLowerCase().includes("numero_corte")
+
+    if (needsFallback) {
+      const fallback = await supabase
+        .from("caja")
+        .insert(payloadBase)
+        .select()
+        .single()
+
+      if (fallback.error) {
+        return { caja: null, error: fallback.error.message }
+      }
+      return { caja: fallback.data as CajaRow, error: null }
+    }
+
+    if (
+      withNumero.error.code === "42P01" ||
+      withNumero.error.message?.toLowerCase().includes("relation") ||
+      withNumero.error.message?.toLowerCase().includes("does not exist")
+    ) {
+      return {
+        caja: null,
+        error:
+          "La tabla de caja no existe en la base de datos activa. Aplica las migraciones pendientes antes de abrir caja.",
+      }
+    }
+
+    return { caja: null, error: withNumero.error.message }
+  } catch (e) {
+    console.error("[abrirCaja] fatal:", e)
+    return { caja: null, error: "Error al abrir caja. Revisa conexión y estructura de base de datos." }
+  }
 }
 
 // ─── cerrarCaja ──────────────────────────────────────────────────────────────
