@@ -17,11 +17,42 @@ export const dynamic = "force-dynamic"
  * El inventario vive en **`productos`**; no existe tabla `inventario` en el esquema usado por la app.
  */
 export default async function DashboardPage() {
-  // Datos del dashboard sobre Prisma/Neon para no depender del stack legacy de Supabase.
-  const [dashboardData, subCtx] = await Promise.all([
-    getDashboardMvpData(),
-    getDashboardSubscriptionBannerContext(),
-  ])
+  let dashboardData: Awaited<ReturnType<typeof getDashboardMvpData>>
+  let subCtx: Awaited<ReturnType<typeof getDashboardSubscriptionBannerContext>>
+  try {
+    // Datos del dashboard sobre Prisma/Neon para no depender del stack legacy de Supabase.
+    ;[dashboardData, subCtx] = await Promise.all([
+      getDashboardMvpData(),
+      getDashboardSubscriptionBannerContext(),
+    ])
+  } catch (error) {
+    console.error("[dashboard] failed", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
+    dashboardData = {
+      stats: {
+        reparacionesTotales: 0,
+        recibidas: 0,
+        diagnostico: 0,
+        enReparacion: 0,
+        listas: 0,
+        entregadas: 0,
+        urgentes: 0,
+        ingresosBasicosMes: 0,
+      },
+      orders: [],
+    }
+    subCtx = {
+      showBanner: true,
+      isPro: false,
+      planTipo: "activo",
+      diasRestantes: 0,
+      tieneVencimiento: false,
+      precioPlanMensual: null,
+      zonaHoraria: null,
+    }
+  }
   const stats = {
     enProceso: dashboardData.stats.diagnostico + dashboardData.stats.enReparacion + dashboardData.stats.recibidas,
     listos: dashboardData.stats.listas,

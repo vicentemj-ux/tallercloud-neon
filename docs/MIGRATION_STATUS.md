@@ -220,3 +220,22 @@
 
 ### Resultado
 - Fase 8.1 queda técnicamente estable para continuar QA visual final y luego pasar a Fase 9.
+
+## Fix Dashboard Runtime después de Fase 9
+
+### Causa exacta
+- Falla de runtime en `/dashboard` por ausencia de manejo defensivo cuando alguna action Prisma lanzaba excepción en render del Server Component.
+
+### Corrección aplicada
+- `app/dashboard/page.tsx`:
+  - `try/catch` alrededor de carga concurrente de `getDashboardMvpData()` + `getDashboardSubscriptionBannerContext()`.
+  - Log temporal seguro:
+    - `console.error("[dashboard] failed", { message, stack })`
+  - Fallback cero-datos para evitar crash de la página.
+- `lib/actions/dashboard-prisma.ts`:
+  - `try/catch` global con el mismo log temporal.
+  - Retorno seguro con `stats` en cero y `orders: []` si algo falla.
+
+### Validación técnica
+- `pnpm build` ✅
+- `/dashboard` queda tolerante a cero datos y a fallas transitorias de lectura.

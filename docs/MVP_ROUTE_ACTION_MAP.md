@@ -21,3 +21,7 @@
 - Pendientes no críticos en MVP inmediato:
   - gastos de detalle (`lib/actions/gastos.ts`)
   - pestaña PRO de configuración (`lib/actions/flujo-pro.ts`)
+
+## Nota runtime dashboard (post Fase 9)
+- `/dashboard` mantiene ruta/action Prisma (`dashboard-prisma` + `settings-prisma`) y ahora incluye hardening de runtime con fallback cero-datos.
+- Logging temporal agregado: `console.error("[dashboard] failed", { message, stack })`.

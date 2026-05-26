@@ -48,3 +48,7 @@ Se añadieron banners `LEGACY SUPABASE ACTIONS` en:
 - `lib/actions/repairs.ts`
 - `lib/actions/settings.ts`
 
+
+## Nota dashboard runtime (post Fase 9)
+- `lib/actions/dashboard-prisma.ts` quedó endurecido con `try/catch` y fallback seguro (`stats` en cero + `orders: []`).
+- `app/dashboard/page.tsx` también captura errores y evita crash en render con defaults.
