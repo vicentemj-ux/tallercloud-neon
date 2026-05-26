@@ -26,13 +26,16 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const email = credentials?.email?.toLowerCase().trim()
+        const emailRaw = credentials?.email?.trim()
+        const email = emailRaw?.toLowerCase()
         const password = credentials?.password ?? ""
         if (!email || !password) return null
 
         const prisma = getPrismaClient()
-        const user = await prisma.user.findUnique({
-          where: { email },
+        const user = await prisma.user.findFirst({
+          where: {
+            email: { equals: email, mode: "insensitive" },
+          },
           include: { tenant: true },
         })
         if (!user || !user.passwordHash || !user.emailVerified || !user.activo) return null
