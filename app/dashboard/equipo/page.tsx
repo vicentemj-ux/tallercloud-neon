@@ -60,6 +60,7 @@ export default function EquipoPage() {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [rolesOptions, setRolesOptions] = useState<RolOption[]>([])
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const [createOpen, setCreateOpen] = useState(false)
   const [nombreMiembro, setNombreMiembro] = useState("")
@@ -81,9 +82,11 @@ export default function EquipoPage() {
   // PERF: getEquipoPageData ya retorna roles — una sola llamada en vez de dos useEffects separados
   const load = async () => {
     setLoading(true)
+    setLoadError(null)
     try {
       const { owner: o, miembros: m, roles: r, error } = await getEquipoPageData()
       if (error) {
+        setLoadError(error)
         toast({ title: "Aviso", description: error, variant: "destructive" })
       }
       setOwner(o)
@@ -91,6 +94,7 @@ export default function EquipoPage() {
       setRolesOptions(r)
     } catch (e) {
       console.error(e)
+      setLoadError("No se pudo cargar el equipo.")
       toast({ title: "Error", description: "No se pudo cargar el equipo.", variant: "destructive" })
     } finally {
       setLoading(false)
@@ -149,6 +153,7 @@ export default function EquipoPage() {
   }, [owner, miembros])
 
   const openCreateModal = () => {
+    if (loadError) return
     setNombreMiembro("")
     setEmailMiembro("")
     setPasswordMiembro("")
@@ -289,6 +294,11 @@ export default function EquipoPage() {
   return (
     <div className="min-h-full bg-gray-50">
       <div className="max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 flex flex-col gap-8">
+      {loadError ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Mi Equipo está temporalmente degradado: {loadError}
+        </div>
+      ) : null}
       {/* HEADER SUPERIOR */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-col gap-4">
@@ -310,6 +320,7 @@ export default function EquipoPage() {
           <div className="flex items-center gap-2">
             <Button
               onClick={openCreateModal}
+              disabled={Boolean(loadError)}
               className="gap-2 text-xs font-bold uppercase tracking-tight bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3 h-11 flex-1 sm:flex-none"
             >
               <Plus className="h-4 w-4" />

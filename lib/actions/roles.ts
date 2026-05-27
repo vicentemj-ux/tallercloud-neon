@@ -39,25 +39,30 @@ export interface RolOption {
 
 /** Catálogo global de roles (Mi Equipo MVP). */
 export async function getRolesByTallerId(): Promise<{ data: RolOption[]; error: string | null }> {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from("roles_taller")
-    .select("id, nombre, slug, categoria, orden")
-    .order("orden", { ascending: true })
+    const { data, error } = await supabase
+      .from("roles_taller")
+      .select("id, nombre, slug, categoria, orden")
+      .order("orden", { ascending: true })
 
-  if (error) {
-    console.error("Error fetching roles_taller:", error)
-    return { data: [], error: error.message }
-  }
-  return {
-    data: (data || []).map((r) => ({
-      id: r.id as string,
-      nombre: r.nombre as string,
-      slug: r.slug as string | undefined,
-      categoria: r.categoria as "estandar" | "especial" | undefined,
-    })),
-    error: null,
+    if (error) {
+      console.error("Error fetching roles_taller:", error)
+      return { data: [], error: error.message }
+    }
+    return {
+      data: (data || []).map((r) => ({
+        id: r.id as string,
+        nombre: r.nombre as string,
+        slug: r.slug as string | undefined,
+        categoria: r.categoria as "estandar" | "especial" | undefined,
+      })),
+      error: null,
+    }
+  } catch (error) {
+    console.error("[getRolesByTallerId] fatal:", error)
+    return { data: [], error: "No se pudo cargar el catalogo de roles." }
   }
 }
 
@@ -74,52 +79,56 @@ export interface CreateRolInput {
 export async function createRol(
   input: CreateRolInput
 ): Promise<{ success: boolean; data?: { id: string }; error?: string }> {
-  const supabase = await createClient()
-  const tallerId = await getCurrentTallerId()
+  try {
+    const supabase = await createClient()
+    const tallerId = await getCurrentTallerId()
 
-  const nombre = (input.nombre || "").trim()
-  if (!nombre) {
-    return { success: false, error: "El nombre del rol es obligatorio." }
-  }
-
-  const { data: rol, error: insertRolError } = await supabase
-    .from("roles")
-    .insert({
-      taller_id: tallerId,
-      nombre,
-      descripcion: (input.descripcion || "").trim() || null,
-    })
-    .select("id")
-    .single()
-
-  if (insertRolError) {
-    console.error("Error creating role:", insertRolError)
-    return {
-      success: false,
-      error: insertRolError.message || "No se pudo crear el rol.",
+    const nombre = (input.nombre || "").trim()
+    if (!nombre) {
+      return { success: false, error: "El nombre del rol es obligatorio." }
     }
-  }
 
-  const rolId = rol?.id
-  if (!rolId) {
-    return { success: false, error: "No se obtuvo el ID del rol creado." }
-  }
+    const { data: rol, error: insertRolError } = await supabase
+      .from("roles")
+      .insert({
+        taller_id: tallerId,
+        nombre,
+        descripcion: (input.descripcion || "").trim() || null,
+      })
+      .select("id")
+      .single()
 
-  const slugs = (input.permisoSlugs || []).filter(Boolean)
-  if (slugs.length > 0) {
-    const rows = slugs.map((permiso_slug) => ({ rol_id: rolId, permiso_slug }))
-    const { error: insertPermisosError } = await supabase
-      .from("rol_permisos")
-      .insert(rows)
-
-    if (insertPermisosError) {
-      console.error("Error creating rol_permisos:", insertPermisosError)
+    if (insertRolError) {
+      console.error("Error creating role:", insertRolError)
       return {
         success: false,
-        error: "Rol creado pero no se pudieron guardar los permisos.",
+        error: insertRolError.message || "No se pudo crear el rol.",
       }
     }
-  }
 
-  return { success: true, data: { id: rolId } }
+    const rolId = rol?.id
+    if (!rolId) {
+      return { success: false, error: "No se obtuvo el ID del rol creado." }
+    }
+
+    const slugs = (input.permisoSlugs || []).filter(Boolean)
+    if (slugs.length > 0) {
+      const rows = slugs.map((permiso_slug) => ({ rol_id: rolId, permiso_slug }))
+      const { error: insertPermisosError } = await supabase
+        .from("rol_permisos")
+        .insert(rows)
+
+      if (insertPermisosError) {
+        console.error("Error creating rol_permisos:", insertPermisosError)
+        return {
+          success: false,
+          error: "Rol creado pero no se pudieron guardar los permisos.",
+        }
+      }
+    }
+    return { success: true, data: { id: rolId } }
+  } catch (error) {
+    console.error("[createRol] fatal:", error)
+    return { success: false, error: "No se pudo crear el rol por configuracion incompleta del servidor." }
+  }
 }
