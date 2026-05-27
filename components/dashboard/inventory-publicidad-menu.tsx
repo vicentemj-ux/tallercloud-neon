@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useReactToPrint } from "react-to-print"
@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { PosterExhibicion } from "@/components/print-templates/PosterExhibicion"
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { getEsUsuarioPro } from "@/lib/actions/auth-prisma"
 import { toast } from "@/hooks/use-toast"
@@ -40,7 +40,7 @@ export interface InventoryPublicidadMenuProps {
 }
 
 /**
- * Evita mismatch de hidratación: el menú completo solo se monta en el cliente.
+ * Evita mismatch de hidrataciÃ³n: el menÃº completo solo se monta en el cliente.
  */
 export function InventoryPublicidadMenu(props: InventoryPublicidadMenuProps) {
   const [isMounted, setIsMounted] = useState(false)
@@ -116,7 +116,7 @@ function InventoryPublicidadMenuInner({
       toast({
         title: "Plan Pro requerido",
         description:
-          "La generación de imágenes para redes está incluido en el Plan Pro. Actualiza en Configuración del taller.",
+          "La generaciÃ³n de imÃ¡genes para redes estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
         variant: "destructive",
       })
       return
@@ -195,7 +195,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "El Cartel de precio está incluido en el Plan Pro. Actualiza en Configuración del taller.",
+                    "El Cartel de precio estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
                   variant: "destructive",
                 })
                 return
@@ -204,7 +204,7 @@ function InventoryPublicidadMenuInner({
             }}
           >
             <span className="text-base" aria-hidden>
-              📄
+              ðŸ“„
             </span>
             <span className="flex flex-col gap-0.5">
               <span className="flex items-center gap-2">
@@ -217,7 +217,7 @@ function InventoryPublicidadMenuInner({
                 </Badge>
               </span>
               <span className="text-[10px] font-normal uppercase tracking-wide text-[#64748b]">
-                4 × 6 pulgadas
+                4 Ã— 6 pulgadas
               </span>
             </span>
           </DropdownMenuItem>
@@ -236,7 +236,7 @@ function InventoryPublicidadMenuInner({
                 htmlFor={`publicidad-oferta-${producto.id}`}
                 className="cursor-pointer text-left text-xs font-medium leading-snug text-slate-700"
               >
-                📢 Activar Oferta de la Semana
+                ðŸ“¢ Activar Oferta de la Semana
               </Label>
               <Switch
                 id={`publicidad-oferta-${producto.id}`}
@@ -253,7 +253,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "El poster de exhibición está incluido en el Plan Pro. Actualiza en Configuración del taller.",
+                    "El poster de exhibiciÃ³n estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
                   variant: "destructive",
                 })
                 return
@@ -262,11 +262,11 @@ function InventoryPublicidadMenuInner({
             }}
           >
             <span className="text-base" aria-hidden>
-              🖨️
+              ðŸ–¨ï¸
             </span>
             <span className="flex flex-col gap-0.5">
               <span className="flex items-center gap-2">
-                <span className="font-medium">Imprimir poster de exhibición</span>
+                <span className="font-medium">Imprimir poster de exhibiciÃ³n</span>
                 <Badge
                   variant="secondary"
                   className="h-4 rounded-full bg-purple-100 px-2 text-[9px] font-bold uppercase leading-none text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
@@ -275,7 +275,7 @@ function InventoryPublicidadMenuInner({
                 </Badge>
               </span>
               <span className="text-[10px] font-normal uppercase tracking-wide text-[#64748b]">
-                Hoja carta · react-to-print
+                Hoja carta Â· react-to-print
               </span>
             </span>
           </DropdownMenuItem>
@@ -286,7 +286,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "Generar imagen para redes está incluido en el Plan Pro. Actualiza en Configuración del taller.",
+                    "Generar imagen para redes estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
                   variant: "destructive",
                 })
                 return
@@ -296,7 +296,7 @@ function InventoryPublicidadMenuInner({
             }}
           >
             <span className="flex items-center gap-2">
-              <span className="font-medium">Generar imagen para redes…</span>
+              <span className="font-medium">Generar imagen para redesâ€¦</span>
               <Badge
                 variant="secondary"
                 className="h-4 rounded-full bg-purple-100 px-2 text-[9px] font-bold uppercase leading-none text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
@@ -305,7 +305,7 @@ function InventoryPublicidadMenuInner({
               </Badge>
             </span>
             <span className="text-[10px] font-normal uppercase tracking-wide text-[#64748b]">
-              Cuadrado 1080×1080 o vertical 9:16
+              Cuadrado 1080Ã—1080 o vertical 9:16
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -399,7 +399,7 @@ function InventoryPublicidadMenuInner({
           </DialogFooter>
           {!isUsuarioPro ? (
             <p className="text-center text-[11px] text-slate-500">
-              La generación de imágenes para redes requiere Plan Pro.
+              La generaciÃ³n de imÃ¡genes para redes requiere Plan Pro.
             </p>
           ) : null}
         </DialogContent>
@@ -407,3 +407,4 @@ function InventoryPublicidadMenuInner({
     </>
   )
 }
+

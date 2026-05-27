@@ -1,13 +1,13 @@
-"use client"
+﻿"use client"
 
 import { createRoot, type Root } from "react-dom/client"
 import { CartelExhibicionTemplate } from "@/components/print-templates/CartelExhibicionTemplate"
 import { buildCartelFeatures } from "@/components/dashboard/inventory-label-utils"
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { formatPeso } from "@/lib/utils/currency"
 
 /**
- * Abre el diálogo de impresión con un cartel 4×6 (iframe + React).
+ * Abre el diÃ¡logo de impresiÃ³n con un cartel 4Ã—6 (iframe + React).
  */
 export function printCartelExhibicion(
   producto: ProductoRow,
@@ -79,3 +79,4 @@ export function printCartelExhibicion(
     setTimeout(cleanup, 1000)
   }, 350)
 }
+

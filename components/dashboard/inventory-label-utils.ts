@@ -1,17 +1,17 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+﻿import type { ProductoRow } from "@/lib/actions/productos-prisma"
 
 /**
- * Etiqueta de exhibición: categoría de equipo (teléfonos, etc.).
- * En BD suele usarse "EQUIPOS"; se acepta también "EQUIPO" por compatibilidad.
+ * Etiqueta de exhibiciÃ³n: categorÃ­a de equipo (telÃ©fonos, etc.).
+ * En BD suele usarse "EQUIPOS"; se acepta tambiÃ©n "EQUIPO" por compatibilidad.
  */
 export function isEquipoExhibitionCategory(producto: { categoria?: string | null }): boolean {
   const c = producto.categoria?.trim().toUpperCase() ?? ""
   return c === "EQUIPO" || c === "EQUIPOS"
 }
 
-/** Modelo comercial: nombre del artículo en inventario. */
+/** Modelo comercial: nombre del artÃ­culo en inventario. */
 export function getProductoModelo(producto: Pick<ProductoRow, "nombre">): string {
-  return (producto.nombre ?? "").trim() || "—"
+  return (producto.nombre ?? "").trim() || "â€”"
 }
 
 /** Almacenamiento / capacidad (prioriza columna nueva `almacenamiento`). */
@@ -21,19 +21,19 @@ export function getProductoCapacidad(producto: Pick<ProductoRow, "capacidad" | "
   return (producto.capacidad ?? "").trim()
 }
 
-/** Línea descripción / estado: condición + descripción (sin IMEI ni serie). */
+/** LÃ­nea descripciÃ³n / estado: condiciÃ³n + descripciÃ³n (sin IMEI ni serie). */
 export function getProductoDescripcionEstado(
   producto: Pick<ProductoRow, "descripcion" | "condicion">
 ): string {
   const parts = [producto.condicion?.trim(), producto.descripcion?.trim()].filter(Boolean) as string[]
-  return parts.join(" · ") || "—"
+  return parts.join(" Â· ") || "â€”"
 }
 
 const MAX_CARTEL_FEATURES = 10
 
 /**
- * Lista corta de viñetas para el cartel de exhibición (4×6).
- * Prioriza datos estructurados y parte la descripción libre en líneas.
+ * Lista corta de viÃ±etas para el cartel de exhibiciÃ³n (4Ã—6).
+ * Prioriza datos estructurados y parte la descripciÃ³n libre en lÃ­neas.
  */
 export function buildCartelFeatures(producto: ProductoRow): string[] {
   const out: string[] = []
@@ -49,7 +49,7 @@ export function buildCartelFeatures(producto: ProductoRow): string[] {
     if (producto.ram?.trim()) out.push(`RAM: ${producto.ram.trim()}`)
     const cap = getProductoCapacidad(producto)
     if (cap) out.push(`Almacenamiento: ${cap}`)
-    if (producto.condicion?.trim()) out.push(`Condición: ${producto.condicion.trim()}`)
+    if (producto.condicion?.trim()) out.push(`CondiciÃ³n: ${producto.condicion.trim()}`)
   }
   if (producto.sku?.trim()) {
     out.push(`SKU: ${producto.sku.trim()}`)
@@ -58,7 +58,7 @@ export function buildCartelFeatures(producto: ProductoRow): string[] {
   const desc = producto.descripcion?.trim()
   if (desc) {
     const chunks = desc
-      .split(/(?:\r?\n|[•·;])+/)
+      .split(/(?:\r?\n|[â€¢Â·;])+/)
       .map((s) => s.trim())
       .filter(Boolean)
     for (const c of chunks) {
@@ -73,3 +73,4 @@ export function buildCartelFeatures(producto: ProductoRow): string[] {
 
   return out.slice(0, MAX_CARTEL_FEATURES)
 }
+

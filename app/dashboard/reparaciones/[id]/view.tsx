@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { getRepairDetailPageData, reactivarReingreso } from "@/lib/actions/repairs-prisma"
-import { getGastosTicket } from "@/lib/actions/gastos"
+import { getGastosTicket } from "@/lib/actions/gastos-prisma"
 import type { BitacoraRepair, RepairDetail } from "@/lib/actions/repairs-prisma"
 import { RepairDetailView } from "@/components/dashboard/repair-detail-view"
 import { ReparacionEditDialog } from "@/components/dashboard/reparacion-edit-dialog"
@@ -81,7 +81,7 @@ export default function ReparacionDetailPage() {
       console.error("[reparacion-detail] load:", error)
       toast({
         title: "No se pudo cargar el detalle completo",
-        description: "Mostrando información parcial. Intenta recargar.",
+        description: "Mostrando informaciÃ³n parcial. Intenta recargar.",
         variant: "destructive",
       })
     } finally {
@@ -133,7 +133,7 @@ export default function ReparacionDetailPage() {
       }
       toast({
         title: "Reingreso activado y registrado en historial",
-        description: `Folio ${repair.folio} reactiva por garantía.`,
+        description: `Folio ${repair.folio} reactiva por garantÃ­a.`,
       })
       setReingresoOpen(false)
       setReingresoMotivo("")
@@ -301,3 +301,6 @@ export default function ReparacionDetailPage() {
     </div>
   )
 }
+
+
+

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { InventoryProductImage } from "@/components/dashboard/inventory-product-image"
@@ -45,7 +45,7 @@ import {
   deleteProducto,
   type ProductoRow,
   type BulkImportProductoInput,
-} from "@/lib/actions/productos"
+} from "@/lib/actions/productos-prisma"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { InventoryExhibitionLabel } from "@/components/dashboard/inventory-exhibition-label"
 import { InventoryStandardLabel } from "@/components/dashboard/inventory-standard-label"
@@ -55,7 +55,7 @@ import { printCartelExhibicion } from "@/components/dashboard/print-cartel-exhib
 import { formatPeso, formatMoney } from "@/lib/utils/currency"
 import { InventoryPublicidadMenu } from "@/components/dashboard/inventory-publicidad-menu"
 import { NuevoProductoModal } from "@/components/dashboard/inventario/NuevoProductoModal"
-// PERF-12: imageCompression se carga bajo demanda al importar imágenes.
+// PERF-12: imageCompression se carga bajo demanda al importar imÃ¡genes.
 import dynamic from "next/dynamic"
 import {
   AlertDialog,
@@ -80,7 +80,7 @@ function InventarioContent() {
   const [saving, setSaving] = useState(false)
   const [editingProducto, setEditingProducto] = useState<ProductoRow | null>(null)
   const [draftProductId, setDraftProductId] = useState("")
-  /** null = orden del servidor (created_at desc, último creado arriba). */
+  /** null = orden del servidor (created_at desc, Ãºltimo creado arriba). */
   const [sortBy, setSortBy] = useState<"nombre" | "stock" | "precio" | null>(null)
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc")
   const [importModalOpen, setImportModalOpen] = useState(false)
@@ -126,7 +126,7 @@ function InventarioContent() {
   const [ubicacion, setUbicacion] = useState("")
   const [registrarIdentificador, setRegistrarIdentificador] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
-  /** Mensaje discreto bajo el área de foto (evita toasts destructivos en fallos de subida). */
+  /** Mensaje discreto bajo el Ã¡rea de foto (evita toasts destructivos en fallos de subida). */
   const [imageUploadError, setImageUploadError] = useState<string | null>(null)
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -219,7 +219,7 @@ function InventarioContent() {
   const updateSearchParams = (params: { q?: string; cat?: string; status?: string }) => {
     const sp = new URLSearchParams(searchParams.toString())
     if (params.q !== undefined) {
-      // No hacemos trim aquí: permite escribir espacios (ej: "Cargador tipo c").
+      // No hacemos trim aquÃ­: permite escribir espacios (ej: "Cargador tipo c").
       // URLSearchParams se encarga de encodear espacios como %20/+.
       const raw = params.q
       if (raw.trim().length > 0) sp.set(SEARCH_PARAM, raw)
@@ -343,7 +343,7 @@ function InventarioContent() {
     }
   }
 
-  /** Payload para la Server Action. Permite nombre vacío → borrador (para persistir antes de foto). */
+  /** Payload para la Server Action. Permite nombre vacÃ­o â†’ borrador (para persistir antes de foto). */
   const buildProductPayload = (productId: string, nombreFallback: string) => {
     const c = buildFormCore()
     const orUndef = (v: string | null) => v ?? undefined
@@ -381,21 +381,21 @@ function InventarioContent() {
     if (esEquipo && registrarIdentificador) {
       const imei = imeiSerie.trim()
       if (!imei) {
-        setImeiError("Ingresa el identificador o desactiva «Registrar IMEI o número de serie».")
+        setImeiError("Ingresa el identificador o desactiva Â«Registrar IMEI o nÃºmero de serieÂ».")
         return
       }
       if (imeiType === "imei") {
         if (!/^\d+$/.test(imei)) {
-          setImeiError("El IMEI solo debe contener dígitos numéricos (sin espacios ni letras).")
+          setImeiError("El IMEI solo debe contener dÃ­gitos numÃ©ricos (sin espacios ni letras).")
           return
         }
         if (imei.length !== 15) {
-          setImeiError(`IMEI incompleto: ${imei.length}/15 dígitos. Verifica el número.`)
+          setImeiError(`IMEI incompleto: ${imei.length}/15 dÃ­gitos. Verifica el nÃºmero.`)
           return
         }
       } else {
         if (imei.length < 8) {
-          setImeiError(`Serie muy corta: ${imei.length}/8 caracteres mínimos.`)
+          setImeiError(`Serie muy corta: ${imei.length}/8 caracteres mÃ­nimos.`)
           return
         }
       }
@@ -410,7 +410,7 @@ function InventarioContent() {
           title: wasEdit ? "Producto actualizado" : "Producto guardado",
           description: wasEdit
             ? "Los cambios del producto se guardaron correctamente."
-            : "El producto se agregó al inventario.",
+            : "El producto se agregÃ³ al inventario.",
         })
         setModalOpen(false)
         setNombre("")
@@ -460,18 +460,18 @@ function InventarioContent() {
   }
 
   const handleDisabledClick = () => {
-    // Mostrar notificación de próximamente
+    // Mostrar notificaciÃ³n de prÃ³ximamente
   }
 
   const generarCodigoBarrasInterno = () => {
-    // Prefijo interno 200 + 9 dígitos aleatorios = 12 dígitos base
+    // Prefijo interno 200 + 9 dÃ­gitos aleatorios = 12 dÃ­gitos base
     let base = "200"
     for (let i = 0; i < 9; i++) {
       base += Math.floor(Math.random() * 10).toString()
     }
 
     const digits = base.split("").map((d) => parseInt(d, 10))
-    // Algoritmo EAN-13: suma impares + 3 * suma pares (sobre los primeros 12 dígitos)
+    // Algoritmo EAN-13: suma impares + 3 * suma pares (sobre los primeros 12 dÃ­gitos)
     let sumOdd = 0
     let sumEven = 0
     for (let i = 0; i < 12; i++) {
@@ -519,7 +519,7 @@ function InventarioContent() {
       const res = await uploadProductImage(base64, productId)
       if (!res.success) {
         const short =
-          res.error && res.error.length > 120 ? "Revisa la conexión o el bucket de fotos en Supabase." : res.error
+          res.error && res.error.length > 120 ? "Revisa la conexiÃ³n o el bucket de fotos en Supabase." : res.error
         setImageUploadError("Error al subir. " + (short || "Intenta de nuevo."))
         toast({ title: "No se pudo subir la imagen", description: short || "Intenta de nuevo.", variant: "destructive" })
         return
@@ -619,18 +619,18 @@ function InventarioContent() {
 
     toast({
       title: "Generando reporte...",
-      description: "Tu archivo CSV se descargará en unos segundos.",
+      description: "Tu archivo CSV se descargarÃ¡ en unos segundos.",
     })
 
     const headers = [
       "Nombre",
       "SKU",
-      "Categoría",
+      "CategorÃ­a",
       "Stock Actual",
-      "Stock Mínimo",
+      "Stock MÃ­nimo",
       "Costo",
       "Precio de Venta",
-      "Ubicación",
+      "UbicaciÃ³n",
     ]
 
     const escapeCsv = (value: unknown) => {
@@ -648,7 +648,7 @@ function InventarioContent() {
       p.stock_minimo ?? 0,
       p.costo ?? 0,
       p.precio_venta ?? 0,
-      "", // Ubicación (aún no persistida en BD)
+      "", // UbicaciÃ³n (aÃºn no persistida en BD)
     ])
 
     const csvContent =
@@ -725,7 +725,7 @@ function InventarioContent() {
           background: "#ffffff",
         })
         barcodeSvg = svg.outerHTML
-      } catch (_) { /* sin código válido — se omite */ }
+      } catch (_) { /* sin cÃ³digo vÃ¡lido â€” se omite */ }
     }
 
     const fullHtml = buildInventoryLabelPrintDocument({
@@ -768,7 +768,7 @@ function InventarioContent() {
       })
       return
     }
-    toast({ title: "Producto eliminado", description: "Se eliminó el producto del inventario." })
+    toast({ title: "Producto eliminado", description: "Se eliminÃ³ el producto del inventario." })
     await loadProductos(pageProductos)
   }
 
@@ -851,17 +851,17 @@ function InventarioContent() {
           precio_venta: idxPrecio >= 0 ? toVal(cols, idxPrecio) : undefined,
           stock_actual: idxStock >= 0 ? toVal(cols, idxStock) : undefined,
           stock_minimo: idxMin >= 0 ? toVal(cols, idxMin) : undefined,
-          // descripcion no se guarda en bulkImportProductos pero se puede mapear más adelante si se amplía
+          // descripcion no se guarda en bulkImportProductos pero se puede mapear mÃ¡s adelante si se amplÃ­a
         }))
         .filter((row) => row.nombre.trim().length > 0)
 
       if (!payload.length) {
-        throw new Error("No se encontraron filas con nombre válido para importar.")
+        throw new Error("No se encontraron filas con nombre vÃ¡lido para importar.")
       }
 
       toast({
-        title: "Procesando importación...",
-        description: `Detectadas ${payload.length} filas válidas. Guardando en TallerCloud...`,
+        title: "Procesando importaciÃ³n...",
+        description: `Detectadas ${payload.length} filas vÃ¡lidas. Guardando en TallerCloud...`,
       })
 
       const result = await bulkImportProductos(payload as BulkImportProductoInput[])
@@ -881,7 +881,7 @@ function InventarioContent() {
           errors: result.errors,
         })
         toast({
-          title: "Importación completada",
+          title: "ImportaciÃ³n completada",
           description: `Productos importados: ${result.insertedCount}. Filas omitidas: ${result.skippedCount}.`,
         })
         await loadProductos(0)
@@ -899,10 +899,10 @@ function InventarioContent() {
   }
 
   const formatRotacionDias = (dias: number) => {
-    if (!Number.isFinite(dias) || dias < 0) return "—"
-    if (dias === 0) return "0 días"
+    if (!Number.isFinite(dias) || dias < 0) return "â€”"
+    if (dias === 0) return "0 dÃ­as"
     const rounded = dias >= 100 ? Math.round(dias) : Math.round(dias * 10) / 10
-    return `${rounded} días`
+    return `${rounded} dÃ­as`
   }
 
   const handlePrintCartel = async (producto: ProductoRow) => {
@@ -970,7 +970,7 @@ function InventarioContent() {
       {/* HEADER SUPERIOR */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-col gap-5">
-        {/* Título, buscador y botones */}
+        {/* TÃ­tulo, buscador y botones */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4 shrink-0">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
@@ -979,12 +979,12 @@ function InventarioContent() {
             <div>
               <h1 className="text-2xl sm:text-4xl font-black italic tracking-tight text-slate-900">INVENTARIO PRO</h1>
               <p className="text-xs uppercase tracking-widest text-slate-500">
-                Control automatizado de stock y almacén
+                Control automatizado de stock y almacÃ©n
               </p>
             </div>
           </div>
 
-          {/* Buscador + Botones de acción */}
+          {/* Buscador + Botones de acciÃ³n */}
           <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             {/* Buscador inline */}
             <div className="relative flex-1 sm:w-56 lg:w-72">
@@ -1013,7 +1013,7 @@ function InventarioContent() {
                     updateSearchParams({ q: "" })
                   }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  aria-label="Limpiar búsqueda"
+                  aria-label="Limpiar bÃºsqueda"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -1068,7 +1068,7 @@ function InventarioContent() {
             <p className="text-xl font-black tabular-nums leading-none text-slate-900 mt-0.5">{totalProductos}</p>
           </button>
 
-          {/* Stock Crítico */}
+          {/* Stock CrÃ­tico */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: statusFilter === "critical" ? "" : "critical" })}
@@ -1082,7 +1082,7 @@ function InventarioContent() {
           >
             <div className="flex items-center gap-1.5">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Crítico</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">CrÃ­tico</span>
               {statusFilter === "critical" && (
                 <span className="ml-auto text-[9px] font-bold text-amber-600 bg-amber-100 rounded px-1 leading-tight">Activo</span>
               )}
@@ -1137,7 +1137,7 @@ function InventarioContent() {
             </p>
           </button>
 
-          {/* Alta Rotación */}
+          {/* Alta RotaciÃ³n */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: "" })}
@@ -1149,7 +1149,7 @@ function InventarioContent() {
           >
             <div className="flex items-center gap-1.5">
               <TrendingUp className="h-3.5 w-3.5 text-emerald-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Rotación</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">RotaciÃ³n</span>
             </div>
             <p className="text-xl font-black tabular-nums leading-none text-emerald-700 mt-0.5 truncate">
               {formatRotacionDias(operationalKpis.rotacionDias)}
@@ -1172,7 +1172,7 @@ function InventarioContent() {
                     onClick={() => toggleSort("nombre")}
                     className="inline-flex items-center gap-1 hover:text-slate-900"
                   >
-                    <span>Producto / Identificación</span>
+                    <span>Producto / IdentificaciÃ³n</span>
                     {sortBy === "nombre" ? (
                       sortDir === "asc" ? (
                         <ChevronUp className="h-3.5 w-3.5" />
@@ -1247,7 +1247,7 @@ function InventarioContent() {
                         No hay productos que coincidan.
                       </p>
                       <p className="text-xs text-slate-500">
-                        Ajusta los filtros o crea un nuevo producto con el botón «Nuevo».
+                        Ajusta los filtros o crea un nuevo producto con el botÃ³n Â«NuevoÂ».
                       </p>
                     </div>
                   </TableCell>
@@ -1285,7 +1285,7 @@ function InventarioContent() {
                     <TableRow key={p.id} className="border-0">
                       <TableCell colSpan={4} className="px-0 py-2">
                         <div className="flex min-h-[100px] flex-col md:min-h-[108px] md:flex-row items-stretch justify-between gap-4 rounded-[28px] border border-slate-200/80 bg-white px-4 py-5 md:px-6 md:py-5 shadow-sm ring-1 ring-slate-100 transition duration-200 hover:shadow-md hover:border-slate-300">
-                          {/* Identificación */}
+                          {/* IdentificaciÃ³n */}
                           <div className="flex items-start gap-3 md:basis-[44%] md:min-w-0">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl">
                               <InventoryProductImage
@@ -1337,7 +1337,7 @@ function InventarioContent() {
                               </>
                               )}
                               {(esCritico || esAgotado) && !esVendido && (
-                                <span className={minimoClass}>mín. {p.stock_minimo}</span>
+                                <span className={minimoClass}>mÃ­n. {p.stock_minimo}</span>
                               )}
                             </div>
                           </div>
@@ -1415,7 +1415,7 @@ function InventarioContent() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>Eliminar producto</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. Se eliminará{" "}
+                                      Esta acciÃ³n no se puede deshacer. Se eliminarÃ¡{" "}
                                       <span className="font-semibold">{p.nombre}</span> del inventario.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
@@ -1440,11 +1440,11 @@ function InventarioContent() {
               )}
             </TableBody>
           </Table>
-          {/* Paginación inventario */}
+          {/* PaginaciÃ³n inventario */}
           {totalProductos > PAGE_SIZE_PRODUCTOS && (
             <div className="flex items-center justify-between px-4 py-3 text-sm text-muted-foreground border-t">
               <span>
-                Mostrando {pageProductos * PAGE_SIZE_PRODUCTOS + 1}–{Math.min((pageProductos + 1) * PAGE_SIZE_PRODUCTOS, totalProductos)} de {totalProductos}
+                Mostrando {pageProductos * PAGE_SIZE_PRODUCTOS + 1}â€“{Math.min((pageProductos + 1) * PAGE_SIZE_PRODUCTOS, totalProductos)} de {totalProductos}
               </span>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" disabled={pageProductos === 0} onClick={() => setPageProductos((p) => p - 1)}>
@@ -1563,21 +1563,21 @@ function InventarioContent() {
                         <button
                           type="button"
                           className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-bold text-slate-700 hover:bg-slate-50"
-                          aria-label="Ayuda para importación"
+                          aria-label="Ayuda para importaciÃ³n"
                         >
                           ?
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-white text-slate-800 border-slate-200 text-[11px] leading-relaxed">
-                        <p>Asegúrate de que los precios no tengan letras.</p>
-                        <p>El SKU debe ser único por producto.</p>
-                        <p>Si el producto es un equipo, incluye el IMEI en la descripción o columna correspondiente.</p>
+                        <p>AsegÃºrate de que los precios no tengan letras.</p>
+                        <p>El SKU debe ser Ãºnico por producto.</p>
+                        <p>Si el producto es un equipo, incluye el IMEI en la descripciÃ³n o columna correspondiente.</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <DialogDescription className="text-xs text-slate-500">
-                  Sube un archivo CSV con tus productos desde Excel, Google Sheets u otros sistemas. TallerCloud validará nombres y precios antes de guardar.
+                  Sube un archivo CSV con tus productos desde Excel, Google Sheets u otros sistemas. TallerCloud validarÃ¡ nombres y precios antes de guardar.
                 </DialogDescription>
               </div>
               <Button
@@ -1617,7 +1617,7 @@ function InventarioContent() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold tracking-wide">
-                    Arrastra tu archivo CSV aquí
+                    Arrastra tu archivo CSV aquÃ­
                   </p>
                   <p className="text-[11px] text-slate-500">
                     o haz clic para seleccionar desde tu computadora
@@ -1667,7 +1667,7 @@ function InventarioContent() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-xs font-semibold tracking-wide text-emerald-700">
-                      Importación completada
+                      ImportaciÃ³n completada
                     </p>
                     <p className="text-[11px] text-slate-600">
                       Los datos del archivo se guardaron en tu inventario. Revisa los totales y, si hubo errores,
@@ -1685,7 +1685,7 @@ function InventarioContent() {
                       {importSummary.inserted}
                     </p>
                     <p className="text-[10px] text-emerald-700">
-                      productos añadidos correctamente
+                      productos aÃ±adidos correctamente
                     </p>
                   </div>
                   <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
@@ -1696,7 +1696,7 @@ function InventarioContent() {
                       {importSummary.skipped}
                     </p>
                     <p className="text-[10px] text-amber-700">
-                      filas con errores de validación
+                      filas con errores de validaciÃ³n
                     </p>
                   </div>
                   <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
@@ -1707,7 +1707,7 @@ function InventarioContent() {
                       {formatPeso(importSummary.totalCostoCarga || 0)}
                     </p>
                     <p className="text-[10px] text-slate-500">
-                      suma de costo × stock importado
+                      suma de costo Ã— stock importado
                     </p>
                   </div>
                 </div>
@@ -1744,7 +1744,7 @@ function InventarioContent() {
                 {showErrorLog && importSummary.errors && importSummary.errors.length > 0 && (
                   <div className="mt-2 max-h-32 overflow-auto rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] text-slate-700 space-y-1">
                     {importSummary.errors.map((err, idx) => (
-                      <p key={idx}>• {err}</p>
+                      <p key={idx}>â€¢ {err}</p>
                     ))}
                   </div>
                 )}
@@ -1769,9 +1769,9 @@ function InventarioContent() {
                   SUGERENCIA IA
                 </p>
                 <p className="text-[11px] text-slate-600">
-                  TallerCloud intenta reconocer automáticamente las columnas de tu archivo (nombre,
+                  TallerCloud intenta reconocer automÃ¡ticamente las columnas de tu archivo (nombre,
                   precios, stock, etc.), pero te recomendamos revisar la estructura y los encabezados
-                  antes de procesar grandes volúmenes de datos.
+                  antes de procesar grandes volÃºmenes de datos.
                 </p>
               </div>
             </div>
@@ -1805,9 +1805,9 @@ function InventarioContent() {
           </DialogHeader>
           <div className="py-4">
             <div className="rounded-lg border border-border bg-slate-50/50 p-4">
-              <p className="text-sm font-medium text-foreground">Próximamente</p>
+              <p className="text-sm font-medium text-foreground">PrÃ³ximamente</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Aquí verás entradas de compras, ventas, ajustes y transferencias relacionadas con este producto.
+                AquÃ­ verÃ¡s entradas de compras, ventas, ajustes y transferencias relacionadas con este producto.
               </p>
             </div>
           </div>
@@ -1829,7 +1829,7 @@ function InventarioContent() {
       >
         <DialogContent className="max-w-full w-full md:max-w-3xl bg-white border border-border shadow-xl overflow-hidden">
           <DialogTitle className="sr-only">Vista Previa de Etiqueta</DialogTitle>
-          <DialogDescription className="sr-only">Vista previa e impresión de etiqueta del producto</DialogDescription>
+          <DialogDescription className="sr-only">Vista previa e impresiÃ³n de etiqueta del producto</DialogDescription>
           <div className="relative">
             {/* Capa superior (control) */}
             <div className="relative bg-white px-4 pt-4 pb-3">
@@ -1841,7 +1841,7 @@ function InventarioContent() {
                 </p>
                 {labelProducto && isEquipoExhibitionCategory(labelProducto) && (
                   <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-slate-600">
-                    Etiqueta de exhibición (EQUIPO)
+                    Etiqueta de exhibiciÃ³n (EQUIPO)
                   </p>
                 )}
               </div>
@@ -1873,8 +1873,8 @@ function InventarioContent() {
                       />
                     ) : labelProducto && isClient ? (
                       <InventoryStandardLabel
-                        nombreUpper={(labelProducto.nombre || "—").toUpperCase()}
-                        skuOrCodigo={(labelProducto.sku || labelProducto.codigo_barras || "—").toString()}
+                        nombreUpper={(labelProducto.nombre || "â€”").toUpperCase()}
+                        skuOrCodigo={(labelProducto.sku || labelProducto.codigo_barras || "â€”").toString()}
                         precioFormateado={formatPeso(Number(labelProducto.precio_venta ?? 0))}
                         barcodeValue={getBarcodeValue(labelProducto)}
                         showBarcodePlaceholder={!getBarcodeValue(labelProducto)}
@@ -1882,14 +1882,14 @@ function InventarioContent() {
                       />
                     ) : (
                       <div className="mx-auto flex h-[25mm] w-[50mm] items-center justify-center border border-dashed border-slate-300 text-xs text-slate-500">
-                        Cargando vista previa…
+                        Cargando vista previaâ€¦
                       </div>
                     )}
                   </div>
 
-                  {/* Nota de configuración (esquina inferior derecha) */}
+                  {/* Nota de configuraciÃ³n (esquina inferior derecha) */}
                   <p className="absolute -bottom-4 right-0 text-[10px] text-slate-500 max-w-[320px] text-right">
-                    Asegúrate de que tu impresora esté configurada en tamaño de papel 50×25 mm (2×1 pulg.)
+                    AsegÃºrate de que tu impresora estÃ© configurada en tamaÃ±o de papel 50Ã—25 mm (2Ã—1 pulg.)
                   </p>
                 </div>
               </div>
@@ -1909,3 +1909,4 @@ export default function InventarioPage() {
     </Suspense>
   )
 }
+

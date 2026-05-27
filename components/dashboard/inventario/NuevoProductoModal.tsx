@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useMemo, type ReactNode } from "react"
 import { InventoryProductImagePreview } from "@/components/dashboard/inventory-product-image"
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { INVENTARIO_CATEGORIAS } from "@/lib/constants"
 import { getInventoryFieldLabels } from "@/lib/inventory/inventory-form-labels"
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import {
   Box,
   Smartphone,
@@ -55,7 +55,7 @@ export type NuevoProductoModalProps = {
   tallerNombre: string
   /** @deprecated No se renderiza en el modal. Mantenido para compatibilidad con page.tsx. */
   footerSlot?: ReactNode
-  /** @deprecated La categoría EQUIPOS activa los flags automáticamente. Mantenido para compatibilidad. */
+  /** @deprecated La categorÃ­a EQUIPOS activa los flags automÃ¡ticamente. Mantenido para compatibilidad. */
   ensureEquiposCategoria?: () => Promise<void>
   nombre: string
   setNombre: (v: string) => void
@@ -181,7 +181,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
     <Dialog open={open} onOpenChange={(o) => !o && !saving && onClose()}>
       <DialogContent overlayClassName="backdrop-blur-md bg-black/25" className="max-w-full w-full md:max-w-5xl max-h-[92vh] flex flex-col rounded-3xl bg-white border-0 shadow-2xl shadow-black/10 overflow-y-auto overflow-x-hidden p-0 gap-0">
 
-        {/* ── Header ── */}
+        {/* â”€â”€ Header â”€â”€ */}
         <div className="px-8 pt-8 pb-4 shrink-0">
           <DialogHeader className="space-y-1 text-left items-start">
             <div className="flex items-center gap-3 mb-1">
@@ -194,25 +194,25 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                 </DialogTitle>
                 <DialogDescription className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
                   {editingProducto
-                    ? "Actualiza la información de este producto en tu inventario."
-                    : "Alta precisa: datos estructurados y búsqueda unificada."}
+                    ? "Actualiza la informaciÃ³n de este producto en tu inventario."
+                    : "Alta precisa: datos estructurados y bÃºsqueda unificada."}
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
         </div>
 
-        {/* ── Body ── */}
+        {/* â”€â”€ Body â”€â”€ */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(280px,340px)] gap-0 lg:gap-6 px-8 py-2 min-w-0">
 
-          {/* ── Columna izquierda ── */}
+          {/* â”€â”€ Columna izquierda â”€â”€ */}
           <div className="flex flex-col gap-4 min-w-0 order-1">
 
-            {/* Identificación */}
+            {/* IdentificaciÃ³n */}
             <section className="rounded-2xl border border-slate-100 bg-slate-50/40 p-5 space-y-4">
               <div className="flex items-center gap-2 text-slate-800">
                 <Fingerprint className="h-4 w-4 shrink-0 text-blue-500" />
-                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Identificación</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">IdentificaciÃ³n</h3>
               </div>
               <div className="space-y-4">
 
@@ -227,7 +227,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   />
                 </div>
 
-                {/* SKU + Código de barras */}
+                {/* SKU + CÃ³digo de barras */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5 min-w-0">
                     <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">SKU</Label>
@@ -239,7 +239,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     />
                   </div>
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Código de barras</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CÃ³digo de barras</Label>
                     <div className="relative">
                       <Input
                         value={codigoBarras}
@@ -251,7 +251,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                         type="button"
                         onClick={generarCodigoBarrasInterno}
                         className="absolute inset-y-0 right-2 my-2 flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-600 hover:text-white transition-colors"
-                        title="Generar código interno EAN-13"
+                        title="Generar cÃ³digo interno EAN-13"
                       >
                         <Wand2 className="h-3.5 w-3.5" />
                       </button>
@@ -259,10 +259,10 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   </div>
                 </div>
 
-                {/* Categoría + Condición en la misma fila */}
+                {/* CategorÃ­a + CondiciÃ³n en la misma fila */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Categoría</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CategorÃ­a</Label>
                     <Select
                       value={categoria}
                       onValueChange={(val) => {
@@ -302,7 +302,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     </Select>
                   </div>
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Condición</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CondiciÃ³n</Label>
                     <Select
                       value={condicion || "__none__"}
                       onValueChange={(v) => setCondicion(v === "__none__" ? "" : v)}
@@ -321,29 +321,29 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   </div>
                 </div>
 
-                {/* Descripción */}
+                {/* DescripciÃ³n */}
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Descripción</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">DescripciÃ³n</Label>
                   <Textarea
                     value={descripcion}
                     onChange={(e) => setDescripcion(e.target.value)}
-                    placeholder="Notas, compatibilidades, detalles de vitrina…"
+                    placeholder="Notas, compatibilidades, detalles de vitrinaâ€¦"
                     className="bg-white border-slate-200 rounded-xl min-h-[80px] resize-y placeholder:text-slate-300 placeholder:font-medium"
                   />
                 </div>
               </div>
             </section>
 
-            {/* Clasificación: Marca + Modelo */}
+            {/* ClasificaciÃ³n: Marca + Modelo */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 space-y-4">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Clasificación</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">ClasificaciÃ³n</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.marca}</Label>
                   <Input
                     value={marca}
                     onChange={(e) => setMarca(e.target.value)}
-                    placeholder="—"
+                    placeholder="â€”"
                     className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300"
                   />
                 </div>
@@ -352,14 +352,14 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   <Input
                     value={modelo}
                     onChange={(e) => setModelo(e.target.value)}
-                    placeholder="—"
+                    placeholder="â€”"
                     className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300"
                   />
                 </div>
               </div>
             </section>
 
-            {/* Hardware + Identificador — visible solo cuando EQUIPOS */}
+            {/* Hardware + Identificador â€” visible solo cuando EQUIPOS */}
             <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${esCategoriEquipos ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
               <div className="overflow-hidden min-h-0">
                 <div className="space-y-4 pt-1 pb-2">
@@ -370,11 +370,11 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.procesador}</Label>
-                        <Input value={procesador} onChange={(e) => setProcesador(e.target.value)} placeholder="—" className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300" />
+                        <Input value={procesador} onChange={(e) => setProcesador(e.target.value)} placeholder="â€”" className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300" />
                       </div>
                       <div className="space-y-1.5">
                         <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.ram}</Label>
-                        <Input value={ram} onChange={(e) => setRam(e.target.value)} placeholder="—" className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300" />
+                        <Input value={ram} onChange={(e) => setRam(e.target.value)} placeholder="â€”" className="bg-slate-50/60 border-slate-200 rounded-xl min-h-[48px] placeholder:text-slate-300" />
                       </div>
                       <div className="space-y-1.5">
                         <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.almacenamiento}</Label>
@@ -387,13 +387,13 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     </div>
                   </section>
 
-                  {/* Identificador IMEI/Serie — siempre visible dentro de EQUIPOS */}
+                  {/* Identificador IMEI/Serie â€” siempre visible dentro de EQUIPOS */}
                   <section className="rounded-2xl border border-blue-100 bg-blue-50/30 p-5 space-y-3">
                     <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Identificador</h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
-                          IMEI o número de serie <span className="text-red-500">*</span>
+                          IMEI o nÃºmero de serie <span className="text-red-500">*</span>
                         </Label>
                         <TooltipProvider>
                           <Tooltip>
@@ -403,8 +403,8 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                               </button>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[220px] text-xs">
-                              <p><strong>IMEI:</strong> 15 dígitos. Ajustes → Información o *#06#.</p>
-                              <p className="mt-1"><strong>Serie:</strong> alfanumérico del fabricante (mín. 8 caracteres).</p>
+                              <p><strong>IMEI:</strong> 15 dÃ­gitos. Ajustes â†’ InformaciÃ³n o *#06#.</p>
+                              <p className="mt-1"><strong>Serie:</strong> alfanumÃ©rico del fabricante (mÃ­n. 8 caracteres).</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -424,14 +424,14 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                           aria-pressed={imeiType === "serie"}
                           className={`flex-1 rounded-lg py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${imeiType === "serie" ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
                         >
-                          Número de serie
+                          NÃºmero de serie
                         </button>
                       </div>
                       <div className="relative">
                         <Input
                           value={imeiSerie}
                           onChange={(e) => { setImeiSerie(e.target.value); setImeiError(null) }}
-                          placeholder={imeiType === "imei" ? "15 dígitos numéricos" : "Mín. 8 caracteres alfanuméricos"}
+                          placeholder={imeiType === "imei" ? "15 dÃ­gitos numÃ©ricos" : "MÃ­n. 8 caracteres alfanumÃ©ricos"}
                           maxLength={imeiType === "imei" ? 15 : 30}
                           className={`bg-white rounded-xl min-h-[48px] font-mono pr-16 ${imeiError ? "border-red-300 focus-visible:ring-red-200" : "border-slate-200"}`}
                         />
@@ -455,19 +455,19 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                       ) : imeiSerie.length > 0 && imeiType === "imei" && /^\d{15}$/.test(imeiSerie) ? (
                         <p className="flex items-center gap-1 text-xs text-emerald-600">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-                          IMEI válido
+                          IMEI vÃ¡lido
                         </p>
                       ) : imeiSerie.length > 0 && imeiType === "serie" && imeiSerie.trim().length >= 8 ? (
                         <p className="flex items-center gap-1 text-xs text-emerald-600">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-                          Número de serie válido
+                          NÃºmero de serie vÃ¡lido
                         </p>
                       ) : null}
                     </div>
                     {stockBloqueadoPorImei && (
                       <div className="flex items-center gap-2 rounded-xl bg-blue-50/60 border border-blue-100 px-3 py-2 text-xs text-blue-700">
                         <Fingerprint className="h-3.5 w-3.5 shrink-0" />
-                        Stock fijado en 1 — identificador único por unidad.
+                        Stock fijado en 1 â€” identificador Ãºnico por unidad.
                       </div>
                     )}
                   </section>
@@ -477,7 +477,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
             </div>
           </div>
 
-          {/* ── Columna derecha ── */}
+          {/* â”€â”€ Columna derecha â”€â”€ */}
           <div className="flex flex-col gap-4 min-w-0 order-2">
 
             {/* Foto */}
@@ -526,12 +526,12 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     {uploadingImage ? (
                       <>
                         <Loader2 className="h-9 w-9 text-blue-500 animate-spin" aria-hidden />
-                        <span className="text-xs text-slate-400 font-medium">Subiendo…</span>
+                        <span className="text-xs text-slate-400 font-medium">Subiendoâ€¦</span>
                       </>
                     ) : (
                       <>
                         <ImageIcon className="h-9 w-9 text-slate-300" strokeWidth={1.25} aria-hidden />
-                        <span className="text-xs text-slate-500 font-medium">Añadir foto</span>
+                        <span className="text-xs text-slate-500 font-medium">AÃ±adir foto</span>
                       </>
                     )}
                   </label>
@@ -588,7 +588,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-600">Mínimo</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-600">MÃ­nimo</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -602,7 +602,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                         />
                       </TooltipTrigger>
                       {stockBloqueadoPorImei && (
-                        <TooltipContent className="text-xs">Unidad única: mínimo fijo en 1.</TooltipContent>
+                        <TooltipContent className="text-xs">Unidad Ãºnica: mÃ­nimo fijo en 1.</TooltipContent>
                       )}
                     </Tooltip>
                   </TooltipProvider>
@@ -610,11 +610,11 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
               </div>
             </section>
 
-            {/* Ubicación en almacén */}
+            {/* UbicaciÃ³n en almacÃ©n */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 space-y-3">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0 text-blue-500" aria-hidden />
-                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Almacén</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">AlmacÃ©n</h3>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.ubicacion}</Label>
@@ -630,7 +630,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
           </div>
         </div>
 
-        {/* ── Footer ── */}
+        {/* â”€â”€ Footer â”€â”€ */}
         <div
           className={`flex flex-col-reverse gap-3 px-8 py-5 sm:flex-row sm:items-center ${
             esCategoriEquipos ? "sm:justify-between" : "sm:justify-end"
@@ -639,7 +639,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
           {esCategoriEquipos && (
             <p className="flex items-center gap-1.5 text-xs text-amber-700">
               <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-              Nota: La categoría EQUIPOS requiere obligatoriamente registrar IMEI/Serie.
+              Nota: La categorÃ­a EQUIPOS requiere obligatoriamente registrar IMEI/Serie.
             </p>
           )}
           <div className="flex justify-end gap-3 shrink-0">
@@ -669,3 +669,4 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
     </Dialog>
   )
 }
+

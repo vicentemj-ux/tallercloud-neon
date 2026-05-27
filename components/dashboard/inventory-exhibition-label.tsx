@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { getProductoCapacidad, getProductoModelo } from "@/components/dashboard/inventory-label-utils"
 
 export interface InventoryExhibitionLabelProps {
@@ -16,7 +16,7 @@ export interface InventoryExhibitionLabelProps {
 }
 
 /**
- * Etiqueta de exhibición 50×25 mm (EQUIPO) — impresora térmica.
+ * Etiqueta de exhibiciÃ³n 50Ã—25 mm (EQUIPO) â€” impresora tÃ©rmica.
  * Layout flex-col de 3 filas; nombre con line-clamp-2 para nombres largos. Sin IMEI/serie.
  */
 const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionLabelProps>(
@@ -32,7 +32,7 @@ const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionL
         style={{ color: "#000000", background: "#ffffff", boxShadow: "none" }}
       >
         <div className="flex h-full w-full flex-col justify-between overflow-hidden p-1 text-black">
-          {/* Fila 1: taller | condición */}
+          {/* Fila 1: taller | condiciÃ³n */}
           <div className="flex w-full flex-none items-start justify-between leading-none">
             <span className="text-[8px] font-bold uppercase leading-none text-black">
               {(tallerNombre || "Mi Taller").toUpperCase()}
@@ -42,7 +42,7 @@ const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionL
             </span>
           </div>
 
-          {/* Fila 2: nombre del producto (crítico) — máx. 2 líneas */}
+          {/* Fila 2: nombre del producto (crÃ­tico) â€” mÃ¡x. 2 lÃ­neas */}
           <div className="my-auto flex min-h-0 w-full flex-1 items-center">
             <p className="line-clamp-2 w-full text-xs font-black uppercase leading-[1.1] text-black">
               {nombreProducto}
@@ -67,3 +67,4 @@ const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionL
 InventoryExhibitionLabel.displayName = "InventoryExhibitionLabel"
 
 export { InventoryExhibitionLabel }
+

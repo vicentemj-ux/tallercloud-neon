@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
@@ -45,17 +45,17 @@ import {
   addGastoOperativo,
   deleteGastoOperativo,
   type GastoOperativo,
-} from "@/lib/actions/gastos"
+} from "@/lib/actions/gastos-prisma"
 import { toast } from "@/hooks/use-toast"
 
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const CATEGORIAS = [
   { value: "general",   label: "General" },
   { value: "renta",     label: "Renta" },
   { value: "servicios", label: "Servicios (agua, luz, internet)" },
-  { value: "nomina",    label: "Nómina" },
+  { value: "nomina",    label: "NÃ³mina" },
   { value: "insumos",   label: "Insumos" },
   { value: "marketing", label: "Marketing" },
   { value: "equipo",    label: "Equipo / Herramienta" },
@@ -89,7 +89,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   ])
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function BitacoraGastosPage() {
   const [gastos, setGastos] = useState<GastoOperativo[]>([])
@@ -147,7 +147,7 @@ export default function BitacoraGastosPage() {
   const handleSave = async () => {
     if (!fConcepto.trim()) { setFormError("Ingresa el concepto del gasto."); return }
     const monto = parseFloat(fMonto)
-    if (isNaN(monto) || monto <= 0) { setFormError("Ingresa un monto válido mayor a 0."); return }
+    if (isNaN(monto) || monto <= 0) { setFormError("Ingresa un monto vÃ¡lido mayor a 0."); return }
     if (!fFecha) { setFormError("Selecciona la fecha."); return }
 
     setIsSaving(true)
@@ -172,7 +172,7 @@ export default function BitacoraGastosPage() {
           fMetodo === 'efectivo'
             ? res.cajaAplicada
               ? "Gasto aplicado a caja correctamente."
-              : "Gasto registrado. No se encontró caja abierta."
+              : "Gasto registrado. No se encontrÃ³ caja abierta."
             : "Gasto registrado exitosamente.",
       })
     } catch (e) {
@@ -197,7 +197,7 @@ export default function BitacoraGastosPage() {
     setIsDeleting(false)
   }
 
-  // ── Derived ──────────────────────────────────────────────────────────────
+  // â”€â”€ Derived â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const now = new Date()
   const mesActual = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   const totalMes = gastos
@@ -291,11 +291,11 @@ export default function BitacoraGastosPage() {
             <TableHeader className="bg-slate-50">
               <TableRow className="hover:bg-transparent border-b border-slate-200">
                 <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Concepto</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Categoría</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Método</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">CategorÃ­a</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">MÃ©todo</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Fecha</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Monto</TableHead>
-                <TableHead className="text-right text-xs font-semibold uppercase tracking-widest text-slate-500">Acción</TableHead>
+                <TableHead className="text-right text-xs font-semibold uppercase tracking-widest text-slate-500">AcciÃ³n</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -363,7 +363,7 @@ export default function BitacoraGastosPage() {
         <DialogContent className="sm:max-w-md rounded-3xl border-slate-200 bg-white p-6 shadow-sm">
           <DialogTitle className="text-lg font-bold">Registrar Gasto Operativo</DialogTitle>
           <DialogDescription className="text-sm tracking-tight text-slate-500">
-            Completa los datos del egreso. Si el método es efectivo, se registrará una salida en caja.
+            Completa los datos del egreso. Si el mÃ©todo es efectivo, se registrarÃ¡ una salida en caja.
           </DialogDescription>
 
           <div className="space-y-4 pt-2">
@@ -377,10 +377,10 @@ export default function BitacoraGastosPage() {
               />
             </div>
 
-            {/* Categoría */}
+            {/* CategorÃ­a */}
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5">
-                <Tag className="h-3.5 w-3.5" /> Categoría
+                <Tag className="h-3.5 w-3.5" /> CategorÃ­a
               </Label>
               <Select value={fCategoria} onValueChange={setFCategoria}>
                 <SelectTrigger>
@@ -394,7 +394,7 @@ export default function BitacoraGastosPage() {
               </Select>
             </div>
 
-            {/* Monto + Método */}
+            {/* Monto + MÃ©todo */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold uppercase tracking-wide">Monto *</Label>
@@ -408,7 +408,7 @@ export default function BitacoraGastosPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold uppercase tracking-wide">Método de pago</Label>
+                <Label className="text-xs font-semibold uppercase tracking-wide">MÃ©todo de pago</Label>
                 <Select value={fMetodo} onValueChange={setFMetodo}>
                   <SelectTrigger>
                     <SelectValue />
@@ -446,7 +446,7 @@ export default function BitacoraGastosPage() {
 
             {fMetodo === "efectivo" && (
               <p className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700">
-                Este gasto en efectivo se registrará como salida en el corte de caja.
+                Este gasto en efectivo se registrarÃ¡ como salida en el corte de caja.
               </p>
             )}
 
@@ -475,9 +475,9 @@ export default function BitacoraGastosPage() {
       <AlertDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null) }}>
         <AlertDialogContent className="rounded-3xl border-slate-200 bg-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este gasto?</AlertDialogTitle>
+            <AlertDialogTitle>Â¿Eliminar este gasto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Si el gasto fue registrado en efectivo, también se eliminará el movimiento de caja correspondiente.
+              Esta acciÃ³n no se puede deshacer. Si el gasto fue registrado en efectivo, tambiÃ©n se eliminarÃ¡ el movimiento de caja correspondiente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -497,3 +497,4 @@ export default function BitacoraGastosPage() {
     </div>
   )
 }
+

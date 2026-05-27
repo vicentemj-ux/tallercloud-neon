@@ -1,8 +1,8 @@
-"use client"
+﻿"use client"
 
 import { useState, useCallback } from "react"
 import { NuevoProductoModal } from "./NuevoProductoModal"
-import { createProducto, uploadProductImage, deleteProducto } from "@/lib/actions/productos"
+import { createProducto, uploadProductImage, deleteProducto } from "@/lib/actions/productos-prisma"
 import { toast } from "@/hooks/use-toast"
 
 export function NuevoProductoModalWrapper({
@@ -152,21 +152,21 @@ export function NuevoProductoModalWrapper({
     if (esEquipo && registrarIdentificador) {
       const imei = imeiSerie.trim()
       if (!imei) {
-        setImeiError("Ingresa el identificador o desactiva «Registrar IMEI o número de serie».")
+        setImeiError("Ingresa el identificador o desactiva Â«Registrar IMEI o nÃºmero de serieÂ».")
         return
       }
       if (imeiType === "imei") {
         if (!/^\d+$/.test(imei)) {
-          setImeiError("El IMEI solo debe contener dígitos numéricos (sin espacios ni letras).")
+          setImeiError("El IMEI solo debe contener dÃ­gitos numÃ©ricos (sin espacios ni letras).")
           return
         }
         if (imei.length !== 15) {
-          setImeiError(`IMEI incompleto: ${imei.length}/15 dígitos. Verifica el número.`)
+          setImeiError(`IMEI incompleto: ${imei.length}/15 dÃ­gitos. Verifica el nÃºmero.`)
           return
         }
       } else {
         if (imei.length < 8) {
-          setImeiError(`Serie muy corta: ${imei.length}/8 caracteres mínimos.`)
+          setImeiError(`Serie muy corta: ${imei.length}/8 caracteres mÃ­nimos.`)
           return
         }
       }
@@ -178,7 +178,7 @@ export function NuevoProductoModalWrapper({
     try {
       const result = await createProducto(formData)
       if (result.success) {
-        toast({ title: "Producto guardado", description: "El producto se agregó al inventario." })
+        toast({ title: "Producto guardado", description: "El producto se agregÃ³ al inventario." })
         resetForm()
         onClose()
         onSaved?.()
@@ -237,7 +237,7 @@ export function NuevoProductoModalWrapper({
       })
       const res = await uploadProductImage(base64, productId)
       if (!res.success) {
-        const short = res.error && res.error.length > 120 ? "Revisa la conexión o el bucket de fotos en Supabase." : res.error
+        const short = res.error && res.error.length > 120 ? "Revisa la conexiÃ³n o el bucket de fotos en Supabase." : res.error
         setImageUploadError("Error al subir. " + (short || "Intenta de nuevo."))
         toast({ title: "No se pudo subir la imagen", description: short || "Intenta de nuevo.", variant: "destructive" })
         return
@@ -320,3 +320,4 @@ export function NuevoProductoModalWrapper({
     />
   )
 }
+

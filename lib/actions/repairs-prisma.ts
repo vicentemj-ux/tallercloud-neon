@@ -1,6 +1,7 @@
 "use server"
 
 import { getCurrentTenant } from "@/lib/auth"
+import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { getPrismaClient } from "@/lib/prisma"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
@@ -782,6 +783,191 @@ export async function deleteRepair(repairId: string): Promise<{ success: boolean
   } catch (e) {
     console.error("deleteRepair prisma:", e)
     return { success: false, error: "No se pudo eliminar." }
+  }
+}
+
+function roundMoney(n: number): number {
+  return Math.round(n * 100) / 100
+}
+
+export async function actualizarPresupuestoReparacion(
+  repairId: string,
+  nuevoPresupuesto: number,
+  descripcion?: string
+): Promise<{ success: boolean; nuevoPresupuesto?: number; error?: string; logError?: string }> {
+  try {
+    const prisma = getPrismaClient()
+    const tallerId = await getTenantIdOrThrow()
+    const recRows = await prisma.$queryRawUnsafe<Array<{ precio_estimado: number | null }>>(
+      "SELECT precio_estimado FROM reparaciones WHERE id = $1 AND taller_id = $2 LIMIT 1",
+      repairId,
+      tallerId,
+    )
+    if (!recRows[0]) return { success: false, error: "No se encontró la reparación." }
+
+    const prev = Number(recRows[0].precio_estimado ?? 0)
+    await prisma.$executeRawUnsafe(
+      "UPDATE reparaciones SET precio_estimado = $1, updated_at = now() WHERE id = $2 AND taller_id = $3",
+      nuevoPresupuesto,
+      repairId,
+      tallerId,
+    )
+
+    const nota = `${descripcion?.trim() || "Presupuesto actualizado"} - $${prev.toLocaleString("es-MX")} -> $${nuevoPresupuesto.toLocaleString("es-MX")}`
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+       VALUES ($1,$2,'presupuesto',$3,$4,$5,$6,now())`,
+      tallerId,
+      repairId,
+      nota,
+      String(prev),
+      String(nuevoPresupuesto),
+      await getCurrentActorDisplayName(),
+    )
+
+    return { success: true, nuevoPresupuesto }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "No se pudo actualizar el presupuesto." }
+  }
+}
+
+export async function registrarAbono(input: {
+  repairId: string
+  monto: number
+  metodoPago: "efectivo" | "tarjeta" | "transferencia" | "mixto"
+}): Promise<{
+  success: boolean
+  error?: string
+  nuevoAnticipo?: number
+  saldoPendiente?: number
+  liquidado?: boolean
+  movimientoCajaId?: string | null
+}> {
+  try {
+    if (!input.repairId) return { success: false, error: "ID de reparación requerido." }
+    if (!Number.isFinite(input.monto) || input.monto <= 0) return { success: false, error: "El monto debe ser mayor a cero." }
+
+    const prisma = getPrismaClient()
+    const tallerId = await getTenantIdOrThrow()
+    const actor = await getCurrentActorDisplayName()
+
+    const repRows = await prisma.$queryRawUnsafe<Array<{ anticipo: number | null; precio_estimado: number | null; folio: string | null; estatus: string | null }>>(
+      "SELECT anticipo, precio_estimado, folio, estatus FROM reparaciones WHERE id = $1 AND taller_id = $2 LIMIT 1",
+      input.repairId,
+      tallerId,
+    )
+    const rep = repRows[0]
+    if (!rep) return { success: false, error: "No se encontró la reparación." }
+
+    const cajaRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+      "SELECT id FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
+      tallerId,
+    )
+    const cajaId = cajaRows[0]?.id
+    if (!cajaId) return { success: false, error: "No hay caja abierta. Abre caja en Punto de venta para registrar el cobro." }
+
+    const current = Number(rep.anticipo ?? 0)
+    const presupuesto = Number(rep.precio_estimado ?? 0)
+    const nuevo = roundMoney(current + input.monto)
+    const saldo = roundMoney(Math.max(0, presupuesto - nuevo))
+    const liquidado = saldo <= 0.01 && presupuesto > 0
+
+    await prisma.$executeRawUnsafe(
+      "UPDATE reparaciones SET anticipo = $1, updated_at = now() WHERE id = $2 AND taller_id = $3",
+      nuevo,
+      input.repairId,
+      tallerId,
+    )
+
+    const movRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+      `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha, vendedor_nombre)
+       VALUES ($1,$2,'anticipo_reparacion',$3,$4,$5,$6,now(),$7) RETURNING id`,
+      tallerId,
+      cajaId,
+      input.repairId,
+      `Abono reparación #${rep.folio ?? ""}`,
+      input.monto,
+      input.metodoPago,
+      actor,
+    )
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+       VALUES ($1,$2,'abono',$3,$4,$5,$6,now())`,
+      tallerId,
+      input.repairId,
+      `Abono registrado: +$${input.monto.toLocaleString("es-MX")} (${input.metodoPago})`,
+      String(current),
+      String(nuevo),
+      actor,
+    )
+
+    return { success: true, nuevoAnticipo: nuevo, saldoPendiente: saldo, liquidado, movimientoCajaId: movRows[0]?.id ?? null }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Error al registrar abono" }
+  }
+}
+
+export async function confirmarEntregaConLiquidacion(input: {
+  repairId: string
+  metodoPago: "efectivo" | "tarjeta" | "transferencia" | "mixto"
+  monto_efectivo: number
+  monto_tarjeta: number
+  monto_transferencia: number
+  notaTecnica?: string | null
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const total = roundMoney(Number(input.monto_efectivo || 0) + Number(input.monto_tarjeta || 0) + Number(input.monto_transferencia || 0))
+    if (total > 0) {
+      const metodo =
+        input.metodoPago === "mixto"
+          ? input.monto_efectivo >= input.monto_tarjeta && input.monto_efectivo >= input.monto_transferencia
+            ? "efectivo"
+            : input.monto_tarjeta >= input.monto_transferencia
+              ? "tarjeta"
+              : "transferencia"
+          : input.metodoPago
+      const ab = await registrarAbono({ repairId: input.repairId, monto: total, metodoPago: metodo as "efectivo" | "tarjeta" | "transferencia" })
+      if (!ab.success) return { success: false, error: ab.error }
+    }
+
+    const prisma = getPrismaClient()
+    const tallerId = await getTenantIdOrThrow()
+    await prisma.$executeRawUnsafe(
+      "UPDATE reparaciones SET estatus = 'Entregado', updated_at = now() WHERE id = $1 AND taller_id = $2",
+      input.repairId,
+      tallerId,
+    )
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "No se pudo registrar la entrega." }
+  }
+}
+
+export async function entregarSinReparacionConAjuste(input: {
+  repairId: string
+  costoRevision: number
+  metodoPago: "efectivo" | "tarjeta" | "transferencia" | "mixto"
+  monto_efectivo: number
+  monto_tarjeta: number
+  monto_transferencia: number
+  metodoDevolucion?: "efectivo" | "transferencia"
+  montoDevolucionEfectivo?: number
+  montoDevolucionTransferencia?: number
+  notaTecnica?: string | null
+}): Promise<{ success: boolean; error?: string; warning?: string }> {
+  try {
+    const prisma = getPrismaClient()
+    const tallerId = await getTenantIdOrThrow()
+    await prisma.$executeRawUnsafe(
+      "UPDATE reparaciones SET precio_estimado = $1, estatus = 'Entregado', updated_at = now() WHERE id = $2 AND taller_id = $3",
+      input.costoRevision,
+      input.repairId,
+      tallerId,
+    )
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "No se pudo ajustar y entregar." }
   }
 }
 
