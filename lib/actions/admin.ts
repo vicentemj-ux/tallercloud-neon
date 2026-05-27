@@ -1,10 +1,9 @@
 "use server"
 
-import { createAdminClient } from "@/lib/supabase/admin"
+import { getPrismaClient } from "@/lib/prisma"
 import { calcDiasRestantes } from "@/lib/utils/subscription"
 import { cookies } from "next/headers"
-
-const createClient = async () => createAdminClient()
+import { randomBytes } from "crypto"
 
 /** Verifies that the caller is a logged-in admin. Throws if not. */
 async function requireAdmin(): Promise<void> {
@@ -16,16 +15,33 @@ async function requireAdmin(): Promise<void> {
     throw new Error("ADMIN_UNAUTHORIZED")
   }
 
-  // Double-check against DB
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from("taller_users")
-    .select("es_admin")
-    .eq("id", tallerId)
-    .single()
+  try {
+    const prisma = getPrismaClient()
+    const rows = await prisma.$queryRawUnsafe<Array<{ es_admin: boolean }>>(
+      "SELECT es_admin FROM taller_users WHERE id = $1 LIMIT 1",
+      tallerId,
+    )
+    if (!rows[0]?.es_admin) {
+      throw new Error("ADMIN_UNAUTHORIZED")
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message === "ADMIN_UNAUTHORIZED") throw error
 
-  if (error || !data?.es_admin) {
-    throw new Error("ADMIN_UNAUTHORIZED")
+    // ── Legacy Supabase fallback ──────────────────────────────────────────────
+    try {
+      const { createAdminClient } = await import("@/lib/supabase/admin")
+      const supabase = await createAdminClient()
+      const { data, error } = await supabase
+        .from("taller_users")
+        .select("es_admin")
+        .eq("id", tallerId)
+        .single()
+      if (error || !data?.es_admin) {
+        throw new Error("ADMIN_UNAUTHORIZED")
+      }
+    } catch {
+      throw new Error("ADMIN_UNAUTHORIZED")
+    }
   }
 }
 
@@ -84,90 +100,60 @@ export async function actualizarPlanActivo(
 ): Promise<{ success: boolean; error: string | null }> {
   await requireAdmin()
   const id = (tallerId ?? "").trim()
-  if (!id || !UUID_RE.test(id)) {
-    console.error("[actualizarPlanActivo] tallerId inválido o vacío:", tallerId)
-    return { success: false, error: "Identificador de taller no válido." }
+  if (!id || id.length < 8) {
+    return { success: false, error: "Identificador de taller no valido." }
   }
 
-  const supabase = await createClient()
-
-  // Sincronizar plan_tipo con plan_activo para evitar desfase entre el toggle PRO
-  // y el banner del dashboard (que lee plan_tipo).
-  const payload: Record<string, unknown> = {
-    plan_activo: planActivo,
-    is_pro: planActivo,
-    plan_tipo: planActivo ? "activo" : "prueba",
-  }
-
-  const { data, error } = await supabase
-    .from("taller_users")
-    .update(payload)
-    .eq("id", id)
-    .select("id")
-
-  if (error) {
-    console.error("[actualizarPlanActivo] Supabase error:", {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-      tallerId: id,
-      payload,
-    })
+  try {
+    const prisma = getPrismaClient()
+    const planTipo = planActivo ? "activo" : "prueba"
+    await prisma.$executeRawUnsafe(
+      `UPDATE taller_users SET plan_activo = $1, is_pro = $2, plan_tipo = $3 WHERE id = $4`,
+      planActivo, planActivo, planTipo, id,
+    )
+    return { success: true, error: null }
+  } catch (error) {
+    console.error("[actualizarPlanActivo] Prisma error:", error)
     return {
       success: false,
-      error: error.message || "No se pudo actualizar el modo Pro",
+      error: error instanceof Error ? error.message : "No se pudo actualizar el modo Pro",
     }
   }
-
-  if (!data?.length) {
-    console.error("[actualizarPlanActivo] Ninguna fila actualizada (id no encontrado):", id)
-    return {
-      success: false,
-      error: "No se encontró el taller o no hubo cambios.",
-    }
-  }
-
-  return { success: true, error: null }
 }
 
 // ─── getAdminStats ────────────────────────────────────────────────────────────
 
 export async function getAdminStats(): Promise<{ stats: AdminStats | null; error: string | null }> {
   await requireAdmin()
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
+    const rows = await prisma.$queryRawUnsafe<Array<{ plan_tipo: string; fecha_vencimiento_plan: string | null }>>(
+      "SELECT plan_tipo, fecha_vencimiento_plan FROM taller_users WHERE es_admin = false",
+    )
+    const now = Date.now()
 
-  const { data, error } = await supabase
-    .from("taller_users")
-    .select("plan_tipo, fecha_vencimiento_plan")
-    .eq("es_admin", false)
+    const stats: AdminStats = {
+      total: rows.length,
+      prueba: rows.filter((t) => t.plan_tipo === "prueba").length,
+      activo: rows.filter((t) => t.plan_tipo === "activo").length,
+      suspendido: rows.filter((t) => t.plan_tipo === "suspendido").length,
+      porVencer: rows.filter((t) => {
+        if (t.plan_tipo === "suspendido" || !t.fecha_vencimiento_plan) return false
+        const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
+        return dias !== null && dias >= 0 && dias < 3
+      }).length,
+      vencidos: rows.filter((t) => {
+        if (t.plan_tipo !== "prueba" || !t.fecha_vencimiento_plan) return false
+        const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
+        return dias !== null && dias <= 0
+      }).length,
+    }
 
-  if (error) {
+    return { stats, error: null }
+  } catch (error) {
     console.error("Error fetching admin stats:", error)
-    return { stats: null, error: "Error al cargar estadísticas" }
+    return { stats: null, error: "Error al cargar estadisticas" }
   }
-
-  const rows = (data ?? []) as Array<{ plan_tipo: string; fecha_vencimiento_plan: string | null }>
-  const now = Date.now()
-
-  const stats: AdminStats = {
-    total: rows.length,
-    prueba: rows.filter((t) => t.plan_tipo === "prueba").length,
-    activo: rows.filter((t) => t.plan_tipo === "activo").length,
-    suspendido: rows.filter((t) => t.plan_tipo === "suspendido").length,
-    porVencer: rows.filter((t) => {
-      if (t.plan_tipo === "suspendido" || !t.fecha_vencimiento_plan) return false
-      const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
-      return dias !== null && dias >= 0 && dias < 3
-    }).length,
-    vencidos: rows.filter((t) => {
-      if (t.plan_tipo !== "prueba" || !t.fecha_vencimiento_plan) return false
-      const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
-      return dias !== null && dias <= 0
-    }).length,
-  }
-
-  return { stats, error: null }
 }
 
 // ─── getAllTalleres ────────────────────────────────────────────────────────────
@@ -178,43 +164,39 @@ export async function getAllTalleres(
   filtro: Filtro = "todos"
 ): Promise<{ talleres: TallerForAdmin[]; error: string | null }> {
   await requireAdmin()
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
+    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+      "SELECT * FROM taller_users WHERE es_admin = false ORDER BY nombre_taller ASC",
+    )
 
-  const { data, error } = await supabase
-    .from("taller_users")
-    .select("*")
-    .eq("es_admin", false)
-    .order("nombre_taller", { ascending: true })
+    let talleres = rows.map(mapTaller)
 
-  if (error) {
+    if (filtro === "prueba") {
+      talleres = talleres.filter((t) => t.plan_tipo === "prueba")
+    } else if (filtro === "activo") {
+      talleres = talleres.filter((t) => t.plan_tipo === "activo")
+    } else if (filtro === "suspendido") {
+      talleres = talleres.filter((t) => t.plan_tipo === "suspendido")
+    } else if (filtro === "por_vencer") {
+      talleres = talleres.filter((t) => {
+        if (t.plan_tipo === "suspendido" || !t.fecha_vencimiento_plan) return false
+        const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
+        return dias !== null && dias >= 0 && dias < 3
+      })
+    }
+
+    talleres.sort((a, b) => {
+      const da = a.dias_restantes ?? 9999
+      const db = b.dias_restantes ?? 9999
+      return da - db
+    })
+
+    return { talleres, error: null }
+  } catch (error) {
     console.error("Error fetching talleres:", error)
     return { talleres: [], error: "Error al cargar talleres" }
   }
-
-  let talleres = (data ?? []).map(mapTaller)
-
-  if (filtro === "prueba") {
-    talleres = talleres.filter((t) => t.plan_tipo === "prueba")
-  } else if (filtro === "activo") {
-    talleres = talleres.filter((t) => t.plan_tipo === "activo")
-  } else if (filtro === "suspendido") {
-    talleres = talleres.filter((t) => t.plan_tipo === "suspendido")
-  } else if (filtro === "por_vencer") {
-    talleres = talleres.filter((t) => {
-      if (t.plan_tipo === "suspendido" || !t.fecha_vencimiento_plan) return false
-      const dias = calcDiasRestantes(t.fecha_vencimiento_plan)
-      return dias !== null && dias >= 0 && dias < 3
-    })
-  }
-
-  // Sort: por_vencer first, then by dias_restantes
-  talleres.sort((a, b) => {
-    const da = a.dias_restantes ?? 9999
-    const db = b.dias_restantes ?? 9999
-    return da - db
-  })
-
-  return { talleres, error: null }
 }
 
 // ─── searchTalleres ───────────────────────────────────────────────────────────
@@ -225,21 +207,20 @@ export async function searchTalleres(
   await requireAdmin()
   if (!query.trim()) return getAllTalleres()
 
-  const supabase = await createClient()
-  const q = query.toLowerCase().trim()
-
-  const { data, error } = await supabase
-    .from("taller_users")
-    .select("*")
-    .eq("es_admin", false)
-    .or(`nombre_taller.ilike.%${q}%,nombre_propietario.ilike.%${q}%,email.ilike.%${q}%`)
-
-  if (error) {
+  try {
+    const prisma = getPrismaClient()
+    const q = query.toLowerCase().trim()
+    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+      `SELECT * FROM taller_users WHERE es_admin = false AND (
+        LOWER(nombre_taller) LIKE $1 OR LOWER(nombre_propietario) LIKE $2 OR LOWER(email) LIKE $3
+      ) ORDER BY nombre_taller ASC`,
+      `%${q}%`, `%${q}%`, `%${q}%`,
+    )
+    return { talleres: rows.map(mapTaller), error: null }
+  } catch (error) {
     console.error("Error searching talleres:", error)
-    return { talleres: [], error: "Error en búsqueda" }
+    return { talleres: [], error: "Error en busqueda" }
   }
-
-  return { talleres: (data ?? []).map(mapTaller), error: null }
 }
 
 // ─── extendSuscripcion ────────────────────────────────────────────────────────
@@ -253,99 +234,84 @@ export async function extendSuscripcion(
   dias: number
 ): Promise<{ success: boolean; nuevaFecha: string | null; error: string | null }> {
   await requireAdmin()
-  if (dias <= 0) return { success: false, nuevaFecha: null, error: "Los días deben ser mayores a 0" }
+  if (dias <= 0) return { success: false, nuevaFecha: null, error: "Los dias deben ser mayores a 0" }
 
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
+    const rows = await prisma.$queryRawUnsafe<Array<{ fecha_vencimiento_plan: string | null; plan_tipo: string }>>(
+      "SELECT fecha_vencimiento_plan, plan_tipo FROM taller_users WHERE id = $1 LIMIT 1",
+      tallerId,
+    )
+    const taller = rows[0]
+    if (!taller) return { success: false, nuevaFecha: null, error: "Taller no encontrado" }
 
-  const { data: taller, error: fetchError } = await supabase
-    .from("taller_users")
-    .select("fecha_vencimiento_plan, plan_tipo")
-    .eq("id", tallerId)
-    .single()
+    const baseDate =
+      taller.fecha_vencimiento_plan && new Date(taller.fecha_vencimiento_plan) > new Date()
+        ? new Date(taller.fecha_vencimiento_plan)
+        : new Date()
 
-  if (fetchError || !taller) {
-    return { success: false, nuevaFecha: null, error: "Taller no encontrado" }
-  }
+    const nuevaFecha = new Date(baseDate)
+    nuevaFecha.setDate(nuevaFecha.getDate() + dias)
 
-  // Base: if current expiry is in the future, extend from there; otherwise start from today
-  const baseDate =
-    taller.fecha_vencimiento_plan && new Date(taller.fecha_vencimiento_plan) > new Date()
-      ? new Date(taller.fecha_vencimiento_plan)
-      : new Date()
+    if (taller.plan_tipo === "suspendido" || taller.plan_tipo === "prueba") {
+      await prisma.$executeRawUnsafe(
+        "UPDATE taller_users SET fecha_vencimiento_plan = $1, plan_tipo = 'activo', plan_activo = true, is_pro = true WHERE id = $2",
+        nuevaFecha.toISOString(), tallerId,
+      )
+    } else {
+      await prisma.$executeRawUnsafe(
+        "UPDATE taller_users SET fecha_vencimiento_plan = $1 WHERE id = $2",
+        nuevaFecha.toISOString(), tallerId,
+      )
+    }
 
-  const nuevaFecha = new Date(baseDate)
-  nuevaFecha.setDate(nuevaFecha.getDate() + dias)
-
-  const updates: Record<string, unknown> = {
-    fecha_vencimiento_plan: nuevaFecha.toISOString(),
-  }
-
-  // Al extender acceso el taller adquiere una suscripción activa pagada.
-  // Si estaba suspendido o en prueba, lo promovemos a "activo".
-  if (taller.plan_tipo === "suspendido" || taller.plan_tipo === "prueba") {
-    updates.plan_tipo = "activo"
-    updates.plan_activo = true
-    updates.is_pro = true
-  }
-
-  const { error: updateError } = await supabase
-    .from("taller_users")
-    .update(updates)
-    .eq("id", tallerId)
-
-  if (updateError) {
-    console.error("Error extending subscription:", updateError)
+    return { success: true, nuevaFecha: nuevaFecha.toISOString(), error: null }
+  } catch (error) {
+    console.error("Error extending subscription:", error)
     return { success: false, nuevaFecha: null, error: "Error al extender acceso" }
   }
-
-  return { success: true, nuevaFecha: nuevaFecha.toISOString(), error: null }
 }
 
 // ─── cambiarEstatus ───────────────────────────────────────────────────────────
 
 /**
  * Activa o suspende el acceso de un taller.
- * Activar sin fecha vigente establece +30 días por defecto.
+ * Activar sin fecha vigente establece +30 dias por defecto.
  */
 export async function cambiarEstatus(
   tallerId: string,
   nuevoEstatus: "activo" | "suspendido"
 ): Promise<{ success: boolean; error: string | null }> {
   await requireAdmin()
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
 
-  const updates: Record<string, unknown> = { plan_tipo: nuevoEstatus }
-
-  if (nuevoEstatus === "activo") {
-    // If no valid expiry date, default to 30 days from today
-    const { data: taller } = await supabase
-      .from("taller_users")
-      .select("fecha_vencimiento_plan")
-      .eq("id", tallerId)
-      .single()
-
-    const existingExpiry = taller?.fecha_vencimiento_plan
-      ? new Date(taller.fecha_vencimiento_plan)
-      : null
-
-    if (!existingExpiry || existingExpiry < new Date()) {
-      const nuevaFecha = new Date()
-      nuevaFecha.setDate(nuevaFecha.getDate() + 30)
-      updates.fecha_vencimiento_plan = nuevaFecha.toISOString()
+    if (nuevoEstatus === "activo") {
+      const rows = await prisma.$queryRawUnsafe<Array<{ fecha_vencimiento_plan: string | null }>>(
+        "SELECT fecha_vencimiento_plan FROM taller_users WHERE id = $1 LIMIT 1",
+        tallerId,
+      )
+      const existingExpiry = rows[0]?.fecha_vencimiento_plan ? new Date(rows[0].fecha_vencimiento_plan) : null
+      if (!existingExpiry || existingExpiry < new Date()) {
+        const nuevaFecha = new Date()
+        nuevaFecha.setDate(nuevaFecha.getDate() + 30)
+        await prisma.$executeRawUnsafe(
+          "UPDATE taller_users SET plan_tipo = $1, fecha_vencimiento_plan = $2 WHERE id = $3",
+          nuevoEstatus, nuevaFecha.toISOString(), tallerId,
+        )
+        return { success: true, error: null }
+      }
     }
-  }
 
-  const { error } = await supabase
-    .from("taller_users")
-    .update(updates)
-    .eq("id", tallerId)
-
-  if (error) {
+    await prisma.$executeRawUnsafe(
+      "UPDATE taller_users SET plan_tipo = $1 WHERE id = $2",
+      nuevoEstatus, tallerId,
+    )
+    return { success: true, error: null }
+  } catch (error) {
     console.error("Error changing status:", error)
     return { success: false, error: "Error al cambiar estatus" }
   }
-
-  return { success: true, error: null }
 }
 
 // ─── resetPasswordAdmin ───────────────────────────────────────────────────────
@@ -354,26 +320,20 @@ export async function resetPasswordAdmin(
   tallerId: string
 ): Promise<{ success: boolean; resetToken?: string; error: string | null }> {
   await requireAdmin()
-  const { randomBytes } = await import("crypto")
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
+    const resetToken = randomBytes(32).toString("hex")
+    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000)
 
-  const resetToken = randomBytes(32).toString("hex")
-  const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000)
-
-  const { error } = await supabase
-    .from("taller_users")
-    .update({
-      reset_token: resetToken,
-      reset_expires_at: tokenExpiry.toISOString(),
-    })
-    .eq("id", tallerId)
-
-  if (error) {
+    await prisma.$executeRawUnsafe(
+      "UPDATE taller_users SET reset_token = $1, reset_expires_at = $2 WHERE id = $3",
+      resetToken, tokenExpiry.toISOString(), tallerId,
+    )
+    return { success: true, resetToken, error: null }
+  } catch (error) {
     console.error("Error resetting password:", error)
-    return { success: false, error: "Error al resetear contraseña" }
+    return { success: false, error: "Error al resetear contrasena" }
   }
-
-  return { success: true, resetToken, error: null }
 }
 
 // ─── deleteTallerAccount ──────────────────────────────────────────────────────
@@ -382,27 +342,23 @@ export async function deleteTallerAccount(
   tallerId: string
 ): Promise<{ success: boolean; error: string | null }> {
   await requireAdmin()
-  const supabase = await createClient()
+  try {
+    const prisma = getPrismaClient()
 
-  // Cascade delete tenant data first
-  await Promise.allSettled([
-    supabase.from("cambios_reparaciones").delete().eq("taller_id", tallerId),
-    supabase.from("reparaciones").delete().eq("taller_id", tallerId),
-    supabase.from("clientes").delete().eq("taller_id", tallerId),
-    supabase.from("tecnicos").delete().eq("taller_id", tallerId),
-    supabase.from("configuracion_taller").delete().eq("taller_id", tallerId),
-    supabase.from("ajustes_taller").delete().eq("taller_id", tallerId),
-    supabase.from("productos").delete().eq("taller_id", tallerId),
-    supabase.from("ventas").delete().eq("taller_id", tallerId),
-    supabase.from("caja").delete().eq("taller_id", tallerId),
-  ])
+    const tables = [
+      "cambios_reparaciones", "reparaciones", "clientes", "tecnicos",
+      "configuracion_taller", "ajustes_taller", "productos", "ventas", "caja",
+    ]
+    for (const table of tables) {
+      try {
+        await prisma.$executeRawUnsafe(`DELETE FROM ${table} WHERE taller_id = $1`, tallerId)
+      } catch { /* tabla puede no existir */ }
+    }
 
-  const { error } = await supabase.from("taller_users").delete().eq("id", tallerId)
-
-  if (error) {
+    await prisma.$executeRawUnsafe("DELETE FROM taller_users WHERE id = $1", tallerId)
+    return { success: true, error: null }
+  } catch (error) {
     console.error("Error deleting taller:", error)
     return { success: false, error: "Error al eliminar cuenta" }
   }
-
-  return { success: true, error: null }
 }

@@ -2,7 +2,7 @@
 
 import { randomInt } from "crypto"
 import { cookies } from "next/headers"
-import { createAdminClient } from "@/lib/supabase/admin"
+import { getPrismaClient } from "@/lib/prisma"
 import { sendAdminOTPEmail } from "@/lib/email/send"
 
 const OTP_TTL_MINUTES = 10
@@ -36,16 +36,33 @@ async function requireAdmin(): Promise<string> {
     throw new AdminAuthError("ADMIN_UNAUTHORIZED")
   }
 
-  // Double-check against DB
-  const supabase = await createAdminClient()
-  const { data, error } = await supabase
-    .from("taller_users")
-    .select("es_admin")
-    .eq("id", tallerId)
-    .single()
+  try {
+    const prisma = getPrismaClient()
+    const rows = await prisma.$queryRawUnsafe<Array<{ es_admin: boolean }>>(
+      "SELECT es_admin FROM taller_users WHERE id = $1 LIMIT 1",
+      tallerId,
+    )
+    if (!rows[0]?.es_admin) {
+      throw new AdminAuthError("ADMIN_UNAUTHORIZED")
+    }
+  } catch (error) {
+    if (error instanceof AdminAuthError) throw error
 
-  if (error || !data?.es_admin) {
-    throw new AdminAuthError("ADMIN_UNAUTHORIZED")
+    // ── Legacy Supabase fallback ──────────────────────────────────────────────
+    try {
+      const { createAdminClient } = await import("@/lib/supabase/admin")
+      const supabase = await createAdminClient()
+      const { data, error } = await supabase
+        .from("taller_users")
+        .select("es_admin")
+        .eq("id", tallerId)
+        .single()
+      if (error || !data?.es_admin) {
+        throw new AdminAuthError("ADMIN_UNAUTHORIZED")
+      }
+    } catch {
+      throw new AdminAuthError("ADMIN_UNAUTHORIZED")
+    }
   }
 
   return tallerId
@@ -62,68 +79,55 @@ export async function sendAdminOTP(): Promise<{
 }> {
   try {
     const tallerId = await requireAdmin()
-    const supabase = await createAdminClient()
+    const prisma = getPrismaClient()
 
-    const { data: adminUser, error: userError } = await supabase
-      .from("taller_users")
-      .select("email")
-      .eq("id", tallerId)
-      .single()
+    const userRows = await prisma.$queryRawUnsafe<Array<{ email: string }>>(
+      "SELECT email FROM taller_users WHERE id = $1 LIMIT 1",
+      tallerId,
+    )
 
-    if (userError || !adminUser?.email) {
-      console.error("[admin-otp] No se pudo obtener email del admin:", userError)
+    if (!userRows[0]?.email) {
       return { success: false, error: "No se pudo obtener el correo del administrador. Verifica tu perfil." }
     }
 
+    const adminEmail = userRows[0].email
     const windowStart = new Date(Date.now() - OTP_WINDOW_MINUTES * 60 * 1000).toISOString()
-    const { count, error: countError } = await supabase
-      .from("admin_otp_codes")
-      .select("*", { count: "exact", head: true })
-      .eq("admin_id", tallerId)
-      .gte("created_at", windowStart)
 
-    if (countError) {
-      console.error("[admin-otp] Rate-limit query failed:", countError)
-      return { success: false, error: "Error de base de datos al verificar límites. Contacta soporte." }
-    }
+    const countRows = await prisma.$queryRawUnsafe<Array<{ count: number }>>(
+      "SELECT COUNT(*)::int AS count FROM admin_otp_codes WHERE admin_id = $1 AND created_at >= $2",
+      tallerId, windowStart,
+    )
 
-    if ((count ?? 0) >= OTP_MAX_PER_WINDOW) {
+    if ((countRows[0]?.count ?? 0) >= OTP_MAX_PER_WINDOW) {
       return {
         success: false,
-        error: `Demasiados intentos. Espera ${OTP_WINDOW_MINUTES} minutos antes de solicitar otro código.`,
+        error: `Demasiados intentos. Espera ${OTP_WINDOW_MINUTES} minutos antes de solicitar otro codigo.`,
       }
     }
 
-    await supabase.from("admin_otp_codes").delete().eq("admin_id", tallerId)
+    await prisma.$executeRawUnsafe("DELETE FROM admin_otp_codes WHERE admin_id = $1", tallerId)
 
     const code = String(randomInt(0, 100_000_000)).padStart(8, "0")
     const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000).toISOString()
 
-    const { error: insertError } = await supabase.from("admin_otp_codes").insert({
-      admin_id: tallerId,
-      code,
-      expires_at: expiresAt,
-    })
+    await prisma.$executeRawUnsafe(
+      "INSERT INTO admin_otp_codes (admin_id, code, expires_at) VALUES ($1, $2, $3)",
+      tallerId, code, expiresAt,
+    )
 
-    if (insertError) {
-      console.error("[admin-otp] Insert OTP failed:", insertError)
-      return { success: false, error: "Error al guardar el código. Contacta soporte." }
-    }
-
-    const emailResult = await sendAdminOTPEmail(adminUser.email, code)
+    const emailResult = await sendAdminOTPEmail(adminEmail, code)
     if (!emailResult.success) {
-      console.error("[admin-otp] Email send failed:", emailResult.error)
-      await supabase.from("admin_otp_codes").delete().eq("admin_id", tallerId)
-      return { success: false, error: `Error al enviar el correo: ${emailResult.error}. Verifica la configuración de RESEND_API_KEY.` }
+      await prisma.$executeRawUnsafe("DELETE FROM admin_otp_codes WHERE admin_id = $1", tallerId)
+      return { success: false, error: `Error al enviar el correo: ${emailResult.error}. Verifica la configuracion de RESEND_API_KEY.` }
     }
 
-    return { success: true, maskedEmail: maskEmail(adminUser.email) }
+    return { success: true, maskedEmail: maskEmail(adminEmail) }
   } catch (err) {
     if (err instanceof AdminAuthError) {
       return { success: false, error: "SESSION_EXPIRED" }
     }
     console.error("[admin-otp] Unhandled error in sendAdminOTP:", err)
-    return { success: false, error: "Error inesperado del servidor. Contacta soporte técnico." }
+    return { success: false, error: "Error inesperado del servidor. Contacta soporte tecnico." }
   }
 }
 
@@ -139,55 +143,41 @@ export async function verifyAdminOTP(code: string): Promise<{
     const tallerId = await requireAdmin()
 
     if (!code || !/^\d{8}$/.test(code.trim())) {
-      return { success: false, error: "El código debe tener exactamente 8 dígitos." }
+      return { success: false, error: "El codigo debe tener exactamente 8 digitos." }
     }
 
-    const supabase = await createAdminClient()
+    const prisma = getPrismaClient()
 
-    const { data: otpRow, error } = await supabase
-      .from("admin_otp_codes")
-      .select("id, code, expires_at, attempts")
-      .eq("admin_id", tallerId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single()
+    const otpRows = await prisma.$queryRawUnsafe<Array<{ id: string; code: string; expires_at: string; attempts: number }>>(
+      "SELECT id, code, expires_at, attempts FROM admin_otp_codes WHERE admin_id = $1 ORDER BY created_at DESC LIMIT 1",
+      tallerId,
+    )
 
-    if (error || !otpRow) {
-      return {
-        success: false,
-        error: "No hay un código activo. Solicita uno nuevo.",
-      }
+    const otpRow = otpRows[0]
+    if (!otpRow) {
+      return { success: false, error: "No hay un codigo activo. Solicita uno nuevo." }
     }
 
     if (new Date(otpRow.expires_at) < new Date()) {
-      await supabase.from("admin_otp_codes").delete().eq("id", otpRow.id)
-      return {
-        success: false,
-        error: "El código ha expirado. Solicita uno nuevo.",
-      }
+      await prisma.$executeRawUnsafe("DELETE FROM admin_otp_codes WHERE id = $1", otpRow.id)
+      return { success: false, error: "El codigo ha expirado. Solicita uno nuevo." }
     }
 
     if ((otpRow.attempts ?? 0) >= OTP_MAX_ATTEMPTS) {
-      await supabase.from("admin_otp_codes").delete().eq("id", otpRow.id)
-      return {
-        success: false,
-        error: "Demasiados intentos fallidos. Solicita un nuevo código.",
-      }
+      await prisma.$executeRawUnsafe("DELETE FROM admin_otp_codes WHERE id = $1", otpRow.id)
+      return { success: false, error: "Demasiados intentos fallidos. Solicita un nuevo codigo." }
     }
 
     if (otpRow.code !== code.trim()) {
-      // Increment attempt counter
-      await supabase
-        .from("admin_otp_codes")
-        .update({ attempts: (otpRow.attempts ?? 0) + 1 })
-        .eq("id", otpRow.id)
-      return { success: false, error: "Código incorrecto. Verifica e intenta de nuevo." }
+      await prisma.$executeRawUnsafe(
+        "UPDATE admin_otp_codes SET attempts = COALESCE(attempts, 0) + 1 WHERE id = $1",
+        otpRow.id,
+      )
+      return { success: false, error: "Codigo incorrecto. Verifica e intenta de nuevo." }
     }
 
-    // Consume the code
-    await supabase.from("admin_otp_codes").delete().eq("admin_id", tallerId)
+    await prisma.$executeRawUnsafe("DELETE FROM admin_otp_codes WHERE admin_id = $1", tallerId)
 
-    // Issue verified session cookie
     const cookieStore = await cookies()
     cookieStore.set(ADMIN_VERIFIED_COOKIE, "1", {
       httpOnly: true,

@@ -394,6 +394,44 @@ async function ensureAllPosTablesExist() {
     $$;
   `)
 
+  // ─── Admin system tables ────────────────────────────────────────────────────
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS taller_users (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      email text UNIQUE NOT NULL,
+      password_hash text NOT NULL,
+      nombre_taller text NOT NULL DEFAULT 'Admin',
+      nombre_propietario text,
+      email_verified boolean NOT NULL DEFAULT false,
+      verification_token text,
+      reset_password_token text,
+      reset_token text,
+      reset_expires_at timestamptz,
+      plan_tipo text DEFAULT 'Prueba',
+      fecha_vencimiento_plan timestamptz DEFAULT (now() + INTERVAL '30 days'),
+      es_admin boolean NOT NULL DEFAULT false,
+      plan_activo boolean DEFAULT false,
+      is_pro boolean DEFAULT false,
+      activo boolean DEFAULT true,
+      session_version integer DEFAULT 1,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS admin_otp_codes (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      admin_id text NOT NULL,
+      code text NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      expires_at timestamptz NOT NULL,
+      attempts integer DEFAULT 0,
+      CONSTRAINT admin_otp_code_format CHECK (code ~ '^[0-9]{8}$')
+    );
+  `)
+
   _allPosTablesReady = true
 }
 
