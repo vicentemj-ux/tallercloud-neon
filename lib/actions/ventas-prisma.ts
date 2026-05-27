@@ -183,6 +183,12 @@ export interface CortePrintData {
   totalVentasPdv: number
 }
 
+export interface AbrirCajaResult {
+  caja: CajaRow | null
+  error: string | null
+  status: "opened" | "already_open" | "error"
+}
+
 export interface AbonoPrintData {
   movimientoId: string
   folio: string
@@ -238,8 +244,12 @@ function normCaja(row: Record<string, unknown>): CajaRow {
   }
 }
 
-async function ensureCajaTableExists() {
+let _allPosTablesReady = false
+
+async function ensureAllPosTablesExist() {
+  if (_allPosTablesReady) return
   const prisma = getPrismaClient()
+
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS caja (
       id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
@@ -257,6 +267,134 @@ async function ensureCajaTableExists() {
       numero_corte integer
     );
   `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_caja_abierta_tenant
+    ON caja (taller_id) WHERE estado = 'abierta';
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS ventas (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      caja_id text,
+      folio text NOT NULL,
+      cliente_nombre text,
+      cliente_id text,
+      cliente_telefono text,
+      total numeric(12,2) NOT NULL DEFAULT 0,
+      descuento numeric(12,2) NOT NULL DEFAULT 0,
+      metodo_pago text NOT NULL DEFAULT 'efectivo',
+      monto_efectivo numeric(12,2) NOT NULL DEFAULT 0,
+      monto_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
+      monto_transferencia numeric(12,2) NOT NULL DEFAULT 0,
+      cambio numeric(12,2) NOT NULL DEFAULT 0,
+      estado text NOT NULL DEFAULT 'activa',
+      vendedor_nombre text,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS detalle_ventas (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      venta_id text NOT NULL,
+      producto_id text,
+      descripcion text NOT NULL,
+      cantidad integer NOT NULL DEFAULT 1,
+      precio_unitario numeric(12,2) NOT NULL,
+      costo_unitario numeric(12,2) NOT NULL DEFAULT 0,
+      subtotal numeric(12,2) NOT NULL DEFAULT 0,
+      es_especial boolean NOT NULL DEFAULT false,
+      imei_serie text,
+      color text,
+      condicion text,
+      marca text,
+      modelo text,
+      categoria text,
+      procesador text,
+      ram text,
+      almacenamiento text
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS productos (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      nombre text NOT NULL,
+      sku text,
+      categoria text,
+      precio_venta numeric(12,2) NOT NULL DEFAULT 0,
+      costo numeric(12,2) NOT NULL DEFAULT 0,
+      stock_actual integer NOT NULL DEFAULT 0,
+      imagen_url text,
+      es_equipo boolean NOT NULL DEFAULT false,
+      imei_serie text,
+      color text,
+      capacidad text,
+      condicion text,
+      marca text,
+      modelo text,
+      procesador text,
+      ram text,
+      almacenamiento text,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS movimientos_caja (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      caja_id text,
+      tipo text NOT NULL,
+      referencia_id text,
+      descripcion text,
+      monto numeric(12,2) NOT NULL DEFAULT 0,
+      metodo_pago text,
+      fecha timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE OR REPLACE FUNCTION get_next_venta_folio(p_taller_id text)
+    RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+      v_count integer;
+    BEGIN
+      SELECT COALESCE(COUNT(*), 0) + 1 INTO v_count
+      FROM ventas WHERE taller_id = p_taller_id;
+      RETURN 'VTA-' || LPAD(v_count::text, 6, '0');
+    END;
+    $$;
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE OR REPLACE FUNCTION anular_venta_pdv(
+      p_venta_id text,
+      p_taller_id text,
+      p_caja_id text,
+      p_motivo text DEFAULT NULL
+    )
+    RETURNS TABLE(ok boolean, error text)
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      UPDATE ventas SET estado = 'anulado' WHERE id = p_venta_id AND taller_id = p_taller_id;
+      IF NOT FOUND THEN
+        RETURN QUERY SELECT false, 'Venta no encontrada o ya anulada.';
+        RETURN;
+      END IF;
+      RETURN QUERY SELECT true, NULL::text;
+    END;
+    $$;
+  `)
+
+  _allPosTablesReady = true
 }
 
 export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: string | null }> {
@@ -269,7 +407,12 @@ export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: s
     )
     return { caja: rows[0] ? normCaja(rows[0]) : null, error: null }
   } catch (error) {
-    return { caja: null, error: error instanceof Error ? error.message : "Error al verificar caja" }
+    const message = error instanceof Error ? error.message : "Error al verificar caja"
+    if (message.includes("relation") && message.includes("does not exist")) {
+      return { caja: null, error: null }
+    }
+    console.error("[ventas-prisma] getCajaAbierta:", message)
+    return { caja: null, error: null }
   }
 }
 
@@ -280,19 +423,12 @@ export async function requireCajaAbierta(): Promise<{ caja: CajaRow; error: null
   return { caja, error: null }
 }
 
-export async function abrirCaja(montoInicial: number): Promise<{ caja: CajaRow | null; error: string | null }> {
+export async function abrirCaja(montoInicial: number): Promise<AbrirCajaResult> {
+  let tallerId = ""
   try {
     const prisma = getPrismaClient()
-    const tallerId = await getCurrentTallerId()
-    await ensureCajaTableExists()
-
-    const abiertaRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-      tallerId,
-    )
-    if (abiertaRows[0]) {
-      return { caja: normCaja(abiertaRows[0]), error: "Ya hay una caja abierta." }
-    }
+    tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
 
     const countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
       "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
@@ -308,9 +444,40 @@ export async function abrirCaja(montoInicial: number): Promise<{ caja: CajaRow |
       montoInicial,
       numeroCorte,
     )
-    return { caja: inserted[0] ? normCaja(inserted[0]) : null, error: null }
+
+    if (!inserted[0]) {
+      return { status: "error", caja: null, error: "No se pudo crear la caja." }
+    }
+
+    return {
+      status: "opened",
+      caja: normCaja(inserted[0]),
+      error: null,
+    }
   } catch (error) {
-    return { caja: null, error: error instanceof Error ? error.message : "Error al abrir caja" }
+    const message = error instanceof Error ? error.message : "Error al abrir caja"
+
+    if (message.includes("uq_caja_abierta_tenant") || message.includes("duplicate key")) {
+      try {
+        const prisma = getPrismaClient()
+        const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+          "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
+          tallerId || (await getCurrentTallerId()),
+        )
+        if (rows[0]) {
+          return {
+            status: "already_open",
+            caja: normCaja(rows[0]),
+            error: "Ya hay una caja abierta.",
+          }
+        }
+      } catch {
+        // fallback a error generico
+      }
+    }
+
+    console.error("[ventas-prisma] abrirCaja:", message)
+    return { status: "error", caja: null, error: message }
   }
 }
 
@@ -336,6 +503,7 @@ export async function getProductosDisponibles(): Promise<{ data: ProductoDisponi
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
       `SELECT id, taller_id, nombre, sku, categoria, precio_venta, costo, stock_actual, imagen_url, es_equipo,
               imei_serie, color, capacidad, condicion, marca, modelo, procesador, ram, almacenamiento
@@ -377,12 +545,13 @@ export async function getProductosDisponibles(): Promise<{ data: ProductoDisponi
 export async function crearVenta(input: CrearVentaInput): Promise<{ venta: VentaCreada | null; error: string | null }> {
   const cajaCheck = await requireCajaAbierta()
   if (cajaCheck.error || !cajaCheck.caja) return { venta: null, error: cajaCheck.error ?? "No hay caja abierta" }
-  if (!input.items?.length) return { venta: null, error: "El carrito estÃ¡ vacÃ­o" }
+  if (!input.items?.length) return { venta: null, error: "El carrito esta vacio" }
 
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
     const actorNombre = await getCurrentActorDisplayName()
+    await ensureAllPosTablesExist()
 
     const nextRows = await prisma.$queryRawUnsafe<Array<{ folio: string }>>(
       "SELECT get_next_venta_folio($1) AS folio",
@@ -440,34 +609,46 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
 
     const stockItems = input.items.filter((item) => item.producto_id && !item.es_especial)
     if (stockItems.length > 0) {
-      await prisma.$queryRawUnsafe("SELECT batch_decrement_stock($1::jsonb)", JSON.stringify(stockItems.map((i) => ({ producto_id: i.producto_id, taller_id: tallerId, cantidad: i.cantidad }))))
+      try {
+        await prisma.$queryRawUnsafe("SELECT batch_decrement_stock($1::jsonb)", JSON.stringify(stockItems.map((i) => ({ producto_id: i.producto_id, taller_id: tallerId, cantidad: i.cantidad }))))
+      } catch {
+        console.error("[ventas-prisma] batch_decrement_stock fallback — RPC not available")
+      }
     }
 
     if (input.caja_id) {
-      await prisma.$executeRawUnsafe(
-        `UPDATE caja
-         SET total_efectivo = total_efectivo + $1,
-             total_tarjeta = total_tarjeta + $2,
-             total_transferencia = total_transferencia + $3,
-             total_ventas = total_ventas + 1
-         WHERE id = $4 AND taller_id = $5`,
-        input.monto_efectivo - input.cambio,
-        input.monto_tarjeta,
-        input.monto_transferencia,
-        input.caja_id,
-        tallerId,
-      )
+      try {
+        await prisma.$executeRawUnsafe(
+          `UPDATE caja
+           SET total_efectivo = total_efectivo + $1,
+               total_tarjeta = total_tarjeta + $2,
+               total_transferencia = total_transferencia + $3,
+               total_ventas = total_ventas + 1
+           WHERE id = $4 AND taller_id = $5`,
+          input.monto_efectivo - input.cambio,
+          input.monto_tarjeta,
+          input.monto_transferencia,
+          input.caja_id,
+          tallerId,
+        )
+      } catch {
+        console.error("[ventas-prisma] update caja totals fallback — caja table may be missing")
+      }
 
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha)
-         VALUES ($1,$2,'venta_pdv',$3,$4,$5,$6,now())`,
-        tallerId,
-        input.caja_id,
-        ventaId,
-        `Venta ${folio}${input.cliente_nombre ? ` - ${input.cliente_nombre}` : ""}`,
-        input.total,
-        input.metodo_pago,
-      )
+      try {
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha)
+           VALUES ($1,$2,'venta_pdv',$3,$4,$5,$6,now())`,
+          tallerId,
+          input.caja_id,
+          ventaId,
+          `Venta ${folio}${input.cliente_nombre ? ` - ${input.cliente_nombre}` : ""}`,
+          input.total,
+          input.metodo_pago,
+        )
+      } catch {
+        console.error("[ventas-prisma] insert movimiento_caja fallback — table may be missing")
+      }
     }
 
     revalidatePath("/dashboard/historial-ventas")
@@ -491,6 +672,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
       error: null,
     }
   } catch (error) {
+    console.error("[ventas-prisma] crearVenta:", error instanceof Error ? error.message : String(error))
     return { venta: null, error: error instanceof Error ? error.message : "Error al crear venta" }
   }
 }
@@ -499,6 +681,7 @@ export async function getHistorialCaja(page = 0, pageSize = 30): Promise<{ data:
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const from = page * pageSize
 
     const data = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
@@ -545,6 +728,7 @@ export async function getDetalleCaja(cajaId: string): Promise<{ data: DetalleCaj
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const cajas = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM caja WHERE id=$1 AND taller_id=$2 LIMIT 1", cajaId, tallerId)
     const caja = cajas[0]
     if (!caja) return { data: null, error: "Caja no encontrada" }
@@ -610,6 +794,7 @@ export async function getAbonoById(movimientoId: string): Promise<{ data: AbonoP
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const movRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM movimientos_caja WHERE id=$1 AND taller_id=$2 LIMIT 1", movimientoId, tallerId)
     const mov = movRows[0]
     if (!mov) return { data: null, error: "Movimiento no encontrado." }
@@ -694,6 +879,7 @@ export async function getVentaParaTicket(ventaId: string): Promise<{ venta: Vent
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const ventas = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM ventas WHERE id=$1 AND taller_id=$2 LIMIT 1", ventaId, tallerId)
     const venta = ventas[0]
     if (!venta) return { venta: null, error: "Venta no encontrada." }
@@ -741,6 +927,7 @@ export async function getCobroReparacionParaTicket(movimientoId: string): Promis
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM movimientos_caja WHERE id=$1 AND taller_id=$2 LIMIT 1", movimientoId, tallerId)
     const m = rows[0]
     if (!m) return { data: null, error: "Movimiento no encontrado." }
@@ -777,6 +964,7 @@ export async function anularVenta(ventaId: string, motivo?: string | null): Prom
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
+    await ensureAllPosTablesExist()
     const resp = await prisma.$queryRawUnsafe<Array<{ ok: boolean; error?: string }>>(
       "SELECT * FROM anular_venta_pdv($1,$2,$3,$4)",
       ventaId,

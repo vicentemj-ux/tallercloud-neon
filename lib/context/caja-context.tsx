@@ -146,15 +146,22 @@ export function OpenCajaModal({ defaultFondo = "500", onSuccess }: OpenCajaModal
   const handleOpen = async () => {
     const val = parseFloat(monto.replace(",", "."))
     if (isNaN(val) || val < 0) {
-      setError("Ingresa un monto válido")
+      setError("Ingresa un monto valido")
       return
     }
     setLoading(true)
     setError("")
     try {
       const result = await abrirCaja(val)
-      if (result.error || !result.caja) {
+      if (result.status === "error" || !result.caja) {
         setError(result.error ?? "Error al abrir caja")
+        return
+      }
+      if (result.status === "already_open") {
+        // otra pestaña/conexión ya abrió la caja — cerrar modal y refrescar
+        setShowOpenModal(false)
+        window.dispatchEvent(new CustomEvent("caja:abierta"))
+        onSuccess?.()
         return
       }
       setShowOpenModal(false)
