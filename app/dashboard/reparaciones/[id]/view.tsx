@@ -21,6 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
+import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
@@ -210,7 +211,7 @@ export default function ReparacionDetailPage() {
         )}
 
         {/* Monitor de Utilidad Operativa */}
-        {repair.estimatedPrice != null && (
+        {!PRO_FEATURES_TEMP_DISABLED && repair.estimatedPrice != null && (
           <MonitorUtilidadOperativa
             repairId={repair.id}
             folio={repair.folio}

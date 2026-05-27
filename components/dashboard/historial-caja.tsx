@@ -35,6 +35,7 @@ import { StatusBadgeFinancial } from "@/components/dashboard/status-badge-financ
 import { TicketCorteTemplate } from "@/components/print-templates"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { toast } from "@/hooks/use-toast"
+import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -234,16 +235,18 @@ function DetalleModal({ data, onClose }: { data: DetalleCajaData; onClose: () =>
               </a>
             </Button>
           ) : null}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full sm:flex-1 gap-2 border-blue-200 bg-blue-50/50 text-blue-800 hover:bg-blue-100/80 hover:text-blue-900"
-            onClick={handleReenviarEmail}
-            disabled={sendingEmail}
-          >
-            {sendingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-            Reenviar correo
-          </Button>
+          {!PRO_FEATURES_TEMP_DISABLED && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:flex-1 gap-2 border-blue-200 bg-blue-50/50 text-blue-800 hover:bg-blue-100/80 hover:text-blue-900"
+              onClick={handleReenviarEmail}
+              disabled={sendingEmail}
+            >
+              {sendingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+              Reenviar correo
+            </Button>
+          )}
           <Button
             type="button"
             variant="outline"
