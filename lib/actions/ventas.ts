@@ -167,7 +167,7 @@ async function ensureCajaTableExists() {
   const prisma = getPrismaClient()
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS caja (
-      id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
       taller_id text NOT NULL,
       monto_inicial numeric(12,2) NOT NULL DEFAULT 0,
       monto_cierre numeric(12,2),
@@ -969,10 +969,24 @@ export async function abrirCaja(
       try {
         const prisma = getPrismaClient()
         const tallerId = await getCurrentTallerId()
-        const countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
-          "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
-          tallerId
-        )
+        let countRows: Array<{ total: number }>
+        try {
+          countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
+            "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
+            tallerId
+          )
+        } catch (countErr) {
+          const msg = countErr instanceof Error ? countErr.message.toLowerCase() : String(countErr).toLowerCase()
+          if (msg.includes("relation") || msg.includes("does not exist") || msg.includes("42p01")) {
+            await ensureCajaTableExists()
+            countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
+              "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
+              tallerId
+            )
+          } else {
+            throw countErr
+          }
+        }
         const numeroCorte = (countRows[0]?.total ?? 0) + 1
 
         try {
