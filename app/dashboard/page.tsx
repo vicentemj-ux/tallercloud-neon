@@ -1,6 +1,5 @@
 import { OrdersTable } from "@/components/dashboard/orders-table"
 import { NewRepairButton } from "@/components/dashboard/new-repair-button"
-import { VerificationGate } from "@/components/dashboard/equipo/VerificationGate"
 import { getDashboardMvpData } from "@/lib/actions/dashboard-prisma"
 import { getDashboardSubscriptionBannerContext } from "@/lib/actions/settings-prisma"
 import { Button } from "@/components/ui/button"
@@ -82,7 +81,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-50">
-      <VerificationGate />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:px-8">
 
         {/* ── HEADER ── */}

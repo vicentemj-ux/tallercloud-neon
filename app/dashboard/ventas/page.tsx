@@ -39,7 +39,7 @@ import {
   type VentaCreada,
 } from "@/lib/actions/ventas"
 import { HistorialCaja } from "@/components/dashboard/historial-caja"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { ArqueoModal } from "@/components/dashboard/ventas/ArqueoModal"
 import { CartPanel } from "@/components/dashboard/ventas/CartPanel"
 import { DescuentoModal } from "@/components/dashboard/ventas/DescuentoModal"
