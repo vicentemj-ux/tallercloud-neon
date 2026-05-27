@@ -36,33 +36,10 @@ async function requireAdmin(): Promise<string> {
     throw new AdminAuthError("ADMIN_UNAUTHORIZED")
   }
 
-  try {
-    const prisma = getPrismaClient()
-    const rows = await prisma.$queryRawUnsafe<Array<{ es_admin: boolean }>>(
-      "SELECT es_admin FROM taller_users WHERE id = $1 LIMIT 1",
-      tallerId,
-    )
-    if (!rows[0]?.es_admin) {
-      throw new AdminAuthError("ADMIN_UNAUTHORIZED")
-    }
-  } catch (error) {
-    if (error instanceof AdminAuthError) throw error
-
-    // ── Legacy Supabase fallback ──────────────────────────────────────────────
-    try {
-      const { createAdminClient } = await import("@/lib/supabase/admin")
-      const supabase = await createAdminClient()
-      const { data, error } = await supabase
-        .from("taller_users")
-        .select("es_admin")
-        .eq("id", tallerId)
-        .single()
-      if (error || !data?.es_admin) {
-        throw new AdminAuthError("ADMIN_UNAUTHORIZED")
-      }
-    } catch {
-      throw new AdminAuthError("ADMIN_UNAUTHORIZED")
-    }
+  const prisma = getPrismaClient()
+  const user = await prisma.user.findUnique({ where: { id: tallerId } })
+  if (!user || user.role !== "ADMIN") {
+    throw new AdminAuthError("ADMIN_UNAUTHORIZED")
   }
 
   return tallerId

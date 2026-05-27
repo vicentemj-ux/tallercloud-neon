@@ -271,26 +271,19 @@ export async function loginAdmin(email: string, password: string) {
     return { success: false, error: `Demasiados intentos. Espera ${rl.retryAfterMinutes} minutos.` }
   }
 
-  // ── Try Prisma/Neon first ──────────────────────────────────────────────────
   try {
     const { getPrismaClient } = await import("@/lib/prisma")
     const prisma = getPrismaClient()
 
-    const rows = await prisma.$queryRawUnsafe<Array<{ id: string; email: string; password_hash: string; nombre_taller: string; es_admin: boolean }>>(
-      "SELECT id, email, password_hash, nombre_taller, es_admin FROM taller_users WHERE email = $1 LIMIT 1",
-      email.toLowerCase().trim(),
-    )
+    const user = await prisma.user.findFirst({
+      where: { email: email.toLowerCase().trim(), role: "ADMIN" },
+    })
 
-    const user = rows[0]
     if (!user) {
       return { success: false, error: "Email o contraseña incorrectos" }
     }
 
-    if (!user.es_admin) {
-      return { success: false, error: "Acceso denegado. Solo administradores del sistema pueden acceder." }
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password_hash)
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash)
     if (!passwordMatch) {
       return { success: false, error: "Email o contraseña incorrectos" }
     }
@@ -302,7 +295,7 @@ export async function loginAdmin(email: string, password: string) {
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
     })
-    cookieStore.set("tallerName", encodeURIComponent(user.nombre_taller), {
+    cookieStore.set("tallerName", encodeURIComponent(user.nombre), {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
@@ -317,56 +310,8 @@ export async function loginAdmin(email: string, password: string) {
     })
 
     return { success: true }
-  } catch (prismaErr) {
-    console.error("[loginAdmin] Prisma fallback — trying Supabase legacy:", prismaErr)
-  }
-
-  // ── Legacy Supabase fallback ────────────────────────────────────────────────
-  try {
-    const supabase = await createClient()
-    const { data: user, error } = await supabase
-      .from("taller_users")
-      .select("id, email, password_hash, nombre_taller, es_admin")
-      .eq("email", email.toLowerCase().trim())
-      .single()
-
-    if (error || !user) {
-      return { success: false, error: "Email o contraseña incorrectos" }
-    }
-
-    if (!user.es_admin) {
-      return { success: false, error: "Acceso denegado. Solo administradores del sistema pueden acceder." }
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password_hash as string)
-    if (!passwordMatch) {
-      return { success: false, error: "Email o contraseña incorrectos" }
-    }
-
-    const cookieStore = await cookies()
-    cookieStore.set("tallerId", user.id, {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    cookieStore.set("tallerName", encodeURIComponent(user.nombre_taller), {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    cookieStore.set("isAdmin", "true", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    })
-
-    return { success: true }
-  } catch (supaErr) {
-    console.error("[loginAdmin] Supabase fallback fatal:", supaErr)
+  } catch (error) {
+    console.error("[loginAdmin] Prisma error:", error instanceof Error ? error.message : String(error))
     return { success: false, error: "Error interno. Contacta soporte." }
   }
 }
