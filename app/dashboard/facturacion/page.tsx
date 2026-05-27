@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { getDashboardSubscriptionBannerContext, getTallerSettings } from "@/lib/actions/settings"
+import { getDashboardSubscriptionBannerContext, getTallerSettings } from "@/lib/actions/settings-prisma"
 import { buildWhatsAppSendUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 import { CalendarCheck2, Check, RefreshCw, Sparkles } from "lucide-react"
 

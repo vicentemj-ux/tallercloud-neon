@@ -80,6 +80,13 @@ type CartItem = {
 
 type MetodoPago = "efectivo" | "tarjeta" | "transferencia" | "mixto"
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), ms)),
+  ])
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function fmt(n: number) {
@@ -222,10 +229,15 @@ function VentasPageContent() {
   // Load reparaciones on mount (eager fetch)
   useEffect(() => {
     setReparacionesLoading(true)
-    getReparacionesListas().then(({ data }) => {
-      if (data) setReparacionesListas(data)
-      setReparacionesLoading(false)
-    })
+    withTimeout(getReparacionesListas(), 15000, "getReparacionesListas")
+      .then(({ data }) => {
+        if (data) setReparacionesListas(data)
+      })
+      .catch((error) => {
+        console.error("[ventas] reparaciones load:", error)
+        setReparacionesListas([])
+      })
+      .finally(() => setReparacionesLoading(false))
   }, [])
 
   // ── Load productos on mount ────────────────────────────────────────────────
@@ -233,11 +245,18 @@ function VentasPageContent() {
     setProductosLoading(true)
     setProductosError(null)
     startFetch()
-    const { data, error } = await getProductosDisponibles()
-    setProductos(data)
-    if (error) setProductosError(error)
-    setProductosLoading(false)
-    stopFetch()
+    try {
+      const { data, error } = await withTimeout(getProductosDisponibles(), 15000, "getProductosDisponibles")
+      setProductos(data)
+      if (error) setProductosError(error)
+    } catch (error) {
+      console.error("[ventas] productos load:", error)
+      setProductos([])
+      setProductosError("No se pudo cargar inventario para venta.")
+    } finally {
+      setProductosLoading(false)
+      stopFetch()
+    }
   }, [startFetch, stopFetch])
 
   useEffect(() => {

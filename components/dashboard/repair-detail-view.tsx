@@ -34,7 +34,7 @@ import {
   type RepairDetail,
   type HistorialReparacionAuditRow,
 } from "@/lib/actions/repairs-prisma"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { StatusChangeConfirmDialog } from "@/components/dashboard/status-change-confirm-dialog"
 import { buildRepairStatusWhatsAppUrl } from "@/lib/whatsapp-repair-status"
 import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
@@ -79,6 +79,13 @@ import { DiagnosisProSummaryCard } from "@/components/dashboard/diagnosis-pro-su
 import { RepairPhotoGallery } from "@/components/dashboard/repair-photo-gallery"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
 import { safeNormalizeChecklistPro } from "@/lib/reparaciones/checklist-pro"
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), ms)),
+  ])
+}
 
 function getDeviceIcon(tipo: string | null | undefined) {
   const t = (tipo || "").toLowerCase()
@@ -247,26 +254,36 @@ export function RepairDetailView({
     setEstado(repair.status ?? "")
     const load = async () => {
       setIsLoadingDetail(true)
-      const [page, settingsRes] = await Promise.all([
-        getRepairDetailPageData(repair.id),
-        getTallerSettings(),
-      ])
-      if (settingsRes.settings?.nombre_taller) setNombreTallerSetting(settingsRes.settings.nombre_taller)
-      if (settingsRes.settings?.terminos_garantia?.trim()) {
-        const t = settingsRes.settings.terminos_garantia.trim()
-        setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}…` : t)
+      try {
+        const [page, settingsRes] = await Promise.all([
+          withTimeout(getRepairDetailPageData(repair.id), 15000, "getRepairDetailPageData"),
+          withTimeout(getTallerSettings(), 15000, "getTallerSettings"),
+        ])
+        if (settingsRes.settings?.nombre_taller) setNombreTallerSetting(settingsRes.settings.nombre_taller)
+        if (settingsRes.settings?.terminos_garantia?.trim()) {
+          const t = settingsRes.settings.terminos_garantia.trim()
+          setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}…` : t)
+        }
+        const data = page.detail
+        setDetail(data ?? null)
+        if (data) {
+          setPresupuesto(data.estimatedPrice?.toString() ?? "")
+          setEstado(data.status ?? repair.status ?? "")
+        }
+        setHistory(page.changes ?? [])
+        setHistorialAudit(page.historialAudit ?? [])
+        setGastos(page.gastos ?? [])
+        setServicios(page.servicios ?? [])
+      } catch (error) {
+        console.error("[repair-detail-view] load:", error)
+        toast({
+          title: "No se pudo cargar el detalle",
+          description: "Intenta recargar el folio.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoadingDetail(false)
       }
-      const data = page.detail
-      setDetail(data ?? null)
-      if (data) {
-        setPresupuesto(data.estimatedPrice?.toString() ?? "")
-        setEstado(data.status ?? repair.status ?? "")
-      }
-      setHistory(page.changes ?? [])
-      setHistorialAudit(page.historialAudit ?? [])
-      setGastos(page.gastos ?? [])
-      setServicios(page.servicios ?? [])
-      setIsLoadingDetail(false)
     }
     load()
   }, [repair?.id])

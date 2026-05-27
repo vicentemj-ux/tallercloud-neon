@@ -82,6 +82,13 @@ const CATEGORIA_COLORS: Record<string, string> = {
 
 const todayISO = () => new Date().toISOString().split("T")[0]
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), ms)),
+  ])
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function BitacoraGastosPage() {
@@ -104,9 +111,20 @@ export default function BitacoraGastosPage() {
 
   const loadGastos = useCallback(async () => {
     setIsLoading(true)
-    const res = await getGastosOperativos()
-    setGastos(res.data)
-    setIsLoading(false)
+    try {
+      const res = await withTimeout(getGastosOperativos(), 15000, "getGastosOperativos")
+      setGastos(res.data)
+    } catch (error) {
+      console.error("[bitacora-gastos] load:", error)
+      toast({
+        title: "No se pudo cargar gastos",
+        description: "Intenta recargar en unos segundos.",
+        variant: "destructive",
+      })
+      setGastos([])
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
   useEffect(() => { loadGastos() }, [loadGastos])

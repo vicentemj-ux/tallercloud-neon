@@ -22,6 +22,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), ms)),
+  ])
+}
+
 function detailToBitacoraRepair(d: RepairDetail): BitacoraRepair {
   return {
     id: d.id,
@@ -58,19 +65,28 @@ export default function ReparacionDetailPage() {
     if (!id) return
     setLoading(true)
     setNotFound(false)
-    const page = await getRepairDetailPageData(id)
-    if (!page.detail) {
-      setNotFound(true)
-      setRepair(null)
-    } else {
-      setRepair(detailToBitacoraRepair(page.detail))
+    try {
+      const page = await withTimeout(getRepairDetailPageData(id), 15000, "getRepairDetailPageData")
+      if (!page.detail) {
+        setNotFound(true)
+        setRepair(null)
+      } else {
+        setRepair(detailToBitacoraRepair(page.detail))
+      }
+      const gastosResult = await withTimeout(getGastosTicket(id), 15000, "getGastosTicket")
+      if (!gastosResult.error) {
+        setGastos(gastosResult.data)
+      }
+    } catch (error) {
+      console.error("[reparacion-detail] load:", error)
+      toast({
+        title: "No se pudo cargar el detalle completo",
+        description: "Mostrando información parcial. Intenta recargar.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
-    // Load gastos
-    const gastosResult = await getGastosTicket(id)
-    if (!gastosResult.error) {
-      setGastos(gastosResult.data)
-    }
-    setLoading(false)
   }, [id])
 
   useEffect(() => {

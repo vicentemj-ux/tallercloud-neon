@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -14,7 +14,7 @@ import {
   type HistorialVentaRow,
   type HistorialVentasTotales,
 } from "@/lib/actions/historial-ventas"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { HistorialVentaRowCard } from "@/components/dashboard/historial-ventas/HistorialVentaRowCard"
 import { ReporteVentasPeriodoLetter } from "@/components/dashboard/historial-ventas/ReporteVentasPeriodoLetter"
 import { formatMoneyCompact } from "@/lib/utils/currency"
@@ -47,6 +47,13 @@ function filterLabelUi(f: string) {
   return 'Todos'
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), ms)),
+  ])
+}
+
 export default function HistorialVentasPage() {
   const { startFetch, stopFetch } = useDataFetchPerf("historial-ventas")
   const [dateFrom, setDateFrom] = useState(todayYmd)
@@ -62,7 +69,6 @@ export default function HistorialVentasPage() {
   const [tallerTelefono, setTallerTelefono] = useState("")
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const [mensajeDespedida, setMensajeDespedida] = useState<string | undefined>(undefined)
-  const [impresoraTicket, setImpresoraTicket] = useState<string | null>(null)
 
   const reportPrintRef = useRef<HTMLDivElement>(null)
   const reportTitleRef = useRef(`Reporte-ventas-${dateFrom}-${dateTo}`)
@@ -93,11 +99,10 @@ export default function HistorialVentasPage() {
       if (cfg?.telefono) setTallerTelefono(String(cfg.telefono).trim())
       if (cfg?.logo_url) setLogoUrl(cfg.logo_url)
       if (cfg?.mensaje_despedida) setMensajeDespedida(cfg.mensaje_despedida.trim())
-      if (cfg?.impresora_ticket) setImpresoraTicket(cfg.impresora_ticket.trim())
     })
   }, [])
 
-  /** Totales de las tarjetas según las filas visibles (mismo criterio que la tabla). */
+  /** Totales de las tarjetas segÃºn las filas visibles (mismo criterio que la tabla). */
   const totalesResumen = useMemo((): HistorialVentasTotales => {
     let efectivo = 0
     let tarjeta = 0
@@ -134,17 +139,28 @@ export default function HistorialVentasPage() {
     setLoading(true)
     setError(null)
     startFetch()
-    const res = await getHistorialVentas({
-      startDate: dateFrom,
-      endDate: dateTo,
-      tipo: mapFilterToTipo(filterType),
-      search: debouncedSearch,
-      tzOffsetMin: new Date().getTimezoneOffset(),
-    })
-    setRows(res.rows)
-    setError(res.error)
-    setLoading(false)
-    stopFetch()
+    try {
+      const res = await withTimeout(
+        getHistorialVentas({
+          startDate: dateFrom,
+          endDate: dateTo,
+          tipo: mapFilterToTipo(filterType),
+          search: debouncedSearch,
+          tzOffsetMin: new Date().getTimezoneOffset(),
+        }),
+        15000,
+        "getHistorialVentas"
+      )
+      setRows(res.rows)
+      setError(res.error)
+    } catch (error) {
+      console.error("[historial-ventas] load:", error)
+      setRows([])
+      setError("No se pudo cargar historial de ventas.")
+    } finally {
+      setLoading(false)
+      stopFetch()
+    }
   }, [dateFrom, dateTo, filterType, debouncedSearch, startFetch, stopFetch])
 
   useEffect(() => {
@@ -153,7 +169,7 @@ export default function HistorialVentasPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Reporte Carta: capa oculta para react-to-print (mismo patrón que cortes de caja) */}
+      {/* Reporte Carta: capa oculta para react-to-print (mismo patrÃ³n que cortes de caja) */}
       <div
         ref={reportPrintRef}
         className="print-letter-report-offscreen"
@@ -191,7 +207,7 @@ export default function HistorialVentasPage() {
             size="icon"
             className="h-10 w-10 rounded-lg border border-slate-200 hover:bg-slate-100"
             disabled={loading}
-            title="Reporte de ventas del período (Carta)"
+            title="Reporte de ventas del perÃ­odo (Carta)"
             onClick={() => void handlePrintReport()}
           >
             {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-500" /> : <Printer className="h-5 w-5 text-slate-500" />}
@@ -212,7 +228,7 @@ export default function HistorialVentasPage() {
                 onChange={(e) => setDateFrom(e.target.value)}
                 className="w-auto min-w-[10rem] border-slate-200 bg-white text-sm text-slate-900"
               />
-              <span className="text-slate-500">—</span>
+              <span className="text-slate-500">â€”</span>
               <Input
                 type="date"
                 value={dateTo}
@@ -324,7 +340,7 @@ export default function HistorialVentasPage() {
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Total Período</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Total PerÃ­odo</p>
                 <p className="text-2xl font-bold text-slate-900">{formatMoneyCompact(totalesResumen.total)}</p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/15">
@@ -339,20 +355,20 @@ export default function HistorialVentasPage() {
         <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p>
       ) : null}
 
-      {/* Sales List — Single Card Container */}
+      {/* Sales List â€” Single Card Container */}
       {loading ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white py-16 shadow-sm">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden />
-          <p className="mt-3 text-sm text-slate-500">Cargando historial…</p>
+          <p className="mt-3 text-sm text-slate-500">Cargando historialâ€¦</p>
         </div>
       ) : rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white py-16 shadow-sm">
           <Store className="h-10 w-10 text-slate-300" />
-          <p className="mt-3 text-sm text-slate-500">No hay ventas en este período.</p>
+          <p className="mt-3 text-sm text-slate-500">No hay ventas en este perÃ­odo.</p>
         </div>
       ) : (
         <>
-          {/* Mobile — cards */}
+          {/* Mobile â€” cards */}
           <div className="sm:hidden flex flex-col gap-3">
             {rows.map((row) => (
               <Card key={row.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white py-0 shadow-sm">
@@ -363,26 +379,26 @@ export default function HistorialVentasPage() {
                   tallerTelefono={tallerTelefono}
                   logoUrl={logoUrl}
                   mensajeDespedida={mensajeDespedida}
-                  impresoraTicket={impresoraTicket}
+                  impresoraTicket={null}
                   onVentaAnulada={() => void load()}
                 />
               </Card>
             ))}
           </div>
 
-          {/* Desktop — table with divs */}
+          {/* Desktop â€” table with divs */}
           <Card className="hidden sm:block gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white py-0 shadow-sm">
             <div className="w-full overflow-x-auto">
               <div className="table w-full border-collapse">
                 <div className="table-row border-b border-slate-100 bg-slate-50/60">
                   <div className="table-cell w-[150px] px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Referencia / Fecha</div>
-                  <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Categoría</div>
+                  <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">CategorÃ­a</div>
                   <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Titular</div>
                   <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Vendedor</div>
                   <div className="table-cell px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Resumen Conceptos</div>
-                  <div className="table-cell w-[110px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Método</div>
+                  <div className="table-cell w-[110px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">MÃ©todo</div>
                   <div className="table-cell w-[120px] px-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Monto Neto</div>
-                  <div className="table-cell w-[50px] pl-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Acción</div>
+                  <div className="table-cell w-[50px] pl-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">AcciÃ³n</div>
                 </div>
                 {rows.map((row) => (
                   <HistorialVentaRowCard
@@ -393,7 +409,7 @@ export default function HistorialVentasPage() {
                     tallerTelefono={tallerTelefono}
                     logoUrl={logoUrl}
                     mensajeDespedida={mensajeDespedida}
-                    impresoraTicket={impresoraTicket}
+                    impresoraTicket={null}
                     onVentaAnulada={() => void load()}
                   />
                 ))}
