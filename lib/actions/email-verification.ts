@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { randomInt } from "crypto"
 import { createClient } from "@/lib/supabase/server"
@@ -17,51 +17,51 @@ function makePin(): string {
   return String(randomInt(0, 1_000_000)).padStart(6, "0")
 }
 
-export async function issueMemberVerificationPin(input: IssuePinInput): Promise<{
-  success: boolean
-  error?: string
-}> {
-  const userId = input.userId.trim()
-  const tallerId = input.tallerId.trim()
-  const email = input.email.trim().toLowerCase()
-  const nombre = input.nombre.trim() || "Usuario"
+export async function issueMemberVerificationPin(input: IssuePinInput): Promise<{ success: boolean; error?: string }> {
+  try {
+    const userId = input.userId.trim()
+    const tallerId = input.tallerId.trim()
+    const email = input.email.trim().toLowerCase()
+    const nombre = input.nombre.trim() || "Usuario"
 
-  if (!userId || !tallerId || !email) {
-    return { success: false, error: "Datos incompletos para enviar verificación." }
+    if (!userId || !tallerId || !email) {
+      return { success: false, error: "Datos incompletos para enviar verificacion." }
+    }
+
+    const admin = await createAdminClient()
+    const pin = makePin()
+    const expiraAt = new Date(Date.now() + 15 * 60 * 1000).toISOString()
+
+    const { error: delOldErr } = await admin
+      .from("verificaciones_email")
+      .delete()
+      .eq("user_id", userId)
+      .eq("taller_id", tallerId)
+
+    if (delOldErr) console.error("issueMemberVerificationPin delete old:", delOldErr)
+
+    const { error: pinErr } = await admin.from("verificaciones_email").insert({
+      user_id: userId,
+      taller_id: tallerId,
+      pin,
+      expira_at: expiraAt,
+    })
+
+    if (pinErr) {
+      console.error("issueMemberVerificationPin insert:", pinErr)
+      return { success: false, error: "No se pudo generar el codigo de verificacion." }
+    }
+
+    const emailRes = await sendMemberVerificationPinEmail(email, nombre, pin)
+    if (!emailRes.success) {
+      return { success: false, error: emailRes.error || "No se pudo enviar el correo de verificacion." }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error("[issueMemberVerificationPin] fatal:", error)
+    return { success: false, error: "Verificacion por PIN no disponible temporalmente." }
   }
-
-  const admin = await createAdminClient()
-  const pin = makePin()
-  const expiraAt = new Date(Date.now() + 15 * 60 * 1000).toISOString()
-
-  const { error: delOldErr } = await admin
-    .from("verificaciones_email")
-    .delete()
-    .eq("user_id", userId)
-    .eq("taller_id", tallerId)
-
-  if (delOldErr) {
-    console.error("issueMemberVerificationPin delete old:", delOldErr)
-  }
-
-  const { error: pinErr } = await admin.from("verificaciones_email").insert({
-    user_id: userId,
-    taller_id: tallerId,
-    pin,
-    expira_at: expiraAt,
-  })
-
-  if (pinErr) {
-    console.error("issueMemberVerificationPin insert:", pinErr)
-    return { success: false, error: "No se pudo generar el código de verificación." }
-  }
-
-  const emailRes = await sendMemberVerificationPinEmail(email, nombre, pin)
-  if (!emailRes.success) {
-    return { success: false, error: emailRes.error || "No se pudo enviar el correo de verificación." }
-  }
-
-  return { success: true }
 }
 
 export async function getCurrentUserVerificationStatus(): Promise<{
@@ -70,112 +70,118 @@ export async function getCurrentUserVerificationStatus(): Promise<{
   nombre: string
   error?: string
 }> {
-  const supabase = await createClient()
-  const admin = await createAdminClient()
-  const tallerId = await getCurrentTallerId()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const supabase = await createClient()
+    const admin = await createAdminClient()
+    const tallerId = await getCurrentTallerId()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  if (!user?.id) {
+    if (!user?.id) {
+      return { requiresVerification: false, email: "", nombre: "" }
+    }
+
+    const { data: member, error } = await admin
+      .from("miembros_taller")
+      .select("email_verificado, email, nombre")
+      .eq("taller_id", tallerId)
+      .eq("auth_user_id", user.id)
+      .maybeSingle()
+
+    if (error) {
+      console.error("getCurrentUserVerificationStatus:", error)
+      return { requiresVerification: false, email: "", nombre: "", error: "No se pudo validar el estado de verificacion." }
+    }
+
+    if (!member) {
+      return { requiresVerification: false, email: "", nombre: "" }
+    }
+
+    const m = member as { email_verificado?: boolean; email?: string | null; nombre?: string | null }
+    return {
+      requiresVerification: !Boolean(m.email_verificado),
+      email: m.email?.trim() || user.email || "",
+      nombre: m.nombre?.trim() || "Usuario",
+    }
+  } catch (error) {
+    console.error("[getCurrentUserVerificationStatus] fatal:", error)
     return { requiresVerification: false, email: "", nombre: "" }
-  }
-
-  const { data: member, error } = await admin
-    .from("miembros_taller")
-    .select("email_verificado, email, nombre")
-    .eq("taller_id", tallerId)
-    .eq("auth_user_id", user.id)
-    .maybeSingle()
-
-  if (error) {
-    console.error("getCurrentUserVerificationStatus:", error)
-    return { requiresVerification: false, email: "", nombre: "", error: "No se pudo validar el estado de verificación." }
-  }
-
-  if (!member) {
-    return { requiresVerification: false, email: "", nombre: "" }
-  }
-
-  const m = member as {
-    email_verificado?: boolean
-    email?: string | null
-    nombre?: string | null
-  }
-  return {
-    requiresVerification: !Boolean(m.email_verificado),
-    email: m.email?.trim() || user.email || "",
-    nombre: m.nombre?.trim() || "Usuario",
   }
 }
 
-export async function resendCurrentUserVerificationPin(): Promise<{
-  success: boolean
-  error?: string
-}> {
-  const supabase = await createClient()
-  const admin = await createAdminClient()
-  const tallerId = await getCurrentTallerId()
+export async function resendCurrentUserVerificationPin(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const admin = await createAdminClient()
+    const tallerId = await getCurrentTallerId()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  if (!user?.id) return { success: false, error: "Sesión no válida para reenviar código." }
+    if (!user?.id) return { success: false, error: "Sesion no valida para reenviar codigo." }
 
-  const { data: member, error } = await admin
-    .from("miembros_taller")
-    .select("email, nombre")
-    .eq("taller_id", tallerId)
-    .eq("auth_user_id", user.id)
-    .maybeSingle()
+    const { data: member, error } = await admin
+      .from("miembros_taller")
+      .select("email, nombre")
+      .eq("taller_id", tallerId)
+      .eq("auth_user_id", user.id)
+      .maybeSingle()
 
-  if (error || !member) {
-    return { success: false, error: "No se encontró el miembro para reenviar el código." }
+    if (error || !member) {
+      return { success: false, error: "No se encontro el miembro para reenviar el codigo." }
+    }
+
+    const m = member as { email?: string | null; nombre?: string | null }
+    return issueMemberVerificationPin({
+      userId: user.id,
+      tallerId,
+      email: m.email?.trim() || user.email || "",
+      nombre: m.nombre?.trim() || "Usuario",
+    })
+  } catch (error) {
+    console.error("[resendCurrentUserVerificationPin] fatal:", error)
+    return { success: false, error: "Verificacion por PIN no disponible temporalmente." }
   }
-
-  const m = member as { email?: string | null; nombre?: string | null }
-  return issueMemberVerificationPin({
-    userId: user.id,
-    tallerId,
-    email: m.email?.trim() || user.email || "",
-    nombre: m.nombre?.trim() || "Usuario",
-  })
 }
 
-export async function verifyCurrentUserPin(pin: string): Promise<{
-  success: boolean
-  error?: string
-}> {
-  const normalizedPin = (pin || "").trim()
-  if (!/^[0-9]{6}$/.test(normalizedPin)) {
-    return { success: false, error: "Código incorrecto o expirado." }
+export async function verifyCurrentUserPin(pin: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const normalizedPin = (pin || "").trim()
+    if (!/^[0-9]{6}$/.test(normalizedPin)) {
+      return { success: false, error: "Codigo incorrecto o expirado." }
+    }
+
+    const supabase = await createClient()
+    const admin = await createAdminClient()
+    const tallerId = await getCurrentTallerId()
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user?.id) return { success: false, error: "Sesion no valida para verificar codigo." }
+
+    const { data, error } = await admin.rpc("verificar_pin", {
+      p_user_id: user.id,
+      p_taller_id: tallerId,
+      p_pin: normalizedPin,
+    })
+
+    if (error) {
+      console.error("verifyCurrentUserPin rpc:", error)
+      return { success: false, error: "Codigo incorrecto o expirado." }
+    }
+
+    const row = Array.isArray(data) ? data[0] : null
+    if (!row?.ok) {
+      return { success: false, error: "Codigo incorrecto o expirado." }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error("[verifyCurrentUserPin] fatal:", error)
+    return { success: false, error: "Verificacion por PIN no disponible temporalmente." }
   }
-
-  const supabase = await createClient()
-  const admin = await createAdminClient()
-  const tallerId = await getCurrentTallerId()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user?.id) return { success: false, error: "Sesión no válida para verificar código." }
-
-  const { data, error } = await admin.rpc("verificar_pin", {
-    p_user_id: user.id,
-    p_taller_id: tallerId,
-    p_pin: normalizedPin,
-  })
-
-  if (error) {
-    console.error("verifyCurrentUserPin rpc:", error)
-    return { success: false, error: "Código incorrecto o expirado." }
-  }
-
-  const row = Array.isArray(data) ? data[0] : null
-  if (!row?.ok) {
-    return { success: false, error: "Código incorrecto o expirado." }
-  }
-
-  return { success: true }
 }

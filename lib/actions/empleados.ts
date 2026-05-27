@@ -42,9 +42,10 @@ export async function getEquipoPageData(): Promise<{
   roles: Array<{ id: string; nombre: string; slug?: string; categoria?: "estandar" | "especial" }>
   error: string | null
 }> {
-  const supabase = await createClient()
-  const admin = await createAdminClient()
-  const tallerId = await getCurrentTallerId()
+  try {
+    const supabase = await createClient()
+    const admin = await createAdminClient()
+    const tallerId = await getCurrentTallerId()
 
   // PERF: 3 queries secuenciales → 3 en paralelo
   const [ownerResult, membersResult, rolesResult] = await Promise.all([
@@ -111,7 +112,16 @@ export async function getEquipoPageData(): Promise<{
     categoria: r.categoria as "estandar" | "especial" | undefined,
   }))
 
-  return { owner, miembros, roles, error: null }
+    return { owner, miembros, roles, error: null }
+  } catch (error) {
+    console.error("[getEquipoPageData] fatal:", error)
+    return {
+      owner: null,
+      miembros: [],
+      roles: [],
+      error: "Mi Equipo no estÃ¡ disponible temporalmente. Verifica la configuraciÃ³n del servidor.",
+    }
+  }
 }
 
 /**
@@ -120,6 +130,7 @@ export async function getEquipoPageData(): Promise<{
 export async function createMiembro(
   input: CreateMiembroInput
 ): Promise<{ success: boolean; error?: string }> {
+  try {
   const nombre = (input.nombre || "").trim()
   const email = (input.email || "").trim().toLowerCase()
   const password = input.password || ""
@@ -249,7 +260,14 @@ export async function createMiembro(
     }
   }
 
-  return { success: true }
+    return { success: true }
+  } catch (error) {
+    console.error("[createMiembro] fatal:", error)
+    return {
+      success: false,
+      error: "No se pudo crear el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+    }
+  }
 }
 
 export interface UpdateMiembroInput {
@@ -265,6 +283,7 @@ export interface UpdateMiembroInput {
 export async function updateMiembro(
   input: UpdateMiembroInput
 ): Promise<{ success: boolean; error?: string }> {
+  try {
   const miembroId = (input.miembroId || "").trim()
   const nombre = (input.nombre || "").trim()
   const rolId = (input.rolId || "").trim()
@@ -331,7 +350,14 @@ export async function updateMiembro(
     }
   }
 
-  return { success: true }
+    return { success: true }
+  } catch (error) {
+    console.error("[updateMiembro] fatal:", error)
+    return {
+      success: false,
+      error: "No se pudo actualizar el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+    }
+  }
 }
 
 /**
@@ -340,6 +366,7 @@ export async function updateMiembro(
 export async function deleteMiembro(
   miembroId: string
 ): Promise<{ success: boolean; error?: string }> {
+  try {
   const id = (miembroId || "").trim()
   if (!id) return { success: false, error: "Miembro inválido." }
 
@@ -381,5 +408,12 @@ export async function deleteMiembro(
     }
   }
 
-  return { success: true }
+    return { success: true }
+  } catch (error) {
+    console.error("[deleteMiembro] fatal:", error)
+    return {
+      success: false,
+      error: "No se pudo eliminar el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+    }
+  }
 }
