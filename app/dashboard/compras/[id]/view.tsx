@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, useParams } from "next/navigation"
@@ -16,36 +16,36 @@ import { toast } from "@/hooks/use-toast"
 import {
   getOrdenById, emitirOrden, abortarOrden,
   recibirOrdenConCreacion,
-} from "@/lib/actions/compras"
-import type { OrdenCompra, DetalleOrden } from "@/lib/actions/compras"
+} from "@/lib/actions/compras-prisma"
+import type { OrdenCompra, DetalleOrden } from "@/lib/actions/compras-prisma"
 import {
   ArrowLeft, Package, Calendar, FileText,
   CheckCircle2, AlertTriangle, Loader2, Trash2, XCircle,
   RefreshCw, Info,
 } from "lucide-react"
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function fmtMXN(n: number) {
   return n.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2 })
 }
 
 function fmtDate(s: string | null) {
-  if (!s) return "—"
+  if (!s) return "â€”"
   const d = new Date(s + "T12:00:00")
   return d.toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" })
 }
 
 const ESTATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  borrador:     { label: "BORRADOR DE AUDITORÍA", className: "bg-slate-100 text-slate-600 border-slate-200" },
-  en_transito:  { label: "EN TRÁNSITO",           className: "bg-blue-50 text-blue-700 border-blue-200" },
+  borrador:     { label: "BORRADOR DE AUDITORÃA", className: "bg-slate-100 text-slate-600 border-slate-200" },
+  en_transito:  { label: "EN TRÃNSITO",           className: "bg-blue-50 text-blue-700 border-blue-200" },
   pendiente:    { label: "ORDENADO",              className: "bg-blue-50 text-blue-600 border-blue-100" },
   recibida:     { label: "RECIBIDO",              className: "bg-emerald-50 text-emerald-600 border-emerald-100" },
   parcial:      { label: "PARCIAL",               className: "bg-amber-50 text-amber-600 border-amber-100" },
   cancelada:    { label: "CANCELADO",             className: "bg-red-50 text-red-600 border-red-100" },
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function OrdenDetallePage() {
   const router = useRouter()
@@ -84,7 +84,7 @@ export default function OrdenDetallePage() {
       toast({ title: "Error", description: error, variant: "destructive" })
       return
     }
-    toast({ title: "Orden emitida", description: "Ahora está en tránsito." })
+    toast({ title: "Orden emitida", description: "Ahora estÃ¡ en trÃ¡nsito." })
     fetchOrden()
   }
 
@@ -108,7 +108,7 @@ export default function OrdenDetallePage() {
     await new Promise(r => setTimeout(r, 800))
     setActionLoading(false)
     setShowDisputa(false)
-    toast({ title: "Disputa registrada", description: "Se notificó al proveedor." })
+    toast({ title: "Disputa registrada", description: "Se notificÃ³ al proveedor." })
   }
 
   const handleSincronizar = async () => {
@@ -126,7 +126,7 @@ export default function OrdenDetallePage() {
       fetchOrden()
     } else {
       toast({
-        title: "Errores en recepción",
+        title: "Errores en recepciÃ³n",
         description: result.errores.join("\n"),
         variant: "destructive",
       })
@@ -167,7 +167,7 @@ export default function OrdenDetallePage() {
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
 
-        {/* ── HEADER ── */}
+        {/* â”€â”€ HEADER â”€â”€ */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-4">
             <button
@@ -210,7 +210,7 @@ export default function OrdenDetallePage() {
                   className="h-10 gap-2 rounded-full bg-blue-600 px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-blue-700 btn-glow"
                 >
                   {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
-                  Emitir orden logística
+                  Emitir orden logÃ­stica
                 </Button>
               </>
             )}
@@ -244,7 +244,7 @@ export default function OrdenDetallePage() {
           </div>
         </header>
 
-        {/* ── MAIN ── */}
+        {/* â”€â”€ MAIN â”€â”€ */}
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
 
           {/* Left column */}
@@ -266,12 +266,12 @@ export default function OrdenDetallePage() {
               )}
             </div>
 
-            {/* Registro auditoría */}
+            {/* Registro auditorÃ­a */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <FileText className="h-4 w-4 text-blue-600" />
                 <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-800">
-                  Registro auditoría
+                  Registro auditorÃ­a
                 </h3>
               </div>
               <div className="space-y-4">
@@ -283,10 +283,10 @@ export default function OrdenDetallePage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Notas de recepción</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Notas de recepciÃ³n</p>
                   <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-3">
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      {orden.notas || "No se registraron instrucciones de auditoría para este despliegue logístico."}
+                      {orden.notas || "No se registraron instrucciones de auditorÃ­a para este despliegue logÃ­stico."}
                     </p>
                   </div>
                 </div>
@@ -369,13 +369,13 @@ export default function OrdenDetallePage() {
         </div>
       </div>
 
-      {/* ── Modal: Abortar ── */}
+      {/* â”€â”€ Modal: Abortar â”€â”€ */}
       <AlertDialog open={showAbortar} onOpenChange={setShowAbortar}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Abortar orden?</AlertDialogTitle>
+            <AlertDialogTitle>Â¿Abortar orden?</AlertDialogTitle>
             <AlertDialogDescription>
-              La orden <strong>{orden.folio}</strong> será eliminada permanentemente. Esta acción no se puede deshacer.
+              La orden <strong>{orden.folio}</strong> serÃ¡ eliminada permanentemente. Esta acciÃ³n no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -392,7 +392,7 @@ export default function OrdenDetallePage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* ── Modal: Disputa ── */}
+      {/* â”€â”€ Modal: Disputa â”€â”€ */}
       <Dialog open={showDisputa} onOpenChange={setShowDisputa}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -403,7 +403,7 @@ export default function OrdenDetallePage() {
           </DialogHeader>
           <div className="space-y-3 py-2">
             <p className="text-sm text-slate-600">
-              Estás a punto de registrar una disputa para la orden <strong>{orden.folio}</strong>. El proveedor será notificado.
+              EstÃ¡s a punto de registrar una disputa para la orden <strong>{orden.folio}</strong>. El proveedor serÃ¡ notificado.
             </p>
           </div>
           <div className="flex justify-end gap-2">
@@ -416,7 +416,7 @@ export default function OrdenDetallePage() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Modal: Sincronizar stock (recepción) [Image 8/9 style] ── */}
+      {/* â”€â”€ Modal: Sincronizar stock (recepciÃ³n) [Image 8/9 style] â”€â”€ */}
       <Dialog open={showRecepcion} onOpenChange={setShowRecepcion}>
         <DialogContent className="max-w-sm text-center p-8">
           <div className="flex flex-col items-center gap-4">
@@ -426,7 +426,7 @@ export default function OrdenDetallePage() {
             <div>
               <h3 className="text-lg font-bold text-slate-900">Sincronizar Stock Entrante</h3>
               <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                Al validar la recepción, el inventario se actualizará en tiempo real. Esta acción consolidará los registros logísticos y es irreversible.
+                Al validar la recepciÃ³n, el inventario se actualizarÃ¡ en tiempo real. Esta acciÃ³n consolidarÃ¡ los registros logÃ­sticos y es irreversible.
               </p>
             </div>
             <div className="flex w-full gap-3 mt-2">
@@ -448,7 +448,7 @@ export default function OrdenDetallePage() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Modal: Confirmar sync final [Image 9] ── */}
+      {/* â”€â”€ Modal: Confirmar sync final [Image 9] â”€â”€ */}
       <Dialog open={showSyncConfirm} onOpenChange={setShowSyncConfirm}>
         <DialogContent className="max-w-sm text-center p-8">
           <div className="flex flex-col items-center gap-4">
@@ -456,9 +456,9 @@ export default function OrdenDetallePage() {
               <RefreshCw className="h-7 w-7 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Confirmar operación</h3>
+              <h3 className="text-lg font-bold text-slate-900">Confirmar operaciÃ³n</h3>
               <p className="text-sm text-slate-500 mt-2">
-                ¿Estás seguro de que deseas sincronizar y finalizar la recepción de <strong>{orden.folio}</strong>?
+                Â¿EstÃ¡s seguro de que deseas sincronizar y finalizar la recepciÃ³n de <strong>{orden.folio}</strong>?
               </p>
             </div>
             <div className="flex w-full gap-3 mt-2">
@@ -482,7 +482,7 @@ export default function OrdenDetallePage() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Modal: Resultado sync ── */}
+      {/* â”€â”€ Modal: Resultado sync â”€â”€ */}
       <Dialog open={!!syncResult} onOpenChange={() => setSyncResult(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -492,7 +492,7 @@ export default function OrdenDetallePage() {
               ) : (
                 <XCircle className="h-5 w-5 text-red-600" />
               )}
-              {syncResult?.success ? "Recepción completada" : "Errores en recepción"}
+              {syncResult?.success ? "RecepciÃ³n completada" : "Errores en recepciÃ³n"}
             </DialogTitle>
           </DialogHeader>
           {syncResult && (
@@ -529,3 +529,4 @@ export default function OrdenDetallePage() {
     </div>
   )
 }
+

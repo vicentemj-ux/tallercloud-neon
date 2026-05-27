@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,8 @@ import {
 import { toast } from "@/hooks/use-toast"
 import {
   getProveedores, createProveedor, updateProveedor, deleteProveedor,
-} from "@/lib/actions/compras"
-import type { Proveedor } from "@/lib/actions/compras"
+} from "@/lib/actions/compras-prisma"
+import type { Proveedor } from "@/lib/actions/compras-prisma"
 import {
   Truck, Plus, Phone, Pencil, Trash2, Loader2,
 } from "lucide-react"
@@ -95,7 +95,7 @@ export function ProveedoresModal({ open, onClose }: { open: boolean; onClose: ()
           <div className="flex-1">
             <DialogHeader className="space-y-0 text-left">
               <DialogTitle className="text-lg font-black italic tracking-tight text-white">
-                GESTIÓN DE PROVEEDORES
+                GESTIÃ“N DE PROVEEDORES
               </DialogTitle>
               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
                 Administra tus fuentes de abastecimiento
@@ -142,7 +142,7 @@ export function ProveedoresModal({ open, onClose }: { open: boolean; onClose: ()
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Teléfono</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">TelÃ©fono</Label>
                   <Input
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
@@ -235,3 +235,4 @@ export function ProveedoresModal({ open, onClose }: { open: boolean; onClose: ()
     </Dialog>
   )
 }
+

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -13,12 +13,12 @@ import {
 import { toast } from "@/hooks/use-toast"
 import {
   createOrden, buscarProductosParaCompra, getProveedores,
-} from "@/lib/actions/compras"
-import type { Proveedor } from "@/lib/actions/compras"
+} from "@/lib/actions/compras-prisma"
+import type { Proveedor } from "@/lib/actions/compras-prisma"
 import { ProveedoresModal } from "@/components/dashboard/compras/ProveedoresModal"
 import { NuevoProductoModalWrapper } from "@/components/dashboard/inventario/NuevoProductoModalWrapper"
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function fmtMXN(n: number) {
   return n.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2 })
@@ -31,12 +31,12 @@ interface CartItem {
   precio_unitario: number
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function NuevaOrdenPage() {
   const router = useRouter()
 
-  // ── Header state ──
+  // â”€â”€ Header state â”€â”€
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
   const [loadingProvs, setLoadingProvs] = useState(true)
   const [provId, setProvId] = useState<string>("")
@@ -44,20 +44,20 @@ export default function NuevaOrdenPage() {
   const [fechaEntrega, setFechaEntrega] = useState<string>("")
   const [referencia, setReferencia] = useState<string>("")
 
-  // ── Product search ──
+  // â”€â”€ Product search â”€â”€
   const [prodQuery, setProdQuery] = useState("")
   const [prodResults, setProdResults] = useState<{ id: string; nombre: string; stock_actual: number; costo: number; sku: string | null }[]>([])
   const [searchingProd, setSearchingProd] = useState(false)
   const prodTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // ─- Cart / Auditoría ──
+  // â”€- Cart / AuditorÃ­a â”€â”€
   const [cart, setCart] = useState<CartItem[]>([])
 
-  // ─- Modals ──
+  // â”€- Modals â”€â”€
   const [showProvModal, setShowProvModal] = useState(false)
   const [showProductoModal, setShowProductoModal] = useState(false)
 
-  // ─- Submit ──
+  // â”€- Submit â”€â”€
   const [saving, setSaving] = useState(false)
 
   const fetchProveedores = useCallback(async () => {
@@ -128,12 +128,12 @@ export default function NuevaOrdenPage() {
       return
     }
     if (cart.length === 0) {
-      toast({ title: "Carrito vacío", description: "Agrega al menos un artículo.", variant: "destructive" })
+      toast({ title: "Carrito vacÃ­o", description: "Agrega al menos un artÃ­culo.", variant: "destructive" })
       return
     }
     const hasEmpty = cart.some(c => !c.descripcion.trim())
     if (hasEmpty) {
-      toast({ title: "Descripción requerida", description: "Todos los artículos deben tener descripción.", variant: "destructive" })
+      toast({ title: "DescripciÃ³n requerida", description: "Todos los artÃ­culos deben tener descripciÃ³n.", variant: "destructive" })
       return
     }
 
@@ -165,7 +165,7 @@ export default function NuevaOrdenPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
 
-        {/* ── HEADER ── */}
+        {/* â”€â”€ HEADER â”€â”€ */}
         <header className="flex items-center gap-4">
           <button
             onClick={() => router.push("/dashboard/compras")}
@@ -175,7 +175,7 @@ export default function NuevaOrdenPage() {
           </button>
           <div>
             <h1 className="text-2xl font-black italic tracking-tight text-slate-900 sm:text-3xl">
-              CONFIGURAR PROVISIÓN
+              CONFIGURAR PROVISIÃ“N
             </h1>
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
               Registro de nueva orden de entrada al inventario
@@ -183,13 +183,13 @@ export default function NuevaOrdenPage() {
           </div>
         </header>
 
-        {/* ── MAIN GRID ── */}
+        {/* â”€â”€ MAIN GRID â”€â”€ */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
 
-          {/* ── LEFT COLUMN ── */}
+          {/* â”€â”€ LEFT COLUMN â”€â”€ */}
           <div className="flex flex-col gap-6">
 
-            {/* Sección 1: Matriz de origen */}
+            {/* SecciÃ³n 1: Matriz de origen */}
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-black">
@@ -241,7 +241,7 @@ export default function NuevaOrdenPage() {
                   {/* Fecha estimada */}
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                      Fecha estimada recepción
+                      Fecha estimada recepciÃ³n
                     </Label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -273,7 +273,7 @@ export default function NuevaOrdenPage() {
               </div>
             </section>
 
-            {/* Sección 2: Selección de activos */}
+            {/* SecciÃ³n 2: SelecciÃ³n de activos */}
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -281,7 +281,7 @@ export default function NuevaOrdenPage() {
                     2
                   </div>
                   <h2 className="text-sm font-black italic tracking-tight text-slate-900 uppercase">
-                    SELECCIÓN DE ACTIVOS
+                    SELECCIÃ“N DE ACTIVOS
                   </h2>
                 </div>
                 <Button
@@ -297,7 +297,7 @@ export default function NuevaOrdenPage() {
               <div className="relative mb-5">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
-                  placeholder="FILTRAR POR CÓDIGO SKU O DESCRIPTOR..."
+                  placeholder="FILTRAR POR CÃ“DIGO SKU O DESCRIPTOR..."
                   value={prodQuery}
                   onChange={(e) => handleProdSearch(e.target.value)}
                   className="h-12 rounded-full border-slate-200 bg-white pl-11 pr-4 text-sm font-medium uppercase tracking-wider text-slate-800 placeholder:text-slate-300 placeholder:font-normal"
@@ -356,21 +356,21 @@ export default function NuevaOrdenPage() {
                   onClick={addManualItem}
                   className="h-10 gap-2 rounded-full border-dashed border-slate-300 px-5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 hover:border-slate-400"
                 >
-                  <Plus className="h-4 w-4" /> Agregar artículo manual
+                  <Plus className="h-4 w-4" /> Agregar artÃ­culo manual
                 </Button>
               </div>
             </section>
           </div>
 
-          {/* ── RIGHT COLUMN: AUDITORÍA PO ── */}
+          {/* â”€â”€ RIGHT COLUMN: AUDITORÃA PO â”€â”€ */}
           <div className="flex flex-col gap-4">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sticky top-6">
-              {/* Header auditoría */}
+              {/* Header auditorÃ­a */}
               <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5 text-slate-700" />
                   <div>
-                    <h3 className="text-sm font-black italic tracking-tight text-slate-900">AUDITORÍA PO</h3>
+                    <h3 className="text-sm font-black italic tracking-tight text-slate-900">AUDITORÃA PO</h3>
                   </div>
                 </div>
                 <span className="inline-flex h-6 items-center justify-center rounded-full bg-slate-100 px-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
@@ -388,9 +388,9 @@ export default function NuevaOrdenPage() {
                     <div key={idx} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-900 leading-tight">{item.descripcion || "Sin descripción"}</p>
+                          <p className="text-sm font-bold text-slate-900 leading-tight">{item.descripcion || "Sin descripciÃ³n"}</p>
                           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
-                            Artículos seleccionados
+                            ArtÃ­culos seleccionados
                           </p>
                         </div>
                         <button
@@ -434,11 +434,11 @@ export default function NuevaOrdenPage() {
                 </div>
               )}
 
-              {/* Total y acción */}
+              {/* Total y acciÃ³n */}
               <div className="mt-5 pt-5 border-t border-slate-100 space-y-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                    Inversión logística proyectada
+                    InversiÃ³n logÃ­stica proyectada
                   </p>
                   <p className="text-3xl font-black text-slate-900 tabular-nums mt-1">{fmtMXN(cartTotal)}</p>
                 </div>
@@ -468,3 +468,4 @@ export default function NuevaOrdenPage() {
     </div>
   )
 }
+

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
-import { registrarCompraUsado } from "@/lib/actions/compras-usado"
+import { registrarCompraUsado } from "@/lib/actions/compras-usado-prisma"
 import {
   ArrowLeft, FileText, MonitorSmartphone, Search,
   User, DollarSign, ShieldAlert, Loader2,
@@ -54,11 +54,11 @@ export default function RegistrarCompraUsadoPage() {
       telefono: form.telefono.trim(),
       marca: form.marca.trim(),
       modelo: form.modelo.trim(),
-      serial: form.serial.trim() || "—",
-      imei: form.imei.trim() || "—",
-      color: form.color.trim() || "—",
-      condicion: form.condicion.trim() || "—",
-      capacidad: form.capacidad.trim() || "—",
+      serial: form.serial.trim() || "â€”",
+      imei: form.imei.trim() || "â€”",
+      color: form.color.trim() || "â€”",
+      condicion: form.condicion.trim() || "â€”",
+      capacidad: form.capacidad.trim() || "â€”",
       monto: montoNum,
       observaciones: form.observaciones.trim() || undefined,
     })
@@ -69,23 +69,24 @@ export default function RegistrarCompraUsadoPage() {
       return
     }
 
-    toast({ title: "Compra registrada", description: `Folio ${result.folio}. Se descontó de caja.` })
+    toast({ title: "Compra registrada", description: `Folio ${result.folio}. Se descontÃ³ de caja.` })
 
-    const params = new URLSearchParams({
-      folio: result.folio,
+    const paramsObject: Record<string, string> = {
+      folio: result.folio ?? "",
       fecha: new Date().toLocaleString("es-MX"),
       vendedor: form.vendedor.trim(),
       documento: form.documento.trim(),
       marca: form.marca.trim(),
       modelo: form.modelo.trim(),
-      serial: form.serial.trim() || "—",
-      imei: form.imei.trim() || "—",
+      serial: form.serial.trim() || "â€”",
+      imei: form.imei.trim() || "â€”",
       monto: String(montoNum),
-      condicion: form.condicion.trim() || "—",
-      color: form.color.trim() || "—",
-      capacidad: form.capacidad.trim() || "—",
-      ...(form.observaciones.trim() ? { observaciones: form.observaciones.trim() } : {}),
-    })
+      condicion: form.condicion.trim() || "â€”",
+      color: form.color.trim() || "â€”",
+      capacidad: form.capacidad.trim() || "â€”",
+    }
+    if (form.observaciones.trim()) paramsObject.observaciones = form.observaciones.trim()
+    const params = new URLSearchParams(paramsObject)
     window.open(`/print-compra?${params.toString()}`, "_blank")
 
     router.push("/dashboard/compras/usados")
@@ -98,7 +99,7 @@ export default function RegistrarCompraUsadoPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* ── HEADER ── */}
+        {/* â”€â”€ HEADER â”€â”€ */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <button
@@ -117,7 +118,7 @@ export default function RegistrarCompraUsadoPage() {
                   COMPRA DE EQUIPO
                 </h1>
                 <p className="text-sm text-slate-500">
-                  Registro de adquisición de equipos usados a clientes.
+                  Registro de adquisiciÃ³n de equipos usados a clientes.
                 </p>
               </div>
             </div>
@@ -133,10 +134,10 @@ export default function RegistrarCompraUsadoPage() {
           </Button>
         </div>
 
-        {/* ── 2-COLUMN LAYOUT ── */}
+        {/* â”€â”€ 2-COLUMN LAYOUT â”€â”€ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-          {/* ── LEFT: Datos del vendedor ── */}
+          {/* â”€â”€ LEFT: Datos del vendedor â”€â”€ */}
           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <User className="h-5 w-5 text-blue-600" />
@@ -168,9 +169,9 @@ export default function RegistrarCompraUsadoPage() {
                 />
               </div>
 
-              {/* Teléfono */}
+              {/* TelÃ©fono */}
               <div className="space-y-2">
-                <Label className={labelBase}>WhatsApp / Teléfono</Label>
+                <Label className={labelBase}>WhatsApp / TelÃ©fono</Label>
                 <Input
                   value={form.telefono}
                   onChange={(e) => patch("telefono", e.target.value)}
@@ -181,7 +182,7 @@ export default function RegistrarCompraUsadoPage() {
 
               {/* Documento */}
               <div className="space-y-2">
-                <Label className={labelBase}>Documento de identidad (cédula/ID)</Label>
+                <Label className={labelBase}>Documento de identidad (cÃ©dula/ID)</Label>
                 <Input
                   value={form.documento}
                   onChange={(e) => patch("documento", e.target.value)}
@@ -192,7 +193,7 @@ export default function RegistrarCompraUsadoPage() {
             </div>
           </div>
 
-          {/* ── RIGHT: Detalles del equipo ── */}
+          {/* â”€â”€ RIGHT: Detalles del equipo â”€â”€ */}
           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <MonitorSmartphone className="h-5 w-5 text-blue-600" />
@@ -265,7 +266,7 @@ export default function RegistrarCompraUsadoPage() {
               <div className="space-y-2">
                 <Label className={`${labelBase} text-blue-600 flex items-center gap-1`}>
                   <DollarSign className="h-3 w-3" />
-                  Precio de compra (se descontará de caja) *
+                  Precio de compra (se descontarÃ¡ de caja) *
                 </Label>
                 <div className="relative">
                   <span className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-400 font-black text-lg">
@@ -285,7 +286,7 @@ export default function RegistrarCompraUsadoPage() {
 
               {/* Observaciones */}
               <div className="space-y-2">
-                <Label className={labelBase}>Observaciones técnicas</Label>
+                <Label className={labelBase}>Observaciones tÃ©cnicas</Label>
                 <Textarea
                   value={form.observaciones}
                   onChange={(e) => patch("observaciones", e.target.value)}
@@ -298,7 +299,7 @@ export default function RegistrarCompraUsadoPage() {
               <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 flex items-start gap-3">
                 <ShieldAlert className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700 leading-relaxed">
-                  El registro generará una declaración jurada de propiedad que el cliente deberá firmar físicamente.
+                  El registro generarÃ¡ una declaraciÃ³n jurada de propiedad que el cliente deberÃ¡ firmar fÃ­sicamente.
                 </p>
               </div>
             </div>
@@ -308,3 +309,5 @@ export default function RegistrarCompraUsadoPage() {
     </div>
   )
 }
+
+
