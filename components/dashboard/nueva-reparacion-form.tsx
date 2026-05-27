@@ -92,6 +92,7 @@ import {
 } from "@/components/dashboard/servicios/ServiceSelector"
 import { getServiciosReparacion } from "@/lib/actions/servicios-prisma"
 import { printWithProvider } from "@/lib/printing/repair-print-service"
+import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
 const isTauriAvailable = async () => false
 const domToPngBase64 = async (..._args: unknown[]) => ""
@@ -272,6 +273,7 @@ export function NuevaReparacionForm({
   const [proBenefitsOpen, setProBenefitsOpen] = useState(false)
 
   const isProPlan = planTipo === "activo"
+  const serviciosProEnabled = isProPlan && !PRO_FEATURES_TEMP_DISABLED
 
   const [healthCheckOpen, setHealthCheckOpen] = useState(false)
   const [checklistProHealth, setChecklistProHealth] = useState<ChecklistProData>({
@@ -565,7 +567,9 @@ export function NuevaReparacionForm({
       checklistIngreso,
       checklist_pro: checklistProHealth,
       photos: photoB64,
-      servicios: selectedServices.map((s) => ({ servicio_id: s.servicio_id, cantidad: s.cantidad })),
+      servicios: serviciosProEnabled
+        ? selectedServices.map((s) => ({ servicio_id: s.servicio_id, cantidad: s.cantidad }))
+        : [],
     }
     if (folio.trim()) input.folio = folio.trim()
     return input
@@ -634,10 +638,12 @@ export function NuevaReparacionForm({
     if (!editingRepairId || !isModal) return
     const load = async () => {
       setLoadingModification(true)
-      const [{ data }, { data: serviciosData }] = await Promise.all([
+      const [repairResult, serviciosResult] = await Promise.all([
         getRepairDetail(editingRepairId),
-        getServiciosReparacion(editingRepairId),
+        serviciosProEnabled ? getServiciosReparacion(editingRepairId) : Promise.resolve({ data: [] as Awaited<ReturnType<typeof getServiciosReparacion>>["data"] }),
       ])
+      const data = repairResult.data
+      const serviciosData = serviciosResult.data
       if (data) {
         setFolio(data.folio)
         setProblemDesc(data.falla ?? "")
@@ -680,7 +686,7 @@ export function NuevaReparacionForm({
           correo: data.clienteEmail ?? "",
         })
         // Load linked services and split stored total into services + extra
-        if (serviciosData && serviciosData.length > 0) {
+        if (serviciosProEnabled && serviciosData && serviciosData.length > 0) {
           const mapped = serviciosData.map((s) => ({
             servicio_id: s.servicio_id ?? "",
             nombre: s.nombre_snapshot,
@@ -1451,8 +1457,26 @@ export function NuevaReparacionForm({
                     </div>
                   ) : null}
 
-                  {/* 2. Servicios */}
-                  <ServiceSelector selected={selectedServices} onChange={setSelectedServices} />
+                  {/* 2. Servicios (PRO) */}
+                  {serviciosProEnabled ? (
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                        Servicios
+                        <span className="rounded-full bg-purple-600 px-2 py-0.5 text-[9px] text-white">PRO</span>
+                      </div>
+                      <ServiceSelector selected={selectedServices} onChange={setSelectedServices} />
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-purple-200 bg-purple-50 px-3 py-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                        Servicios (PRO)
+                      </p>
+                      <p className="mt-1 text-[11px] text-purple-800">
+                        Disponible solo en plan PRO.
+                        {PRO_FEATURES_TEMP_DISABLED ? " Temporalmente desactivado para el MVP." : ""}
+                      </p>
+                    </div>
+                  )}
 
                   {/* 3. Desglose + Total */}
                   <div className="flex flex-col gap-2">

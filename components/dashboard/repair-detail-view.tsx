@@ -867,9 +867,14 @@ export function RepairDetailView({
                   {/* Servicios aplicados */}
                   {servicios.length > 0 && (
                     <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-3">
-                        Servicios aplicados
-                      </p>
+                      <div className="mb-3 flex items-center gap-2">
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                          Servicios aplicados
+                        </p>
+                        <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-700">
+                          PRO
+                        </span>
+                      </div>
                       <div className="space-y-2">
                         {servicios.map((s) => (
                           <div key={s.id} className="flex items-center justify-between text-sm">
