@@ -76,7 +76,7 @@ export default function ClientesPage() {
             <Users className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-          <h1 className="italic font-extrabold text-2xl tracking-tight text-slate-900">CLIENTES PRO</h1>
+          <h1 className="italic font-extrabold text-2xl tracking-tight text-slate-900">CLIENTES</h1>
           <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
             DIRECTORIO Y EXPEDIENTE DE REPARACIONES
           </p>

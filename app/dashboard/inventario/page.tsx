@@ -977,7 +977,7 @@ function InventarioContent() {
               <Box className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-4xl font-black italic tracking-tight text-slate-900">INVENTARIO PRO</h1>
+              <h1 className="text-2xl sm:text-4xl font-black italic tracking-tight text-slate-900">INVENTARIO</h1>
               <p className="text-xs uppercase tracking-widest text-slate-500">
                 Control automatizado de stock y almacÃ©n
               </p>

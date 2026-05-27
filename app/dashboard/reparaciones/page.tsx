@@ -260,7 +260,7 @@ function ReparacionesContent() {
               <div>
                 <div className="flex items-center gap-3">
                   <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
-                    REPARACIONES PRO
+                    REPARACIONES
                   </h1>
                   <span className="rounded-full bg-slate-100 px-3 py-0.5 text-sm font-bold text-slate-600 tabular-nums">
                     {totalRepairs.toLocaleString("es-MX")} órdenes
