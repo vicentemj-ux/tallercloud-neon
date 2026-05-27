@@ -32,7 +32,8 @@ import {
   Wrench,
 } from "lucide-react"
 import { useTallerNegocioNombre } from "@/lib/hooks/use-taller-negocio-nombre"
-import { getEsUsuarioPro, logoutTaller } from "@/lib/actions/auth-prisma"
+import { logoutTaller } from "@/lib/actions/auth-prisma"
+import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 import {
   DndContext,
   type DragEndEvent,
@@ -267,11 +268,11 @@ export function SidebarContent({ pathname, onNavigate }: { pathname: string; onN
   }, [tallerId])
 
   useEffect(() => {
-    let cancelled = false
-    getEsUsuarioPro()
-      .then((isPro) => { if (!cancelled) setIsUsuarioPro(Boolean(isPro)) })
-      .catch(() => { if (!cancelled) setIsUsuarioPro(false) })
-    return () => { cancelled = true }
+    if (PRO_FEATURES_TEMP_DISABLED) {
+      setIsUsuarioPro(false)
+      return
+    }
+    setIsUsuarioPro(false)
   }, [])
 
   const sortedMainItems = useMemo(
@@ -325,6 +326,11 @@ export function SidebarContent({ pathname, onNavigate }: { pathname: string; onN
         </nav>
 
         <p className="px-3 pb-2 pt-5 text-[11px] font-black uppercase tracking-[0.22em] text-purple-500">Pro</p>
+        {PRO_FEATURES_TEMP_DISABLED ? (
+          <div className="mb-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs text-purple-700">
+            Modulos PRO temporalmente desactivados.
+          </div>
+        ) : null}
         <nav className="flex flex-col gap-1">
           {PRO_NAV_ITEMS.map((item) => (
             <NavItemRow key={item.href} item={item} pathname={pathname} isUsuarioPro={isUsuarioPro} onNavigate={onNavigate} />

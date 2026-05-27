@@ -1,13 +1,12 @@
-"use client"
+﻿"use client"
 
 import { Suspense, useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { Menu, Loader2 } from "lucide-react"
-import { CajaProvider, OpenCajaModal, useCajaContext } from "@/lib/context/caja-context"
-import { CajaStatusBadge, CajaStatusBadgeFallback } from "@/components/dashboard/caja-status-badge"
+import { Menu } from "lucide-react"
+import { PRO_DISABLED_ROUTES, PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
 // Lazy-load sidebar con DnD (~100-150KB ahorrados en bundle inicial)
 const SidebarContent = dynamic(
@@ -15,11 +14,7 @@ const SidebarContent = dynamic(
   { ssr: false, loading: () => <SidebarSkeleton /> }
 )
 
-// Lazy-load componentes no críticos del header
-const CloudConnectionStatus = dynamic(
-  () => import("@/components/dashboard/cloud-connection-status").then((m) => m.CloudConnectionStatus),
-  { ssr: false }
-)
+// Lazy-load componentes no crÃ­ticos del header
 const HelpQuickSheet = dynamic(
   () => import("@/components/dashboard/help-quick-sheet").then((m) => m.HelpQuickSheet),
   { ssr: false }
@@ -37,7 +32,7 @@ const OfflineSyncListener = dynamic(
   { ssr: false }
 )
 
-// ─── Skeleton para sidebar mientras carga DnD ─────────────────────────────────
+// â”€â”€â”€ Skeleton para sidebar mientras carga DnD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function SidebarSkeleton() {
   return (
@@ -59,24 +54,11 @@ function SidebarSkeleton() {
   )
 }
 
-// ─── Loading overlay while caja status is being checked ───────────────────────
-
-function CajaLoadingOverlay() {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <p className="text-sm font-medium text-slate-500">Verificando caja…</p>
-      </div>
-    </div>
-  )
-}
-
-// ─── Dashboard Content (reads caja context) ───────────────────────────────────
+// â”€â”€â”€ Dashboard Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { status } = useCajaContext()
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
@@ -88,22 +70,17 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     }
   }, [mobileOpen])
 
-  // Bloqueo total: si no hay caja abierta, solo mostramos el modal
-  if (status === "closed") {
-    return (
-      <div className="flex h-screen [height:100dvh] items-center justify-center bg-slate-100">
-        <OpenCajaModal />
-      </div>
-    )
-  }
-
-  if (status === "loading") {
-    return <CajaLoadingOverlay />
-  }
+  useEffect(() => {
+    if (!PRO_FEATURES_TEMP_DISABLED) return
+    const blocked = PRO_DISABLED_ROUTES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+    if (blocked) {
+      router.replace("/dashboard")
+    }
+  }, [pathname, router])
 
   return (
     <div className="flex h-screen [height:100dvh] bg-muted/30">
-      {/* Desktop Sidebar — lazy loaded */}
+      {/* Desktop Sidebar â€” lazy loaded */}
       <aside className="hidden w-64 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
         <SidebarContent pathname={pathname} />
       </aside>
@@ -132,31 +109,23 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
-            <span className="sr-only">Abrir menú</span>
+            <span className="sr-only">Abrir menÃº</span>
           </Button>
           <span className="min-w-0 shrink truncate text-sm font-bold tracking-tight text-slate-900 sm:text-base">
             TallerCloud
           </span>
           <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
-            <Suspense fallback={<CajaStatusBadgeFallback />}>
-              <CajaStatusBadge />
-            </Suspense>
             <HelpQuickSheet />
             <DashboardHeaderProfile />
-            <CloudConnectionStatus className="hidden shrink-0 text-slate-600 sm:inline-flex" />
           </div>
         </header>
 
         {/* Desktop Header */}
         <header className="hidden h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-6 shadow-sm lg:flex">
           <span className="shrink-0 text-lg font-bold tracking-tight text-slate-900">TallerCloud</span>
-          <Suspense fallback={<CajaStatusBadgeFallback />}>
-            <CajaStatusBadge />
-          </Suspense>
           <HelpQuickSheet />
           <DashboardHeaderProfile />
           <div className="min-w-0 flex-1" />
-          <CloudConnectionStatus className="shrink-0 text-slate-600" />
         </header>
 
         <main className="flex-1 overflow-y-auto scroll-smooth bg-slate-50/50 font-sans">
@@ -167,15 +136,13 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   )
 }
 
-// ─── Dashboard Shell (Client Component) ───────────────────────────────────────
+// â”€â”€â”€ Dashboard Shell (Client Component) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <OfflineSyncListener />
-      <CajaProvider>
-        <DashboardContent>{children}</DashboardContent>
-      </CajaProvider>
+      <DashboardContent>{children}</DashboardContent>
     </>
   )
 }

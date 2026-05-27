@@ -27,6 +27,7 @@ import { Imprenta } from "@/components/configuracion/Imprenta"
 import { Hardware } from "@/components/configuracion/Hardware"
 import { ModuleHeader } from "@/components/dashboard/module-header"
 import { ESTADOS_MEXICO, getPaisesNombres } from "@/lib/constants/paises"
+import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
 type TimezoneOption = { value: string; city: string; country: string }
 type TimezoneGroup = { label: string; options: TimezoneOption[] }
@@ -82,6 +83,7 @@ function formatTimezoneClock(timeZone: string, now: Date): string {
 
 type Tab = "taller" | "cuenta" | "alertas" | "flujo-pro" | "imprenta" | "hardware"
 type FieldErrors = Partial<Record<keyof TallerSettings, string>>
+const TEMP_DISABLED_TABS: Tab[] = ["alertas", "flujo-pro"]
 
 // ─── Validación cliente ────────────────────────────────────────────────────
 
@@ -159,7 +161,8 @@ function ConfiguracionContent() {
   
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const validTabs: Tab[] = ["taller", "cuenta", "alertas", "flujo-pro", "imprenta", "hardware"]
-    return tabParam && validTabs.includes(tabParam) ? tabParam : "taller"
+    const initial = tabParam && validTabs.includes(tabParam) ? tabParam : "taller"
+    return PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(initial) ? "taller" : initial
   })
   // Taller state
   const [settings, setSettings] = useState<TallerSettings | null>(null)
@@ -218,6 +221,10 @@ function ConfiguracionContent() {
 
   // Cargar ajustes de Flujo PRO cuando la pestaña esté activa
   useEffect(() => {
+    if (PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(activeTab)) {
+      setActiveTab("taller")
+      return
+    }
     if (activeTab !== "flujo-pro" || loadingFluJoPro) return
     const load = async () => {
       setLoadingFluJoPro(true)
@@ -379,15 +386,26 @@ function ConfiguracionContent() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                if (PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)) return
+                setActiveTab(tab.id)
+              }}
+              disabled={PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
+                  : PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)
+                    ? "border-transparent text-slate-400 cursor-not-allowed"
+                    : "border-transparent text-slate-500 hover:text-slate-700"
               }`}
             >
               {tab.icon}
               {tab.label}
+              {PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id) ? (
+                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold uppercase text-purple-700">
+                  Pro
+                </span>
+              ) : null}
             </button>
           ))}
         </div>

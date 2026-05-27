@@ -49,7 +49,7 @@ import { SuccessModal } from "@/components/dashboard/ventas/SuccessModal"
 import { VentaEnEsperaConfirm } from "@/components/dashboard/ventas/VentaEnEsperaConfirm"
 import { VentasEnEsperaModal } from "@/components/dashboard/ventas/VentasEnEsperaModal"
 import { type ClientAutocompletePayload } from "@/components/dashboard/client-autocomplete"
-import { useCajaContext } from "@/lib/context/caja-context"
+import { CajaProvider, useCajaContext } from "@/lib/context/caja-context"
 import { getReparacionesListas, type RepairOrder } from "@/lib/actions/repairs"
 import { guardarVentaEnEspera, getVentasEnEspera, type VentaEnEspera } from "@/lib/ventas-en-espera"
 
@@ -113,7 +113,7 @@ function ProductThumb({ src, alt, productId, tallerId }: { src: string | null; a
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
-export default function VentasPage() {
+function VentasPageContent() {
   const router = useRouter()
   const { startFetch, stopFetch } = useDataFetchPerf("ventas")
   const { caja, refresh } = useCajaContext()
@@ -1170,6 +1170,14 @@ export default function VentasPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function VentasPage() {
+  return (
+    <CajaProvider>
+      <VentasPageContent />
+    </CajaProvider>
   )
 }
 
