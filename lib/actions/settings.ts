@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { calcDiasRestantes } from "@/lib/utils/subscription"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
+import { getTallerSettings as getTallerSettingsPrisma } from "@/lib/actions/settings-prisma"
 
 const createClient = async () => (await createCurrentTenantClient()).supabase
 
@@ -148,58 +149,8 @@ export async function deleteTechnician(id: string) {
 
 // Settings
 export async function getTallerSettings() {
-  const supabase = await createClient()
-  const tallerId = await getCurrentTallerId()
-
-  const { data, error } = await supabase
-    .from("configuracion_taller")
-    .select("*")
-    .eq("taller_id", tallerId)
-    .single()
-
-  if (error?.code === "PGRST116") {
-    // No rows found, return defaults
-    return {
-      settings: {
-        id: "",
-        nombre_taller: "Mi Taller",
-        direccion: "",
-        telefono: "",
-        email_contacto: "",
-        ciudad: "",
-        estado: "",
-        pais: "México",
-        zona_horaria: "UTC",
-        logo_url: null,
-        pie_pagina: "Gracias por su confianza",
-        terminos_garantia: "Garantía de 30 días en reparaciones",
-        descripcion_publica: "",
-        tamano_papel: "80mm",
-        label_size: "2x1",
-        alertas_stock_bajo: false,
-        reportes_cierre_caja: true,
-        alerta_urgentes: false,
-        prefijo_folio: "REP",
-        siguiente_folio: 1,
-        dias_garantia: 30,
-        mensaje_despedida: "¡Gracias por confiar en nosotros!",
-        mostrar_precio_etiqueta: true,
-        impresion_config: {},
-        facebook: null,
-        instagram: null,
-        tiktok: null,
-        whatsapp: null,
-      },
-      error: null,
-    }
-  }
-
-  if (error) {
-    console.error("Error fetching settings:", error)
-    return { settings: null, error: "Error al cargar configuración" }
-  }
-
-  return { settings: data, error: null }
+  // Runtime-safe bridge: evita dependencia de Supabase env en módulos activos.
+  return getTallerSettingsPrisma()
 }
 
 /** Plan de suscripción del taller (PRO = `activo`). */

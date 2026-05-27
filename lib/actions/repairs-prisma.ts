@@ -713,6 +713,64 @@ export async function getAllActiveTechnicians() {
   }
 }
 
+export interface RepairOrder {
+  id: string
+  folio: string
+  customer: string
+  phone: string
+  device: string
+  tipo_equipo: string
+  status: "Recibido" | "Diagnostico" | "En Reparacion" | "Listo" | "Entregado"
+  date: string
+  problem: string
+  price: string
+  technician: string
+}
+
+export async function getReparacionesListas(): Promise<{ data: RepairOrder[]; error: string | null }> {
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const rows = await prisma.reparacion.findMany({
+      where: { tenantId, estado: "Listo" },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        folio: true,
+        cliente: { select: { nombre: true, telefono: true } },
+        tipoEquipo: true,
+        equipoMarca: true,
+        equipoModelo: true,
+        estado: true,
+        createdAt: true,
+        falla: true,
+        costoEstimado: true,
+        tecnico: true,
+      },
+      take: 500,
+    })
+
+    const data: RepairOrder[] = rows.map((r) => ({
+      id: r.id,
+      folio: r.folio,
+      customer: r.cliente?.nombre ?? "Sin nombre",
+      phone: r.cliente?.telefono ?? "",
+      device: `${r.equipoMarca ?? ""} ${r.equipoModelo ?? ""}`.trim(),
+      tipo_equipo: r.tipoEquipo ?? "",
+      status: (r.estado as RepairOrder["status"]) || "Recibido",
+      date: r.createdAt.toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }),
+      problem: r.falla ?? "",
+      price: r.costoEstimado == null ? "Pendiente" : `$${Number(r.costoEstimado).toLocaleString("es-MX")}`,
+      technician: r.tecnico ?? "Pendiente",
+    }))
+
+    return { data, error: null }
+  } catch (e) {
+    console.error("getReparacionesListas prisma:", e)
+    return { data: [], error: "No se pudieron cargar las reparaciones listas." }
+  }
+}
+
 export async function deleteRepair(repairId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const prisma = getPrismaClient()

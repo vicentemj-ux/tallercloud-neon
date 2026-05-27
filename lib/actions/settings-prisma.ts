@@ -31,6 +31,9 @@ export interface TallerSettings {
   mensaje_despedida?: string
   impresion_config?: Record<string, unknown> | null
   mostrar_precio_etiqueta?: boolean
+  impresora_ticket?: string | null
+  impresora_etiqueta?: string | null
+  impresora_documento?: string | null
   facebook?: string | null
   instagram?: string | null
   tiktok?: string | null
@@ -67,6 +70,9 @@ function toSettings(row: Awaited<ReturnType<typeof getPrismaClient>>["configurac
     mensaje_despedida: row?.mensajeDespedida ?? "¡Gracias por confiar en nosotros!",
     impresion_config: (row?.printSettings as Record<string, unknown> | null) ?? {},
     mostrar_precio_etiqueta: true,
+    impresora_ticket: null,
+    impresora_etiqueta: null,
+    impresora_documento: null,
     facebook: row?.facebook ?? null,
     instagram: row?.instagram ?? null,
     tiktok: row?.tiktok ?? null,
