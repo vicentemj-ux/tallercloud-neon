@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Input } from "@/components/ui/input"
 import { Search, X, Wrench, Loader2 } from "lucide-react"
-import { getServicios } from "@/lib/actions/servicios"
-import type { Servicio } from "@/lib/actions/servicios"
+import { getServicios } from "@/lib/actions/servicios-prisma"
+import type { Servicio } from "@/lib/actions/servicios-prisma"
 
 export interface SelectedServicio {
   servicio_id: string

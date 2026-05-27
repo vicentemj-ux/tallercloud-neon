@@ -6,7 +6,7 @@ import { getPrismaClient } from "@/lib/prisma"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
 import type { SecurityTab } from "@/lib/reparaciones/security"
-import type { ReparacionGasto } from "@/lib/actions/gastos"
+import type { ReparacionGasto } from "@/lib/actions/gastos-prisma"
 import * as legacyRepairs from "@/lib/actions/repairs"
 import {
   getPublicTrackPhotoKey,

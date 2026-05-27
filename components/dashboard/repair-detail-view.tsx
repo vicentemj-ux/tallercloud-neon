@@ -154,7 +154,7 @@ export function RepairDetailView({
 
   // Gastos del ticket â€” solo lectura (para mostrar utilidad estimada)
   const [gastos, setGastos] = useState<ReparacionGasto[]>([])
-  const [servicios, setServicios] = useState<import("@/lib/actions/servicios").ReparacionServicio[]>([])
+  const [servicios, setServicios] = useState<import("@/lib/actions/servicios-prisma").ReparacionServicio[]>([])
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [cancelSummary, setCancelSummary] = useState<{ total: number; movements: Array<{ id: string; tipo: string; monto: number; metodo_pago: string; caja_id: string | null }> } | null>(null)
   const [isCancelling, setIsCancelling] = useState(false)

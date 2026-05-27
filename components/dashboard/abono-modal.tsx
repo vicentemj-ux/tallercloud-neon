@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useRef } from "react"
 import { flushSync } from "react-dom"
@@ -27,8 +27,8 @@ import {
   getRepairDetail,
   registrarAbono,
   applyRepairStatusChange,
-} from "@/lib/actions/repairs"
-import { getTallerSettings, type TallerSettings } from "@/lib/actions/settings"
+} from "@/lib/actions/repairs-prisma"
+import { getTallerSettings, type TallerSettings } from "@/lib/actions/settings-prisma"
 import { toast } from "@/hooks/use-toast"
 import { AbonoReceipt } from "@/components/dashboard/abono-receipt"
 import { printWithProvider } from "@/lib/printing/repair-print-service"
@@ -37,7 +37,7 @@ const isTauriAvailable = async () => false
 const domToPngBase64 = async (..._args: unknown[]) => ""
 const printEscposImage = async (..._args: unknown[]) => {}
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type MetodoPago = "efectivo" | "tarjeta" | "transferencia"
 
@@ -58,7 +58,7 @@ export interface AbonoModalProps {
   onSuccess: (nuevoAnticipo: number) => void
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function fmtPeso(n: number) {
   return n.toLocaleString("es-MX", {
@@ -79,7 +79,7 @@ function metodoLabel(m: string): string {
   return map[m] ?? m
 }
 
-// ─── Method button ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Method button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function MetodoBtn({
   value,
@@ -107,7 +107,7 @@ function MetodoBtn({
   )
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function AbonoModal({
   isOpen,
@@ -149,7 +149,7 @@ export function AbonoModal({
   const [shopSettings, setShopSettings] = useState<TallerSettings | null>(null)
   const hiddenRef = useRef<HTMLDivElement>(null)
 
-  // ── Load detail on open ───────────────────────────────────────────────────
+  // â”€â”€ Load detail on open â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   useEffect(() => {
     if (!isOpen || !repairId) {
@@ -189,14 +189,14 @@ export function AbonoModal({
     load()
   }, [isOpen, repairId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Derived values ────────────────────────────────────────────────────────
+  // â”€â”€ Derived values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const saldoPendiente = Math.max(0, presupuesto - currentAnticipo)
 
   const montoNum = parseFloat(monto) || 0
 
   // When paying with cash and the entered amount exceeds the balance,
-  // cap the abono at saldo — the rest is change returned to the customer.
+  // cap the abono at saldo â€” the rest is change returned to the customer.
   const montoEfectivoReal = metodoPago === "efectivo" && montoNum > saldoPendiente ? saldoPendiente : montoNum
   const abonoTotal = montoEfectivoReal
 
@@ -205,12 +205,12 @@ export function AbonoModal({
 
   const nuevoSaldo = Math.max(0, saldoPendiente - abonoTotal)
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const handleSubmit = async () => {
     if (!repairId) return
     if (abonoTotal <= 0) {
-      toast({ title: "Monto inválido", description: "Ingresa un monto mayor a $0.", variant: "destructive" })
+      toast({ title: "Monto invÃ¡lido", description: "Ingresa un monto mayor a $0.", variant: "destructive" })
       return
     }
 
@@ -243,7 +243,7 @@ export function AbonoModal({
     }
   }
 
-  // ── Post-liquidation: ask to change status ────────────────────────────────
+  // â”€â”€ Post-liquidation: ask to change status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const handleListoChoice = async (cambiarAListo: boolean) => {
     setListoDialogOpen(false)
@@ -255,14 +255,14 @@ export function AbonoModal({
           repairId,
           estadoAnterior: prev,
           estadoNuevo: "Listo",
-          notaTecnica: "Liquidación de pago",
+          notaTecnica: "LiquidaciÃ³n de pago",
         })
       }
     }
     setShowSuccess(true)
   }
 
-  // ── Success modal actions ─────────────────────────────────────────────────
+  // â”€â”€ Success modal actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const handleSuccessClose = () => {
     const nuevoAnticipo = paymentInfo?.nuevoAnticipo ?? pendingAnticipo ?? currentAnticipo
@@ -277,7 +277,7 @@ export function AbonoModal({
     if (!paymentInfo.movimientoCajaId) {
       toast({
         title: "Comprobante no disponible",
-        description: "No se encontró el abono registrado para impresión.",
+        description: "No se encontrÃ³ el abono registrado para impresiÃ³n.",
         variant: "destructive",
       })
       return
@@ -308,8 +308,8 @@ export function AbonoModal({
         toast({ title: "Comprobante enviado a impresora" })
       } else if (result.usedFallback) {
         toast({
-          title: "Impresión web en uso",
-          description: `${result.errorMessage || "Se usó impresión web como respaldo."}`,
+          title: "ImpresiÃ³n web en uso",
+          description: `${result.errorMessage || "Se usÃ³ impresiÃ³n web como respaldo."}`,
         })
       }
     } catch (e) {
@@ -320,11 +320,11 @@ export function AbonoModal({
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   return (
     <>
-      {/* ── Main abono form dialog ── */}
+      {/* â”€â”€ Main abono form dialog â”€â”€ */}
       <Dialog open={isOpen && !showSuccess} onOpenChange={(o) => !o && onClose()}>
         <DialogContent className="sm:max-w-md bg-white p-5">
           <DialogHeader>
@@ -333,7 +333,7 @@ export function AbonoModal({
               REGISTRAR ABONO
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Ticket #{repairFolio} · Saldo pendiente: {fmtPeso(saldoPendiente)}
+              Ticket #{repairFolio} Â· Saldo pendiente: {fmtPeso(saldoPendiente)}
             </DialogDescription>
           </DialogHeader>
 
@@ -354,7 +354,7 @@ export function AbonoModal({
                     step="0.01"
                     value={monto}
                     onChange={(e) => setMonto(e.target.value)}
-                    placeholder={`Máx. ${fmtPeso(saldoPendiente)}`}
+                    placeholder={`MÃ¡x. ${fmtPeso(saldoPendiente)}`}
                     className="bg-white border-slate-200 min-h-[44px] text-lg font-bold"
                     autoFocus
                   />
@@ -362,7 +362,7 @@ export function AbonoModal({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Método de pago
+                    MÃ©todo de pago
                   </Label>
                   <div className="grid grid-cols-3 gap-2">
                     <MetodoBtn value="efectivo" current={metodoPago} label="EFECTIVO" onChange={setMetodoPago} />
@@ -398,7 +398,7 @@ export function AbonoModal({
                             : "border-slate-200 bg-slate-50 text-slate-400"
                         }`}
                       >
-                        {cambio > 0 ? fmtPeso(cambio) : "—"}
+                        {cambio > 0 ? fmtPeso(cambio) : "â€”"}
                       </div>
                     </div>
                   </div>
@@ -417,9 +417,9 @@ export function AbonoModal({
                     <span className="font-semibold text-amber-600">{fmtPeso(currentAnticipo)}</span>
                   </div>
                   <div className="flex justify-between border-t border-slate-200 pt-1.5">
-                    <span className="font-semibold">Restará pendiente</span>
+                    <span className="font-semibold">RestarÃ¡ pendiente</span>
                     <span className={`font-bold ${nuevoSaldo <= 0 ? "text-emerald-600" : "text-red-600"}`}>
-                      {nuevoSaldo <= 0 ? "LIQUIDADO ✓" : fmtPeso(nuevoSaldo)}
+                      {nuevoSaldo <= 0 ? "LIQUIDADO âœ“" : fmtPeso(nuevoSaldo)}
                     </span>
                   </div>
                 </div>
@@ -448,13 +448,13 @@ export function AbonoModal({
         </DialogContent>
       </Dialog>
 
-      {/* ── Liquidation: ask to change status to Listo ── */}
+      {/* â”€â”€ Liquidation: ask to change status to Listo â”€â”€ */}
       <AlertDialog open={listoDialogOpen} onOpenChange={setListoDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Saldo liquidado</AlertDialogTitle>
             <AlertDialogDescription>
-              Este abono cubre el total del presupuesto. ¿Deseas cambiar el estado del ticket a{" "}
+              Este abono cubre el total del presupuesto. Â¿Deseas cambiar el estado del ticket a{" "}
               <strong>Finalizado</strong>?
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -466,13 +466,13 @@ export function AbonoModal({
               onClick={() => handleListoChoice(true)}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              Sí, marcar como Listo
+              SÃ­, marcar como Listo
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* ── Abono registrado: success + print ── */}
+      {/* â”€â”€ Abono registrado: success + print â”€â”€ */}
       <Dialog open={showSuccess} onOpenChange={(o) => !o && handleSuccessClose()}>
         <DialogContent className="sm:max-w-sm bg-white">
           <div className="flex flex-col items-center gap-4 py-4 text-center">
@@ -540,4 +540,5 @@ export function AbonoModal({
     </>
   )
 }
+
 
