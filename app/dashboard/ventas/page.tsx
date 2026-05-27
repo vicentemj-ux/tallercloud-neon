@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import {
   AlertCircle,
+  Store,
   ArrowDownCircle,
   ArrowLeft,
   ArrowUpCircle,
@@ -124,7 +125,7 @@ function ProductThumb({ src, alt, productId, tallerId }: { src: string | null; a
 function VentasPageContent() {
   const router = useRouter()
   const { startFetch, stopFetch } = useDataFetchPerf("ventas")
-  const { caja, refresh } = useCajaContext()
+  const { caja, status, refresh, open: openCaja } = useCajaContext()
 
   // â”€â”€ Products state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [productos, setProductos] = useState<ProductoDisponible[]>([])
@@ -645,6 +646,16 @@ function VentasPageContent() {
 
           {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2">
+            {status !== "open" && (
+              <Button
+                onClick={openCaja}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-600 font-bold uppercase gap-2 rounded-2xl px-4 py-2.5 h-auto btn-glow"
+              >
+                <Store className="h-4 w-4" />
+                Abrir Caja
+              </Button>
+            )}
+
             {caja && (
               <button
                 onClick={() => setShowArqueo(true)}
@@ -666,7 +677,7 @@ function VentasPageContent() {
 
             <Button
               onClick={() => setShowArqueo(true)}
-              disabled={!caja}
+              disabled={status !== "open"}
               className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 font-bold uppercase gap-2 disabled:opacity-40 rounded-2xl px-4 py-2.5 h-auto"
             >
               <Calculator className="h-4 w-4" />
@@ -684,7 +695,7 @@ function VentasPageContent() {
 
             <Button
               onClick={() => router.push("/dashboard/corte")}
-              disabled={!caja}
+              disabled={status !== "open"}
               variant="outline"
               className="border-slate-200 text-red-500 hover:bg-red-50 font-bold uppercase gap-2 disabled:opacity-40 rounded-2xl px-4 py-2.5 h-auto"
             >
@@ -699,6 +710,28 @@ function VentasPageContent() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* LEFT COLUMN */}
         <div className="flex flex-col gap-4 w-full lg:flex-[2]">
+          {status !== "open" && (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700">
+                    Caja cerrada
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    Abre la caja para iniciar pruebas de ventas, abonos y movimientos.
+                  </p>
+                </div>
+                <Button
+                  onClick={openCaja}
+                  className="h-11 rounded-xl bg-emerald-600 px-5 text-xs font-black uppercase tracking-wider text-white hover:bg-emerald-700 btn-glow"
+                >
+                  <Store className="mr-2 h-4 w-4" />
+                  Abrir Caja
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Tabs */}
           <div className="flex items-center gap-1 bg-white rounded-2xl border border-slate-200 p-1.5 shadow-sm">
             {(

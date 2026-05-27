@@ -286,6 +286,14 @@ export async function abrirCaja(montoInicial: number): Promise<{ caja: CajaRow |
     const tallerId = await getCurrentTallerId()
     await ensureCajaTableExists()
 
+    const abiertaRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
+      "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
+      tallerId,
+    )
+    if (abiertaRows[0]) {
+      return { caja: normCaja(abiertaRows[0]), error: "Ya hay una caja abierta." }
+    }
+
     const countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
       "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
       tallerId,
