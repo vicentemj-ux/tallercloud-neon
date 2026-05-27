@@ -46,7 +46,7 @@ import {
   type ProductoRow,
   type BulkImportProductoInput,
 } from "@/lib/actions/productos-prisma"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { InventoryExhibitionLabel } from "@/components/dashboard/inventory-exhibition-label"
 import { InventoryStandardLabel } from "@/components/dashboard/inventory-standard-label"
 import { isEquipoExhibitionCategory } from "@/components/dashboard/inventory-label-utils"

@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label"
 import { AlertCircle } from "lucide-react"
-import type { TallerSettings } from "@/lib/actions/settings"
+import type { TallerSettings } from "@/lib/actions/settings-prisma"
 
 interface FieldWrapProps {
   field: keyof TallerSettings

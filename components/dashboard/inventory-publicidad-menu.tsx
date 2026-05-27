@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { PosterExhibicion } from "@/components/print-templates/PosterExhibicion"
 import type { ProductoRow } from "@/lib/actions/productos-prisma"
-import { getTallerSettings } from "@/lib/actions/settings"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { getEsUsuarioPro } from "@/lib/actions/auth-prisma"
 import { toast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
