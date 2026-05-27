@@ -1,6 +1,6 @@
 "use client"
 
-import type { CobroReparacionTicketData } from "@/lib/actions/ventas"
+import type { CobroReparacionTicketData } from "@/lib/actions/ventas-prisma"
 
 const METODOS_LABEL: Record<string, string> = {
   efectivo: "Efectivo",
@@ -170,3 +170,5 @@ export function TicketCobroReparacionTemplate({
     </div>
   )
 }
+
+

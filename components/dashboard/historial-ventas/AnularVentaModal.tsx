@@ -5,7 +5,7 @@ import { Wallet, CheckCircle2, Loader2 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
-import { anularVenta, getCajaAbierta, type CajaRow } from "@/lib/actions/ventas"
+import { anularVenta, getCajaAbierta, type CajaRow } from "@/lib/actions/ventas-prisma"
 import { formatMoneyCompact } from "@/lib/utils/currency"
 
 interface AnularVentaModalProps {
@@ -161,3 +161,5 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
     </Dialog>
   )
 }
+
+

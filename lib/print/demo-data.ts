@@ -4,7 +4,7 @@
  */
 
 import type { TicketRecepcionData } from "@/components/print-templates/TicketRecepcionTemplate"
-import type { VentaCreada } from "@/lib/actions/ventas"
+import type { VentaCreada } from "@/lib/actions/ventas-prisma"
 import type { LabelRepairTemplateData } from "@/components/print-templates/LabelRepairTemplate"
 import type { ProductSaleLabelTemplateData } from "@/components/print-templates/ProductSaleLabelTemplate"
 
@@ -157,3 +157,5 @@ export function getDemoData(type: DocumentType) {
       return DEMO_REPARACION
   }
 }
+
+

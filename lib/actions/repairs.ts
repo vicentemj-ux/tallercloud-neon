@@ -31,7 +31,7 @@ import {
 } from "@/lib/reparaciones/checklist-pro"
 import { getAjustesTallerFlujoPro } from "@/lib/actions/flujo-pro"
 import { createRepairInputSchema, formatCreateRepairValidationError } from "@/lib/validations/repair-create"
-import { crearVenta, getCajaAbierta } from "@/lib/actions/ventas"
+import { crearVenta, getCajaAbierta } from "@/lib/actions/ventas-prisma"
 import { setServiciosReparacion } from "@/lib/actions/servicios"
 
 const createClient = async () => (await createCurrentTenantClient()).supabase
@@ -2901,3 +2901,5 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
     return { success: false, error: "Error inesperado al cancelar la reparación." }
   }
 }
+
+

@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useMemo, useState } from "react"
 import { Calculator, Clock, X, Loader2 } from "lucide-react"
-import { getCajaConDetalle, type CajaRow, type CortePrintData, type CorteCobro, type CorteGasto, type CorteVentaLinea } from "@/lib/actions/ventas"
+import { getCajaConDetalle, type CajaRow, type CortePrintData, type CorteCobro, type CorteGasto, type CorteVentaLinea } from "@/lib/actions/ventas-prisma"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 
@@ -311,3 +311,5 @@ export const ArqueoModal = memo(function ArqueoModal({
     </Dialog>
   )
 })
+
+

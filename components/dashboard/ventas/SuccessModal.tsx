@@ -9,7 +9,7 @@ import { toast } from "@/hooks/use-toast"
 import { MessageCircle, Printer, Tag, X, CheckCircle2, Loader2 } from "lucide-react"
 import { TicketVentaDispatcher } from "@/components/print-templates"
 import type { ProductSaleLabelTemplateData } from "@/components/print-templates/ProductSaleLabelTemplate"
-import type { VentaCreada } from "@/lib/actions/ventas"
+import type { VentaCreada } from "@/lib/actions/ventas-prisma"
 import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 
 const isTauriAvailable = async () => false
@@ -336,4 +336,6 @@ export const SuccessModal = memo(function SuccessModal({
     </Dialog>
   )
 })
+
+
 

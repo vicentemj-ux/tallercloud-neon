@@ -37,7 +37,7 @@ import {
   type ProductoDisponible,
   type DetalleVentaInput,
   type VentaCreada,
-} from "@/lib/actions/ventas"
+} from "@/lib/actions/ventas-prisma"
 import { HistorialCaja } from "@/components/dashboard/historial-caja"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { ArqueoModal } from "@/components/dashboard/ventas/ArqueoModal"
@@ -1199,4 +1199,6 @@ export default function VentasPage() {
     </CajaProvider>
   )
 }
+
+
 

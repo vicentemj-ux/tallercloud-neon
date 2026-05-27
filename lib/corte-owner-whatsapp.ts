@@ -1,4 +1,4 @@
-import type { CortePrintData } from "@/lib/actions/ventas"
+import type { CortePrintData } from "@/lib/actions/ventas-prisma"
 import { buildWhatsAppUrl, normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 
 function fmtMoney(n: number) {
@@ -85,3 +85,5 @@ export function formatCorteOwnerWhatsAppMessage(nombreTaller: string, corte: Cor
 export function buildWaMeUrl(phoneDigits: string, message: string): string {
   return buildWhatsAppUrl(phoneDigits, message)
 }
+
+

@@ -23,7 +23,7 @@ import {
   type HistorialCajaItem,
   type DetalleCajaData,
   type CortePrintData,
-} from "@/lib/actions/ventas"
+} from "@/lib/actions/ventas-prisma"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { getCurrentOwnerIdentity } from "@/lib/actions/auth-prisma"
 import {
@@ -601,3 +601,5 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
     </>
   )
 }
+
+

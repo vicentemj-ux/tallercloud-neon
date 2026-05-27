@@ -10,7 +10,7 @@ import {
   canAnularVentas,
   type VentaCreada,
   type CobroReparacionTicketData,
-} from "@/lib/actions/ventas"
+} from "@/lib/actions/ventas-prisma"
 import { formatMoneyCompact } from "@/lib/utils/currency"
 import { formatFolioFecha } from "@/lib/utils/date"
 import { SuccessModal } from "@/components/dashboard/ventas/SuccessModal"
@@ -322,3 +322,5 @@ export function HistorialVentaRowCard({
     </>
   )
 }
+
+

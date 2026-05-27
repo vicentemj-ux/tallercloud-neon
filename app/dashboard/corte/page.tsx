@@ -14,8 +14,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { getCajaConDetalle, cerrarCaja, getCajaAbierta } from "@/lib/actions/ventas"
-import type { CajaRow, CortePrintData } from "@/lib/actions/ventas"
+import { getCajaConDetalle, cerrarCaja, getCajaAbierta } from "@/lib/actions/ventas-prisma"
+import type { CajaRow, CortePrintData } from "@/lib/actions/ventas-prisma"
 
 function fmt(n: number) {
   return n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -284,3 +284,5 @@ function RegistroRow({
     </div>
   )
 }
+
+

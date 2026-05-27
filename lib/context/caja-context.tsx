@@ -19,8 +19,8 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import { getCajaAbierta, abrirCaja } from "@/lib/actions/ventas"
-import type { CajaRow } from "@/lib/actions/ventas"
+import { getCajaAbierta, abrirCaja } from "@/lib/actions/ventas-prisma"
+import type { CajaRow } from "@/lib/actions/ventas-prisma"
 import { AlertCircle, Loader2, Store } from "lucide-react"
 
 type CajaStatus = "open" | "closed" | "loading"
@@ -235,3 +235,5 @@ export function OpenCajaModal({ defaultFondo = "500", onSuccess }: OpenCajaModal
     </Dialog>
   )
 }
+
+

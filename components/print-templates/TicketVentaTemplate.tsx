@@ -1,6 +1,6 @@
 "use client"
 
-import type { VentaCreada } from "@/lib/actions/ventas"
+import type { VentaCreada } from "@/lib/actions/ventas-prisma"
 
 const METODOS_LABEL: Record<string, string> = {
   efectivo: "Efectivo",
@@ -236,3 +236,5 @@ export function TicketVentaTemplate({
     </div>
   )
 }
+
+
