@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
-import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import { PRO_DISABLED_ROUTES, PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
@@ -14,15 +13,6 @@ const SidebarContent = dynamic(
   { ssr: false, loading: () => <SidebarSkeleton /> }
 )
 
-// Lazy-load componentes no crÃ­ticos del header
-const HelpQuickSheet = dynamic(
-  () => import("@/components/dashboard/help-quick-sheet").then((m) => m.HelpQuickSheet),
-  { ssr: false }
-)
-const DashboardHeaderProfile = dynamic(
-  () => import("@/components/dashboard/dashboard-header-profile").then((m) => m.DashboardHeaderProfile),
-  { ssr: false }
-)
 const OfflineBanner = dynamic(
   () => import("@/components/dashboard/offline-banner").then((m) => m.OfflineBanner),
   { ssr: false }
@@ -100,38 +90,20 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-0 flex-1 flex-col bg-white">
         <OfflineBanner />
 
-        {/* Mobile Header */}
-        <header className="flex h-14 shrink-0 items-center gap-2 overflow-hidden border-b border-slate-200 bg-white px-3 shadow-sm sm:gap-3 sm:px-4 lg:hidden">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-10 w-10 shrink-0 rounded-xl border-slate-200 bg-white shadow-sm hover:bg-slate-50"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Abrir menÃº</span>
-          </Button>
-          <span className="min-w-0 shrink truncate text-sm font-bold tracking-tight text-slate-900 sm:text-base">
-            TallerCloud
-          </span>
-          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
-            <HelpQuickSheet />
-            <DashboardHeaderProfile />
-          </div>
-        </header>
-
-        {/* Desktop Header */}
-        <header className="hidden h-14 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-6 shadow-sm lg:flex">
-          <span className="shrink-0 text-lg font-bold tracking-tight text-slate-900">TallerCloud</span>
-          <HelpQuickSheet />
-          <DashboardHeaderProfile />
-          <div className="min-w-0 flex-1" />
-        </header>
-
         <main className="flex-1 overflow-y-auto scroll-smooth bg-slate-50/50 font-sans">
           {children}
         </main>
       </div>
+
+      {/* Mobile floating menu button (no top header bar) */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg lg:hidden"
+        aria-label="Abrir menú"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
     </div>
   )
 }
