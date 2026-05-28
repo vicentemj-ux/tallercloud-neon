@@ -319,32 +319,6 @@ async function ensureAllPosTablesExist() {
   `)
 
   await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS productos (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      nombre text NOT NULL,
-      sku text,
-      categoria text,
-      precio_venta numeric(12,2) NOT NULL DEFAULT 0,
-      costo numeric(12,2) NOT NULL DEFAULT 0,
-      stock_actual integer NOT NULL DEFAULT 0,
-      imagen_url text,
-      es_equipo boolean NOT NULL DEFAULT false,
-      imei_serie text,
-      color text,
-      capacidad text,
-      condicion text,
-      marca text,
-      modelo text,
-      procesador text,
-      ram text,
-      almacenamiento text,
-      created_at timestamptz NOT NULL DEFAULT now(),
-      updated_at timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS movimientos_caja (
       id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
       taller_id text NOT NULL,
@@ -517,41 +491,39 @@ export async function getProductosDisponibles(): Promise<{ data: ProductoDisponi
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT id, taller_id, nombre, sku, categoria, precio_venta, costo, stock_actual, imagen_url, es_equipo,
-              imei_serie, color, capacidad, condicion, marca, modelo, procesador, ram, almacenamiento
-       FROM productos
-       WHERE taller_id = $1 AND stock_actual > 0
-       ORDER BY nombre ASC
-       LIMIT 300`,
-      tallerId,
-    )
+
+    const rows = await prisma.producto.findMany({
+      where: { tenantId: tallerId, stockActual: { gt: 0 } },
+      orderBy: { nombre: "asc" },
+      take: 300,
+    })
+
     return {
       data: rows.map((row) => ({
-        id: String(row.id),
-        taller_id: String(row.taller_id),
-        nombre: String(row.nombre ?? ""),
-        sku: row.sku == null ? null : String(row.sku),
-        categoria: row.categoria == null ? null : String(row.categoria),
-        precio_venta: toNum(row.precio_venta),
-        costo: toNum(row.costo),
-        stock_actual: toNum(row.stock_actual),
-        imagen_url: getInventoryPublicUrl(row.imagen_url == null ? null : String(row.imagen_url)),
-        es_equipo: Boolean(row.es_equipo),
-        imei_serie: row.imei_serie == null ? null : String(row.imei_serie),
-        color: row.color == null ? null : String(row.color),
-        capacidad: row.capacidad == null ? null : String(row.capacidad),
-        condicion: row.condicion == null ? null : String(row.condicion),
-        marca: row.marca == null ? null : String(row.marca),
-        modelo: row.modelo == null ? null : String(row.modelo),
-        procesador: row.procesador == null ? null : String(row.procesador),
-        ram: row.ram == null ? null : String(row.ram),
-        almacenamiento: row.almacenamiento == null ? null : String(row.almacenamiento),
+        id: row.id,
+        taller_id: row.tenantId,
+        nombre: row.nombre,
+        sku: row.sku,
+        categoria: row.categoria,
+        precio_venta: Number(row.precioVenta),
+        costo: Number(row.costo),
+        stock_actual: row.stockActual,
+        imagen_url: getInventoryPublicUrl(row.imagenUrl),
+        es_equipo: row.esEquipo,
+        imei_serie: row.imeiSerie,
+        color: row.color,
+        capacidad: row.capacidad,
+        condicion: row.condicion,
+        marca: row.marca,
+        modelo: row.modelo,
+        procesador: row.procesador,
+        ram: row.ram,
+        almacenamiento: row.almacenamiento,
       })),
       error: null,
     }
   } catch (error) {
+    console.error("[ventas-prisma] getProductosDisponibles:", error)
     return { data: [], error: error instanceof Error ? error.message : "Error al cargar inventario" }
   }
 }

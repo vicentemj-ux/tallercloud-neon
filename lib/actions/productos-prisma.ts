@@ -5,6 +5,9 @@ import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
 import { normalizeInventoryImagePathForDb } from "@/lib/storage"
 import { sanitizeFileName, uploadFileToR2 } from "@/lib/r2"
+import type { Prisma } from "@prisma/client"
+
+// ─── Public types (snake_case for UI backward compat) ────────────────────────
 
 export interface ProductoRow {
   id: string
@@ -73,153 +76,177 @@ export type UploadProductImageResult =
   | { success: true; path: string }
   | { success: false; error: string; errorDebug?: unknown }
 
-function n(v: unknown): number { return Number(v ?? 0) }
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export async function getProductos(page = 0, pageSize = 50, search = ""): Promise<{ data: ProductoRow[]; error: string | null; total: number }> {
+function toNum(v: unknown): number {
+  return Number(v ?? 0)
+}
+
+function mapToRow(p: {
+  id: string
+  tenantId: string
+  nombre: string
+  sku: string | null
+  codigoBarras: string | null
+  imagenUrl: string | null
+  categoria: string | null
+  descripcion: string | null
+  marca: string | null
+  modelo: string | null
+  ubicacion: string | null
+  costo: Prisma.Decimal
+  precioVenta: Prisma.Decimal
+  stockActual: number
+  stockMinimo: number
+  esEquipo: boolean
+  imeiSerie: string | null
+  color: string | null
+  capacidad: string | null
+  procesador: string | null
+  ram: string | null
+  almacenamiento: string | null
+  condicion: string | null
+  createdAt: Date
+}): ProductoRow {
+  return {
+    id: p.id,
+    taller_id: p.tenantId,
+    nombre: p.nombre,
+    sku: p.sku,
+    codigo_barras: p.codigoBarras,
+    imagen_url: p.imagenUrl,
+    categoria: p.categoria,
+    descripcion: p.descripcion,
+    marca: p.marca,
+    modelo: p.modelo,
+    ubicacion: p.ubicacion,
+    costo: Number(p.costo),
+    precio_venta: Number(p.precioVenta),
+    stock_actual: p.stockActual,
+    stock_minimo: p.stockMinimo,
+    es_equipo: p.esEquipo,
+    imei_serie: p.imeiSerie,
+    color: p.color,
+    capacidad: p.capacidad,
+    procesador: p.procesador,
+    ram: p.ram,
+    almacenamiento: p.almacenamiento,
+    condicion: p.condicion,
+    created_at: p.createdAt.toISOString(),
+  }
+}
+
+function buildData(input: CreateProductoInput, tenantId: string) {
+  const esEquipo = Boolean(input.es_equipo)
+  const almacStr = (input.almacenamiento || input.capacidad || "").trim() || null
+  return {
+    tenantId,
+    nombre: (input.nombre || "").trim(),
+    sku: (input.sku || "").trim() || null,
+    codigoBarras: (input.codigo_barras || "").trim() || null,
+    imagenUrl: normalizeInventoryImagePathForDb(input.imagen_url),
+    categoria: (input.categoria || "").trim() || null,
+    descripcion: (input.descripcion || "").trim() || null,
+    marca: (input.marca || "").trim() || null,
+    modelo: (input.modelo || "").trim() || null,
+    ubicacion: (input.ubicacion || "").trim() || null,
+    costo: Number.isFinite(Number(input.costo)) ? Math.max(0, Number(input.costo)) : 0,
+    precioVenta: Number.isFinite(Number(input.precio_venta)) ? Math.max(0, Number(input.precio_venta)) : 0,
+    stockActual: input.stock_actual != null ? Math.max(0, Math.floor(Number(input.stock_actual))) : 1,
+    stockMinimo: input.stock_minimo != null ? Math.max(0, Math.floor(Number(input.stock_minimo))) : 5,
+    esEquipo,
+    imeiSerie: esEquipo && (input.imei_serie || "").trim() ? (input.imei_serie || "").trim() : null,
+    color: esEquipo && (input.color || "").trim() ? (input.color || "").trim() : null,
+    procesador: esEquipo && (input.procesador || "").trim() ? (input.procesador || "").trim() : null,
+    ram: esEquipo && (input.ram || "").trim() ? (input.ram || "").trim() : null,
+    almacenamiento: esEquipo ? almacStr : null,
+    capacidad: esEquipo ? almacStr : null,
+    condicion: (input.condicion || "").trim() || null,
+  }
+}
+
+// ─── Queries ─────────────────────────────────────────────────────────────────
+
+export async function getProductos(
+  page = 0,
+  pageSize = 50,
+  search = "",
+): Promise<{ data: ProductoRow[]; error: string | null; total: number }> {
   try {
     const prisma = getPrismaClient()
-    const tallerId = await getCurrentTallerId()
-    const from = page * pageSize
-    const pattern = `%${search.trim()}%`
-
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT id, taller_id, nombre, sku, codigo_barras, imagen_url, categoria, descripcion, marca, modelo, ubicacion,
-              costo, precio_venta, stock_actual, stock_minimo, es_equipo, imei_serie, color, capacidad, procesador, ram, almacenamiento, condicion, created_at
-       FROM productos
-       WHERE taller_id = $1
-         AND ($2 = '' OR nombre ILIKE $3 OR sku ILIKE $3 OR codigo_barras ILIKE $3 OR descripcion ILIKE $3 OR categoria ILIKE $3)
-       ORDER BY created_at DESC, id DESC
-       OFFSET $4 LIMIT $5`,
-      tallerId,
-      search.trim(),
-      pattern,
-      from,
-      pageSize,
-    )
-    const totalRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
-      `SELECT COUNT(*)::int AS total FROM productos
-       WHERE taller_id = $1
-         AND ($2 = '' OR nombre ILIKE $3 OR sku ILIKE $3 OR codigo_barras ILIKE $3 OR descripcion ILIKE $3 OR categoria ILIKE $3)`,
-      tallerId,
-      search.trim(),
-      pattern,
-    )
-
-    return {
-      data: rows.map((r) => ({
-        id: String(r.id),
-        taller_id: String(r.taller_id),
-        nombre: String(r.nombre ?? ""),
-        sku: r.sku == null ? null : String(r.sku),
-        codigo_barras: r.codigo_barras == null ? null : String(r.codigo_barras),
-        imagen_url: r.imagen_url == null ? null : String(r.imagen_url),
-        categoria: r.categoria == null ? null : String(r.categoria),
-        descripcion: r.descripcion == null ? null : String(r.descripcion),
-        marca: r.marca == null ? null : String(r.marca),
-        modelo: r.modelo == null ? null : String(r.modelo),
-        ubicacion: r.ubicacion == null ? null : String(r.ubicacion),
-        costo: n(r.costo),
-        precio_venta: n(r.precio_venta),
-        stock_actual: n(r.stock_actual),
-        stock_minimo: n(r.stock_minimo),
-        es_equipo: Boolean(r.es_equipo),
-        imei_serie: r.imei_serie == null ? null : String(r.imei_serie),
-        color: r.color == null ? null : String(r.color),
-        capacidad: r.capacidad == null ? null : String(r.capacidad),
-        procesador: r.procesador == null ? null : String(r.procesador),
-        ram: r.ram == null ? null : String(r.ram),
-        almacenamiento: r.almacenamiento == null ? null : String(r.almacenamiento),
-        condicion: r.condicion == null ? null : String(r.condicion),
-        created_at: String(r.created_at),
-      })),
-      error: null,
-      total: totalRows[0]?.total ?? 0,
+    const tenantId = await getCurrentTallerId()
+    const q = search.trim()
+    const where: Prisma.ProductoWhereInput = { tenantId }
+    if (q) {
+      where.OR = [
+        { nombre: { contains: q, mode: "insensitive" } },
+        { sku: { contains: q, mode: "insensitive" } },
+        { codigoBarras: { contains: q, mode: "insensitive" } },
+        { descripcion: { contains: q, mode: "insensitive" } },
+        { categoria: { contains: q, mode: "insensitive" } },
+      ]
     }
+
+    const [data, total] = await Promise.all([
+      prisma.producto.findMany({
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: page * pageSize,
+        take: pageSize,
+      }),
+      prisma.producto.count({ where }),
+    ])
+
+    return { data: data.map(mapToRow), error: null, total }
   } catch (error) {
+    console.error("[productos-prisma] getProductos:", error)
     return { data: [], error: error instanceof Error ? error.message : "Error al cargar inventario", total: 0 }
   }
 }
 
-export async function getInventoryOperationalKpis(): Promise<{ valorEnRiesgo: number; rotacionDiasPromedio: number; error: string | null }> {
+export async function getInventoryOperationalKpis(): Promise<{
+  valorEnRiesgo: number
+  rotacionDiasPromedio: number
+  error: string | null
+}> {
   try {
     const prisma = getPrismaClient()
-    const tallerId = await getCurrentTallerId()
-    const riesgoRows = await prisma.$queryRawUnsafe<Array<{ valor: number }>>(
+    const tenantId = await getCurrentTallerId()
+
+    const rows = await prisma.$queryRawUnsafe<Array<{ valor: number }>>(
       `SELECT COALESCE(SUM(COALESCE(costo,0) * COALESCE(stock_actual,0)),0)::float8 AS valor
        FROM productos
        WHERE taller_id = $1 AND COALESCE(stock_actual,0) <= COALESCE(stock_minimo,0)`,
-      tallerId,
+      tenantId,
     )
-    return { valorEnRiesgo: Number(riesgoRows[0]?.valor ?? 0), rotacionDiasPromedio: 0, error: null }
+
+    return { valorEnRiesgo: Number(rows[0]?.valor ?? 0), rotacionDiasPromedio: 0, error: null }
   } catch (error) {
     return { valorEnRiesgo: 0, rotacionDiasPromedio: 0, error: error instanceof Error ? error.message : "Error KPI" }
   }
 }
 
-export async function createProducto(input: CreateProductoInput): Promise<{ success: boolean; error?: string }> {
+// ─── Mutations ───────────────────────────────────────────────────────────────
+
+export async function createProducto(
+  input: CreateProductoInput,
+): Promise<{ success: boolean; error?: string }> {
   try {
     const prisma = getPrismaClient()
-    const tallerId = await getCurrentTallerId()
+    const tenantId = await getCurrentTallerId()
     const nombre = (input.nombre || "").trim()
     if (!nombre) return { success: false, error: "El nombre del producto es obligatorio." }
 
-    const almacStr = (input.almacenamiento || input.capacidad || "").trim() || null
-    const payload = {
-      taller_id: tallerId,
-      nombre,
-      sku: (input.sku || "").trim() || null,
-      codigo_barras: (input.codigo_barras || "").trim() || null,
-      imagen_url: normalizeInventoryImagePathForDb(input.imagen_url),
-      categoria: (input.categoria || "").trim() || null,
-      descripcion: (input.descripcion || "").trim() || null,
-      marca: (input.marca || "").trim() || null,
-      modelo: (input.modelo || "").trim() || null,
-      ubicacion: (input.ubicacion || "").trim() || null,
-      costo: Number.isFinite(Number(input.costo)) ? Math.max(0, Number(input.costo)) : 0,
-      precio_venta: Number.isFinite(Number(input.precio_venta)) ? Math.max(0, Number(input.precio_venta)) : 0,
-      stock_actual: input.stock_actual != null ? Math.max(0, Math.floor(Number(input.stock_actual))) : 1,
-      stock_minimo: input.stock_minimo != null ? Math.max(0, Math.floor(Number(input.stock_minimo))) : 5,
-      es_equipo: Boolean(input.es_equipo),
-      imei_serie: input.es_equipo && (input.imei_serie || "").trim() ? (input.imei_serie || "").trim() : null,
-      color: input.es_equipo && (input.color || "").trim() ? (input.color || "").trim() : null,
-      procesador: input.es_equipo && (input.procesador || "").trim() ? (input.procesador || "").trim() : null,
-      ram: input.es_equipo && (input.ram || "").trim() ? (input.ram || "").trim() : null,
-      almacenamiento: input.es_equipo ? almacStr : null,
-      capacidad: input.es_equipo ? almacStr : null,
-      condicion: (input.condicion || "").trim() || null,
-    }
+    const data = buildData(input, tenantId)
 
     if (input.id?.trim()) {
-      const updated = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-        `UPDATE productos SET
-           nombre=$1, sku=$2, codigo_barras=$3, imagen_url=$4, categoria=$5, descripcion=$6, marca=$7, modelo=$8, ubicacion=$9,
-           costo=$10, precio_venta=$11, stock_actual=$12, stock_minimo=$13, es_equipo=$14, imei_serie=$15, color=$16,
-           procesador=$17, ram=$18, almacenamiento=$19, capacidad=$20, condicion=$21
-         WHERE id=$22 AND taller_id=$23 RETURNING id`,
-        payload.nombre, payload.sku, payload.codigo_barras, payload.imagen_url, payload.categoria, payload.descripcion, payload.marca, payload.modelo, payload.ubicacion,
-        payload.costo, payload.precio_venta, payload.stock_actual, payload.stock_minimo, payload.es_equipo, payload.imei_serie, payload.color,
-        payload.procesador, payload.ram, payload.almacenamiento, payload.capacidad, payload.condicion,
-        input.id.trim(), tallerId,
-      )
-      if (updated.length === 0) {
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO productos (id, taller_id, nombre, sku, codigo_barras, imagen_url, categoria, descripcion, marca, modelo, ubicacion,
-            costo, precio_venta, stock_actual, stock_minimo, es_equipo, imei_serie, color, procesador, ram, almacenamiento, capacidad, condicion)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)`,
-          input.id.trim(), tallerId, payload.nombre, payload.sku, payload.codigo_barras, payload.imagen_url, payload.categoria, payload.descripcion, payload.marca, payload.modelo, payload.ubicacion,
-          payload.costo, payload.precio_venta, payload.stock_actual, payload.stock_minimo, payload.es_equipo, payload.imei_serie, payload.color,
-          payload.procesador, payload.ram, payload.almacenamiento, payload.capacidad, payload.condicion,
-        )
-      }
+      await prisma.producto.upsert({
+        where: { id: input.id.trim() },
+        create: { id: input.id.trim(), ...data },
+        update: data,
+      })
     } else {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO productos (taller_id, nombre, sku, codigo_barras, imagen_url, categoria, descripcion, marca, modelo, ubicacion,
-          costo, precio_venta, stock_actual, stock_minimo, es_equipo, imei_serie, color, procesador, ram, almacenamiento, capacidad, condicion)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
-        tallerId, payload.nombre, payload.sku, payload.codigo_barras, payload.imagen_url, payload.categoria, payload.descripcion, payload.marca, payload.modelo, payload.ubicacion,
-        payload.costo, payload.precio_venta, payload.stock_actual, payload.stock_minimo, payload.es_equipo, payload.imei_serie, payload.color,
-        payload.procesador, payload.ram, payload.almacenamiento, payload.capacidad, payload.condicion,
-      )
+      await prisma.producto.create({ data })
     }
 
     revalidatePath("/dashboard/inventario")
@@ -229,16 +256,19 @@ export async function createProducto(input: CreateProductoInput): Promise<{ succ
   }
 }
 
-export async function uploadProductImage(base64Image: string, productId: string): Promise<UploadProductImageResult> {
+export async function uploadProductImage(
+  base64Image: string,
+  productId: string,
+): Promise<UploadProductImageResult> {
   try {
     if (!base64Image?.trim()) return { success: false, error: "No hay imagen" }
-    const tallerId = await getCurrentTallerId()
+    const tenantId = await getCurrentTallerId()
     const base64 = base64Image.startsWith("data:image") ? base64Image.split(",")[1] : base64Image
-    if (!base64) return { success: false, error: "Formato de imagen no válido" }
+    if (!base64) return { success: false, error: "Formato de imagen no valido" }
 
     const buffer = Buffer.from(base64, "base64")
     const fileName = sanitizeFileName(`${productId}.webp`)
-    const key = `inventario/${tallerId}/${fileName}`
+    const key = `inventario/${tenantId}/${fileName}`
 
     await uploadFileToR2({ key, body: buffer, contentType: "image/webp" })
     return { success: true, path: key }
@@ -247,7 +277,15 @@ export async function uploadProductImage(base64Image: string, productId: string)
   }
 }
 
-export async function bulkImportProductos(rows: BulkImportProductoInput[]): Promise<{ success: boolean; insertedCount: number; skippedCount: number; totalCostoCarga: number; errors?: string[] }> {
+export async function bulkImportProductos(
+  rows: BulkImportProductoInput[],
+): Promise<{
+  success: boolean
+  insertedCount: number
+  skippedCount: number
+  totalCostoCarga: number
+  errors?: string[]
+}> {
   try {
     let insertedCount = 0
     let totalCostoCarga = 0
@@ -288,15 +326,21 @@ export async function bulkImportProductos(rows: BulkImportProductoInput[]): Prom
       errors: errors.length ? errors : undefined,
     }
   } catch (err) {
-    return { success: false, insertedCount: 0, skippedCount: rows.length, totalCostoCarga: 0, errors: [err instanceof Error ? err.message : String(err)] }
+    return {
+      success: false,
+      insertedCount: 0,
+      skippedCount: rows.length,
+      totalCostoCarga: 0,
+      errors: [err instanceof Error ? err.message : String(err)],
+    }
   }
 }
 
 export async function deleteProducto(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     const prisma = getPrismaClient()
-    const tallerId = await getCurrentTallerId()
-    await prisma.$executeRawUnsafe("DELETE FROM productos WHERE id = $1 AND taller_id = $2", id, tallerId)
+    const tenantId = await getCurrentTallerId()
+    await prisma.producto.deleteMany({ where: { id, tenantId } })
     return { success: true }
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) }

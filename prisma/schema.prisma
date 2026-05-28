@@ -56,6 +56,7 @@ model Tenant {
   reparaciones  Reparacion[]
   archivos      Archivo[]
   configuracion ConfiguracionTaller?
+  productos     Producto[]
 }
 
 model User {
@@ -239,4 +240,38 @@ model ConfiguracionTaller {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+}
+
+model Producto {
+  id             String     @id @default(cuid())
+  tenantId       String     @map("taller_id")
+  nombre         String
+  sku            String?
+  codigoBarras   String?    @map("codigo_barras")
+  imagenUrl      String?    @map("imagen_url")
+  categoria      String?
+  descripcion    String?
+  marca          String?
+  modelo         String?
+  ubicacion      String?
+  costo          Decimal    @default(0) @db.Decimal(12, 2)
+  precioVenta    Decimal    @default(0) @db.Decimal(12, 2) @map("precio_venta")
+  stockActual    Int        @default(0) @map("stock_actual")
+  stockMinimo    Int        @default(0) @map("stock_minimo")
+  esEquipo       Boolean    @default(false) @map("es_equipo")
+  imeiSerie      String?    @map("imei_serie")
+  color          String?
+  capacidad      String?
+  procesador     String?
+  ram            String?
+  almacenamiento String?
+  condicion      String?
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt
+
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("productos")
+  @@index([tenantId])
+  @@index([tenantId, categoria])
 }
