@@ -50,7 +50,7 @@ import { SuccessModal } from "@/components/dashboard/ventas/SuccessModal"
 import { VentaEnEsperaConfirm } from "@/components/dashboard/ventas/VentaEnEsperaConfirm"
 import { VentasEnEsperaModal } from "@/components/dashboard/ventas/VentasEnEsperaModal"
 import { type ClientAutocompletePayload } from "@/components/dashboard/client-autocomplete"
-import { CajaProvider, useCajaContext } from "@/lib/context/caja-context"
+import { CajaProvider, useCajaContext, OpenCajaModal } from "@/lib/context/caja-context"
 import { getReparacionesListas, type RepairOrder } from "@/lib/actions/repairs-prisma"
 import { guardarVentaEnEspera, getVentasEnEspera, type VentaEnEspera } from "@/lib/ventas-en-espera"
 import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
@@ -1232,6 +1232,7 @@ export default function VentasPage() {
   return (
     <CajaProvider>
       <VentasPageContent />
+      <OpenCajaModal />
     </CajaProvider>
   )
 }

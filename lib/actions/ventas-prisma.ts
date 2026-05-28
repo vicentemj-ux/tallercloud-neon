@@ -368,6 +368,36 @@ async function ensureAllPosTablesExist() {
     $$;
   `)
 
+  // ─── Repair audit tables ───────────────────────────────────────────────────
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS historial_reparacion (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      reparacion_id text NOT NULL,
+      taller_id text NOT NULL,
+      usuario_id text,
+      estado_anterior text,
+      estado_nuevo text NOT NULL,
+      nota_tecnica text,
+      actor_nombre text,
+      fecha timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS cambios_reparaciones (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      reparacion_id text NOT NULL,
+      tipo_cambio text NOT NULL,
+      descripcion text,
+      valor_anterior text,
+      valor_nuevo text,
+      usuario text,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+
   // ─── Admin OTP codes table ─────────────────────────────────────────────────
 
   await prisma.$executeRawUnsafe(`

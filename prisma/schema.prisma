@@ -151,7 +151,7 @@ model Reparacion {
   tenantId     String
   clienteId    String
   folio        String
-  estado       String   @default("RECIBIDO")
+  estado       String   @default("RECIBIDO") @map("estatus")
   tipoEquipo   String?
   equipoMarca  String?
   equipoModelo String?
@@ -159,7 +159,7 @@ model Reparacion {
   color        String?
   falla        String?
   tecnico      String?
-  costoEstimado Decimal? @db.Decimal(10, 2)
+  costoEstimado Decimal? @db.Decimal(10, 2) @map("precio_estimado")
   anticipo     Decimal? @db.Decimal(10, 2)
   securityType String?
   securityValue String?

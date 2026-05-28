@@ -3,11 +3,15 @@
 import { getCurrentTenant } from "@/lib/auth"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { getPrismaClient } from "@/lib/prisma"
-import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
+import {
+  ensureChecklistIngreso,
+  parseChecklistIngreso,
+  type ChecklistIngreso,
+} from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
 import type { SecurityTab } from "@/lib/reparaciones/security"
-import type { ReparacionGasto } from "@/lib/actions/gastos-prisma"
-import * as legacyRepairs from "@/lib/actions/repairs"
+import { getGastosTicket, type ReparacionGasto } from "@/lib/actions/gastos-prisma"
+import { getServiciosReparacion, type ReparacionServicio } from "@/lib/actions/servicios-prisma"
 import {
   getPublicTrackPhotoKey,
   getR2BucketName,
@@ -20,6 +24,24 @@ import { last4 as phoneLast4, onlyDigits } from "@/lib/phone"
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 type ArchivoRow = { publicUrl: string | null; storageKey: string | null; key: string | null }
 type TechnicianRow = { id: string; nombre: string | null }
+type LegacyRepairsModule = typeof import("@/lib/actions/repairs")
+
+let legacyRepairsModulePromise: Promise<LegacyRepairsModule> | null = null
+
+async function getLegacyRepairsModule(): Promise<LegacyRepairsModule> {
+  if (!legacyRepairsModulePromise) {
+    legacyRepairsModulePromise = import("@/lib/actions/repairs")
+  }
+  return legacyRepairsModulePromise
+}
+
+function getLegacyUnavailableResponse(error: unknown) {
+  console.error("[repairs-prisma] legacy bridge unavailable:", error)
+  return {
+    success: false as const,
+    error: "Funcion temporalmente no disponible en MVP.",
+  }
+}
 
 function getPrismaErrorCode(error: unknown): string | null {
   if (!error || typeof error !== "object") return null
@@ -399,6 +421,19 @@ export async function createRepair(input: CreateRepairInput) {
       }
     }
 
+    try {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+         VALUES ($1,$2,'creacion',$3,NULL,NULL,$4,now())`,
+        tenantId,
+        result.id,
+        `Orden creada (folio ${result.folio})`,
+        await getCurrentActorDisplayName(),
+      )
+    } catch (historyErr) {
+      console.warn("createRepair prisma history seed:", historyErr)
+    }
+
     return {
       success: true,
       repairId: result.id,
@@ -492,6 +527,33 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
     const fotos = archivos
       .map((a: ArchivoRow) => getArchivoDisplayUrl(a))
       .filter((u: string | null | undefined): u is string => Boolean(u))
+    let checklistIngreso: ChecklistIngreso | null = null
+    let checklistPro: ChecklistProData | null = null
+    let creadoPorNombre: string | null = null
+
+    try {
+      const extraRows = await prisma.$queryRawUnsafe<Array<{
+        checklist_ingreso: unknown
+        checklist_pro: unknown
+        creado_por_nombre: string | null
+      }>>(
+        `SELECT checklist_ingreso, checklist_pro, creado_por_nombre
+         FROM reparaciones
+         WHERE id = $1 AND taller_id = $2
+         LIMIT 1`,
+        repairId,
+        tenantId,
+      )
+      const extra = extraRows[0]
+      if (extra) {
+        checklistIngreso = parseChecklistIngreso(extra.checklist_ingreso)
+        checklistPro = (extra.checklist_pro as ChecklistProData | null) ?? null
+        creadoPorNombre = extra.creado_por_nombre ?? null
+      }
+    } catch (extraErr) {
+      console.warn("getRepairDetail prisma extras:", extraErr)
+    }
+
     const detail: RepairDetail = {
       ...toBitacoraRepair({ ...rep, cliente: { nombre: rep.cliente.nombre, telefono: rep.cliente.telefono } }),
       status: asStatus(rep.estado),
@@ -513,9 +575,9 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
       costoTotal: estimated,
       restante: estimated == null ? null : Math.max(0, estimated - anticipo),
       notasInternas: rep.notasInternas ?? null,
-      checklistIngreso: null,
-      checklistPro: null,
-      creadoPorNombre: null,
+      checklistIngreso: ensureChecklistIngreso(rep.tipoEquipo ?? "Otro", checklistIngreso),
+      checklistPro,
+      creadoPorNombre,
     }
     return { data: detail, error: null }
   } catch (e) {
@@ -529,11 +591,93 @@ export async function getRepairDetailPageData(repairId: string): Promise<{
   changes: RepairChangeHistoryRow[]
   gastos: ReparacionGasto[]
   historialAudit: HistorialReparacionAuditRow[]
-  servicios: import("@/lib/actions/servicios").ReparacionServicio[]
+  servicios: ReparacionServicio[]
   error: string | null
 }> {
   const { data, error } = await getRepairDetail(repairId)
-  return { detail: data, changes: [], gastos: [], historialAudit: [], servicios: [], error }
+  if (!data || error) {
+    return { detail: data, changes: [], gastos: [], historialAudit: [], servicios: [], error }
+  }
+
+  const prisma = getPrismaClient()
+  const tenantId = await getTenantIdOrThrow()
+
+  let changes: RepairChangeHistoryRow[] = []
+  let historialAudit: HistorialReparacionAuditRow[] = []
+
+  try {
+    const changeRows = await prisma.$queryRawUnsafe<Array<{
+      id: string
+      tipo_cambio: string
+      descripcion: string
+      created_at: Date | string
+      valor_anterior: string | null
+      valor_nuevo: string | null
+      usuario: string | null
+    }>>(
+      `SELECT id, tipo_cambio, descripcion, created_at, valor_anterior, valor_nuevo, usuario
+       FROM cambios_reparaciones
+       WHERE taller_id = $1 AND reparacion_id = $2
+       ORDER BY created_at DESC
+       LIMIT 200`,
+      tenantId,
+      repairId,
+    )
+
+    changes = changeRows.map((r) => ({
+      id: String(r.id),
+      tipo_cambio: String(r.tipo_cambio ?? ""),
+      descripcion: String(r.descripcion ?? ""),
+      created_at: new Date(r.created_at).toISOString(),
+      valor_anterior: r.valor_anterior,
+      valor_nuevo: r.valor_nuevo,
+      usuario: r.usuario ?? null,
+    }))
+  } catch (changesErr) {
+    console.warn("getRepairDetailPageData changes:", changesErr)
+  }
+
+  try {
+    const auditRows = await prisma.$queryRawUnsafe<Array<{
+      id: string
+      estado_anterior: string | null
+      estado_nuevo: string
+      nota_tecnica: string | null
+      fecha: Date | string
+      usuario_nombre: string | null
+    }>>(
+      `SELECT id, estado_anterior, estado_nuevo, nota_tecnica, fecha, usuario_nombre
+       FROM historial_reparacion
+       WHERE taller_id = $1 AND reparacion_id = $2
+       ORDER BY fecha DESC
+       LIMIT 200`,
+      tenantId,
+      repairId,
+    )
+
+    historialAudit = auditRows.map((r) => ({
+      id: String(r.id),
+      estado_anterior: r.estado_anterior,
+      estado_nuevo: String(r.estado_nuevo ?? ""),
+      nota_tecnica: r.nota_tecnica,
+      fecha: new Date(r.fecha).toISOString(),
+      usuario_nombre: (r.usuario_nombre ?? "").trim() || "Sistema",
+    }))
+  } catch (auditErr) {
+    console.warn("getRepairDetailPageData audit:", auditErr)
+  }
+
+  const gastosResult = await getGastosTicket(repairId)
+  const serviciosResult = await getServiciosReparacion(repairId)
+
+  return {
+    detail: data,
+    changes,
+    gastos: gastosResult.error ? [] : gastosResult.data,
+    historialAudit,
+    servicios: serviciosResult.error ? [] : serviciosResult.data,
+    error,
+  }
 }
 
 export async function getTrackingTallerInfo(ticketId: string): Promise<{ name: string; logoUrl: string | null; telefono: string | null; whatsapp: string | null } | null> {
@@ -684,9 +828,28 @@ export async function applyRepairStatusChange(input: {
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
+    const actorNombre = await getCurrentActorDisplayName()
     const existing = await prisma.reparacion.findFirst({ where: { id: input.repairId, tenantId }, select: { id: true } })
-    if (!existing) return { success: false, error: "No se encontró la reparación." }
+    if (!existing) return { success: false, error: "No se encontro la reparacion." }
     await prisma.reparacion.update({ where: { id: input.repairId }, data: { estado: input.estadoNuevo } })
+
+    const nota = input.notaTecnica?.trim() || null
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
+      input.repairId, tenantId, tenantId, input.estadoAnterior || null, input.estadoNuevo, nota, actorNombre,
+    )
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+       VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
+      tenantId, input.repairId,
+      `Estado: ${input.estadoAnterior || '?'} → ${input.estadoNuevo}`,
+      input.estadoAnterior || null,
+      input.estadoNuevo,
+      actorNombre,
+    )
+
     return { success: true }
   } catch (e) {
     console.error("applyRepairStatusChange prisma:", e)
@@ -971,18 +1134,57 @@ export async function entregarSinReparacionConAjuste(input: {
   }
 }
 
-export async function updateRepairChecklistPro(...args: Parameters<typeof legacyRepairs.updateRepairChecklistPro>) {
-  return legacyRepairs.updateRepairChecklistPro(...args)
+export async function updateRepairChecklistPro(
+  ...args: Parameters<LegacyRepairsModule["updateRepairChecklistPro"]>
+) {
+  try {
+    const legacyRepairs = await getLegacyRepairsModule()
+    return await legacyRepairs.updateRepairChecklistPro(...args)
+  } catch (error) {
+    return getLegacyUnavailableResponse(error)
+  }
 }
-export async function updateRepairQuickNotes(...args: Parameters<typeof legacyRepairs.updateRepairQuickNotes>) {
-  return legacyRepairs.updateRepairQuickNotes(...args)
+export async function updateRepairQuickNotes(
+  ...args: Parameters<LegacyRepairsModule["updateRepairQuickNotes"]>
+) {
+  try {
+    const legacyRepairs = await getLegacyRepairsModule()
+    return await legacyRepairs.updateRepairQuickNotes(...args)
+  } catch (error) {
+    return getLegacyUnavailableResponse(error)
+  }
 }
-export async function getCancelacionSummary(...args: Parameters<typeof legacyRepairs.getCancelacionSummary>) {
-  return legacyRepairs.getCancelacionSummary(...args)
+export async function getCancelacionSummary(
+  ...args: Parameters<LegacyRepairsModule["getCancelacionSummary"]>
+) {
+  try {
+    const legacyRepairs = await getLegacyRepairsModule()
+    return await legacyRepairs.getCancelacionSummary(...args)
+  } catch (error) {
+    return {
+      total: 0,
+      movements: [],
+      error: getLegacyUnavailableResponse(error).error,
+    }
+  }
 }
-export async function cancelarReparacion(...args: Parameters<typeof legacyRepairs.cancelarReparacion>) {
-  return legacyRepairs.cancelarReparacion(...args)
+export async function cancelarReparacion(
+  ...args: Parameters<LegacyRepairsModule["cancelarReparacion"]>
+) {
+  try {
+    const legacyRepairs = await getLegacyRepairsModule()
+    return await legacyRepairs.cancelarReparacion(...args)
+  } catch (error) {
+    return getLegacyUnavailableResponse(error)
+  }
 }
-export async function reactivarReingreso(...args: Parameters<typeof legacyRepairs.reactivarReingreso>) {
-  return legacyRepairs.reactivarReingreso(...args)
+export async function reactivarReingreso(
+  ...args: Parameters<LegacyRepairsModule["reactivarReingreso"]>
+) {
+  try {
+    const legacyRepairs = await getLegacyRepairsModule()
+    return await legacyRepairs.reactivarReingreso(...args)
+  } catch (error) {
+    return getLegacyUnavailableResponse(error)
+  }
 }
