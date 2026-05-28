@@ -1168,11 +1168,47 @@ export async function confirmarEntregaConLiquidacion(input: {
 
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
+    const actorNombre = await getCurrentActorDisplayName()
+
+    const existing = await prisma.reparacion.findFirst({
+      where: { id: input.repairId, tenantId: tallerId },
+      select: { estado: true },
+    })
+    const estadoAnterior = existing?.estado || "Listo"
+
     await prisma.$executeRawUnsafe(
       "UPDATE reparaciones SET estatus = 'Entregado', updated_at = now() WHERE id = $1 AND taller_id = $2",
       input.repairId,
       tallerId,
     )
+
+    const nota = input.notaTecnica?.trim() || "Liquidacion y entrega"
+
+    try {
+      await ensureAuditTablesExist()
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
+        input.repairId, tallerId, tallerId, estadoAnterior, "Entregado", nota, actorNombre,
+      )
+    } catch (he) {
+      console.error("[repairs-prisma] confirmarEntrega historial_reparacion:", he)
+    }
+
+    try {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
+        tallerId, input.repairId,
+        `Estado: ${estadoAnterior} -> Entregado (liquidacion)`,
+        estadoAnterior,
+        "Entregado",
+        actorNombre,
+      )
+    } catch (ce) {
+      console.error("[repairs-prisma] confirmarEntrega cambios_reparaciones:", ce)
+    }
+
     return { success: true }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "No se pudo registrar la entrega." }
@@ -1194,12 +1230,65 @@ export async function entregarSinReparacionConAjuste(input: {
   try {
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
+    const actorNombre = await getCurrentActorDisplayName()
+
+    const existing = await prisma.reparacion.findFirst({
+      where: { id: input.repairId, tenantId: tallerId },
+      select: { estado: true, costoEstimado: true },
+    })
+    const estadoAnterior = existing?.estado || "Recibido"
+    const precioAnterior = existing?.costoEstimado != null ? Number(existing.costoEstimado) : 0
+
     await prisma.$executeRawUnsafe(
       "UPDATE reparaciones SET precio_estimado = $1, estatus = 'Entregado', updated_at = now() WHERE id = $2 AND taller_id = $3",
       input.costoRevision,
       input.repairId,
       tallerId,
     )
+
+    const nota = input.notaTecnica?.trim() || "Entrega sin reparacion"
+
+    try {
+      await ensureAuditTablesExist()
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
+        input.repairId, tallerId, tallerId, estadoAnterior, "Entregado", nota, actorNombre,
+      )
+    } catch (he) {
+      console.error("[repairs-prisma] entregarSinReparacion historial_reparacion:", he)
+    }
+
+    try {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
+        tallerId, input.repairId,
+        `Estado: ${estadoAnterior} -> Entregado (sin reparacion)`,
+        estadoAnterior,
+        "Entregado",
+        actorNombre,
+      )
+    } catch (ce) {
+      console.error("[repairs-prisma] entregarSinReparacion cambios_reparaciones estado:", ce)
+    }
+
+    if (precioAnterior !== input.costoRevision) {
+      try {
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+           VALUES ($1,$2,'presupuesto',$3,$4,$5,$6,now())`,
+          tallerId, input.repairId,
+          `Ajuste de presupuesto (sin reparacion): $${precioAnterior.toFixed(2)} -> $${input.costoRevision.toFixed(2)}`,
+          precioAnterior.toFixed(2),
+          input.costoRevision.toFixed(2),
+          actorNombre,
+        )
+      } catch (pe) {
+        console.error("[repairs-prisma] entregarSinReparacion cambios_reparaciones presupuesto:", pe)
+      }
+    }
+
     return { success: true }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "No se pudo ajustar y entregar." }
