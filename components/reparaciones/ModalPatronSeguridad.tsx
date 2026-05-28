@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
@@ -175,7 +175,7 @@ export const ModalPatronSeguridad = memo(function ModalPatronSeguridad({
       >
         <DialogHeader className="border-b border-amber-100/90 bg-gradient-to-r from-white via-amber-50/40 to-white px-5 py-4 text-left">
           <DialogTitle className="text-base font-semibold tracking-tight text-slate-900">
-            Dibujar Patrón de Desbloqueo
+            Dibujar Patron de Desbloqueo
           </DialogTitle>
         </DialogHeader>
 
@@ -278,7 +278,7 @@ export const ModalPatronSeguridad = memo(function ModalPatronSeguridad({
               disabled={!valid}
               onClick={handleSave}
             >
-              Guardar patrón
+              Guardar patron
             </Button>
           </div>
         </DialogFooter>

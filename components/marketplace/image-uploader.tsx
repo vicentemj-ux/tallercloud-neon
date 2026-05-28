@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Trash2 } from 'lucide-react';
@@ -179,7 +179,7 @@ export function ImageUploader({ product, onUpdate }: ImageUploaderProps) {
           <Upload className="w-12 h-12 text-muted-foreground" />
           <div>
             <p className="font-semibold text-foreground">
-              {product.image ? 'Cambiar imagen' : 'Arrastra tu imagen aquí'}
+              {product.image ? 'Cambiar imagen' : 'Arrastra tu imagen aqui'}
             </p>
             <p className="text-sm text-muted-foreground">
               o haz clic para seleccionar
@@ -215,7 +215,7 @@ export function ImageUploader({ product, onUpdate }: ImageUploaderProps) {
                 {/* Position */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-foreground">
-                    Posición
+                    Posicion
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'] as const).map((pos) => (

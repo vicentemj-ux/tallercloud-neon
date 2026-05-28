@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
@@ -26,14 +26,14 @@ export interface TicketSalidaGarantiaProps {
   costoTotal: number
   /** Abonos acumulados antes del pago final de entrega */
   anticiposPrevios: number
-  /** Cobro en esta entrega (liquidación) */
+  /** Cobro en esta entrega (liquidacion) */
   pagoFinal: number
   fechaVencimientoGarantia: string
-  /** Texto legal breve (p. ej. de configuración) */
+  /** Texto legal breve (p. ej. de configuracion) */
   terminosGarantiaCortos: string
   /** Mensaje de despedida personalizado (publicidad) */
   mensajeDespedida?: string
-  /** repairId para el QR de garantía digital */
+  /** repairId para el QR de garantia digital */
   repairId?: string
   className?: string
 }
@@ -52,10 +52,10 @@ function fmt(n: number) {
   return n.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-/** 30 o 60 días según texto de configuración (sin columna dedicada en BD). */
+/** 30 o 60 dias segun texto de configuracion (sin columna dedicada en BD). */
 export function warrantyDaysFromTerminos(terminos: string): 30 | 60 {
   const t = terminos.toLowerCase()
-  if (/\b60\b/.test(t) || t.includes("sesenta") || t.includes("60 día")) return 60
+  if (/\b60\b/.test(t) || t.includes("sesenta") || t.includes("60 dia")) return 60
   return 30
 }
 
@@ -191,9 +191,9 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── DIAGNÓSTICO INICIAL ── */}
+      {/* ── DIAGNoSTICO INICIAL ── */}
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "1px" }}>
-        DIAGNÓSTICO INICIAL
+        DIAGNoSTICO INICIAL
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700, lineHeight: 1.2, wordBreak: "break-word" }}>
         {solucionRealizada}
@@ -228,7 +228,7 @@ export function TicketSalidaGarantia({
 
       <Divider thick />
 
-      {/* ── GARANTÍA (recuadro destacado) ── */}
+      {/* ── GARANTiA (recuadro destacado) ── */}
       <div
         style={{
           border: `1.5px solid ${BLACK}`,
@@ -237,10 +237,10 @@ export function TicketSalidaGarantia({
         }}
       >
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "center", marginBottom: "2px" }}>
-          GARANTÍA
+          GARANTiA
         </div>
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700, textAlign: "center" }}>
-          Válida hasta: <span style={{ fontWeight: 900 }}>{fechaVencimientoGarantia}</span>
+          Valida hasta: <span style={{ fontWeight: 900 }}>{fechaVencimientoGarantia}</span>
         </div>
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "9px", fontWeight: 700, lineHeight: 1.2, marginTop: "2px", textAlign: "center" }}>
           {terminosGarantiaCortos}
@@ -249,9 +249,9 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── TÉRMINOS ── */}
+      {/* ── TeRMINOS ── */}
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>
-        TÉRMINOS
+        TeRMINOS
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "9px", fontWeight: 700, lineHeight: 1.25, wordBreak: "break-word" }}>
         {terminosGarantiaCortos.split(" • ").map((t, i) => (
@@ -261,14 +261,14 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── QR GARANTÍA DIGITAL ── */}
+      {/* ── QR GARANTiA DIGITAL ── */}
       {repairId && qrUrl && (
         <div style={{ textAlign: "center", margin: "4px 0" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "2px" }}>
             <QRCodeSVG value={qrUrl} size={56} level="M" bgColor="#ffffff" fgColor="#000000" />
           </div>
           <div style={{ ...SHARP, fontFamily: FONT, fontSize: "9px", fontWeight: 700, lineHeight: 1.2 }}>
-            Escanea para ver tu garantía digital
+            Escanea para ver tu garantia digital
           </div>
         </div>
       )}

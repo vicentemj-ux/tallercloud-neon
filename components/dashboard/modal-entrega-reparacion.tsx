@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import {
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, PackageCheck, RotateCcw } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { confirmarEntregaConLiquidacion, entregarSinReparacionConAjuste } from "@/lib/actions/repairs"
+import { confirmarEntregaConLiquidacion, entregarSinReparacionConAjuste } from "@/lib/actions/repairs-prisma"
 
 function fmt(n: number) {
   return n.toLocaleString("es-MX", {
@@ -43,7 +43,7 @@ function montosUnico(metodo: Metodo, total: number) {
 }
 
 export type EntregaCompletadaPayload = {
-  /** Monto cobrado en esta operación de entrega (liquidación o sin reparación) */
+  /** Monto cobrado en esta operaciÃ³n de entrega (liquidaciÃ³n o sin reparaciÃ³n) */
   pagoFinal: number
 }
 
@@ -53,7 +53,7 @@ export interface ModalEntregaReparacionProps {
   repairId: string
   folio: string
   saldoPendiente: number
-  /** Anticipo actual (para estimar cobro en «sin reparación») */
+  /** Anticipo actual (para estimar cobro en Â«sin reparaciÃ³nÂ») */
   anticipoActual: number
   /** Estado actual del ticket; determina el flujo del modal */
   estado?: string
@@ -76,7 +76,7 @@ export function ModalEntregaReparacion({
   const [metodo, setMetodo] = useState<Metodo>("efectivo")
   const [saving, setSaving] = useState(false)
 
-  // Sin reparación
+  // Sin reparaciÃ³n
   const [cargoRevision, setCargoRevision] = useState("")
   const [metodoDevolucion, setMetodoDevolucion] = useState<MetodoDevolucion>("efectivo")
   const [metodoCargoExtra, setMetodoCargoExtra] = useState<Metodo>("efectivo")
@@ -97,7 +97,7 @@ export function ModalEntregaReparacion({
     return Number.isFinite(raw) ? Math.max(0, raw) : 0
   }, [cargoRevision])
 
-  // Cálculos para sin reparación
+  // CÃ¡lculos para sin reparaciÃ³n
   const montoADevolver = useMemo(() => {
     if (cargoRevNum <= anticipoActual) {
       return round2(anticipoActual - cargoRevNum)
@@ -115,7 +115,7 @@ export function ModalEntregaReparacion({
   const hayDevolucion = montoADevolver > 0.005
   const hayCargoExtra = cargoExtra > 0.005
 
-  // ── Entrega EXITOSA (estado Listo) ─────────────────────────────────────────
+  // â”€â”€ Entrega EXITOSA (estado Listo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const saldo = round2(Math.max(0, saldoPendiente))
   const tieneSaldo = saldo > 0.005
 
@@ -147,7 +147,7 @@ export function ModalEntregaReparacion({
     }
   }
 
-  // ── Entrega SIN REPARACIÓN ────────────────────────────────────────────────
+  // â”€â”€ Entrega SIN REPARACIÃ“N â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSinReparacion = async () => {
     setSavingSinRep(true)
     try {
@@ -175,7 +175,7 @@ export function ModalEntregaReparacion({
       if (res.warning) {
         toast({ title: "Reembolso no registrado", description: res.warning, variant: "destructive" })
       } else {
-        toast({ title: "Entrega sin reparación", description: "Orden cerrada." })
+        toast({ title: "Entrega sin reparaciÃ³n", description: "Orden cerrada." })
       }
       onOpenChange(false)
       await onCompleted({ pagoFinal: hayCargoExtra ? cargoExtra : 0 })
@@ -184,7 +184,7 @@ export function ModalEntregaReparacion({
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   if (esSinReparacion) {
     return (
@@ -196,7 +196,7 @@ export function ModalEntregaReparacion({
                 <RotateCcw className="h-4 w-4 text-amber-600" aria-hidden />
               </div>
               <div>
-                <DialogTitle className="text-base font-semibold text-slate-900">Entregar sin reparación</DialogTitle>
+                <DialogTitle className="text-base font-semibold text-slate-900">Entregar sin reparaciÃ³n</DialogTitle>
                 <DialogDescription className="text-xs text-slate-600">
                   Folio <span className="font-mono font-semibold">{folio}</span>
                 </DialogDescription>
@@ -213,7 +213,7 @@ export function ModalEntregaReparacion({
               </div>
               <div className="space-y-1">
                 <Label htmlFor="cargo-revision" className="text-xs font-semibold text-slate-700">
-                  Cargo por revisión
+                  Cargo por revisiÃ³n
                 </Label>
                 <Input
                   id="cargo-revision"
@@ -227,17 +227,17 @@ export function ModalEntregaReparacion({
               </div>
             </div>
 
-            {/* Resultado del cálculo */}
+            {/* Resultado del cÃ¡lculo */}
             {hayDevolucion ? (
               <div className="rounded-xl border border-red-200 bg-red-50/60 px-4 py-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-red-700">Monto a devolver al cliente</p>
                 <p className="mt-0.5 text-2xl font-bold tabular-nums text-red-700">{fmt(montoADevolver)}</p>
                 <p className="text-[11px] text-red-800">
-                  {fmt(anticipoActual)} − {fmt(cargoRevNum)} = {fmt(montoADevolver)} devolución
+                  {fmt(anticipoActual)} âˆ’ {fmt(cargoRevNum)} = {fmt(montoADevolver)} devoluciÃ³n
                 </p>
 
                 <div className="mt-2 space-y-1.5">
-                  <Label className="text-xs font-medium text-slate-700">Método de devolución</Label>
+                  <Label className="text-xs font-medium text-slate-700">MÃ©todo de devoluciÃ³n</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {(
                       [
@@ -260,7 +260,7 @@ export function ModalEntregaReparacion({
                     ))}
                   </div>
                   <p className="text-[10px] text-slate-500">
-                    {metodoDevolucion === "efectivo" ? "Salida de caja registrada." : "Devolución por transferencia registrada."}
+                    {metodoDevolucion === "efectivo" ? "Salida de caja registrada." : "DevoluciÃ³n por transferencia registrada."}
                   </p>
                 </div>
               </div>
@@ -273,7 +273,7 @@ export function ModalEntregaReparacion({
                 </p>
 
                 <div className="mt-2 space-y-1.5">
-                  <Label className="text-xs font-medium text-slate-700">Método de pago</Label>
+                  <Label className="text-xs font-medium text-slate-700">MÃ©todo de pago</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {(
                       [
@@ -302,7 +302,7 @@ export function ModalEntregaReparacion({
               <div className="rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Sin movimiento de dinero</p>
                 <p className="text-xs text-slate-600">
-                  Cargo igual al anticipo. No hay devolución ni cobro adicional.
+                  Cargo igual al anticipo. No hay devoluciÃ³n ni cobro adicional.
                 </p>
               </div>
             )}
@@ -317,7 +317,7 @@ export function ModalEntregaReparacion({
                 value={nota}
                 onChange={(e) => setNota(e.target.value)}
                 rows={2}
-                placeholder="Motivo de la no reparación…"
+                placeholder="Motivo de la no reparaciÃ³nâ€¦"
                 className="resize-none rounded-lg border-slate-200 text-sm"
               />
             </div>
@@ -331,7 +331,7 @@ export function ModalEntregaReparacion({
               {savingSinRep ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Procesando…
+                  Procesandoâ€¦
                 </>
               ) : hayDevolucion ? (
                 "Confirmar entrega y reembolso"
@@ -347,7 +347,7 @@ export function ModalEntregaReparacion({
     )
   }
 
-  // ── Entrega EXITOSA (Listo) ───────────────────────────────────────────────
+  // â”€â”€ Entrega EXITOSA (Listo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[min(90vh,640px)] w-[calc(100%-1.5rem)] max-w-lg overflow-y-auto border border-slate-200 bg-white p-0 text-slate-900 shadow-lg sm:w-full">
@@ -373,16 +373,16 @@ export function ModalEntregaReparacion({
             <p className="mt-1 text-2xl font-bold tabular-nums text-slate-900">{fmt(saldo)}</p>
             {tieneSaldo ? (
               <p className="mt-2 text-xs text-slate-600">
-                Equivale a costo total menos abonos registrados. Se creará venta y movimiento en caja abierta.
+                Equivale a costo total menos abonos registrados. Se crearÃ¡ venta y movimiento en caja abierta.
               </p>
             ) : (
-              <p className="mt-2 text-xs text-slate-600">Sin cargo pendiente: confirmación sin venta en caja.</p>
+              <p className="mt-2 text-xs text-slate-600">Sin cargo pendiente: confirmaciÃ³n sin venta en caja.</p>
             )}
           </div>
 
           {tieneSaldo ? (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-slate-700">Método de pago del saldo</Label>
+              <Label className="text-sm font-medium text-slate-700">MÃ©todo de pago del saldo</Label>
               <div className="grid grid-cols-3 gap-2">
                 {(
                   [
@@ -417,7 +417,7 @@ export function ModalEntregaReparacion({
               value={nota}
               onChange={(e) => setNota(e.target.value)}
               rows={3}
-              placeholder="Observaciones internas…"
+              placeholder="Observaciones internasâ€¦"
               className="resize-none rounded-xl border-slate-200"
             />
           </div>
@@ -431,7 +431,7 @@ export function ModalEntregaReparacion({
             {saving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Procesando…
+                Procesandoâ€¦
               </>
             ) : tieneSaldo ? (
               "Confirmar entrega y cobro"
@@ -444,3 +444,4 @@ export function ModalEntregaReparacion({
     </Dialog>
   )
 }
+

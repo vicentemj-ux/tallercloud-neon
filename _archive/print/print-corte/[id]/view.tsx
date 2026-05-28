@@ -1,131 +1,150 @@
-"use client"
+﻿"use client"
 
-import { useEffect, useRef, useState } from "react"
-import { useParams } from "next/navigation"
-import { TicketCorteTemplate } from "@/components/print-templates"
-import type { CortePrintData } from "@/lib/actions/ventas"
-import { getCajaConDetalle } from "@/lib/actions/ventas"
+import { useEffect, useState, useMemo, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
+import { TicketCompraTemplate, type TicketCompraData } from "@/components/print-templates/TicketCompraTemplate"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
-import { isTauriAvailable, printTicketRasterDirecto } from "@/lib/tauri/desktop-bridge"
-import { toast } from "@/hooks/use-toast"
 
-export default function PrintCorteDynamicPage() {
-  const { id } = useParams<{ id: string }>()
-  const [corte, setCorte] = useState<CortePrintData | null>(null)
-  const [business, setBusiness] = useState<{ name: string; phone: string } | null>(null)
-  const ticketRef = useRef<HTMLDivElement>(null)
+interface BusinessSettings {
+  name: string
+  phone: string
+  address: string
+  logoUrl: string | null
+  declaracionJurat: string
+  mensajeDespedida: string
+  mostrarLogo: boolean
+}
+
+function parseQueryData(sp: URLSearchParams): TicketCompraData | null {
+  const folio = sp.get("folio")
+  const vendedor = sp.get("vendedor")
+  const documento = sp.get("documento")
+  const marca = sp.get("marca")
+  const modelo = sp.get("modelo")
+  const serial = sp.get("serial")
+  const imei = sp.get("imei")
+  const monto = sp.get("monto")
+
+  if (!folio || !vendedor || !marca || !modelo || !monto) return null
+
+  return {
+    folio,
+    fecha: sp.get("fecha") || new Date().toLocaleString("es-MX"),
+    vendedor,
+    documento: documento || "—",
+    marca,
+    modelo,
+    serial: serial || "—",
+    imei: imei || "—",
+    monto: Number(monto) || 0,
+    condicion: sp.get("condicion") || "—",
+    color: sp.get("color") || "—",
+    capacidad: sp.get("capacidad") || "—",
+    observaciones: sp.get("observaciones") || undefined,
+  }
+}
+
+function PrintCompraContent() {
+  const searchParams = useSearchParams()
+  const [business, setBusiness] = useState<BusinessSettings | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
   usePrintWindowClose()
 
-  useEffect(() => {
-    if (!id) return
+  const data = useMemo(() => {
+    if (!searchParams) return null
+    return parseQueryData(searchParams)
+  }, [searchParams])
 
+  useEffect(() => {
     const load = async () => {
-      const [corteResult, settingsResult] = await Promise.all([
-        getCajaConDetalle(decodeURIComponent(id)),
-        getTallerSettings(),
-      ])
-
-      if (corteResult.error || !corteResult.data) {
-        console.error("[print-corte/[id]]", corteResult.error)
-        return
-      }
-
-      const cfg = settingsResult.settings
-      setCorte(corteResult.data)
-      setBusiness({
-        name: cfg?.nombre_taller || "Mi Taller",
-        phone: cfg?.telefono || "",
-      })
-    }
-
-    void load()
-  }, [id])
-
-  useEffect(() => {
-    if (!corte || !business) return
-
-    const runPrint = async () => {
-      // Desktop direct print (Tauri) — raster de alta calidad
-      if (await isTauriAvailable()) {
-        try {
-          const { settings } = await getTallerSettings()
-          const printerName = settings?.impresora_ticket?.trim()
-          if (!printerName) {
-            toast({
-              title: "Impresora no configurada",
-              description: "Ve a Configuracion > Hardware y selecciona la impresora de tickets.",
-              variant: "destructive",
-            })
-            return
-          }
-          await new Promise<void>((resolve) => setTimeout(resolve, 300))
-          if (ticketRef.current) {
-            await printTicketRasterDirecto(printerName, ticketRef.current)
-            toast({ title: "Corte enviado a impresora" })
-          }
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : "Error al imprimir"
-          toast({ title: "Error de impresion", description: msg, variant: "destructive" })
+      try {
+        const { settings } = await getTallerSettings()
+        if (!settings) {
+          setLoadError("No se pudo cargar la configuracion del taller.")
+          return
         }
-        return
+
+        const cfg = settings.impresion_config as Record<string, unknown> | null
+        const compraCfg = (cfg?.compra || {}) as Record<string, unknown>
+
+        setBusiness({
+          name: settings.nombre_taller || "Mi Taller",
+          phone: settings.telefono || "",
+          address: settings.direccion || "",
+          logoUrl: settings.logo_url ?? null,
+          declaracionJurat: String(compraCfg.declaracionJurat || ""),
+          mensajeDespedida: settings.mensaje_despedida || "¡Gracias por su preferencia!",
+          mostrarLogo: Boolean(compraCfg.mostrarLogo ?? true),
+        })
+      } catch (err) {
+        console.error("[print-compra] error:", err)
+        setLoadError("Error al cargar la configuracion.")
       }
-
-      // Fallback web
-      document.body.classList.add("print-ticket-mode")
-      const style = document.createElement("style")
-      style.id = "print-corte-page-style"
-      style.textContent = `@page { size: 80mm auto; margin: 0; }`
-      document.head.appendChild(style)
-      window.setTimeout(() => window.print(), 500)
     }
+    void load()
+  }, [])
 
-    runPrint()
+  // Disparar impresion
+  useEffect(() => {
+    if (!data || !business) return
+
+    document.body.classList.add("print-ticket-mode")
+
+    const style = document.createElement("style")
+    style.id = "print-compra-page-style"
+    style.textContent = `@page { size: A4 portrait; margin: 8mm; } @media print { body { margin: 0 !important; padding: 0 !important; } }`
+    document.head.appendChild(style)
+
+    const timer = window.setTimeout(() => window.print(), 600)
 
     return () => {
+      window.clearTimeout(timer)
       document.body.classList.remove("print-ticket-mode")
-      document.getElementById("print-corte-page-style")?.remove()
+      document.getElementById("print-compra-page-style")?.remove()
     }
-  }, [corte, business])
+  }, [data, business])
 
-  if (!corte || !business) return null
+  if (loadError) {
+    return (
+      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", color: "#c00000", fontSize: "14px" }}>
+        <strong>Error:</strong> {loadError}
+      </div>
+    )
+  }
 
-  // Misma lógica que CorteCajaSummary para garantizar valores idénticos en pantalla y papel.
-  // efectivoEsperado = fondo inicial + PDV efectivo + abonos reparación - gastos.
-  // efectivoContado  = lo que el cajero físicamente contó (monto_cierre); si no existe, saldo_final.
-  const efectivoEsperado = corte.monto_inicial + corte.total_efectivo + corte.total_abonos_efectivo - corte.total_gastos
-  const efectivoContado =
-    corte.monto_cierre != null && Number.isFinite(corte.monto_cierre)
-      ? corte.monto_cierre
-      : corte.saldo_final
-  const diferencia = efectivoContado - efectivoEsperado
+  if (!data || !business) {
+    return (
+      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", color: "#555", fontSize: "13px" }}>
+        Cargando comprobante…
+      </div>
+    )
+  }
 
   return (
-    <div ref={ticketRef} className="print-ticket-only flex items-center justify-center bg-white p-4">
-      <TicketCorteTemplate
+    <div className="print-ticket-only flex items-start justify-center bg-white p-4">
+      <TicketCompraTemplate
+        data={data}
         businessName={business.name}
-        numeroCorte={corte.numero_corte}
-        fechaApertura={corte.fecha_apertura}
-        fechaCierre={corte.fecha_cierre}
-        montoInicial={corte.monto_inicial}
-        ventasRegistradas={corte.total_ventas}
-        totalEfectivo={corte.total_efectivo}
-        totalTarjeta={corte.total_tarjeta}
-        totalTransferencia={corte.total_transferencia}
-        totalAbonosEfectivo={corte.total_abonos_efectivo}
-        totalAbonosTarjeta={corte.total_abonos_tarjeta}
-        totalAbonosTransferencia={corte.total_abonos_transferencia}
-        efectivoEsperado={efectivoEsperado}
-        efectivoContado={efectivoContado}
-        diferencia={diferencia}
-        cobrosRep={corte.cobrosRep}
-        totalCobrosRep={corte.total_abonos}
-        gastos={corte.listaGastos}
-        totalGastos={corte.total_gastos}
-        ventas={corte.ventas}
-        totalVentasPdv={corte.totalVentasPdv}
-        notaCierre={corte.nota_cierre}
+        businessPhone={business.phone}
+        businessAddress={business.address}
+        logoUrl={business.logoUrl}
+        declaracionJurat={business.declaracionJurat || undefined}
+        mensajeDespedida={business.mensajeDespedida}
+        mostrarLogo={business.mostrarLogo}
       />
     </div>
+  )
+}
+
+export default function PrintCompraPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", color: "#555", fontSize: "13px" }}>
+        Cargando comprobante…
+      </div>
+    }>
+      <PrintCompraContent />
+    </Suspense>
   )
 }

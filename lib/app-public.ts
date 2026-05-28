@@ -1,5 +1,5 @@
-/**
- * Origen público de la instalación (tracking, QR, enlaces en tickets).
+﻿/**
+ * Origen publico de la instalacion (tracking, QR, enlaces en tickets).
  * Configurar `NEXT_PUBLIC_APP_URL` en cada entorno; en cliente se usa `window.location.origin` como respaldo.
  */
 export function getPublicAppBaseUrl(): string {

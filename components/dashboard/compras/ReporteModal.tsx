@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ export function ReporteModal({ open, onClose }: { open: boolean; onClose: () => 
 
   const handleDownload = async () => {
     setLoading(true)
-    // Simular generación de reporte
+    // Simular generacion de reporte
     await new Promise((r) => setTimeout(r, 1200))
     setLoading(false)
     alert("Reporte descargado (mock)")
@@ -47,7 +47,7 @@ export function ReporteModal({ open, onClose }: { open: boolean; onClose: () => 
           {/* Rango */}
           <div className="rounded-xl border border-slate-800 bg-slate-800/40 p-4 space-y-4">
             <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-              Rango de análisis de ventas
+              Rango de analisis de ventas
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">

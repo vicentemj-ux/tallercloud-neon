@@ -1,8 +1,8 @@
-/**
- * Utilidades compartidas de impresión (tamaño de papel, px de vista previa).
- * No usar `"use server"` aquí: no son Server Actions.
+﻿/**
+ * Utilidades compartidas de impresion (tamano de papel, px de vista previa).
+ * No usar `"use server"` aqui: no son Server Actions.
  *
- * Lectura de configuración del taller (`getPaperSize`) → `lib/actions/print-actions.ts`.
+ * Lectura de configuracion del taller (`getPaperSize`) → `lib/actions/print-actions.ts`.
  */
 
 export type PaperSize = "80mm"

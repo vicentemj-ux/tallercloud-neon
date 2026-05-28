@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -35,10 +35,10 @@ export function ImprentaControlsPanel({
               <Info className="h-4 w-4" />
             </div>
             <div>
-              <h5 className="text-sm font-bold text-amber-900">Nota de impresión</h5>
+              <h5 className="text-sm font-bold text-amber-900">Nota de impresion</h5>
               <p className="mt-1 text-xs leading-relaxed text-amber-800">
-                Para etiquetas, recomendamos usar impresoras térmicas de etiquetas
-                (ej. Zebra, Dymo) con el tamaño de papel ajustado en el driver.
+                Para etiquetas, recomendamos usar impresoras termicas de etiquetas
+                (ej. Zebra, Dymo) con el tamano de papel ajustado en el driver.
               </p>
             </div>
           </div>
@@ -48,12 +48,12 @@ export function ImprentaControlsPanel({
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-4 w-4 text-slate-500" />
             <h5 className="text-xs font-bold uppercase tracking-widest text-slate-700">
-              ¿Qué significa "ajustado en el driver"?
+              ¿Que significa "ajustado en el driver"?
             </h5>
           </div>
           <p className="text-xs leading-relaxed text-slate-600">
             Significa que debes configurar en Windows/Linux/Mac (Propiedades de
-            impresora) que el tamaño del papel sea idéntico al que tienes físicamente
+            impresora) que el tamano del papel sea identico al que tienes fisicamente
             (ej. 50mm × 25mm), para que el sistema imprima justo en el centro de la
             etiqueta.
           </p>
@@ -61,21 +61,21 @@ export function ImprentaControlsPanel({
 
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <h5 className="text-xs font-bold uppercase tracking-widest text-slate-700 mb-3">
-            Consejos útiles
+            Consejos utiles
           </h5>
           <ul className="space-y-2 text-xs text-slate-600">
             <li className="flex items-start gap-2">
               <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
-              Usa papel térmico de buena calidad para evitar que el texto se borre.
+              Usa papel termico de buena calidad para evitar que el texto se borre.
             </li>
             <li className="flex items-start gap-2">
               <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
-              Realiza una prueba de impresión antes de pegar la etiqueta en el equipo.
+              Realiza una prueba de impresion antes de pegar la etiqueta en el equipo.
             </li>
             <li className="flex items-start gap-2">
               <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
-              Si el texto se corta, revisa que el tamaño de página en el driver coincida
-              con la etiqueta física.
+              Si el texto se corta, revisa que el tamano de pagina en el driver coincida
+              con la etiqueta fisica.
             </li>
           </ul>
         </div>
@@ -111,7 +111,7 @@ export function ImprentaControlsPanel({
                 config.formato === "80mm" ? "text-blue-700" : "text-slate-700"
               }`}
             >
-              Térmico 80mm
+              Termico 80mm
             </span>
           </button>
 
@@ -143,7 +143,7 @@ export function ImprentaControlsPanel({
       {/* Toggles */}
       <div className="space-y-3">
         <Label className="text-[11px] font-semibold tracking-wide text-slate-600 uppercase block">
-          Información visible
+          Informacion visible
         </Label>
 
         <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5">
@@ -160,8 +160,8 @@ export function ImprentaControlsPanel({
         {docType === "reparacion" && (
           <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5">
             <div className="space-y-0.5">
-              <p className="text-sm font-medium text-slate-700">Técnico</p>
-              <p className="text-[11px] text-slate-500">Incluir nombre del técnico asignado</p>
+              <p className="text-sm font-medium text-slate-700">Tecnico</p>
+              <p className="text-[11px] text-slate-500">Incluir nombre del tecnico asignado</p>
             </div>
             <Switch
               checked={config.mostrarTecnico}
@@ -197,12 +197,12 @@ export function ImprentaControlsPanel({
       <div className="space-y-4">
         <div className="space-y-2">
           <Label className="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
-            Garantía / Términos de reparación
+            Garantia / Terminos de reparacion
           </Label>
           <Textarea
             value={config.terminos}
             onChange={(e) => patch({ terminos: e.target.value })}
-            placeholder="Ej. 30 días de garantía en mano de obra..."
+            placeholder="Ej. 30 dias de garantia en mano de obra..."
             className="min-h-[80px] border-slate-200 bg-white text-sm resize-y"
           />
         </div>
@@ -223,7 +223,7 @@ export function ImprentaControlsPanel({
       {isCompra && (
         <div className="space-y-2">
           <Label className="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
-            Declaración jurada
+            Declaracion jurada
           </Label>
           <p className="text-[11px] text-slate-500">
             Variables disponibles: {"{{vendedor}}"}, {"{{documento}}"}, {"{{marca}}"}, {"{{modelo}}"},{" "}
@@ -232,7 +232,7 @@ export function ImprentaControlsPanel({
           <Textarea
             value={config.declaracionJurat}
             onChange={(e) => patch({ declaracionJurat: e.target.value })}
-            placeholder="Texto de declaración jurada..."
+            placeholder="Texto de declaracion jurada..."
             className="min-h-[120px] border-slate-200 bg-white text-sm resize-y font-mono text-xs"
           />
         </div>

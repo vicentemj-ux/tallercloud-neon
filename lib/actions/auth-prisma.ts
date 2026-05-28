@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import bcrypt from "bcryptjs"
 import { cookies } from "next/headers"
@@ -145,7 +145,7 @@ export async function changeOwnerPassword(
     if (!userId) return { success: false, error: "No autenticado" }
 
     if (!newPassword || newPassword.length < 8) {
-      return { success: false, error: "La nueva contraseña debe tener al menos 8 caracteres" }
+      return { success: false, error: "La nueva contrasena debe tener al menos 8 caracteres" }
     }
 
     const prisma = getPrismaClient()
@@ -153,7 +153,7 @@ export async function changeOwnerPassword(
     if (!row?.passwordHash) return { success: false, error: "No se pudo cargar tu usuario" }
 
     const match = await bcrypt.compare(currentPassword, row.passwordHash)
-    if (!match) return { success: false, error: "La contraseña actual no es correcta" }
+    if (!match) return { success: false, error: "La contrasena actual no es correcta" }
 
     const passwordHash = await bcrypt.hash(newPassword, 12)
     const newSessionVersion = Math.floor(Date.now() / 1000)
@@ -175,7 +175,7 @@ export async function changeOwnerPassword(
     return { success: true }
   } catch (e) {
     console.error("[auth-prisma] changeOwnerPassword:", e)
-    return { success: false, error: "No se pudo actualizar la contraseña" }
+    return { success: false, error: "No se pudo actualizar la contrasena" }
   }
 }
 

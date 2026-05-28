@@ -1,4 +1,4 @@
-import { Construction, ArrowLeft } from "lucide-react"
+﻿import { Construction, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -24,7 +24,7 @@ export function ModuleConstruction({
           {moduleName}
         </h2>
         <p className="text-muted-foreground">
-          {description || "Este módulo está en construcción. Regresa pronto para nuevas actualizaciones."}
+          {description || "Este modulo esta en construccion. Regresa pronto para nuevas actualizaciones."}
         </p>
       </div>
 

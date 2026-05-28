@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import Image from "next/image"
 import { useState } from "react"
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 export type InventoryProductImageProps = {
   /** Valor de `productos.imagen_url`: path relativo o URL completa. */
   stored: string | null | undefined
-  /** `productos.id` (para preferir la ruta canónica `{tallerId}/{productId}.webp`) */
+  /** `productos.id` (para preferir la ruta canonica `{tallerId}/{productId}.webp`) */
   productId?: string
   /** `productos.taller_id` */
   tallerId?: string
@@ -78,7 +78,7 @@ type InventoryProductImagePreviewProps = {
   className?: string
 }
 
-/** Vista previa cuadrada (modal inventario): ancho fluido, altura máx. */
+/** Vista previa cuadrada (modal inventario): ancho fluido, altura max. */
 export function InventoryProductImagePreview({ stored, productId, tallerId, alt, className }: InventoryProductImagePreviewProps) {
   const canonical =
     tallerId && productId ? getInventoryCanonicalImageUrl(tallerId, productId) : null

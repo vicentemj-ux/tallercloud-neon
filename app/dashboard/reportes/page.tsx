@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,16 +31,16 @@ function nDaysAgoIso(n: number) {
 function firstOfYearIso() { return `${new Date().getFullYear()}-01-01` }
 
 const PERIODOS = [
-  { label: "7 Días",  desde: () => nDaysAgoIso(6),  hasta: todayIso },
+  { label: "7 Dias",  desde: () => nDaysAgoIso(6),  hasta: todayIso },
   { label: "Mes",     desde: firstOfMonthIso,         hasta: todayIso },
   { label: "3 Meses", desde: () => nDaysAgoIso(89),  hasta: todayIso },
-  { label: "Año",     desde: firstOfYearIso,          hasta: todayIso },
+  { label: "Ano",     desde: firstOfYearIso,          hasta: todayIso },
 ]
 
 const ESTATUS_BAR: Record<string, string> = {
   "Recibido":      "#3b82f6",
-  "Diagnóstico":   "#8b5cf6",
-  "En Reparación": "#f59e0b",
+  "Diagnostico":   "#8b5cf6",
+  "En Reparacion": "#f59e0b",
   "Listo":         "#10b981",
 }
 
@@ -169,7 +169,7 @@ export default function ReportesPage() {
 
   const maxMes = data ? Math.max(...data.ingresosMensuales.map(m => m.total), 1) : 1
 
-  // Filtrar técnicos y fallas por búsqueda
+  // Filtrar tecnicos y fallas por busqueda
   const q = search.toLowerCase().trim()
   const filteredFallas  = data ? (q ? data.topFallas.filter(f => f.falla.toLowerCase().includes(q)) : data.topFallas) : []
   const filteredTecs    = data ? (q ? data.eliteSquad.filter(t => t.nombre.toLowerCase().includes(q)) : data.eliteSquad) : []
@@ -178,7 +178,7 @@ export default function ReportesPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-        {/* ── HEADER TÁCTICO ── */}
+        {/* ── HEADER TaCTICO ── */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           {/* Izquierda: Branding */}
@@ -192,17 +192,17 @@ export default function ReportesPage() {
                 REPORTES <span className="text-blue-600">PRO</span>
               </h1>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                Visión Financiera y Operativa Integrada del Taller
+                Vision Financiera y Operativa Integrada del Taller
               </p>
             </div>
           </div>
 
-          {/* Centro: Búsqueda + Period Tabs */}
+          {/* Centro: Busqueda + Period Tabs */}
           <div className="flex flex-1 items-center justify-center gap-3 lg:max-w-xl">
             <div className="relative flex-1 max-w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
               <Input
-                placeholder="Buscar falla o técnico…"
+                placeholder="Buscar falla o tecnico…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8 h-9 text-xs border-slate-200 bg-white rounded-lg"
@@ -320,19 +320,19 @@ export default function ReportesPage() {
                   </div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Ticket Promedio</p>
                   <p className="text-3xl font-black text-slate-900">{fmtPesos(data?.ticketPromedio ?? 0)}</p>
-                  <p className="text-xs text-slate-400 mt-2">Por reparación entregada</p>
+                  <p className="text-xs text-slate-400 mt-2">Por reparacion entregada</p>
                 </CardContent>
               </Card>
             </div>
           )}
 
-        {/* ── GRÁFICO 6 MESES ── */}
+        {/* ── GRaFICO 6 MESES ── */}
         {loading ? <SkeletonChart /> : (
           <Card className="gap-0 py-0 border-slate-200 bg-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-base font-black text-slate-900">Ingresos últimos 6 meses</h3>
+                  <h3 className="text-base font-black text-slate-900">Ingresos ultimos 6 meses</h3>
                   <p className="text-xs text-slate-400 mt-0.5">POS + Reparaciones entregadas combinados</p>
                 </div>
                 <div className="flex items-center gap-4 text-xs text-slate-500">
@@ -381,7 +381,7 @@ export default function ReportesPage() {
           </Card>
         )}
 
-        {/* ── FILA MEDIA: Flujo + Métodos de Pago ── */}
+        {/* ── FILA MEDIA: Flujo + Metodos de Pago ── */}
         <div className="grid gap-4 lg:grid-cols-2">
 
           {/* Flujo Activo */}
@@ -435,7 +435,7 @@ export default function ReportesPage() {
             </Card>
           )}
 
-          {/* Métodos de Pago */}
+          {/* Metodos de Pago */}
           {loading ? <SkeletonInfoCard rows={3} /> : (
             <Card className="gap-0 py-0 border-slate-200 bg-white">
               <CardContent className="p-6">
@@ -444,7 +444,7 @@ export default function ReportesPage() {
                     <CreditCard className="h-4 w-4 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-900">Métodos de Pago</h3>
+                    <h3 className="text-sm font-black text-slate-900">Metodos de Pago</h3>
                     <p className="text-xs text-slate-400">Ventas POS del periodo seleccionado</p>
                   </div>
                 </div>
@@ -491,10 +491,10 @@ export default function ReportesPage() {
           )}
         </div>
 
-        {/* ── FILA INFERIOR: Fallas + Técnicos ── */}
+        {/* ── FILA INFERIOR: Fallas + Tecnicos ── */}
         <div className="grid gap-4 lg:grid-cols-2">
 
-          {/* Fallas Más Frecuentes */}
+          {/* Fallas Mas Frecuentes */}
           {loading ? <SkeletonInfoCard rows={5} /> : (
             <Card className="gap-0 py-0 border-slate-200 bg-white">
               <CardContent className="p-6">
@@ -503,8 +503,8 @@ export default function ReportesPage() {
                     <Package className="h-4 w-4 text-orange-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-900">Fallas Más Frecuentes</h3>
-                    <p className="text-xs text-slate-400">Guía para surtir partes y refacciones</p>
+                    <h3 className="text-sm font-black text-slate-900">Fallas Mas Frecuentes</h3>
+                    <p className="text-xs text-slate-400">Guia para surtir partes y refacciones</p>
                   </div>
                 </div>
 
@@ -513,7 +513,7 @@ export default function ReportesPage() {
                     <div className="flex flex-col items-center py-8 gap-2">
                       <Search className="h-7 w-7 text-slate-300" />
                       <p className="text-xs text-slate-400 italic">
-                        {q ? "Sin resultados para la búsqueda" : "Sin fallas registradas en el periodo"}
+                        {q ? "Sin resultados para la busqueda" : "Sin fallas registradas en el periodo"}
                       </p>
                     </div>
                   )
@@ -546,7 +546,7 @@ export default function ReportesPage() {
             </Card>
           )}
 
-          {/* Rendimiento por Técnico */}
+          {/* Rendimiento por Tecnico */}
           {loading ? <SkeletonInfoCard rows={4} /> : (
             <Card className="gap-0 py-0 border-slate-200 bg-white">
               <CardContent className="p-6">
@@ -555,7 +555,7 @@ export default function ReportesPage() {
                     <Trophy className="h-4 w-4 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-900">Rendimiento por Técnico</h3>
+                    <h3 className="text-sm font-black text-slate-900">Rendimiento por Tecnico</h3>
                     <p className="text-xs text-slate-400">Reparaciones entregadas en el periodo</p>
                   </div>
                 </div>
@@ -565,7 +565,7 @@ export default function ReportesPage() {
                     <div className="flex flex-col items-center py-8 gap-2">
                       <Search className="h-7 w-7 text-slate-300" />
                       <p className="text-xs text-slate-400 italic">
-                        {q ? "Sin resultados para la búsqueda" : "Sin reparaciones entregadas en el periodo"}
+                        {q ? "Sin resultados para la busqueda" : "Sin reparaciones entregadas en el periodo"}
                       </p>
                     </div>
                   )

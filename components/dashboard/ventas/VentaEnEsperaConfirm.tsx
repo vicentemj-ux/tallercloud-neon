@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -20,7 +20,7 @@ export function VentaEnEsperaConfirm({
               VENTA EN ESPERA
             </h2>
             <p className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 mt-1 leading-relaxed">
-              La venta ha sido guardada. Puedes atender a otro cliente y recuperarla más tarde desde el botón de &quot;VENTAS EN ESPERA&quot;.
+              La venta ha sido guardada. Puedes atender a otro cliente y recuperarla mas tarde desde el boton de &quot;VENTAS EN ESPERA&quot;.
             </p>
           </div>
         </div>
@@ -30,7 +30,7 @@ export function VentaEnEsperaConfirm({
           <div className="h-px bg-slate-100" />
         </div>
 
-        {/* Botón */}
+        {/* Boton */}
         <div className="px-6 pb-6">
           <Button
             onClick={onClose}

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
@@ -9,7 +9,7 @@ interface ProductFormProps {
 }
 
 const categories = [
-  'Electrónica',
+  'Electronica',
   'Ropa',
   'Accesorios',
   'Hogar',
@@ -42,7 +42,7 @@ export function ProductForm({ onAddProduct }: ProductFormProps) {
       newErrors.price = 'El precio debe ser mayor a 0';
     }
     if (!formData.description.trim()) {
-      newErrors.description = 'La descripción es requerida';
+      newErrors.description = 'La descripcion es requerida';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -130,7 +130,7 @@ export function ProductForm({ onAddProduct }: ProductFormProps) {
         {/* Category */}
         <div className="space-y-2">
           <label htmlFor="category" className="block text-sm font-medium text-foreground">
-            Categoría
+            Categoria
           </label>
           <select
             id="category"
@@ -148,7 +148,7 @@ export function ProductForm({ onAddProduct }: ProductFormProps) {
         {/* Description */}
         <div className="space-y-2">
           <label htmlFor="description" className="block text-sm font-medium text-foreground">
-            Descripción
+            Descripcion
           </label>
           <textarea
             id="description"

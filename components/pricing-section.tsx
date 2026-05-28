@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import Link from "next/link"
@@ -20,8 +20,8 @@ const includedCore = [
   "Punto de venta con caja integrada",
   "Control de inventario con IMEI/Serie",
   "Historial completo de clientes",
-  "Impresión térmica 58mm y 80mm",
-  "Etiquetas térmicas 2×1\"",
+  "Impresion termica 58mm y 80mm",
+  "Etiquetas termicas 2×1\"",
   "Tu equipo en la app (MVP: hasta 5 miembros)",
   "Actualizaciones gratuitas",
   "Soporte por WhatsApp",
@@ -30,7 +30,7 @@ const includedCore = [
 const includedPro = [
   "Todo lo de PLAN CORE",
   "Firma digital con QR en tickets",
-  "Evidencia fotográfica en reparaciones",
+  "Evidencia fotografica en reparaciones",
   "Health Check PRO en flujo de taller",
 ]
 
@@ -106,7 +106,7 @@ export function PricingSection() {
                       ${PRICE_CORE_ANNUAL.toLocaleString("es-MX")} MXN facturado anualmente
                     </p>
                     <span className="mt-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                      Ahorras ${ANNUAL_SAVINGS_CORE} MXN al año
+                      Ahorras ${ANNUAL_SAVINGS_CORE} MXN al ano
                     </span>
                   </>
                 ) : (
@@ -138,10 +138,10 @@ export function PricingSection() {
                 className="mt-auto h-12 w-full border-primary/30 text-base font-bold text-primary hover:bg-primary/5"
                 asChild
               >
-                <Link href="/auth/register">Comenzar 30 días gratis</Link>
+                <Link href="/auth/register">Comenzar 30 dias gratis</Link>
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Sin tarjeta de crédito · Cancela cuando quieras
+                Sin tarjeta de credito · Cancela cuando quieras
               </p>
             </div>
           </div>
@@ -167,7 +167,7 @@ export function PricingSection() {
                       ${PRICE_PRO_ANNUAL.toLocaleString("es-MX")} MXN facturado anualmente
                     </p>
                     <span className="mt-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                      Ahorras ${ANNUAL_SAVINGS_PRO.toLocaleString("es-MX")} MXN al año
+                      Ahorras ${ANNUAL_SAVINGS_PRO.toLocaleString("es-MX")} MXN al ano
                     </span>
                   </>
                 ) : (
@@ -198,10 +198,10 @@ export function PricingSection() {
                 className="mt-auto h-12 w-full text-base font-bold"
                 asChild
               >
-                <Link href="/auth/register">Comenzar 30 días gratis</Link>
+                <Link href="/auth/register">Comenzar 30 dias gratis</Link>
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Sin tarjeta de crédito · Cancela cuando quieras
+                Sin tarjeta de credito · Cancela cuando quieras
               </p>
             </div>
           </div>

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
@@ -61,7 +61,7 @@ function PrintCompraContent() {
       try {
         const { settings } = await getTallerSettings()
         if (!settings) {
-          setLoadError("No se pudo cargar la configuración del taller.")
+          setLoadError("No se pudo cargar la configuracion del taller.")
           return
         }
 
@@ -79,13 +79,13 @@ function PrintCompraContent() {
         })
       } catch (err) {
         console.error("[print-compra] error:", err)
-        setLoadError("Error al cargar la configuración.")
+        setLoadError("Error al cargar la configuracion.")
       }
     }
     void load()
   }, [])
 
-  // Disparar impresión
+  // Disparar impresion
   useEffect(() => {
     if (!data || !business) return
 

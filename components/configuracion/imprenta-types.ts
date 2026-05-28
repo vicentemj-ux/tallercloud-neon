@@ -1,4 +1,4 @@
-import {
+﻿import {
   Wrench,
   DollarSign,
   Package,
@@ -38,9 +38,9 @@ export const DOCUMENT_TYPES: {
 }[] = [
   {
     id: "reparacion",
-    label: "Reparación",
+    label: "Reparacion",
     icon: Wrench,
-    description: "Ticket de recepción y cobro",
+    description: "Ticket de recepcion y cobro",
   },
   {
     id: "venta",
@@ -52,13 +52,13 @@ export const DOCUMENT_TYPES: {
     id: "compra",
     label: "Compra",
     icon: Package,
-    description: "Adquisición de equipos usados",
+    description: "Adquisicion de equipos usados",
   },
   {
     id: "etiqueta",
     label: "Etiqueta",
     icon: Tag,
-    description: "Etiqueta de reparación 2×1″",
+    description: "Etiqueta de reparacion 2×1″",
   },
   {
     id: "barras",
@@ -73,13 +73,13 @@ export function getDefaultConfig(): Record<DocumentType, DocConfig> {
     reparacion: {
       ...DEFAULT_DOC_CONFIG,
       terminos:
-        "Garantía de 30 días en reparaciones. No cubre daños por líquidos ni golpes posteriores.",
+        "Garantia de 30 dias en reparaciones. No cubre danos por liquidos ni golpes posteriores.",
     },
     venta: {
       ...DEFAULT_DOC_CONFIG,
       mostrarTecnico: false,
       terminos:
-        "Garantía de 30 días en reparaciones. Los accesorios no tienen cambio ni devolución.",
+        "Garantia de 30 dias en reparaciones. Los accesorios no tienen cambio ni devolucion.",
     },
     compra: {
       ...DEFAULT_DOC_CONFIG,

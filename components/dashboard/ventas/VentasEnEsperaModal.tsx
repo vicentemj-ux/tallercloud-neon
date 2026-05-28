@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -94,7 +94,7 @@ export function VentasEnEsperaModal({
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          {itemCount} artículo{itemCount !== 1 ? "s" : ""}
+                          {itemCount} articulo{itemCount !== 1 ? "s" : ""}
                         </span>
                         <span className="text-[10px] text-slate-300">·</span>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">

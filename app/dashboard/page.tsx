@@ -1,4 +1,4 @@
-import { OrdersTable } from "@/components/dashboard/orders-table"
+﻿import { OrdersTable } from "@/components/dashboard/orders-table"
 import { NewRepairButton } from "@/components/dashboard/new-repair-button"
 import { getDashboardMvpData } from "@/lib/actions/dashboard-prisma"
 import { getDashboardSubscriptionBannerContext } from "@/lib/actions/settings-prisma"
@@ -12,7 +12,7 @@ import Link from "next/link"
 export const dynamic = "force-dynamic"
 
 /**
- * Métricas (`getDashboardStats`) vienen de la RPC sobre **reparaciones / ventas / caja**, no de la tabla `productos`.
+ * Metricas (`getDashboardStats`) vienen de la RPC sobre **reparaciones / ventas / caja**, no de la tabla `productos`.
  * El inventario vive en **`productos`**; no existe tabla `inventario` en el esquema usado por la app.
  */
 export default async function DashboardPage() {
@@ -62,11 +62,11 @@ export default async function DashboardPage() {
   const showTimezoneBanner = !subCtx.zonaHoraria || subCtx.zonaHoraria === "UTC"
 
   /**
-   * Reglas de visibilidad del banner de suscripción:
+   * Reglas de visibilidad del banner de suscripcion:
    * - suspendido: siempre visible
-   * - prueba: siempre visible (el usuario necesita saber cuántos días le quedan)
-   * - activo con vencimiento: solo cuando faltan ≤ 5 días (urgencia de renovación)
-   * - activo sin vencimiento: nunca (suscripción estable)
+   * - prueba: siempre visible (el usuario necesita saber cuantos dias le quedan)
+   * - activo con vencimiento: solo cuando faltan ≤ 5 dias (urgencia de renovacion)
+   * - activo sin vencimiento: nunca (suscripcion estable)
    */
   const showSubscriptionUrgencyBanner =
     subCtx.planTipo === "suspendido" ||
@@ -90,12 +90,12 @@ export default async function DashboardPage() {
               VISTA <span className="text-blue-600">GENERAL</span>
             </h1>
             <p className="mt-1 max-w-full text-sm leading-snug text-slate-500">
-              Panorama en tiempo real de operaciones, tickets y desempeño del taller.
+              Panorama en tiempo real de operaciones, tickets y desempeno del taller.
             </p>
           </div>
         </header>
 
-        {/* ── Banners de cuenta (suscripción / zona horaria) ── */}
+        {/* ── Banners de cuenta (suscripcion / zona horaria) ── */}
         {(showSubscriptionUrgencyBanner || showTimezoneBanner) && (
           <section className={`grid gap-3 ${showSubscriptionUrgencyBanner && showTimezoneBanner ? "sm:grid-cols-2" : ""}`}>
             {showSubscriptionUrgencyBanner && (
@@ -106,14 +106,14 @@ export default async function DashboardPage() {
                   </div>
                   <div className="min-w-0">
                     {subCtx.planTipo === "suspendido" ? (
-                      <p className="text-sm font-semibold text-blue-900">Cuenta suspendida — regulariza tu suscripción.</p>
+                      <p className="text-sm font-semibold text-blue-900">Cuenta suspendida — regulariza tu suscripcion.</p>
                     ) : subCtx.planTipo === "prueba" ? (
                       <p className="text-sm font-semibold text-blue-900">
-                        Te quedan <span className="font-black text-blue-700">{subCtx.diasRestantes}</span> {subCtx.diasRestantes === 1 ? "día" : "días"} de prueba.
+                        Te quedan <span className="font-black text-blue-700">{subCtx.diasRestantes}</span> {subCtx.diasRestantes === 1 ? "dia" : "dias"} de prueba.
                       </p>
                     ) : (
                       <p className="text-sm font-semibold text-blue-900">
-                        Tu suscripción vence en <span className="font-black text-blue-700">{subCtx.diasRestantes}</span> {subCtx.diasRestantes === 1 ? "día" : "días"}. Renueva pronto.
+                        Tu suscripcion vence en <span className="font-black text-blue-700">{subCtx.diasRestantes}</span> {subCtx.diasRestantes === 1 ? "dia" : "dias"}. Renueva pronto.
                       </p>
                     )}
                   </div>
@@ -129,7 +129,7 @@ export default async function DashboardPage() {
                   <Globe className="h-4 w-4 text-slate-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Configuración pendiente</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Configuracion pendiente</p>
                   <p className="text-sm font-semibold text-slate-700">Configura tu zona horaria</p>
                 </div>
                 <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 group-hover:text-slate-500 transition-colors" />
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
         {/* ── BENTO GRID ── */}
         <section
           className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4"
-          aria-label="Métricas operativas"
+          aria-label="Metricas operativas"
         >
 
           {/* ── HERO: Ingresos del Mes — col-span-2 row-span-2 ── */}
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
                   {stats.urgentes}
                 </p>
                 <p className={`mt-1 text-xs ${stats.urgentes > 0 ? "text-red-700" : "text-slate-400"}`}>
-                  7+ días sin movimiento
+                  7+ dias sin movimiento
                 </p>
               </div>
             </div>
@@ -273,7 +273,7 @@ export default async function DashboardPage() {
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-widest text-amber-600">Tickets en Cola</p>
                   <p className="text-4xl font-black tabular-nums leading-tight text-slate-900">{stats.enProceso}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Recibidos y en reparación activa</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Recibidos y en reparacion activa</p>
                 </div>
               </div>
 
@@ -293,7 +293,7 @@ export default async function DashboardPage() {
             </div>
           </Link>
 
-          {/* ── CTA: Nueva Reparación — col-span-4 ── */}
+          {/* ── CTA: Nueva Reparacion — col-span-4 ── */}
           <div className="
               col-span-1 sm:col-span-2 lg:col-span-4
             group relative overflow-hidden rounded-3xl
@@ -307,13 +307,13 @@ export default async function DashboardPage() {
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">
-                  Acción Rápida
+                  Accion Rapida
                 </p>
                 <p className="text-lg font-black text-white leading-tight">
-                  Registrar nueva reparación
+                  Registrar nueva reparacion
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Crea el ticket, asigna técnico y genera el folio al instante.
+                  Crea el ticket, asigna tecnico y genera el folio al instante.
                 </p>
               </div>
               <div className="flex items-center gap-3 shrink-0">

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
@@ -102,7 +102,7 @@ const VentaLabel = forwardRef<HTMLDivElement, VentaLabelProps>(({ data }, ref) =
           </div>
         ))}
         {extraCount > 0 && (
-          <div style={{ fontSize: "6pt", color: "#666" }}>+{extraCount} más</div>
+          <div style={{ fontSize: "6pt", color: "#666" }}>+{extraCount} mas</div>
         )}
       </div>
 

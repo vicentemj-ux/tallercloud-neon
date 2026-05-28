@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
@@ -111,10 +111,10 @@ const TicketCompraTemplate = forwardRef<HTMLDivElement, TicketCompraTemplateProp
           )}
         </div>
 
-        {/* ── TÍTULO ── */}
+        {/* ── TiTULO ── */}
         <div style={{ textAlign: "center", marginBottom: "6mm", borderBottom: `2px solid ${BLACK}`, paddingBottom: "3mm" }}>
           <div style={{ ...SHARP, fontWeight: 900, fontSize: "16px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Comprobante de Adquisición
+            Comprobante de Adquisicion
           </div>
           <div style={{ ...SHARP, fontWeight: 700, fontSize: "11px", marginTop: "2px" }}>
             Folio: <span style={{ fontFamily: MONO, fontWeight: 900 }}>{data.folio}</span> · {data.fecha}
@@ -144,7 +144,7 @@ const TicketCompraTemplate = forwardRef<HTMLDivElement, TicketCompraTemplateProp
             <div><span style={{ fontWeight: 700 }}>IMEI:</span> <span style={{ fontFamily: MONO }}>{data.imei}</span></div>
             <div><span style={{ fontWeight: 700 }}>Color:</span> {data.color}</div>
             <div><span style={{ fontWeight: 700 }}>Capacidad:</span> {data.capacidad}</div>
-            <div><span style={{ fontWeight: 700 }}>Condición:</span> {data.condicion}</div>
+            <div><span style={{ fontWeight: 700 }}>Condicion:</span> {data.condicion}</div>
             <div><span style={{ fontWeight: 700 }}>Monto:</span> <span style={{ fontFamily: MONO, fontWeight: 900 }}>{fmtMXN(data.monto)}</span></div>
           </div>
         </div>
@@ -159,10 +159,10 @@ const TicketCompraTemplate = forwardRef<HTMLDivElement, TicketCompraTemplateProp
           </div>
         )}
 
-        {/* ── DECLARACIÓN JURADA ── */}
+        {/* ── DECLARACIoN JURADA ── */}
         <div style={{ marginBottom: "8mm", border: `1.5px solid ${BLACK}`, padding: "4mm", background: "#fafafa" }}>
           <div style={{ ...SHARP, fontWeight: 900, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2mm", textAlign: "center" }}>
-            Declaración bajo protesta de decir verdad
+            Declaracion bajo protesta de decir verdad
           </div>
           <p style={{ ...SHARP, fontWeight: 600, fontSize: "11px", lineHeight: 1.5, margin: 0, textAlign: "justify" }}>
             {juratText}

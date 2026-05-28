@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo } from "react"
 import { HelpCircle, X, Info, Loader2 } from "lucide-react"
@@ -80,7 +80,7 @@ export const ConfirmModal = memo(function ConfirmModal({
 
           {/* Method row */}
           <div className="flex items-center justify-between px-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 italic">Método de pago</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 italic">Metodo de pago</p>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 italic">{metodosLabel[metodo]}</p>
           </div>
 
@@ -90,7 +90,7 @@ export const ConfirmModal = memo(function ConfirmModal({
               <Info className="h-4 w-4" />
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-blue-500 leading-relaxed">
-              Al confirmar, se descontará el stock de los productos y se registrará la transacción en el historial.
+              Al confirmar, se descontara el stock de los productos y se registrara la transaccion en el historial.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ export const ConfirmModal = memo(function ConfirmModal({
               disabled={loading}
               className="h-12 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.15em] shadow-lg shadow-blue-600/25 disabled:opacity-40 transition-all hover:shadow-xl hover:shadow-blue-600/30 hover:-translate-y-0.5"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sí, Finalizar Venta"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Si, Finalizar Venta"}
             </Button>
           </div>
         </div>

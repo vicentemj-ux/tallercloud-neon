@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import Link from "next/link"
@@ -48,9 +48,9 @@ export function HelpQuickSheet({ className }: { className?: string }) {
           overlayClassName="z-[80]"
         >
           <SheetHeader className="border-b border-slate-200 pb-4 text-left">
-            <SheetTitle className="text-lg font-semibold text-slate-900">Ayuda rápida</SheetTitle>
+            <SheetTitle className="text-lg font-semibold text-slate-900">Ayuda rapida</SheetTitle>
             <SheetDescription className="text-sm text-slate-600">
-              Atajos al manual y al centro de documentación del panel.
+              Atajos al manual y al centro de documentacion del panel.
             </SheetDescription>
           </SheetHeader>
 
@@ -66,7 +66,7 @@ export function HelpQuickSheet({ className }: { className?: string }) {
               <div>
                 <p className="font-semibold text-slate-900">Centro de Ayuda</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
-                  Manual de recepción, modo offline, diagnóstico PRO, firma digital y preguntas frecuentes.
+                  Manual de recepcion, modo offline, diagnostico PRO, firma digital y preguntas frecuentes.
                 </p>
               </div>
             </Link>
@@ -80,7 +80,7 @@ export function HelpQuickSheet({ className }: { className?: string }) {
                 <Wrench className="h-5 w-5" aria-hidden />
               </div>
               <div>
-                <p className="font-semibold text-slate-900">Nueva reparación</p>
+                <p className="font-semibold text-slate-900">Nueva reparacion</p>
                 <p className="mt-0.5 text-xs text-slate-600">Abrir el flujo de nuevo ticket.</p>
               </div>
             </Link>
@@ -89,7 +89,7 @@ export function HelpQuickSheet({ className }: { className?: string }) {
               <div className="flex gap-2 text-slate-600">
                 <LifeBuoy className="h-4 w-4 shrink-0 mt-0.5" aria-hidden />
                 <p className="text-xs leading-relaxed">
-                  ¿Sin conexión? Los tickets nuevos pueden guardarse en cola y sincronizarse al volver la red. Mira el
+                  ¿Sin conexion? Los tickets nuevos pueden guardarse en cola y sincronizarse al volver la red. Mira el
                   indicador en la barra superior.
                 </p>
               </div>

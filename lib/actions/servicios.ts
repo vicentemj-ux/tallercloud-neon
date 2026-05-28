@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { revalidatePath } from "next/cache"
@@ -30,7 +30,7 @@ export interface CreateServicioInput {
   precio: number
 }
 
-// ─── Catálogo de servicios ────────────────────────────────────────────────────
+// ─── Catalogo de servicios ────────────────────────────────────────────────────
 
 export async function getServicios(): Promise<{ data: Servicio[]; error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()

@@ -92,7 +92,7 @@ function getDeviceIcon(tipo: string | null | undefined) {
   if (t.includes("laptop") || t.includes("notebook") || t.includes("mac")) return Laptop
   if (t.includes("videojuego") || t.includes("consola") || t.includes("playstation") || t.includes("xbox") || t.includes("nintendo")) return Gamepad2
   if (t.includes("tablet") || t.includes("ipad")) return Tablet
-  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil") || t.includes("mÃ³vil")) return Smartphone
+  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil")) return Smartphone
   if (t.includes("impresora") || t.includes("printer")) return Printer
   if (t.includes("reloj") || t.includes("watch") || t.includes("smartwatch")) return Watch
   if (t.includes("computadora") || t.includes("desktop") || t.includes("pc") || t.includes("all-in-one")) return Monitor
@@ -111,8 +111,8 @@ export interface RepairDetailViewProps {
 
 const PROCESS_OPTIONS = [
   { value: "Recibido", label: "RECIBIDO" },
-  { value: "Diagnostico", label: "DIAGNÃ“STICO" },
-  { value: "En Reparacion", label: "EN REPARACIÃ“N" },
+  { value: "Diagnostico", label: "DIAGNOSTICO" },
+  { value: "En Reparacion", label: "EN REPARACION" },
   { value: "Listo", label: "LISTO" },
 ]
 
@@ -144,15 +144,15 @@ export function RepairDetailView({
     detail: RepairDetail | null
   } | null>(null)
 
-  /** ConfirmaciÃ³n de cambio de estado (no guardar directo) */
+  /** Confirmacion de cambio de estado (no guardar directo) */
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [pendingEstado, setPendingEstado] = useState<string | null>(null)
   const [statusNota, setStatusNota] = useState("")
   const [statusPendingKind, setStatusPendingKind] = useState<"historial" | "whatsapp" | null>(null)
   const [nombreTallerSetting, setNombreTallerSetting] = useState("Mi Taller")
-  const [warrantyHint, setWarrantyHint] = useState("30 dÃ­as")
+  const [warrantyHint, setWarrantyHint] = useState("30 dias")
 
-  // Gastos del ticket â€” solo lectura (para mostrar utilidad estimada)
+  // Gastos del ticket - solo lectura (para mostrar utilidad estimada)
   const [gastos, setGastos] = useState<ReparacionGasto[]>([])
   const [servicios, setServicios] = useState<import("@/lib/actions/servicios-prisma").ReparacionServicio[]>([])
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
@@ -160,18 +160,18 @@ export function RepairDetailView({
   const [isCancelling, setIsCancelling] = useState(false)
   const [healthSheetOpen, setHealthSheetOpen] = useState(false)
 
-  // â”€â”€ Inline quick-edit state â”€â”€
+  // Inline quick-edit state
   const [editingObservaciones, setEditingObservaciones] = useState(false)
   const [observacionesDraft, setObservacionesDraft] = useState("")
   const [editingNotas, setEditingNotas] = useState(false)
   const [notasDraft, setNotasDraft] = useState("")
   const [savingQuickNotes, setSavingQuickNotes] = useState(false)
 
-  // â”€â”€ Modal reparaciÃ³n no exitosa â”€â”€
+  // Modal reparacion no exitosa
   const [noExitosaOpen, setNoExitosaOpen] = useState(false)
   const [noExitosaTipo, setNoExitosaTipo] = useState<"sin_reparar" | "cancelar">("sin_reparar")
 
-  // â”€â”€ Modal decisiÃ³n LISTO (exitosa / no exitosa) â”€â”€
+  // Modal decision LISTO (exitosa / no exitosa)
   const [listoDecisionOpen, setListoDecisionOpen] = useState(false)
 
   const [checklistProDraft, setChecklistProDraft] = useState<ChecklistProData>({
@@ -210,7 +210,7 @@ export function RepairDetailView({
         onRepairUpdated({ ...repair, status: "Cancelado" as BitacoraRepair["status"] })
         setEstado("Cancelado")
       } else {
-        toast({ title: "Error", description: result.error ?? "No se pudo cancelar la reparaciÃ³n.", variant: "destructive" })
+        toast({ title: "Error", description: result.error ?? "No se pudo cancelar la reparacion.", variant: "destructive" })
         setCancelDialogOpen(false)
       }
     } finally {
@@ -262,7 +262,7 @@ export function RepairDetailView({
         if (settingsRes.settings?.nombre_taller) setNombreTallerSetting(settingsRes.settings.nombre_taller)
         if (settingsRes.settings?.terminos_garantia?.trim()) {
           const t = settingsRes.settings.terminos_garantia.trim()
-          setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}â€¦` : t)
+          setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}...` : t)
         }
         const data = page.detail
         setDetail(data ?? null)
@@ -388,7 +388,7 @@ export function RepairDetailView({
   const confirmarNoExitosa = async (data: { razon: string; nota: string }) => {
     if (!repair) return
     const nuevoEstado = noExitosaTipo === "sin_reparar" ? "Sin Reparacion" : "Cancelado"
-    const notaCompleta = [data.razon, data.nota].filter(Boolean).join(" â€” ")
+    const notaCompleta = [data.razon, data.nota].filter(Boolean).join(" - ")
     try {
       const res = await applyRepairStatusChange({
         repairId: repair.id,
@@ -409,7 +409,7 @@ export function RepairDetailView({
       onRepairUpdated({ ...repair, status: nuevoEstado as BitacoraRepair["status"] })
       toast({
         title: nuevoEstado === "Sin Reparacion" ? "Marcado sin reparar" : "Cancelado",
-        description: "RazÃ³n registrada para mÃ©tricas.",
+        description: "Razon registrada para metricas.",
       })
     } catch {
       toast({ title: "Error", description: "Error de red al guardar.", variant: "destructive" })
@@ -472,15 +472,15 @@ export function RepairDetailView({
           if (url) window.open(url)
           else
             toast({
-              title: "Sin telÃ©fono",
-              description: "No hay nÃºmero de cliente para abrir WhatsApp.",
+              title: "Sin telefono",
+              description: "No hay numero de cliente para abrir WhatsApp.",
               variant: "destructive",
             })
         } catch (waErr) {
           console.error("[confirmStatusChange] WhatsApp:", waErr)
           toast({
             title: "WhatsApp",
-            description: "El estado se guardÃ³; no se pudo abrir el mensaje.",
+            description: "El estado se guardo; no se pudo abrir el mensaje.",
             variant: "destructive",
           })
         }
@@ -504,7 +504,7 @@ export function RepairDetailView({
   const badgeLabel = getRepairStatusDisplayLabel(estado)
   const registradoText = detail?.createdAtRaw
     ? new Date(detail.createdAtRaw).toLocaleDateString("es-MX", { day: "numeric", month: "numeric", year: "numeric" })
-    : detail?.createdAt ?? "â€”"
+    : detail?.createdAt ?? "-"
   const formatTimestamp = (iso: string) =>
     new Date(iso).toLocaleString("es-MX", {
       day: "2-digit",
@@ -528,7 +528,7 @@ export function RepairDetailView({
     const m: Record<string, string> = {
       presupuesto: "Presupuesto",
       abono: "Abono / pago",
-      tecnico: "TÃ©cnico asignado",
+      tecnico: "Tecnico asignado",
       estado: "Cambio de estado",
     }
     return m[tipo] ?? tipo
@@ -556,7 +556,7 @@ export function RepairDetailView({
         valorAnterior: c.valor_anterior ?? null,
         valorNuevo: c.valor_nuevo ?? null,
       }))
-    /* CronolÃ³gico: el ingreso basal (Recibido) primero, lo mÃ¡s reciente al final */
+    /* Cronologico: el ingreso basal (Recibido) primero, lo mas reciente al final */
     const merged = [...estadoRows, ...logRows].sort(
       (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
     )
@@ -592,13 +592,13 @@ export function RepairDetailView({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {/* Folio */}
             <span className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
-              {repair?.folio ?? detail?.folio ?? "â€”"}
+              {repair?.folio ?? detail?.folio ?? "-"}
             </span>
             {/* Estado */}
             <span className="inline-flex rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-bold uppercase text-blue-800">
               {badgeLabel}
             </span>
-            {/* TÃ©cnico */}
+            {/* Tecnico */}
             {detail?.tecnico && detail.tecnico !== "No asignado" && (
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-bold uppercase tracking-wide text-slate-700">
                 <Wrench className="h-4 w-4" aria-hidden />
@@ -624,11 +624,11 @@ export function RepairDetailView({
               <span>
                 {registradoText}
                 {detail?.creadoPorNombre ? (
-                  <span className="text-slate-500"> Â· {detail.creadoPorNombre}</span>
+                  <span className="text-slate-500"> · {detail.creadoPorNombre}</span>
                 ) : null}
               </span>
             </span>
-            {/* Entregar (cuando estÃ¡ Listo, Sin ReparaciÃ³n o Cancelado) */}
+            {/* Entregar (cuando esta Listo, Sin Reparacion o Cancelado) */}
             {(estado === "Listo" || estado === "Sin Reparacion" || estado === "Cancelado") && (
               <Button
                 type="button"
@@ -684,10 +684,10 @@ export function RepairDetailView({
           <AlertDialogContent className="max-w-md border-red-200 bg-red-50">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-center text-xl font-bold text-red-800">
-                ATENCIÃ“N
+                ATENCION
               </AlertDialogTitle>
               <AlertDialogDescription className="text-center text-base text-red-800">
-                EstÃ¡s a punto de borrar permanentemente este folio. Esta acciÃ³n no se puede deshacer.
+                Estas a punto de borrar permanentemente este folio. Esta accion no se puede deshacer.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="flex flex-col-reverse gap-2 pt-4 sm:flex-row">
@@ -719,17 +719,17 @@ export function RepairDetailView({
           <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-center text-xl font-bold text-slate-900">
-                Â¿Cancelar esta reparaciÃ³n?
+                Cancelar esta reparacion?
               </AlertDialogTitle>
               <AlertDialogDescription className="space-y-2 text-center text-base text-slate-700">
-                <span className="block">Esta acciÃ³n cancelarÃ¡ el folio y generarÃ¡ devoluciones automÃ¡ticas.</span>
+                <span className="block">Esta accion cancelara el folio y generara devoluciones automaticas.</span>
                 {cancelSummary && cancelSummary.total > 0 ? (
                   <span className="block font-semibold text-red-600">
                     Total a devolver:{" "}
                     {new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(cancelSummary.total)}
                   </span>
                 ) : (
-                  <span className="block text-slate-500">Sin pagos registrados â€” no se generarÃ¡n devoluciones.</span>
+                  <span className="block text-slate-500">Sin pagos registrados - no se generaran devoluciones.</span>
                 )}
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -745,7 +745,7 @@ export function RepairDetailView({
                 }}
                 className="bg-red-600 text-white hover:bg-red-700"
               >
-                {isCancelling ? "Cancelando..." : "Confirmar cancelaciÃ³n"}
+                {isCancelling ? "Cancelando..." : "Confirmar cancelacion"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -799,14 +799,14 @@ export function RepairDetailView({
                               <span className="text-gray-400">&rdquo;</span>
                             </>
                           ) : (
-                            <span className="italic text-gray-500">Sin descripciÃ³n de falla</span>
+                            <span className="italic text-gray-500">Sin descripcion de falla</span>
                           )}
                         </p>
                       </div>
                     </div>
                     <div className="flex min-h-0 flex-col gap-2">
                       <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        DiagnÃ³stico rÃ¡pido
+                        Diagnostico rapido
                       </Label>
                       <DiagnosisProSummaryCard
                         encendido={detail?.checklistIngreso?.encendido ?? null}
@@ -882,7 +882,7 @@ export function RepairDetailView({
                               <Wrench className="h-3.5 w-3.5 text-blue-600" />
                               <span className="font-semibold text-slate-800">{s.nombre_snapshot}</span>
                               {s.cantidad > 1 && (
-                                <span className="text-xs text-slate-500">Ã—{s.cantidad}</span>
+                                <span className="text-xs text-slate-500">x{s.cantidad}</span>
                               )}
                             </div>
                             <span className="font-bold text-slate-900">
@@ -910,13 +910,13 @@ export function RepairDetailView({
                         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-4">
                             <p className="text-[11px] font-bold uppercase tracking-wide text-sky-800">
-                              InversiÃ³n (interno)
+                              Inversion (interno)
                             </p>
                             <p className="mt-1 text-2xl font-bold tabular-nums text-sky-900">
                               ${totalGastos.toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                             </p>
                             <p className="mt-2 text-xs text-sky-800/90">
-                              Mano de obra ${gastosManoObra.toFixed(2)} Â· Refacciones ${gastosRefaccion.toFixed(2)}
+                              Mano de obra ${gastosManoObra.toFixed(2)} · Refacciones ${gastosRefaccion.toFixed(2)}
                             </p>
                           </div>
                           <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4">
@@ -944,13 +944,13 @@ export function RepairDetailView({
                     })()
                   ) : null}
 
-                  {/* â”€â”€ Observaciones estÃ©ticas â”€â”€ */}
+                  {/* Observaciones esteticas */}
                   <div className="mt-6">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
                         <Eye className="h-4 w-4 text-slate-400" aria-hidden />
                         <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                          Observaciones estÃ©ticas al ingreso
+                          Observaciones esteticas al ingreso
                         </Label>
                       </div>
                       <button
@@ -968,7 +968,7 @@ export function RepairDetailView({
                         <Textarea
                           value={observacionesDraft}
                           onChange={(e) => setObservacionesDraft(e.target.value)}
-                          placeholder="Golpes, rayones, piezas faltantesâ€¦"
+                          placeholder="Golpes, rayones, piezas faltantes..."
                           className="min-h-[72px] resize-y rounded-lg border-slate-200 bg-white text-sm"
                           disabled={savingQuickNotes}
                         />
@@ -1001,7 +1001,7 @@ export function RepairDetailView({
                             {detail.checklistIngreso.observacionesEsteticas.trim()}
                           </p>
                         ) : (
-                          <p className="text-sm italic text-gray-400">Sin observaciones estÃ©ticas registradas</p>
+                          <p className="text-sm italic text-gray-400">Sin observaciones esteticas registradas</p>
                         )}
                       </div>
                     )}
@@ -1031,7 +1031,7 @@ export function RepairDetailView({
                         <Textarea
                           value={notasDraft}
                           onChange={(e) => setNotasDraft(e.target.value)}
-                          placeholder="Notas solo para el tallerâ€¦"
+                          placeholder="Notas solo para el taller..."
                           className="min-h-[72px] resize-y rounded-lg border-amber-200 bg-white text-sm"
                           disabled={savingQuickNotes}
                         />
@@ -1076,7 +1076,7 @@ export function RepairDetailView({
                   </div>
                   <div className="max-h-[min(50vh,480px)] overflow-y-auto pr-1 sm:max-h-none">
                     {auditFeedItems.length === 0 ? (
-                      <p className="py-6 text-center text-sm text-gray-500">Sin movimientos registrados aÃºn.</p>
+                      <p className="py-6 text-center text-sm text-gray-500">Sin movimientos registrados aun.</p>
                     ) : (
                       <ul className="relative space-y-0 border-l-2 border-gray-200 pl-5">
                         {auditFeedItems.map((item, idx) => {
@@ -1106,8 +1106,8 @@ export function RepairDetailView({
                                     </p>
                                   )}
                                   <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
-                                    {formatTimestamp(item.fecha)} â€” {item.usuario}
-                                    {item.nota?.trim() ? ` â€” ${item.nota.trim()}` : ""}
+                                    {formatTimestamp(item.fecha)} - {item.usuario}
+                                    {item.nota?.trim() ? ` - ${item.nota.trim()}` : ""}
                                   </p>
                                 </div>
                               ) : (
@@ -1120,7 +1120,7 @@ export function RepairDetailView({
                                   ) : null}
                                   <p className="mt-1 text-sm italic text-gray-600">&ldquo;{item.descripcion}&rdquo;</p>
                                   <p className="mt-2 text-[11px] text-gray-500">
-                                    {formatTimestamp(item.fecha)} Â· {item.usuario}
+                                    {formatTimestamp(item.fecha)} · {item.usuario}
                                   </p>
                                 </div>
                               )}
@@ -1141,10 +1141,10 @@ export function RepairDetailView({
                     <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">Cliente</h3>
                   </div>
                   <p className="text-xl font-bold leading-tight text-gray-900 sm:text-2xl">
-                    {(detail?.clienteName ?? repair?.clienteName) || "â€”"}
+                    {(detail?.clienteName ?? repair?.clienteName) || "-"}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-800">
-                    {(detail?.clientePhone ?? repair?.clientePhone) || "â€”"}
+                    {(detail?.clientePhone ?? repair?.clientePhone) || "-"}
                   </p>
                   {detail?.clientePhone ? (
                     <button
@@ -1152,7 +1152,7 @@ export function RepairDetailView({
                       onClick={() => {
                         const digits = normalizePhoneForWhatsApp(detail.clientePhone)
                         if (!digits) return
-                        const msg = `Buenas ${(detail?.clienteName ?? repair?.clienteName ?? "cliente").trim()}, lo contactamos de parte de ${nombreTallerSetting} por el ${(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim()} ${(detail?.deviceModel ?? repair?.deviceModel ?? "").trim()} que nos llevÃ³ a revisiÃ³n a la tienda.`
+                        const msg = `Buenas ${(detail?.clienteName ?? repair?.clienteName ?? "cliente").trim()}, lo contactamos de parte de ${nombreTallerSetting} por el ${(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim()} ${(detail?.deviceModel ?? repair?.deviceModel ?? "").trim()} que nos llevo a revision a la tienda.`
                         window.open(`https://api.whatsapp.com/send?phone=${digits}&text=${encodeURIComponent(msg)}`)
                       }}
                       className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-emerald-700"
@@ -1174,20 +1174,20 @@ export function RepairDetailView({
                   <div className="space-y-4">
                     <div>
                       <p className="text-2xl font-bold uppercase tracking-tight text-gray-900">
-                        {(detail?.tipo_equipo ?? repair?.tipo_equipo ?? "").trim() || "â€”"} Â· {(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim() || "â€”"}
+                        {(detail?.tipo_equipo ?? repair?.tipo_equipo ?? "").trim() || "-"} · {(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim() || "-"}
                       </p>
                       <p className="text-xl font-bold text-[#2563eb] sm:text-2xl">
-                        {(detail?.deviceModel ?? repair?.deviceModel ?? "").trim() || "â€”"}
+                        {(detail?.deviceModel ?? repair?.deviceModel ?? "").trim() || "-"}
                       </p>
                     </div>
                     <dl className="grid grid-cols-1 gap-3 text-sm">
                       <div>
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">IMEI / SN</dt>
-                        <dd className="mt-0.5 font-mono text-gray-900">{detail?.imei ?? "â€”"}</dd>
+                        <dd className="mt-0.5 font-mono text-gray-900">{detail?.imei ?? "-"}</dd>
                       </div>
                       <div>
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">Color</dt>
-                        <dd className="mt-0.5 text-gray-900">{detail?.color ?? "â€”"}</dd>
+                        <dd className="mt-0.5 text-gray-900">{detail?.color ?? "-"}</dd>
                       </div>
                       <div className="sm:col-span-2">
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">Seguridad del equipo</dt>
@@ -1197,7 +1197,7 @@ export function RepairDetailView({
                           ) : detail.securityType === "pattern" ? (
                             <div>
                               <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
-                                PatrÃ³n
+                                Patron
                               </p>
                               <UnlockPatternGrid
                                 pattern={detail.securityValue ?? detail.patronDesbloqueo ?? undefined}
@@ -1213,20 +1213,20 @@ export function RepairDetailView({
                             <div>
                               <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-500">PIN</p>
                               <p className="font-mono text-base font-semibold text-gray-900">
-                                {detail.securityValue ?? detail.pinContrasena ?? "â€”"}
+                                {detail.securityValue ?? detail.pinContrasena ?? "-"}
                               </p>
                             </div>
                           ) : detail.securityType === "password" ? (
                             <div>
                               <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-500">
-                                ContraseÃ±a
+                                Contrasena
                               </p>
                               <p className="font-mono text-base font-semibold text-gray-900 break-all">
-                                {detail.securityValue ?? detail.pinContrasena ?? "â€”"}
+                                {detail.securityValue ?? detail.pinContrasena ?? "-"}
                               </p>
                             </div>
                           ) : (
-                            <p className="text-sm text-gray-500">â€”</p>
+                            <p className="text-sm text-gray-500">-</p>
                           )}
                         </dd>
                       </div>
@@ -1333,11 +1333,11 @@ export function RepairDetailView({
         onConfirm={confirmarNoExitosa}
       />
 
-      {/* Modal decisiÃ³n LISTO */}
+      {/* Modal decision LISTO */}
       <Dialog open={listoDecisionOpen} onOpenChange={setListoDecisionOpen}>
         <DialogContent className="max-w-sm gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 shadow-lg">
           <DialogHeader className="shrink-0 border-b border-slate-100 px-5 pb-4 pt-5 text-left">
-            <DialogTitle className="text-base font-bold text-slate-900">Â¿ReparaciÃ³n exitosa?</DialogTitle>
+            <DialogTitle className="text-base font-bold text-slate-900">Reparacion exitosa?</DialogTitle>
             <DialogDescription className="text-sm text-slate-500">
               Define el resultado antes de marcar como finalizado.
             </DialogDescription>
@@ -1349,7 +1349,7 @@ export function RepairDetailView({
               className="w-full gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-sm hover:bg-emerald-700"
             >
               <PackageCheck className="h-5 w-5" aria-hidden />
-              SÃ­, reparaciÃ³n exitosa
+              Si, reparacion exitosa
             </Button>
             <Button
               type="button"
@@ -1379,7 +1379,7 @@ export function RepairDetailView({
           clientePhone={exitoEntregaSnapshot.detail?.clientePhone ?? repair.clientePhone}
           equipoLabel={
             `${exitoEntregaSnapshot.detail?.deviceBrand ?? repair.deviceBrand ?? ""} ${exitoEntregaSnapshot.detail?.deviceModel ?? repair.deviceModel ?? ""}`.trim() ||
-            "â€”"
+            "-"
           }
           anticiposPrevios={exitoEntregaSnapshot.anticiposPrevios}
           pagoFinal={exitoEntregaSnapshot.pagoFinal}
@@ -1412,7 +1412,7 @@ export function RepairDetailView({
         }
       }}
       estadoAnteriorLabel={getRepairStatusDisplayLabel(estado)}
-      estadoNuevoLabel={pendingEstado ? getRepairStatusDisplayLabel(pendingEstado) : "â€”"}
+      estadoNuevoLabel={pendingEstado ? getRepairStatusDisplayLabel(pendingEstado) : "-"}
       notaTecnica={statusNota}
       onNotaTecnicaChange={setStatusNota}
       onSoloHistorial={() => void confirmStatusChange("historial")}
@@ -1422,6 +1422,8 @@ export function RepairDetailView({
     </>
   )
 }
+
+
 
 
 

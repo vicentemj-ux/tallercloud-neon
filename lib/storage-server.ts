@@ -1,9 +1,9 @@
-"use server"
+﻿"use server"
 
 /**
  * lib/storage-server.ts — Server Actions para Supabase Storage privado.
  * Requiere service_role key — solo ejecutar server-side.
- * Para URLs públicas usa getPublicUrl() de lib/storage.ts.
+ * Para URLs publicas usa getPublicUrl() de lib/storage.ts.
  */
 
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -12,7 +12,7 @@ import { extractStoragePath } from "@/lib/storage"
 /**
  * Genera una signed URL para un archivo en un bucket PRIVADO.
  * @param bucket     Nombre del bucket
- * @param pathOrUrl  Path del archivo o URL pública/expirada existente
+ * @param pathOrUrl  Path del archivo o URL publica/expirada existente
  * @param expiresIn  Segundos de validez (default: 7200 = 2h)
  */
 export async function getSignedUrl(
@@ -36,8 +36,8 @@ export async function getSignedUrl(
 }
 
 /**
- * Genera signed URLs en bulk para múltiples archivos del mismo bucket.
- * Más eficiente que llamar getSignedUrl() en bucle.
+ * Genera signed URLs en bulk para multiples archivos del mismo bucket.
+ * Mas eficiente que llamar getSignedUrl() en bucle.
  */
 export async function getSignedUrls(
   bucket: string,

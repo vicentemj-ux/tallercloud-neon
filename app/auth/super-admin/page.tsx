@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -28,10 +28,10 @@ export default function SuperAdminLoginPage() {
         router.push("/admin/dashboard")
         router.refresh()
       } else {
-        setError(result.error || "Error al iniciar sesión")
+        setError(result.error || "Error al iniciar sesion")
       }
     } catch (err) {
-      setError("Error al iniciar sesión. Intenta nuevamente.")
+      setError("Error al iniciar sesion. Intenta nuevamente.")
     } finally {
       setLoading(false)
     }
@@ -59,7 +59,7 @@ export default function SuperAdminLoginPage() {
         {/* Login Card */}
         <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-2xl">
           <CardHeader className="space-y-3 border-b border-slate-800 pb-6">
-            <CardTitle className="text-white text-center">Portal de Administración</CardTitle>
+            <CardTitle className="text-white text-center">Portal de Administracion</CardTitle>
             <CardDescription className="text-slate-400 text-center text-sm">
               Acceso exclusivo para Super Administradores del Sistema
             </CardDescription>
@@ -95,7 +95,7 @@ export default function SuperAdminLoginPage() {
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-200 text-sm font-medium">
-                  Contraseña Maestra
+                  Contrasena Maestra
                 </Label>
                 <Input
                   id="password"
@@ -129,16 +129,16 @@ export default function SuperAdminLoginPage() {
             {/* 2FA Info */}
             <div className="mt-4 p-3 bg-blue-950/30 border border-blue-900/50 rounded-lg">
               <p className="text-xs text-blue-400 text-center">
-                <strong>Verificación en dos pasos:</strong> Tras iniciar sesión, recibirás un código de 6 dígitos en tu correo registrado.
+                <strong>Verificacion en dos pasos:</strong> Tras iniciar sesion, recibiras un codigo de 6 digitos en tu correo registrado.
                 <br />
-                Asegúrate de que <code className="text-blue-300">RESEND_API_KEY</code> esté configurada en las variables de entorno.
+                Asegurate de que <code className="text-blue-300">RESEND_API_KEY</code> este configurada en las variables de entorno.
               </p>
             </div>
 
             {/* Security Footer */}
             <div className="mt-4 pt-4 border-t border-slate-800">
               <p className="text-xs text-slate-500 text-center">
-                Esta página solo es accesible para administradores autorizados.
+                Esta pagina solo es accesible para administradores autorizados.
                 <br />
                 Todos los intentos de acceso se registran y monitorean.
               </p>

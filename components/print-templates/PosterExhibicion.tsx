@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import dynamic from "next/dynamic"
 import { forwardRef, useMemo } from "react"
@@ -17,7 +17,7 @@ import {
   buildWhatsAppApiSendUrl,
 } from "@/lib/print/poster-exhibicion-utils"
 
-/** Colores solo HEX/RGB — impresión y captura (sin oklch/lab). Paleta neutra para cualquier taller. */
+/** Colores solo HEX/RGB — impresion y captura (sin oklch/lab). Paleta neutra para cualquier taller. */
 const POSTER_ACCENT_BLUE = "#185FA5"
 const POSTER_ACCENT_TEAL = "#0d9488"
 const SLATE_900 = "#0f172a"
@@ -41,7 +41,7 @@ export interface PosterExhibicionProps {
   format: "letter" | "square"
   businessName?: string
   logoUrl?: string | null
-  /** Teléfono del taller (configuración); para QR y enlace api.whatsapp.com */
+  /** Telefono del taller (configuracion); para QR y enlace api.whatsapp.com */
   tallerTelefono?: string | null
 }
 
@@ -152,7 +152,7 @@ export const PosterExhibicion = forwardRef<HTMLDivElement, PosterExhibicionProps
               className="mt-1 text-[9px] font-medium uppercase tracking-wider sm:text-[10px]"
               style={{ color: POSTER_ACCENT_TEAL }}
             >
-              Exhibición de mostrador
+              Exhibicion de mostrador
             </p>
           </div>
         </header>
@@ -180,7 +180,7 @@ export const PosterExhibicion = forwardRef<HTMLDivElement, PosterExhibicionProps
                 className="text-[10px] font-bold uppercase tracking-[0.14em]"
                 style={{ color: SLATE_400 }}
               >
-                Ficha técnica
+                Ficha tecnica
               </p>
               <ul className="space-y-2.5">
                 <li className="flex items-start gap-3">
@@ -346,7 +346,7 @@ export const PosterExhibicion = forwardRef<HTMLDivElement, PosterExhibicionProps
                     className="mt-1.5 max-w-[7.5rem] text-center text-[7px] font-semibold leading-tight sm:text-[8px]"
                     style={{ color: SLATE_600 }}
                   >
-                    ¿Dudas? ¡Escanéame y envíanos WhatsApp!
+                    ¿Dudas? ¡Escaneame y envianos WhatsApp!
                   </p>
                 </div>
               ) : null}

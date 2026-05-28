@@ -1,9 +1,9 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { ArrowRight, Zap } from 'lucide-react';
 
 export const metadata = {
   title: 'Herramientas Gratuitas | Taller Cloud',
-  description: 'Herramientas gratis para gestionar tu negocio: generador de publicaciones, editor de imágenes con marca de agua y más.',
+  description: 'Herramientas gratis para gestionar tu negocio: generador de publicaciones, editor de imagenes con marca de agua y mas.',
 };
 
 export default function HerramientasPage() {
@@ -14,8 +14,8 @@ export default function HerramientasPage() {
       description: 'Crea productos, agrega fotos con marca de agua y genera publicaciones listas para tu marketplace.',
       icon: <Zap className="w-8 h-8" />,
       href: '/herramientas/marketplace',
-      features: ['Formulario de productos', 'Editor de imágenes', 'Marca de agua automática', 'Generador de posts', 'Exportar en múltiples formatos'],
-      badge: 'Más popular',
+      features: ['Formulario de productos', 'Editor de imagenes', 'Marca de agua automatica', 'Generador de posts', 'Exportar en multiples formatos'],
+      badge: 'Mas popular',
     },
   ];
 
@@ -33,7 +33,7 @@ export default function HerramientasPage() {
               Herramientas para tu negocio
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl">
-              Acceso gratuito a herramientas poderosas diseñadas para ayudarte a gestionar y promocionar tu negocio sin costo alguno.
+              Acceso gratuito a herramientas poderosas disenadas para ayudarte a gestionar y promocionar tu negocio sin costo alguno.
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function HerramientasPage() {
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="text-sm font-semibold text-foreground mb-3">Características incluidas:</h3>
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Caracteristicas incluidas:</h3>
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {tool.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -97,10 +97,10 @@ export default function HerramientasPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              ¿Necesitas más funcionalidades?
+              ¿Necesitas mas funcionalidades?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Nuestro plan premium de Taller Cloud ofrece automaciones avanzadas, integración con múltiples marketplaces y gestión completa de tu negocio.
+              Nuestro plan premium de Taller Cloud ofrece automaciones avanzadas, integracion con multiples marketplaces y gestion completa de tu negocio.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link

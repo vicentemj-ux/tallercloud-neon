@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { ProductForm } from '@/components/marketplace/product-form';
@@ -61,7 +61,7 @@ export default function MarketplacePage() {
 
   const steps = [
     { id: 'products' as const, label: 'Productos', number: 1 },
-    { id: 'images' as const, label: 'Imágenes', number: 2 },
+    { id: 'images' as const, label: 'Imagenes', number: 2 },
     { id: 'posts' as const, label: 'Publicaciones', number: 3 },
     { id: 'export' as const, label: 'Exportar', number: 4 },
   ];
@@ -123,7 +123,7 @@ export default function MarketplacePage() {
               <div className="bg-card border border-border rounded-lg p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">Tus Productos ({products.length})</h2>
                 {products.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No hay productos aún. Crea uno para comenzar.</p>
+                  <p className="text-sm text-muted-foreground">No hay productos aun. Crea uno para comenzar.</p>
                 ) : (
                   <div className="space-y-2">
                     {products.map(product => (
@@ -170,7 +170,7 @@ export default function MarketplacePage() {
                 />
               ) : (
                 <div className="bg-card border border-border rounded-lg p-12 text-center">
-                  <p className="text-muted-foreground mb-4">Por favor selecciona un producto para editar imágenes</p>
+                  <p className="text-muted-foreground mb-4">Por favor selecciona un producto para editar imagenes</p>
                   <button
                     onClick={() => setCurrentStep('products')}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90"

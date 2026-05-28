@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -34,13 +34,13 @@ export default function RegisterPage() {
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden")
+      setError("Las contrasenas no coinciden")
       return
     }
 
     // Validate password length
     if (formData.password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres")
+      setError("La contrasena debe tener al menos 8 caracteres")
       return
     }
 
@@ -73,7 +73,7 @@ export default function RegisterPage() {
         <div className="flex justify-center">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-blue-600">TallerCloud</h1>
-            <p className="text-sm text-slate-600 mt-1">Gestión de reparaciones inteligente</p>
+            <p className="text-sm text-slate-600 mt-1">Gestion de reparaciones inteligente</p>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function RegisterPage() {
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl text-center">Registrar mi Taller</CardTitle>
             <CardDescription className="text-center">
-              Crea tu cuenta en 30 días gratis
+              Crea tu cuenta en 30 dias gratis
             </CardDescription>
           </CardHeader>
 
@@ -103,7 +103,7 @@ export default function RegisterPage() {
                 <Input
                   id="nombrePropietario"
                   name="nombrePropietario"
-                  placeholder="Juan García"
+                  placeholder="Juan Garcia"
                   value={formData.nombrePropietario}
                   onChange={handleChange}
                   required
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                 <Input
                   id="nombreTaller"
                   name="nombreTaller"
-                  placeholder="Taller García Reparaciones"
+                  placeholder="Taller Garcia Reparaciones"
                   value={formData.nombreTaller}
                   onChange={handleChange}
                   required
@@ -132,7 +132,7 @@ export default function RegisterPage() {
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
-                  Correo Electrónico
+                  Correo Electronico
                 </Label>
                 <Input
                   id="email"
@@ -150,7 +150,7 @@ export default function RegisterPage() {
               {/* Password */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">
-                  Contraseña (mínimo 8 caracteres)
+                  Contrasena (minimo 8 caracteres)
                 </Label>
                 <Input
                   id="password"
@@ -168,7 +168,7 @@ export default function RegisterPage() {
               {/* Confirm Password */}
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                  Confirmar Contraseña
+                  Confirmar Contrasena
                 </Label>
                 <Input
                   id="confirmPassword"
@@ -219,7 +219,7 @@ export default function RegisterPage() {
                   href="/auth/login"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Inicia sesión aquí
+                  Inicia sesion aqui
                 </Link>
               </p>
             </div>

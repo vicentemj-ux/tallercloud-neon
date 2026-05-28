@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { Resend } from "resend"
 import { MemberVerificationPinTemplate, VerifyEmailTemplate, ResetPasswordTemplate } from "./templates"
@@ -40,7 +40,7 @@ export async function sendVerificationEmail(
     return { success: true, messageId: data!.id }
   } catch (error) {
     console.error("[v0] Error sending verification email:", error)
-    return { success: false, error: "Error al enviar correo de verificación" }
+    return { success: false, error: "Error al enviar correo de verificacion" }
   }
 }
 
@@ -60,7 +60,7 @@ export async function sendPasswordResetEmail(
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
-      subject: "Recupera tu contraseña en TallerCloud",
+      subject: "Recupera tu contrasena en TallerCloud",
       react: ResetPasswordTemplate({
         userName,
         resetLink,
@@ -72,7 +72,7 @@ export async function sendPasswordResetEmail(
     return { success: true, messageId: data!.id }
   } catch (error) {
     console.error("[v0] Error sending password reset email:", error)
-    return { success: false, error: "Error al enviar correo de recuperación" }
+    return { success: false, error: "Error al enviar correo de recuperacion" }
   }
 }
 
@@ -111,7 +111,7 @@ export async function sendWelcomeEmail(
                 </div>
                 <div class="content">
                   <p>Hola ${userName},</p>
-                  <p>Tu taller <strong>${tallerName}</strong> está listo para usar TallerCloud.</p>
+                  <p>Tu taller <strong>${tallerName}</strong> esta listo para usar TallerCloud.</p>
                   <p>Accede a tu dashboard en <a href="${process.env.NEXT_PUBLIC_APP_URL}">TallerCloud</a> para comenzar a gestionar tus reparaciones.</p>
                   <p>Si tienes preguntas, no dudes en contactarnos.</p>
                 </div>
@@ -141,7 +141,7 @@ export async function sendAdminOTPEmail(email: string, code: string) {
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
-      subject: `${code} — Código de verificación de administrador`,
+      subject: `${code} — Codigo de verificacion de administrador`,
       html: `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -164,16 +164,16 @@ export async function sendAdminOTPEmail(email: string, code: string) {
 <div class="wrap">
   <div class="card">
     <div class="logo">TallerCloud — Admin</div>
-    <h1>Verificación de identidad</h1>
-    <p>Se solicitó acceso al panel de administración. Ingresa este código de 6 dígitos para continuar.</p>
+    <h1>Verificacion de identidad</h1>
+    <p>Se solicito acceso al panel de administracion. Ingresa este codigo de 6 digitos para continuar.</p>
     <div class="code-box">
       <div class="code">${code}</div>
-      <div class="expiry">Válido por 10 minutos</div>
+      <div class="expiry">Valido por 10 minutos</div>
     </div>
     <div class="warning">
-      ⚠️ Si no solicitaste este código, alguien puede estar intentando acceder a tu cuenta. Cambia tu contraseña inmediatamente.
+      ⚠️ Si no solicitaste este codigo, alguien puede estar intentando acceder a tu cuenta. Cambia tu contrasena inmediatamente.
     </div>
-    <div class="footer">Este correo fue enviado automáticamente por TallerCloud. No respondas a este mensaje.</div>
+    <div class="footer">Este correo fue enviado automaticamente por TallerCloud. No respondas a este mensaje.</div>
   </div>
 </div>
 </body>
@@ -199,7 +199,7 @@ export async function sendMemberVerificationPinEmail(
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
-      subject: "Bienvenido a TallerCloud - Confirma tu correo electrónico",
+      subject: "Bienvenido a TallerCloud - Confirma tu correo electronico",
       react: MemberVerificationPinTemplate({
         userName,
         pin,
@@ -210,6 +210,6 @@ export async function sendMemberVerificationPinEmail(
     return { success: true, messageId: data!.id }
   } catch (error) {
     console.error("[v0] Error sending member PIN email:", error)
-    return { success: false, error: "Error al enviar correo de verificación por PIN" }
+    return { success: false, error: "Error al enviar correo de verificacion por PIN" }
   }
 }

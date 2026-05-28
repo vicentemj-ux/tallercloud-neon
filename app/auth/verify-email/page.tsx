@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
@@ -71,11 +71,11 @@ function VerifyEmailContent() {
             <CardTitle className="text-2xl">
               {status === "loading" && "Verificando tu email..."}
               {status === "success" && "Email verificado"}
-              {status === "error" && "Error de verificación"}
+              {status === "error" && "Error de verificacion"}
               {status === "check-email" && "¡Registro exitoso!"}
             </CardTitle>
             {status === "check-email" && (
-              <p className="text-slate-600">Revisa tu correo electrónico</p>
+              <p className="text-slate-600">Revisa tu correo electronico</p>
             )}
           </CardHeader>
 
@@ -104,7 +104,7 @@ function VerifyEmailContent() {
                 {status === "error" && message}
                 {status === "check-email" && (
                   <>
-                    Te enviamos un correo de verificación{email ? ` a ${email}` : ""}. 
+                    Te enviamos un correo de verificacion{email ? ` a ${email}` : ""}. 
                     Haz clic en el enlace del correo para activar tu cuenta.
                   </>
                 )}
@@ -124,7 +124,7 @@ function VerifyEmailContent() {
               <div className="space-y-3 pt-4">
                 <Link href={status === "success" ? "/auth/login" : "/auth/login"}>
                   <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                    {status === "success" ? "Ir al login" : "Ya verifiqué mi correo → ir al login"}
+                    {status === "success" ? "Ir al login" : "Ya verifique mi correo → ir al login"}
                   </Button>
                 </Link>
               </div>

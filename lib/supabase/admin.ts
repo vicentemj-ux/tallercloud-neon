@@ -1,9 +1,9 @@
-"use server"
+﻿"use server"
 
 import { createClient } from "@supabase/supabase-js"
 
 /**
- * Cliente Supabase con service_role para operaciones de administración (ej. auth.admin.createUser).
+ * Cliente Supabase con service_role para operaciones de administracion (ej. auth.admin.createUser).
  * Usar solo en Server Actions; nunca exponer en el cliente.
  * Requiere SUPABASE_SERVICE_ROLE_KEY en .env.local
  */

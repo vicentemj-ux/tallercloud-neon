@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import dynamic from "next/dynamic"
 import { forwardRef } from "react"
@@ -65,11 +65,11 @@ const TicketDocumentoTemplate = forwardRef<HTMLDivElement, TicketDocumentoTempla
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm", marginBottom: "5mm" }}>
           <Card title="Datos del Cliente">
             <InfoLine label="Nombre" value={repair.cliente_nombre} />
-            <InfoLine label="Teléfono" value={repair.cliente_telefono} />
+            <InfoLine label="Telefono" value={repair.cliente_telefono} />
             <InfoLine label="Fecha" value={fmtDateShort(repair.fecha_creacion)} />
-            {repair.tecnico ? <InfoLine label="Técnico" value={repair.tecnico} /> : null}
+            {repair.tecnico ? <InfoLine label="Tecnico" value={repair.tecnico} /> : null}
           </Card>
-          <Card title="Información del Equipo">
+          <Card title="Informacion del Equipo">
             <InfoLine label="Equipo" value={`${repair.dispositivo_marca} ${repair.dispositivo_modelo}`} />
             {repair.tipo_equipo ? <InfoLine label="Tipo" value={repair.tipo_equipo} /> : null}
             {repair.imei_serie ? <InfoLine label="IMEI/Serie" value={repair.imei_serie} /> : null}
@@ -78,7 +78,7 @@ const TicketDocumentoTemplate = forwardRef<HTMLDivElement, TicketDocumentoTempla
           </Card>
         </div>
 
-        <Card title="Descripción del Servicio" style={{ marginBottom: "5mm" }}>
+        <Card title="Descripcion del Servicio" style={{ marginBottom: "5mm" }}>
           <div style={{ fontSize: "9.5pt", color: "#0f172a" }}>{repair.falla_reportada}</div>
           {repair.notas_internas ? (
             <div style={{ marginTop: "4px", fontSize: "8.5pt", color: "#64748b" }}>
@@ -91,7 +91,7 @@ const TicketDocumentoTemplate = forwardRef<HTMLDivElement, TicketDocumentoTempla
         {repair.gastos.length > 0 ? (
           <div style={{ marginBottom: "5mm" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", background: "#f1f5f9", borderRadius: "8px 8px 0 0", padding: "6px 10px", fontSize: "7.5pt", fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              <span>Descripción</span>
+              <span>Descripcion</span>
               <span>Importe</span>
             </div>
             {repair.gastos.map((g, i) => (
@@ -123,7 +123,7 @@ const TicketDocumentoTemplate = forwardRef<HTMLDivElement, TicketDocumentoTempla
             <div style={{ fontSize: "7pt", color: "#94a3b8" }}>Rastrear estado</div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16mm" }}>
-            <SigBlock label="Firma técnico responsable" />
+            <SigBlock label="Firma tecnico responsable" />
             <SigBlock label="Firma cliente / Conformidad" />
           </div>
         </div>
@@ -131,7 +131,7 @@ const TicketDocumentoTemplate = forwardRef<HTMLDivElement, TicketDocumentoTempla
         {terminosGarantia ? (
           <div style={{ marginTop: "5mm", padding: "6px 10px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
             <div style={{ fontSize: "7pt", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "3px" }}>
-              Términos de Garantía
+              Terminos de Garantia
             </div>
             <div style={{ fontSize: "7.5pt", color: "#64748b" }}>{terminosGarantia}</div>
           </div>

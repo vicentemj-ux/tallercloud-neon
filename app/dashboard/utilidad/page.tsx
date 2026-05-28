@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
@@ -64,7 +64,7 @@ export default function UtilidadPage() {
             </div>
             <div>
               <h1 className="text-3xl font-black italic text-slate-900">CONTROL DE UTILIDAD</h1>
-              <p className="text-sm text-slate-500">Dashboard Financiero de Operación</p>
+              <p className="text-sm text-slate-500">Dashboard Financiero de Operacion</p>
             </div>
           </div>
 
@@ -138,7 +138,7 @@ export default function UtilidadPage() {
                     {esDeficit ? (
                       <>
                         <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
-                        Déficit de Caja
+                        Deficit de Caja
                       </>
                     ) : (
                       <>
@@ -159,13 +159,13 @@ export default function UtilidadPage() {
               <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">Ventas Brutas</p>
                 <p className="text-3xl font-black text-white mb-1">{dash(fmtPesos(data?.ventasBrutas ?? 0))}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Facturación Consolidada</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Facturacion Consolidada</p>
               </div>
 
               <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">Costo Directo</p>
                 <p className="text-3xl font-black text-white/80 mb-1">{dash(fmtPesos(data?.costoDeVenta ?? 0))}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Inversión en Venta</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Inversion en Venta</p>
               </div>
 
               <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 p-5">
@@ -186,14 +186,14 @@ export default function UtilidadPage() {
         {/* Detail Cards — 2 columnas como la competencia */}
         <div className="grid gap-6 lg:grid-cols-2">
 
-          {/* Relación Ingresos */}
+          {/* Relacion Ingresos */}
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50">
                 <span className="text-lg font-bold text-emerald-600">$</span>
               </div>
               <div>
-                <p className="text-sm font-black italic uppercase tracking-wide text-slate-900">Relación Ingresos</p>
+                <p className="text-sm font-black italic uppercase tracking-wide text-slate-900">Relacion Ingresos</p>
                 <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Actividad de Cobro</p>
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function UtilidadPage() {
                         </svg>
                         {item.fecha}
                         <span className="text-slate-300">•</span>
-                        <span className="uppercase">{item.tipo === "venta" ? "Venta POS" : "Reparación"}</span>
+                        <span className="uppercase">{item.tipo === "venta" ? "Venta POS" : "Reparacion"}</span>
                       </p>
                     </div>
                     <span className="shrink-0 text-sm font-black text-emerald-600 tabular-nums">
@@ -238,7 +238,7 @@ export default function UtilidadPage() {
             )}
           </div>
 
-          {/* Relación Egresos */}
+          {/* Relacion Egresos */}
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50">
@@ -247,7 +247,7 @@ export default function UtilidadPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-black italic uppercase tracking-wide text-slate-900">Relación Egresos</p>
+                <p className="text-sm font-black italic uppercase tracking-wide text-slate-900">Relacion Egresos</p>
                 <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Gastos del Periodo</p>
               </div>
             </div>

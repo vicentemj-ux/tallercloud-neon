@@ -1,4 +1,4 @@
-import * as React from "react"
+﻿import * as React from "react"
 
 interface VerifyEmailProps {
   userName: string
@@ -17,20 +17,20 @@ export function VerifyEmailTemplate({
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "30px" }}>
           <h1 style={{ color: "#2563eb", fontSize: "28px", margin: "0 0 10px 0" }}>TallerCloud</h1>
-          <p style={{ color: "#666", margin: "0" }}>Gestión de reparaciones inteligente</p>
+          <p style={{ color: "#666", margin: "0" }}>Gestion de reparaciones inteligente</p>
         </div>
 
         {/* Content */}
         <div style={{ marginBottom: "30px" }}>
-          <h2 style={{ color: "#333", fontSize: "20px", marginBottom: "15px" }}>Verifica tu correo electrónico</h2>
+          <h2 style={{ color: "#333", fontSize: "20px", marginBottom: "15px" }}>Verifica tu correo electronico</h2>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "15px" }}>
             Hola {userName},
           </p>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "15px" }}>
-            Gracias por registrar tu taller <strong>{tallerName}</strong> en TallerCloud. Para completar tu registro y acceder a tu dashboard, necesitamos verificar tu correo electrónico.
+            Gracias por registrar tu taller <strong>{tallerName}</strong> en TallerCloud. Para completar tu registro y acceder a tu dashboard, necesitamos verificar tu correo electronico.
           </p>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "20px" }}>
-            Haz clic en el botón de abajo para verificar tu email. Este enlace expirará en 24 horas.
+            Haz clic en el boton de abajo para verificar tu email. Este enlace expirara en 24 horas.
           </p>
 
           {/* CTA Button */}
@@ -101,16 +101,16 @@ export function MemberVerificationPinTemplate({
             TallerCloud
           </h1>
           <p style={{ color: "#6b7280", margin: "0", fontSize: "13px" }}>
-            Plataforma de gestión para talleres
+            Plataforma de gestion para talleres
           </p>
         </div>
 
         <h2 style={{ color: "#111827", fontSize: "22px", margin: "0 0 14px 0", textAlign: "center" }}>
-          Confirma tu correo electrónico, {userName}
+          Confirma tu correo electronico, {userName}
         </h2>
 
         <p style={{ color: "#374151", lineHeight: "1.65", marginBottom: "18px", textAlign: "center" }}>
-          Para completar tu acceso, ingresa el código de verificación en el panel de TallerCloud.
+          Para completar tu acceso, ingresa el codigo de verificacion en el panel de TallerCloud.
         </p>
 
         <div
@@ -138,7 +138,7 @@ export function MemberVerificationPinTemplate({
         </div>
 
         <p style={{ color: "#4b5563", textAlign: "center", marginBottom: "22px", fontSize: "14px" }}>
-          El código es válido por 15 minutos.
+          El codigo es valido por 15 minutos.
         </p>
 
         <div
@@ -155,7 +155,7 @@ export function MemberVerificationPinTemplate({
             Si no solicitaste este acceso, puedes ignorar este correo.
           </p>
           <p style={{ margin: 0 }}>
-            TallerCloud.net · Soporte · Términos · Privacidad
+            TallerCloud.net · Soporte · Terminos · Privacidad
           </p>
         </div>
       </div>
@@ -174,20 +174,20 @@ export function ResetPasswordTemplate({
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "30px" }}>
           <h1 style={{ color: "#2563eb", fontSize: "28px", margin: "0 0 10px 0" }}>TallerCloud</h1>
-          <p style={{ color: "#666", margin: "0" }}>Gestión de reparaciones inteligente</p>
+          <p style={{ color: "#666", margin: "0" }}>Gestion de reparaciones inteligente</p>
         </div>
 
         {/* Content */}
         <div style={{ marginBottom: "30px" }}>
-          <h2 style={{ color: "#333", fontSize: "20px", marginBottom: "15px" }}>Recupera tu contraseña</h2>
+          <h2 style={{ color: "#333", fontSize: "20px", marginBottom: "15px" }}>Recupera tu contrasena</h2>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "15px" }}>
             Hola {userName},
           </p>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "15px" }}>
-            Recibimos una solicitud para restablecer la contraseña de tu taller <strong>{tallerName}</strong>.
+            Recibimos una solicitud para restablecer la contrasena de tu taller <strong>{tallerName}</strong>.
           </p>
           <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "20px" }}>
-            Haz clic en el botón de abajo para crear una nueva contraseña. Este enlace expirará en 1 hora.
+            Haz clic en el boton de abajo para crear una nueva contrasena. Este enlace expirara en 1 hora.
           </p>
 
           {/* CTA Button */}
@@ -205,7 +205,7 @@ export function ResetPasswordTemplate({
                 fontSize: "16px",
               }}
             >
-              Restablecer Contraseña
+              Restablecer Contrasena
             </a>
           </div>
 
@@ -217,7 +217,7 @@ export function ResetPasswordTemplate({
           </p>
 
           <p style={{ color: "#d32f2f", lineHeight: "1.6", marginTop: "20px", marginBottom: "0" }}>
-            <strong>Nota:</strong> Si no solicitaste restablecer tu contraseña, ignora este correo. Tu contraseña seguirá siendo segura.
+            <strong>Nota:</strong> Si no solicitaste restablecer tu contrasena, ignora este correo. Tu contrasena seguira siendo segura.
           </p>
         </div>
 

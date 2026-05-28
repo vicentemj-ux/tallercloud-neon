@@ -233,7 +233,7 @@ async function fetchCobrosReparacion(tallerId: string, from: string, to: string,
     const folio = movFolio ?? (rep?.folio ? `A-${rep.folio}` : "—")
     const cliente = (rep?.cliente_nombre ?? "").trim() || "—"
     const equipo = `${(rep?.marca ?? "").trim()} ${(rep?.modelo ?? "").trim()}`.trim()
-    const tipoMov = m.tipo === "liquidacion_reparacion" ? "Liquidación" : "Anticipo"
+    const tipoMov = m.tipo === "liquidacion_reparacion" ? "Liquidacion" : "Anticipo"
     const descripcion = (m.descripcion ?? "").trim()
     const conceptos = [tipoMov, equipo ? `· ${equipo}` : "", descripcion ? `· ${descripcion}` : ""]
       .filter(Boolean)
@@ -244,7 +244,7 @@ async function fetchCobrosReparacion(tallerId: string, from: string, to: string,
       source: "reparacion",
       folio,
       fechaIso: new Date(m.fecha).toISOString(),
-      tipoLabel: "Reparación",
+      tipoLabel: "Reparacion",
       cliente,
       vendedor: (m.vendedor_nombre ?? "").trim() || "—",
       conceptos: conceptos || "—",

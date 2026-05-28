@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,7 +23,7 @@ export interface StatusChangeConfirmDialogProps {
   onNotaTecnicaChange: (v: string) => void
   onSoloHistorial: () => void
   onActualizarYWhatsApp: () => void
-  /** null = no hay operación en curso */
+  /** null = no hay operacion en curso */
   pendingKind: "historial" | "whatsapp" | null
 }
 
@@ -59,13 +59,13 @@ export function StatusChangeConfirmDialog({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           <Label htmlFor="nota-tecnica-status" className="text-sm font-medium text-slate-700">
-            Nota técnica <span className="font-normal text-slate-400">(opcional)</span>
+            Nota tecnica <span className="font-normal text-slate-400">(opcional)</span>
           </Label>
           <Textarea
             id="nota-tecnica-status"
             value={notaTecnica}
             onChange={(e) => onNotaTecnicaChange(e.target.value)}
-            placeholder="Detalle interno o motivo visible en plantillas según el estado…"
+            placeholder="Detalle interno o motivo visible en plantillas segun el estado…"
             rows={4}
             disabled={isPending}
             className="mt-2 min-h-[96px] max-h-40 w-full resize-none rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#2563eb]"

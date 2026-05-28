@@ -1,4 +1,4 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+﻿import type { ProductoRow } from "@/lib/actions/productos"
 import {
   getProductoCapacidad,
   getProductoModelo,
@@ -26,7 +26,7 @@ const PAGE_AND_BODY = `
 `
 
 /**
- * Documento completo para iframe de impresión (etiqueta inventario estándar o exhibición EQUIPO).
+ * Documento completo para iframe de impresion (etiqueta inventario estandar o exhibicion EQUIPO).
  */
 export function buildInventoryLabelPrintDocument(params: {
   producto: ProductoRow

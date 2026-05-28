@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -130,7 +130,7 @@ export default function EquipoPage() {
         key: "owner",
         nombre: owner.nombre,
         email: owner.email,
-        rol: "SÚPER ADMIN",
+        rol: "SuPER ADMIN",
         estado: "ACTIVO",
         owner: true,
         initial: (owner.nombre?.trim()?.charAt(0) || "P").toUpperCase(),
@@ -194,7 +194,7 @@ export default function EquipoPage() {
       return
     }
     if (!password || password.length < 6) {
-      toast({ title: "Contraseña inválida", description: "Mínimo 6 caracteres.", variant: "destructive" })
+      toast({ title: "Contrasena invalida", description: "Minimo 6 caracteres.", variant: "destructive" })
       return
     }
     if (!rolId) {
@@ -210,12 +210,12 @@ export default function EquipoPage() {
         return
       }
 
-      toast({ title: "Usuario creado", description: `${nombre} ya puede iniciar sesión con su email.` })
+      toast({ title: "Usuario creado", description: `${nombre} ya puede iniciar sesion con su email.` })
       setCreateOpen(false)
       await load()
     } catch (e) {
       console.error(e)
-      toast({ title: "Error", description: "Ocurrió un error al guardar.", variant: "destructive" })
+      toast({ title: "Error", description: "Ocurrio un error al guardar.", variant: "destructive" })
     } finally {
       setIsSubmitting(false)
     }
@@ -227,7 +227,7 @@ export default function EquipoPage() {
     const password = editPassword
 
     if (!editMemberId) {
-      toast({ title: "Error", description: "Miembro inválido.", variant: "destructive" })
+      toast({ title: "Error", description: "Miembro invalido.", variant: "destructive" })
       return
     }
     if (!nombre) {
@@ -239,7 +239,7 @@ export default function EquipoPage() {
       return
     }
     if (password && password.length < 6) {
-      toast({ title: "Contraseña inválida", description: "Mínimo 6 caracteres.", variant: "destructive" })
+      toast({ title: "Contrasena invalida", description: "Minimo 6 caracteres.", variant: "destructive" })
       return
     }
 
@@ -257,12 +257,12 @@ export default function EquipoPage() {
         return
       }
 
-      toast({ title: "Cambios guardados", description: "La información del miembro fue actualizada." })
+      toast({ title: "Cambios guardados", description: "La informacion del miembro fue actualizada." })
       setEditOpen(false)
       await load()
     } catch (e) {
       console.error(e)
-      toast({ title: "Error", description: "No se pudo guardar la edición.", variant: "destructive" })
+      toast({ title: "Error", description: "No se pudo guardar la edicion.", variant: "destructive" })
     } finally {
       setIsSubmitting(false)
     }
@@ -278,7 +278,7 @@ export default function EquipoPage() {
         return
       }
 
-      toast({ title: "Miembro eliminado", description: "Se revocó su acceso correctamente." })
+      toast({ title: "Miembro eliminado", description: "Se revoco su acceso correctamente." })
       setDeleteOpen(false)
       setDeleteMemberId("")
       setDeleteMemberName("")
@@ -296,13 +296,13 @@ export default function EquipoPage() {
       <div className="max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 flex flex-col gap-8">
       {loadError ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Mi Equipo está temporalmente degradado: {loadError}
+          Mi Equipo esta temporalmente degradado: {loadError}
         </div>
       ) : null}
       {/* HEADER SUPERIOR */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-col gap-4">
-        {/* Título y subtítulo */}
+        {/* Titulo y subtitulo */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 shrink-0">
@@ -316,7 +316,7 @@ export default function EquipoPage() {
             </div>
           </div>
 
-          {/* Botones de acción */}
+          {/* Botones de accion */}
           <div className="flex items-center gap-2">
             <Button
               onClick={openCreateModal}
@@ -363,7 +363,7 @@ export default function EquipoPage() {
                         </Badge>
                         {member.owner && (
                           <Badge className="border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-50">
-                            DUEÑO
+                            DUEnO
                           </Badge>
                         )}
                       </div>
@@ -424,7 +424,7 @@ export default function EquipoPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-left text-sm text-gray-500">Agrega un técnico o administrador a tu equipo.</p>
+            <p className="text-left text-sm text-gray-500">Agrega un tecnico o administrador a tu equipo.</p>
           </DialogHeader>
 
           <div className="space-y-4 px-6 pb-6 pt-2">
@@ -456,7 +456,7 @@ export default function EquipoPage() {
                 <SelectContent className="border-gray-200 bg-white text-gray-900">
                   {rolesEstandar.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estándar</SelectLabel>
+                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estandar</SelectLabel>
                       {rolesEstandar.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -474,7 +474,7 @@ export default function EquipoPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contraseña</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contrasena</Label>
               <Input
                 type="password"
                 value={passwordMiembro}
@@ -547,7 +547,7 @@ export default function EquipoPage() {
                 <SelectContent className="border-gray-200 bg-white text-gray-900">
                   {rolesEstandar.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estándar</SelectLabel>
+                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estandar</SelectLabel>
                       {rolesEstandar.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -565,12 +565,12 @@ export default function EquipoPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contraseña</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contrasena</Label>
               <Input
                 type="password"
                 value={editPassword}
                 onChange={(e) => setEditPassword(e.target.value)}
-                placeholder="Dejar vacío para no cambiar"
+                placeholder="Dejar vacio para no cambiar"
                 className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
               />
             </div>
@@ -599,7 +599,7 @@ export default function EquipoPage() {
           <AlertDialogHeader>
             <AlertDialogTitle className="text-gray-900">Eliminar Miembro</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600">
-              ¿Estás seguro de que deseas eliminar a {deleteMemberName || "este miembro"}? Esta acción revocará su acceso al sistema de TallerCloud de forma permanente.
+              ¿Estas seguro de que deseas eliminar a {deleteMemberName || "este miembro"}? Esta accion revocara su acceso al sistema de TallerCloud de forma permanente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

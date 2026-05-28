@@ -1,4 +1,4 @@
-import { Header } from "@/components/header"
+﻿import { Header } from "@/components/header"
 import { FeaturesSection } from "@/components/features-section"
 import { PricingSection } from "@/components/pricing-section"
 import { Footer } from "@/components/footer"
@@ -39,7 +39,7 @@ export default function Home() {
                 El sistema que tu taller necesita, al precio que puedes pagar
               </h1>
               <p className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                TallerCloud es la plataforma de gestión para talleres de reparación de celulares,
+                TallerCloud es la plataforma de gestion para talleres de reparacion de celulares,
                 laptops y consolas. Controla tus reparaciones, ventas e inventario desde cualquier
                 dispositivo.
               </p>
@@ -48,8 +48,8 @@ export default function Home() {
             {/* Trust badges */}
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               {[
-                { icon: CheckCircle2, text: "30 días gratis · Sin tarjeta" },
-                { icon: Clock,        text: "Configuración en 5 minutos" },
+                { icon: CheckCircle2, text: "30 dias gratis · Sin tarjeta" },
+                { icon: Clock,        text: "Configuracion en 5 minutos" },
                 { icon: Smartphone,   text: "Celular, tablet y PC" },
               ].map(({ icon: Icon, text }) => (
                 <div
@@ -80,7 +80,7 @@ export default function Home() {
                 className="h-13 w-full px-8 text-base sm:w-auto"
                 asChild
               >
-                <Link href="#caracteristicas">Ver cómo funciona</Link>
+                <Link href="#caracteristicas">Ver como funciona</Link>
               </Button>
             </div>
 
@@ -124,8 +124,8 @@ export default function Home() {
                       <span>Estatus</span>
                     </div>
                     {[
-                      { folio: "TC-0041", cliente: "Juan Pérez",    equipo: "iPhone 13",    status: "En Reparación", color: "bg-amber-100 text-amber-700" },
-                      { folio: "TC-0040", cliente: "María López",   equipo: "Laptop HP",    status: "Listo",         color: "bg-emerald-100 text-emerald-700" },
+                      { folio: "TC-0041", cliente: "Juan Perez",    equipo: "iPhone 13",    status: "En Reparacion", color: "bg-amber-100 text-amber-700" },
+                      { folio: "TC-0040", cliente: "Maria Lopez",   equipo: "Laptop HP",    status: "Listo",         color: "bg-emerald-100 text-emerald-700" },
                       { folio: "TC-0039", cliente: "Carlos Ruiz",   equipo: "PS5",          status: "Recibido",      color: "bg-blue-100 text-blue-700" },
                     ].map((row) => (
                       <div key={row.folio} className="grid grid-cols-4 items-center border-t border-border px-4 py-3 text-sm">
@@ -144,12 +144,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PARA QUIÉN ES ────────────────────────────────────────────────── */}
+        {/* ── PARA QUIeN ES ────────────────────────────────────────────────── */}
         <section className="py-16 sm:py-24 border-t border-border">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-12 flex flex-col items-center gap-3 text-center">
               <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Diseñado para talleres como el tuyo
+                Disenado para talleres como el tuyo
               </h2>
             </div>
 
@@ -158,19 +158,19 @@ export default function Home() {
                 {
                   emoji: "📱",
                   title: "Talleres de celulares",
-                  desc: "Controla cada reparación con folio digital y mantén a tu cliente informado por WhatsApp.",
+                  desc: "Controla cada reparacion con folio digital y manten a tu cliente informado por WhatsApp.",
                   icon: Smartphone,
                 },
                 {
                   emoji: "💻",
-                  title: "Reparación de laptops y PC",
-                  desc: "Gestiona diagnósticos, presupuestos y entregas sin perder ningún detalle.",
+                  title: "Reparacion de laptops y PC",
+                  desc: "Gestiona diagnosticos, presupuestos y entregas sin perder ningun detalle.",
                   icon: Laptop,
                 },
                 {
                   emoji: "🎮",
-                  title: "Venta y reparación de consolas",
-                  desc: "Lleva el control de tu inventario con número de serie e IMEI.",
+                  title: "Venta y reparacion de consolas",
+                  desc: "Lleva el control de tu inventario con numero de serie e IMEI.",
                   icon: Gamepad2,
                 },
               ].map((item) => (
@@ -189,7 +189,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CARACTERÍSTICAS ──────────────────────────────────────────────── */}
+        {/* ── CARACTERiSTICAS ──────────────────────────────────────────────── */}
         <FeaturesSection />
 
         {/* ── PRECIOS ──────────────────────────────────────────────────────── */}
@@ -202,14 +202,14 @@ export default function Home() {
               <div className="text-4xl">🛠️</div>
               <blockquote className="text-xl font-medium leading-relaxed text-foreground sm:text-2xl">
                 "Siendo de Los Mochis, construimos TallerCloud entendiendo exactamente los retos
-                de un taller de reparación local. Cada función existe porque la vivimos en el negocio."
+                de un taller de reparacion local. Cada funcion existe porque la vivimos en el negocio."
               </blockquote>
               <div className="flex flex-col items-center gap-1">
                 <p className="font-bold text-foreground">Vicente Munguia</p>
                 <p className="text-sm text-muted-foreground">Fundador · Los Mochis, Sinaloa</p>
               </div>
               <p className="max-w-lg text-sm text-muted-foreground">
-                Sé parte de los primeros talleres en Los Mochis en digitalizar su operación.
+                Se parte de los primeros talleres en Los Mochis en digitalizar su operacion.
               </p>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function Home() {
                   className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-colors"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  ¿Tienes dudas? Escríbenos por WhatsApp →
+                  ¿Tienes dudas? Escribenos por WhatsApp →
                 </a>
               </div>
             </div>
@@ -255,18 +255,18 @@ export default function Home() {
 
       <Footer />
 
-      {/* ── BOTÓN FLOTANTE WHATSAPP ─────────────────────────────────────── */}
+      {/* ── BOToN FLOTANTE WHATSAPP ─────────────────────────────────────── */}
       <a
         href={WHATSAPP_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar por WhatsApp"
-        title="¿Tienes dudas? Escríbenos"
+        title="¿Tienes dudas? Escribenos"
         className="fixed bottom-6 right-6 z-50 group"
       >
         {/* Anillo de pulso */}
         <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-30 animate-ping" />
-        {/* Botón principal */}
+        {/* Boton principal */}
         <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/40 transition-transform group-hover:scale-110">
           <svg
             viewBox="0 0 24 24"

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useMemo } from "react"
 import type { DocumentType } from "@/lib/print/demo-data"
@@ -99,7 +99,7 @@ export function ImprentaPreviewCanvas({ docType, config, settings }: ImprentaPre
       <div className="relative z-10 px-4 py-2 border-t border-slate-700/60">
         <p className="text-[10px] text-slate-500 text-center">
           La vista previa refleja exactamente el template con los datos de tu taller.
-          El resultado impreso puede variar según la impresora y el navegador.
+          El resultado impreso puede variar segun la impresora y el navegador.
         </p>
       </div>
     </div>
@@ -144,7 +144,7 @@ function PreviewContent({
         mostrarPrecios={config.mostrarPrecios}
         mostrarRedesSociales={config.mostrarRedesSociales}
         logoUrl={logoUrl ?? undefined}
-        tecnicoNombre="Ing. Roberto Díaz"
+        tecnicoNombre="Ing. Roberto Diaz"
         redesSociales={redesSociales}
       />
     )

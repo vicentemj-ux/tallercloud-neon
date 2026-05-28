@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef, useEffect, useRef } from "react"
 
@@ -12,7 +12,7 @@ export interface InventoryStandardLabelProps {
 }
 
 /**
- * Etiqueta de inventario estándar 50×25 mm: nombre, código de barras, SKU/código y precio.
+ * Etiqueta de inventario estandar 50×25 mm: nombre, codigo de barras, SKU/codigo y precio.
  * Usa jsbarcode directamente para evitar depender de react-barcode.
  */
 const InventoryStandardLabel = forwardRef<HTMLDivElement, InventoryStandardLabelProps>(
@@ -56,7 +56,7 @@ const InventoryStandardLabel = forwardRef<HTMLDivElement, InventoryStandardLabel
             </div>
           ) : showBarcodePlaceholder ? (
             <div className="flex h-8 w-full items-center justify-center rounded-md border border-dashed border-black text-[8px] font-medium text-black">
-              Sin código de barras válido (EAN-13)
+              Sin codigo de barras valido (EAN-13)
             </div>
           ) : null}
         </div>

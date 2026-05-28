@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useMemo, useState } from "react"
 import { FileText, Lock } from "lucide-react"
@@ -99,7 +99,7 @@ export default function CotizacionesPage() {
   const handleConvert = async (cotizacion: Cotizacion) => {
     const res = await convertirCotizacionAReparacion(cotizacion.id)
     if (!res.success) {
-      toast({ variant: "destructive", title: "Conversión", description: res.error || "No se pudo convertir." })
+      toast({ variant: "destructive", title: "Conversion", description: res.error || "No se pudo convertir." })
       return
     }
     toast({ title: "Cotizacion convertida", description: `Se creo la reparacion ${res.folioReparacion ?? ""}`.trim() })

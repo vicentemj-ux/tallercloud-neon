@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useCallback, useState } from "react"
 
@@ -10,10 +10,10 @@ export interface WebcamPollingConfig {
 /**
  * Hook que captura snapshots desde la webcam local de la PC.
  *
- * Usado en Modo Básico cuando la cámara IP no soporta ISAPI
+ * Usado en Modo Basico cuando la camara IP no soporta ISAPI
  * (como el modelo DS-2DE2C400IG-W-W).
  *
- * Captura una foto cada 8 segundos vía getUserMedia + canvas.
+ * Captura una foto cada 8 segundos via getUserMedia + canvas.
  */
 export function useWebcamPolling(config: WebcamPollingConfig | null) {
   const [active, setActive] = useState(false)
@@ -86,7 +86,7 @@ export function useWebcamPolling(config: WebcamPollingConfig | null) {
         setActive(true)
         setError(null)
 
-        // Primer capture después de 2s (para que el video cargue)
+        // Primer capture despues de 2s (para que el video cargue)
         setTimeout(captureAndSend, 2000)
         intervalRef.current = setInterval(captureAndSend, intervalMs)
       })

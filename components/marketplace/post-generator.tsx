@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Copy, RefreshCw, Check } from 'lucide-react';
@@ -11,23 +11,23 @@ interface PostGeneratorProps {
 const templates = [
   {
     id: 'simple',
-    name: 'Publicación Simple',
+    name: 'Publicacion Simple',
     template: (p: Product) => `
 🛍️ ${p.name}
-💰 ${p.category ? `Categoría: ${p.category}` : ''}
+💰 ${p.category ? `Categoria: ${p.category}` : ''}
 
 ${p.description}
 
 📍 Precio especial: $${p.price}
 
-¿Te interesa? ¡Envíanos un mensaje!
+¿Te interesa? ¡Envianos un mensaje!
 
 #ecommerce #venta #marketplace
     `.trim(),
   },
   {
     id: 'promotional',
-    name: 'Publicación Promocional',
+    name: 'Publicacion Promocional',
     template: (p: Product) => `
 🔥 ¡OFERTA ESPECIAL! 🔥
 
@@ -46,32 +46,32 @@ Este producto es perfecto para ti. No te lo pierdas.
   },
   {
     id: 'detailed',
-    name: 'Publicación Detallada',
+    name: 'Publicacion Detallada',
     template: (p: Product) => `
 📦 ${p.name} - ${p.category}
 
-Descripción:
+Descripcion:
 ${p.description}
 
-Características:
+Caracteristicas:
 ✨ Calidad premium
-✨ Entrega rápida
-✨ Garantía incluida
+✨ Entrega rapida
+✨ Garantia incluida
 
 💲 Precio: $${p.price}
 
-¿Preguntas? Estamos aquí para ayudarte.
+¿Preguntas? Estamos aqui para ayudarte.
 
 Haz tu pedido hoy mismo.
 
-#tienda #calidad #satisfacción
+#tienda #calidad #satisfaccion
     `.trim(),
   },
   {
     id: 'urgent',
-    name: 'Publicación Urgente',
+    name: 'Publicacion Urgente',
     template: (p: Product) => `
-⏰ ¡ATENCIÓN! ⏰
+⏰ ¡ATENCIoN! ⏰
 
 Tenemos disponible: ${p.name}
 
@@ -82,7 +82,7 @@ ${p.description}
 Stock limitado. 
 ¡COMPRA AHORA!
 
-#urgente #disponible #rápido
+#urgente #disponible #rapido
     `.trim(),
   },
 ];
@@ -112,7 +112,7 @@ export function PostGenerator({ product }: PostGeneratorProps) {
     <div className="space-y-6">
       {/* Templates Selection */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Plantillas de Publicación</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Plantillas de Publicacion</h3>
         <div className="grid grid-cols-2 gap-3">
           {templates.map(template => (
             <button
@@ -182,7 +182,7 @@ export function PostGenerator({ product }: PostGeneratorProps) {
         {/* Custom Edit */}
         <div className="space-y-2 border-t border-border pt-6">
           <label htmlFor="custom-post" className="block text-sm font-medium text-foreground">
-            Editar Publicación
+            Editar Publicacion
           </label>
           <textarea
             id="custom-post"
@@ -193,7 +193,7 @@ export function PostGenerator({ product }: PostGeneratorProps) {
             }}
             rows={6}
             className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
-            placeholder="Edita tu publicación aquí..."
+            placeholder="Edita tu publicacion aqui..."
           />
         </div>
       </div>
@@ -201,7 +201,7 @@ export function PostGenerator({ product }: PostGeneratorProps) {
       {/* Info */}
       <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
         <p className="text-sm text-foreground">
-          💡 <strong>Consejo:</strong> Puedes editar cualquier publicación. Los hashtags y emojis ayudan a mejorar el alcance en redes sociales.
+          💡 <strong>Consejo:</strong> Puedes editar cualquier publicacion. Los hashtags y emojis ayudan a mejorar el alcance en redes sociales.
         </p>
       </div>
     </div>

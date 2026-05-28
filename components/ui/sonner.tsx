@@ -1,12 +1,12 @@
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+﻿import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CheckCircle2, AlertCircle, Info, XCircle, Loader2 } from "lucide-react"
 
 /**
  * Toaster global de TallerCloud — estilo oscuro premium (pill shape).
  *
- * - Success: fondo slate-900, icono emerald, título uppercase tracking-widest
+ * - Success: fondo slate-900, icono emerald, titulo uppercase tracking-widest
  * - Error: fondo slate-900, icono rojo
- * - Todos los toast: border-radius 9999px (pill), sin descripción por defecto
+ * - Todos los toast: border-radius 9999px (pill), sin descripcion por defecto
  *
  * Montado en app/layout.tsx.
  */

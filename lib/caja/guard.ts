@@ -1,5 +1,5 @@
-export const CAJA_GUARD_MESSAGES = {
-  NO_CAJA_ABIERTA: "No hay caja abierta. Abre la caja antes de realizar esta operación.",
+﻿export const CAJA_GUARD_MESSAGES = {
+  NO_CAJA_ABIERTA: "No hay caja abierta. Abre la caja antes de realizar esta operacion.",
   ERROR_VERIFICAR_CAJA: "Error al verificar caja.",
   SALDO_INSUFICIENTE: "Saldo insuficiente en caja.",
 } as const

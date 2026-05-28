@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import Link from "next/link"
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
         <div className="flex justify-center">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-blue-600">TallerCloud</h1>
-            <p className="text-sm text-slate-600 mt-1">Gestión de reparaciones inteligente</p>
+            <p className="text-sm text-slate-600 mt-1">Gestion de reparaciones inteligente</p>
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-slate-600 text-center">
-                  Hemos enviado instrucciones para resetear tu contraseña a:
+                  Hemos enviado instrucciones para resetear tu contrasena a:
                 </p>
                 <p className="font-medium text-center text-slate-900">{email}</p>
                 <p className="text-xs text-slate-500 text-center">
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           ) : (
             <>
               <CardHeader className="space-y-2">
-                <CardTitle className="text-2xl text-center">Olvidé mi contraseña</CardTitle>
+                <CardTitle className="text-2xl text-center">Olvide mi contrasena</CardTitle>
                 <CardDescription className="text-center">
                   Ingresa tu email y te enviaremos instrucciones para resetearla
                 </CardDescription>
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium">
-                      Correo Electrónico
+                      Correo Electronico
                     </Label>
                     <Input
                       id="email"
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
                     className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Volver al inicio de sesión
+                    Volver al inicio de sesion
                   </Link>
                 </div>
               </CardContent>

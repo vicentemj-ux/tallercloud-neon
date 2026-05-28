@@ -1,4 +1,4 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+﻿import type { ProductoRow } from "@/lib/actions/productos"
 import { formatPosterMoney } from "@/lib/utils/currency"
 import {
   computePrecioMayoreo,
@@ -39,7 +39,7 @@ export interface PosterExhibicionSatoriProps {
   producto: ProductoRow
   precio_oferta?: number | null
   isOffer?: boolean
-  /** Nombre comercial del taller (configuración). */
+  /** Nombre comercial del taller (configuracion). */
   businessName?: string
   logoDataUrl?: string | null
   productImageDataUrl?: string | null
@@ -78,7 +78,7 @@ function computeDerived(
   }
 }
 
-/** Escala diseño original 1200 → 1080. */
+/** Escala diseno original 1200 → 1080. */
 const S = POSTER_SQUARE_PX / 1200
 function sc(n: number): number {
   return Math.round(n * S)
@@ -202,7 +202,7 @@ function PosterExhibicionSatoriTemplateSquare({
             letterSpacing: 2,
           }}
         >
-          Exhibición de mostrador
+          Exhibicion de mostrador
         </div>
       </div>
 
@@ -281,7 +281,7 @@ function PosterExhibicionSatoriTemplateSquare({
                 letterSpacing: 2,
               }}
             >
-              Ficha técnica
+              Ficha tecnica
             </div>
 
             <SpecRow
@@ -441,7 +441,7 @@ function PosterExhibicionSatoriTemplateSquare({
 }
 
 /**
- * Plantilla 9:16 (1080×1920) — estados / stories. Logo y nombre del taller dinámicos.
+ * Plantilla 9:16 (1080×1920) — estados / stories. Logo y nombre del taller dinamicos.
  */
 function PosterExhibicionSatoriTemplateVertical({
   producto,
@@ -530,7 +530,7 @@ function PosterExhibicionSatoriTemplateVertical({
             letterSpacing: 2,
           }}
         >
-          Exhibición de mostrador
+          Exhibicion de mostrador
         </div>
       </div>
 
@@ -603,7 +603,7 @@ function PosterExhibicionSatoriTemplateVertical({
 
       <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: SLATE_400, textTransform: "uppercase", letterSpacing: 2 }}>
-          Ficha técnica
+          Ficha tecnica
         </div>
         <SpecRow
           label="Procesador"
@@ -713,7 +713,7 @@ function SpecRow({
   accent: string
   chipBg: string
   chip: string
-  /** Escala sobre tamaños base (diseño 1200px); sin funciones — Satori no soporta bien props función. */
+  /** Escala sobre tamanos base (diseno 1200px); sin funciones — Satori no soporta bien props funcion. */
   scale: number
 }) {
   const sz = (n: number) => Math.round(n * scale)

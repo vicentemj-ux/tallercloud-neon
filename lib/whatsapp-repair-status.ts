@@ -1,5 +1,5 @@
-/**
- * Construye la URL de WhatsApp (api.whatsapp.com) para notificar cambio de estado de reparación.
+﻿/**
+ * Construye la URL de WhatsApp (api.whatsapp.com) para notificar cambio de estado de reparacion.
  * Solo cliente (sin dependencias de servidor).
  */
 
@@ -25,7 +25,7 @@ export function buildRepairStatusWhatsAppUrl(params: {
   notaTecnica?: string | null
   total?: number | null
   restante?: number | null
-  /** Costo de revisión cuando el estado es Sin Reparación */
+  /** Costo de revision cuando el estado es Sin Reparacion */
   costoRevision?: number | null
   baseUrl?: string | null
 }): string | null {
@@ -42,17 +42,17 @@ export function buildRepairStatusWhatsAppUrl(params: {
     let body = ""
 
     if (n === "Listo") {
-      body = `${nombreTaller}\nHola ${cliente}, tu equipo ${equipo} (Folio #${folio}) está LISTO.\n\n✅ Resultado: Exitoso\n💰 Total: ${formatMoneyMx(params.total)}\n📉 Restante: ${formatMoneyMx(params.restante)}\n\n_Organizado con TallerCloud.net_`
+      body = `${nombreTaller}\nHola ${cliente}, tu equipo ${equipo} (Folio #${folio}) esta LISTO.\n\n✅ Resultado: Exitoso\n💰 Total: ${formatMoneyMx(params.total)}\n📉 Restante: ${formatMoneyMx(params.restante)}\n\n_Organizado con TallerCloud.net_`
     } else if (n === "Sin Reparacion") {
       const motivo = params.notaTecnica?.trim() || "—"
-      body = `${nombreTaller}\nHola ${cliente}, lamentamos informar que tu equipo ${equipo} (#${folio}) se marcó como No Reparable.\n\n📝 Motivo: ${motivo}\n💵 Costo revisión: ${formatMoneyMx(params.costoRevision)}\n\n_Organizado con TallerCloud.net_`
+      body = `${nombreTaller}\nHola ${cliente}, lamentamos informar que tu equipo ${equipo} (#${folio}) se marco como No Reparable.\n\n📝 Motivo: ${motivo}\n💵 Costo revision: ${formatMoneyMx(params.costoRevision)}\n\n_Organizado con TallerCloud.net_`
     } else {
       const base =
         safeStr(params.baseUrl, "").replace(/\/$/, "") ||
         getPublicAppBaseUrl() ||
         "https://tallercloud.net"
       const track = repairId ? `${base}/track/${repairId}` : base
-      body = `${nombreTaller}\nHola ${cliente}, el estado de tu orden ${folio} cambió a: ${n || "actualizado"}.\n\n🔗 Rastreo: ${track}\n\n_Organizado con TallerCloud.net_`
+      body = `${nombreTaller}\nHola ${cliente}, el estado de tu orden ${folio} cambio a: ${n || "actualizado"}.\n\n🔗 Rastreo: ${track}\n\n_Organizado con TallerCloud.net_`
     }
 
     return buildWhatsAppUrl(digits, body)

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Shim de compatibilidad: mapea la API legacy de Radix Toast a Sonner.
  *
  * Todos los componentes que usen:
@@ -17,7 +17,7 @@ type ToastInput = {
   title?: string
   description?: string
   variant?: "default" | "destructive"
-  /** Duración en ms (opcional, default heredado del Toaster global) */
+  /** Duracion en ms (opcional, default heredado del Toaster global) */
   duration?: number
   className?: string
 }

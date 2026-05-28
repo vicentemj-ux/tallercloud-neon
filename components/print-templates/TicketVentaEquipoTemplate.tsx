@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { TicketVentaTemplateProps } from "./TicketVentaTemplate"
 
@@ -66,8 +66,8 @@ function Divider() {
 
 /**
  * Template especializado para ventas que incluyen hardware (equipos).
- * Muestra una sección de DATOS DEL DISPOSITIVO estructurada por cada artículo equipo.
- * Artículos sin datos de hardware se muestran como línea estándar.
+ * Muestra una seccion de DATOS DEL DISPOSITIVO estructurada por cada articulo equipo.
+ * Articulos sin datos de hardware se muestran como linea estandar.
  */
 export function TicketVentaEquipoTemplate({
   venta,
@@ -138,7 +138,7 @@ export function TicketVentaEquipoTemplate({
 
       <Divider />
 
-      {/* ── Artículos ── */}
+      {/* ── Articulos ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         {venta.items.map((item, i) => {
           const esEquipo = !!(item.marca || item.modelo || item.imei_serie)
@@ -146,7 +146,7 @@ export function TicketVentaEquipoTemplate({
 
           return (
             <div key={i}>
-              {/* Línea principal del artículo */}
+              {/* Linea principal del articulo */}
               <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "flex-start" }}>
                 <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700, textAlign: "left", flex: 1, minWidth: 0, lineHeight: 1.2 }}>
                   {item.cantidad}× {(item.categoria ? item.categoria + " " : "") + item.descripcion}
@@ -156,7 +156,7 @@ export function TicketVentaEquipoTemplate({
                 </span>
               </div>
 
-              {/* Sección de dispositivo — solo si el artículo es equipo */}
+              {/* Seccion de dispositivo — solo si el articulo es equipo */}
               {esEquipo && (
                 <div style={{ marginTop: "2px", marginLeft: "6px", paddingLeft: "6px", borderLeft: "1.5px solid black" }}>
                   {(item.marca || item.modelo) && (
@@ -176,7 +176,7 @@ export function TicketVentaEquipoTemplate({
                   )}
                   {item.condicion && (
                     <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700 }}>
-                      <span style={{ fontWeight: 900 }}>Condición:</span> {item.condicion}
+                      <span style={{ fontWeight: 900 }}>Condicion:</span> {item.condicion}
                     </div>
                   )}
                   {specs && (
@@ -216,7 +216,7 @@ export function TicketVentaEquipoTemplate({
           </>
         ) : (
           <div style={{ display: "flex", justifyContent: "space-between", gap: "6px" }}>
-            <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Método de pago</span>
+            <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Metodo de pago</span>
             <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>{METODOS_LABEL[venta.metodo_pago] ?? venta.metodo_pago}</span>
           </div>
         )}
@@ -243,7 +243,7 @@ export function TicketVentaEquipoTemplate({
           {mensajeDespedida || "¡Gracias por tu confianza!"}
         </div>
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700, lineHeight: 1.2, marginTop: "2px" }}>
-          {terminosGarantia || "Garantía válida únicamente con este comprobante."}
+          {terminosGarantia || "Garantia valida unicamente con este comprobante."}
         </div>
       </div>
     </div>

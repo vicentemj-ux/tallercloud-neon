@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import {
@@ -101,7 +101,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
 
   const handleExtendCustom = () => {
     const d = parseInt(diasInput, 10)
-    if (!d || d <= 0) { feedback_err("Ingresa un número de días válido"); return }
+    if (!d || d <= 0) { feedback_err("Ingresa un numero de dias valido"); return }
     setDiasInput("")
     handleExtend(d)
   }
@@ -122,7 +122,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
   // ── Reset password ──────────────────────────────────────────────────────
   const handleReset = () => run(async () => {
     const r = await resetPasswordAdmin(taller.id)
-    if (r.success) setFeedback({ msg: "Token generado. Comparte el enlace de recuperación con el cliente.", ok: true })
+    if (r.success) setFeedback({ msg: "Token generado. Comparte el enlace de recuperacion con el cliente.", ok: true })
     else feedback_err(r.error ?? "Error")
   })
 
@@ -161,7 +161,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
       ? "—"
       : taller.dias_restantes <= 0
         ? "Vencido"
-        : `${taller.dias_restantes} días`
+        : `${taller.dias_restantes} dias`
 
   return (
     <div
@@ -197,12 +197,12 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             ["Vencimiento", taller.fecha_vencimiento_plan
               ? new Date(taller.fecha_vencimiento_plan).toLocaleDateString("es-MX")
               : "—"],
-            ["Días restantes", diasRestantesLabel],
+            ["Dias restantes", diasRestantesLabel],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between items-center px-4 py-2.5">
               <span className="text-slate-400">{label}</span>
               <span className={`font-medium ${
-                label === "Días restantes" && taller.dias_restantes !== null && taller.dias_restantes <= 0
+                label === "Dias restantes" && taller.dias_restantes !== null && taller.dias_restantes <= 0
                   ? "text-red-400"
                   : taller.dias_restantes !== null && taller.dias_restantes < 3
                     ? "text-amber-400"
@@ -249,10 +249,10 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
         <Section title="Extender acceso">
           <div className="grid grid-cols-2 gap-2">
             {[
-              { label: "+30 días", days: 30 },
-              { label: "+90 días", days: 90 },
-              { label: "+180 días", days: 180 },
-              { label: "+365 días", days: 365 },
+              { label: "+30 dias", days: 30 },
+              { label: "+90 dias", days: 90 },
+              { label: "+180 dias", days: 180 },
+              { label: "+365 dias", days: 365 },
             ].map(({ label, days }) => (
               <Button
                 key={days}
@@ -270,7 +270,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             <Input
               type="number"
               min="1"
-              placeholder="Días personalizados..."
+              placeholder="Dias personalizados..."
               value={diasInput}
               onChange={(e) => setDiasInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleExtendCustom()}
@@ -283,11 +283,11 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
               size="sm"
               className="bg-slate-600 hover:bg-slate-500 text-white shrink-0 h-9"
             >
-              + Días
+              + Dias
             </Button>
           </div>
           <p className="text-[11px] text-slate-500 mt-1">
-            Si el taller está suspendido, extender reactivará el acceso automáticamente.
+            Si el taller esta suspendido, extender reactivara el acceso automaticamente.
           </p>
         </Section>
 
@@ -310,7 +310,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             Suspender acceso
           </Button>
           <p className="text-[11px] text-slate-500">
-            Suspender bloquea el acceso de inmediato. Activar sin fecha vigente añade 30 días por defecto.
+            Suspender bloquea el acceso de inmediato. Activar sin fecha vigente anade 30 dias por defecto.
           </p>
         </Section>
 
@@ -322,7 +322,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             className="w-full bg-purple-700 hover:bg-purple-600 text-white font-bold gap-2"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
-            Resetear contraseña
+            Resetear contrasena
           </Button>
         </Section>
 
@@ -346,7 +346,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             ) : (
               <div className="space-y-3">
                 <p className="text-sm text-red-200">
-                  Esta acción es <strong>irreversible</strong>. Se eliminarán todos los datos del taller.
+                  Esta accion es <strong>irreversible</strong>. Se eliminaran todos los datos del taller.
                 </p>
                 <p className="text-xs text-slate-400">
                   Escribe{" "}

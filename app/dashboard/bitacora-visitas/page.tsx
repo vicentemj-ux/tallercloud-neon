@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
@@ -185,7 +185,7 @@ export default function BitacoraVisitasPage() {
           </div>
         </div>
 
-        {/* Lista agrupada por día */}
+        {/* Lista agrupada por dia */}
         <div className="space-y-6">
           {loading ? (
             <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
@@ -196,7 +196,7 @@ export default function BitacoraVisitasPage() {
             <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
               <XCircle className="mx-auto h-8 w-8 text-red-400 mb-3" />
               <p className="text-sm font-bold text-slate-700">No se pudo identificar el taller</p>
-              <p className="text-xs text-slate-400 mt-1">Asegúrate de haber iniciado sesión correctamente.</p>
+              <p className="text-xs text-slate-400 mt-1">Asegurate de haber iniciado sesion correctamente.</p>
               <Button
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs"
                 onClick={() => router.push("/dashboard")}
@@ -207,7 +207,7 @@ export default function BitacoraVisitasPage() {
           ) : visitas.length === 0 ? (
             <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
               <Search className="mx-auto h-8 w-8 text-slate-300 mb-3" />
-              <p className="text-sm font-medium text-slate-400">No hay registros de visitas en este período</p>
+              <p className="text-sm font-medium text-slate-400">No hay registros de visitas en este periodo</p>
             </div>
           ) : (
             Array.from(grouped.entries()).map(([day, dayVisitas]) => (
@@ -240,7 +240,7 @@ export default function BitacoraVisitasPage() {
                           Atendido por
                         </th>
                         <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Vínculo
+                          Vinculo
                         </th>
                       </tr>
                     </thead>

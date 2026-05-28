@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -25,26 +25,26 @@ import { cn } from "@/lib/utils"
 import { updateClient } from "@/lib/actions/clients-prisma"
 import type { Client } from "@/lib/actions/clients-prisma"
 
-// ─── Catálogos SAT CFDI 4.0 ──────────────────────────────────────────────────
+// ─── Catalogos SAT CFDI 4.0 ──────────────────────────────────────────────────
 
 const REGIMENES_FISCALES = [
   { value: "601", label: "601 — General de Ley Personas Morales" },
   { value: "605", label: "605 — Sueldos y Salarios" },
   { value: "606", label: "606 — Arrendamiento" },
-  { value: "612", label: "612 — Personas Físicas con Act. Empresariales" },
+  { value: "612", label: "612 — Personas Fisicas con Act. Empresariales" },
   { value: "616", label: "616 — Sin obligaciones fiscales" },
-  { value: "621", label: "621 — Incorporación Fiscal" },
-  { value: "625", label: "625 — Plataformas Tecnológicas" },
+  { value: "621", label: "621 — Incorporacion Fiscal" },
+  { value: "625", label: "625 — Plataformas Tecnologicas" },
   { value: "626", label: "626 — RESICO" },
 ] as const
 
 const USOS_CFDI = [
-  { value: "S01", label: "S01 — Sin efectos fiscales (Público general)" },
-  { value: "G01", label: "G01 — Adquisición de mercancias" },
+  { value: "S01", label: "S01 — Sin efectos fiscales (Publico general)" },
+  { value: "G01", label: "G01 — Adquisicion de mercancias" },
   { value: "G03", label: "G03 — Gastos en general" },
-  { value: "I04", label: "I04 — Equipo de cómputo y accesorios" },
-  { value: "I06", label: "I06 — Comunicaciones telefónicas" },
-  { value: "D01", label: "D01 — Honorarios médicos" },
+  { value: "I04", label: "I04 — Equipo de computo y accesorios" },
+  { value: "I06", label: "I06 — Comunicaciones telefonicas" },
+  { value: "D01", label: "D01 — Honorarios medicos" },
   { value: "CP01", label: "CP01 — Pagos" },
   { value: "P01", label: "P01 — Por definir" },
 ] as const
@@ -105,7 +105,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
         regimen_fiscal: client.regimen_fiscal ?? "",
         uso_cfdi: client.uso_cfdi ?? "",
       })
-      // Auto-abrir pestaña fiscal si el cliente ya tiene RFC
+      // Auto-abrir pestana fiscal si el cliente ya tiene RFC
       setShowFiscal(!!client.rfc)
       setError(null)
     }
@@ -155,7 +155,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
         onClose()
       }
     } catch {
-      setError("Error de conexión. Intenta de nuevo.")
+      setError("Error de conexion. Intenta de nuevo.")
     } finally {
       setSaving(false)
     }
@@ -177,12 +177,12 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
             <DialogDescription className="sr-only">Formulario para editar los datos del cliente</DialogDescription>
 
             <div className="flex items-center justify-between gap-3 min-w-0">
-              {/* Título */}
+              {/* Titulo */}
               <span className="text-xl font-black italic leading-tight tracking-tight text-white truncate">
                 EDITAR CLIENTE
               </span>
 
-              {/* Toggle BÁSICO / FACTURACIÓN */}
+              {/* Toggle BaSICO / FACTURACIoN */}
               <div className="flex shrink-0 gap-0.5 rounded-xl border border-white/10 bg-white/10 p-0.5">
                 <Button
                   type="button"
@@ -197,7 +197,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                   )}
                 >
                   <Lock className="h-3 w-3" />
-                  Básico
+                  Basico
                 </Button>
                 <Button
                   type="button"
@@ -212,12 +212,12 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                   )}
                 >
                   <Receipt className="h-3 w-3" />
-                  Facturación
+                  Facturacion
                 </Button>
               </div>
             </div>
 
-            {/* Botón cerrar */}
+            {/* Boton cerrar */}
             <Button
               type="button"
               variant="ghost"
@@ -235,7 +235,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <form id="client-edit-form" onSubmit={handleSubmit} className="space-y-3">
 
-            {/* Fila 1: Nombre / Teléfono Principal */}
+            {/* Fila 1: Nombre / Telefono Principal */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="nombre" className="text-xs font-semibold text-slate-700">
@@ -246,14 +246,14 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                   name="nombre"
                   value={form.nombre}
                   onChange={handleChange}
-                  placeholder="María López García"
+                  placeholder="Maria Lopez Garcia"
                   required
                   className="h-10 rounded-xl border-slate-200 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="telefono" className="text-xs font-semibold text-slate-700">
-                  Teléfono Principal
+                  Telefono Principal
                 </Label>
                 <Input
                   id="telefono"
@@ -268,7 +268,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
               </div>
             </div>
 
-            {/* Fila 2: Teléfono Secundario / Correo */}
+            {/* Fila 2: Telefono Secundario / Correo */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="telefono_secundario" className="text-xs font-semibold text-slate-700">
@@ -324,7 +324,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                   Datos Fiscales — CFDI 4.0
                 </p>
 
-                {/* RFC / Razón Social */}
+                {/* RFC / Razon Social */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label htmlFor="rfc" className="text-xs font-semibold text-slate-700">RFC</Label>
@@ -340,7 +340,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="razon_social" className="text-xs font-semibold text-slate-700">Razón Social</Label>
+                    <Label htmlFor="razon_social" className="text-xs font-semibold text-slate-700">Razon Social</Label>
                     <Input
                       id="razon_social"
                       name="razon_social"
@@ -352,7 +352,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                   </div>
                 </div>
 
-                {/* CP Fiscal / Régimen Fiscal */}
+                {/* CP Fiscal / Regimen Fiscal */}
                 <div className="grid grid-cols-5 gap-3">
                   <div className="col-span-2 space-y-1.5">
                     <Label htmlFor="codigo_postal_fiscal" className="text-xs font-semibold text-slate-700">C.P. Fiscal</Label>
@@ -367,7 +367,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                     />
                   </div>
                   <div className="col-span-3 space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-700">Régimen Fiscal</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Regimen Fiscal</Label>
                     <Select
                       value={form.regimen_fiscal}
                       onValueChange={(v) => handleSelect("regimen_fiscal", v)}

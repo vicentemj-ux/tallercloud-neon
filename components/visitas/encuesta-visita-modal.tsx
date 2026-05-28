@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { X, CheckCircle2, Loader2 } from "lucide-react"
@@ -8,8 +8,8 @@ import type { MotivoVisita } from "@/lib/utils/visitas"
 import { toast } from "@/hooks/use-toast"
 
 const MOTIVOS: { value: MotivoVisita; label: string }[] = [
-  { value: "reparacion", label: "Reparación / Diagnóstico" },
-  { value: "cotizacion", label: "Cotización" },
+  { value: "reparacion", label: "Reparacion / Diagnostico" },
+  { value: "cotizacion", label: "Cotizacion" },
   { value: "compra", label: "Comprar producto" },
   { value: "recoger", label: "Recoger equipo" },
   { value: "personal", label: "Personal del negocio" },
@@ -89,14 +89,14 @@ export function EncuestaVisitaModal({
             <X className="h-4 w-4" />
           </button>
           <div className="absolute bottom-3 left-3 rounded-full bg-blue-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-            CLIENTE EN RECEPCIÓN
+            CLIENTE EN RECEPCIoN
           </div>
         </div>
 
         {/* Body */}
         <div className="p-5 space-y-4">
           <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
-            ¿Cuál es el motivo de la visita?
+            ¿Cual es el motivo de la visita?
           </h3>
 
           <div className="space-y-1.5">

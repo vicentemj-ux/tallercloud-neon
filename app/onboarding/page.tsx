@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+﻿import { redirect } from "next/navigation"
 import { OnboardingForm } from "./onboarding-form"
 import { getCurrentUser } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
@@ -36,8 +36,8 @@ export default async function OnboardingPage() {
         <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">¡Bienvenido, {welcomeName}!</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Para activar tu prueba gratuita de 30 días, indica cómo se llama tu taller. Podrás cambiarlo
-            después en configuración.
+            Para activar tu prueba gratuita de 30 dias, indica como se llama tu taller. Podras cambiarlo
+            despues en configuracion.
           </p>
 
           <div className="mt-8">
@@ -46,7 +46,7 @@ export default async function OnboardingPage() {
         </div>
 
         <p className="mt-8 text-center text-xs text-slate-500">
-          Al continuar aceptas los términos de uso de TallerCloud para cuentas de prueba.
+          Al continuar aceptas los terminos de uso de TallerCloud para cuentas de prueba.
         </p>
       </div>
     </div>

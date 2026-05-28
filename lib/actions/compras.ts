@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
@@ -39,9 +39,9 @@ export interface OrdenCompra {
   created_at: string
   custodio: string | null
   detalle?: DetalleOrden[]
-  /** Errores persistidos de intentos de recepción fallidos */
+  /** Errores persistidos de intentos de recepcion fallidos */
   errores_recepcion?: string[] | null
-  /** Conteo de líneas de detalle (population) */
+  /** Conteo de lineas de detalle (population) */
   articulos_count?: number
 }
 
@@ -120,7 +120,7 @@ export async function getComprasStats(): Promise<ComprasStats> {
   }
 }
 
-// ─── Órdenes ──────────────────────────────────────────────────────────────────
+// ─── ordenes ──────────────────────────────────────────────────────────────────
 
 export async function getOrdenes(opts?: {
   search?: string
@@ -385,7 +385,7 @@ export async function deleteProveedor(
 ): Promise<{ error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
 
-  // Soft delete — mantiene historial en órdenes existentes
+  // Soft delete — mantiene historial en ordenes existentes
   const { error } = await supabase
     .from("proveedores")
     .update({ activo: false })
@@ -395,7 +395,7 @@ export async function deleteProveedor(
   return { error: error?.message ?? null }
 }
 
-// ─── Productos (búsqueda para vincular a detalle) ─────────────────────────────
+// ─── Productos (busqueda para vincular a detalle) ─────────────────────────────
 
 export async function buscarProductosParaCompra(
   query: string
@@ -422,7 +422,7 @@ export async function buscarProductosParaCompra(
   }
 }
 
-// ─── Recepción con creación de productos ──────────────────────────────────────
+// ─── Recepcion con creacion de productos ──────────────────────────────────────
 
 export interface ProductoNuevoPreview {
   descripcion: string
@@ -447,13 +447,13 @@ export interface PreviewRecepcion {
   totalExistentes: number
 }
 
-/** Obtiene un preview de qué pasará al recibir la orden (productos nuevos vs existentes). */
+/** Obtiene un preview de que pasara al recibir la orden (productos nuevos vs existentes). */
 export async function previewRecepcion(
   ordenId: string
 ): Promise<{ data: PreviewRecepcion | null; error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
 
-  // 1. Obtener la orden y validar que está en_transito/pendiente/parcial
+  // 1. Obtener la orden y validar que esta en_transito/pendiente/parcial
   const { data: orden, error: ordenErr } = await supabase
     .from("ordenes_compra")
     .select("id, estatus, stock_aplicado")
@@ -468,7 +468,7 @@ export async function previewRecepcion(
     return { data: null, error: "La orden ya fue recibida o cancelada." }
   }
 
-  // 2. Obtener líneas del detalle
+  // 2. Obtener lineas del detalle
   const { data: lineas, error: lineasErr } = await supabase
     .from("detalle_orden_compra")
     .select("id, descripcion, cantidad, precio_unitario, producto_id")
@@ -476,7 +476,7 @@ export async function previewRecepcion(
     .eq("taller_id", tallerId)
 
   if (lineasErr || !lineas) {
-    return { data: null, error: lineasErr?.message ?? "No se pudieron leer las líneas." }
+    return { data: null, error: lineasErr?.message ?? "No se pudieron leer las lineas." }
   }
 
   const nuevosRaw = lineas.filter(l => !l.producto_id)
@@ -560,7 +560,7 @@ export async function recibirOrdenConCreacion(
       return { success: false, creados: 0, actualizados: 0, errores: ["La orden ya fue recibida o cancelada."] }
     }
 
-    // 2. Obtener líneas
+    // 2. Obtener lineas
     const { data: lineas, error: lineasErr } = await supabase
       .from("detalle_orden_compra")
       .select("id, descripcion, cantidad, precio_unitario, producto_id")
@@ -568,7 +568,7 @@ export async function recibirOrdenConCreacion(
       .eq("taller_id", tallerId)
 
     if (lineasErr || !lineas) {
-      return { success: false, creados: 0, actualizados: 0, errores: [lineasErr?.message ?? "Error leyendo líneas."] }
+      return { success: false, creados: 0, actualizados: 0, errores: [lineasErr?.message ?? "Error leyendo lineas."] }
     }
 
     // 3. Procesar productos NUEVOS
@@ -609,7 +609,7 @@ export async function recibirOrdenConCreacion(
         continue
       }
 
-      // Vincular la línea al nuevo producto
+      // Vincular la linea al nuevo producto
       const { error: linkError } = await supabase
         .from("detalle_orden_compra")
         .update({ producto_id: nuevoProducto.id })
@@ -617,7 +617,7 @@ export async function recibirOrdenConCreacion(
         .eq("taller_id", tallerId)
 
       if (linkError) {
-        errores.push(`Producto creado pero no vinculado a línea "${linea.descripcion}"`)
+        errores.push(`Producto creado pero no vinculado a linea "${linea.descripcion}"`)
       }
 
       creados++
@@ -664,7 +664,7 @@ export async function recibirOrdenConCreacion(
       actualizados++
     }
 
-    // 5. Si hay errores, persistirlos en la orden (para diagnóstico posterior) y NO marcar como recibida
+    // 5. Si hay errores, persistirlos en la orden (para diagnostico posterior) y NO marcar como recibida
     if (errores.length > 0) {
       await supabase
         .from("ordenes_compra")
@@ -675,7 +675,7 @@ export async function recibirOrdenConCreacion(
       return { success: false, creados, actualizados, errores }
     }
 
-    // 6. Marcar orden como recibida (y limpiar errores si existían)
+    // 6. Marcar orden como recibida (y limpiar errores si existian)
     const { error: recibirError } = await supabase
       .from("ordenes_compra")
       .update({

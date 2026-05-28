@@ -1,7 +1,7 @@
-"use server"
+﻿"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar repairs-prisma.ts / dashboard-prisma.ts / tracking-prisma.ts).
-// Pendiente migración completa de módulos legacy/PRO.
+// Pendiente migracion completa de modulos legacy/PRO.
 
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
@@ -37,8 +37,8 @@ import { setServiciosReparacion } from "@/lib/actions/servicios"
 const createClient = async () => (await createCurrentTenantClient()).supabase
 
 /**
- * Verifica si el usuario actual es el propietario del taller (no un técnico/empleado).
- * Útil para restringir mutaciones críticas (presupuesto, estado, etc.).
+ * Verifica si el usuario actual es el propietario del taller (no un tecnico/empleado).
+ * util para restringir mutaciones criticas (presupuesto, estado, etc.).
  */
 async function isCurrentUserOwner(tallerId: string): Promise<boolean> {
   try {
@@ -55,7 +55,7 @@ async function isCurrentUserOwner(tallerId: string): Promise<boolean> {
   }
 }
 
-/** Nombre visible del usuario Auth que registró la orden (propietario = taller_id, miembro = miembros_taller, etc.). */
+/** Nombre visible del usuario Auth que registro la orden (propietario = taller_id, miembro = miembros_taller, etc.). */
 async function resolveUsuarioRecepcionNombre(
   supabase: Awaited<ReturnType<typeof createClient>>,
   tallerId: string,
@@ -105,7 +105,7 @@ function zfill(num: number, width: number): string {
   return String(num).padStart(width, "0")
 }
 
-/** Mensaje legible para fallos de insert/update de PostgREST (debug en producción). */
+/** Mensaje legible para fallos de insert/update de PostgREST (debug en produccion). */
 function formatPostgrestError(err: {
   message: string
   code?: string
@@ -126,20 +126,20 @@ function isNextRedirectError(e: unknown): boolean {
   return typeof d === "string" && d.includes("NEXT_REDIRECT")
 }
 
-/** Mensaje útil cuando Next oculta el detalle en producción (Server Actions). */
+/** Mensaje util cuando Next oculta el detalle en produccion (Server Actions). */
 function sanitizeUnexpectedRepairError(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e)
   if (
     msg.includes("An error occurred in the Server Components render") ||
     msg.includes("omitted in production")
   ) {
-    return "Error al registrar. Si subiste fotos, cierra sesión y vuelve a entrar, o intenta sin fotos."
+    return "Error al registrar. Si subiste fotos, cierra sesion y vuelve a entrar, o intenta sin fotos."
   }
-  return msg || "Error inesperado al registrar la reparación."
+  return msg || "Error inesperado al registrar la reparacion."
 }
 
 export interface CreateRepairInput {
-  /** Si se omite o está vacío, el trigger en BD asigna folio desde configuracion_taller. */
+  /** Si se omite o esta vacio, el trigger en BD asigna folio desde configuracion_taller. */
   folio?: string | null
   customerName: string
   customerPhone: string
@@ -161,16 +161,16 @@ export interface CreateRepairInput {
   securityValue?: string
   /** Notas internas del taller (no visibles para el cliente en tracking) */
   notasInternas?: string
-  /** Checklist de ingreso (recepción) — JSON en BD */
+  /** Checklist de ingreso (recepcion) — JSON en BD */
   checklistIngreso?: ChecklistIngreso | null
   /** Health check PRO — JSON en `checklist_pro` (alias camelCase) */
   checklistPro?: ChecklistProData | null
   /** Salida Zod / API (snake_case) */
   checklist_pro?: unknown | null
   photos?: string[] // Array of base64 or URLs, or we'll handle File separately
-  /** Método de pago del anticipo inicial (efectivo | tarjeta | transferencia). Default "efectivo". */
+  /** Metodo de pago del anticipo inicial (efectivo | tarjeta | transferencia). Default "efectivo". */
   metodoPagoAnticipo?: string | null
-  /** Servicios adicionales del catálogo */
+  /** Servicios adicionales del catalogo */
   servicios?: { servicio_id: string; cantidad?: number }[]
 }
 
@@ -179,18 +179,18 @@ const MAX_REPAIR_IMAGE_BYTES = 6 * 1024 * 1024
 type UploadRepairPhotosResult = { urls: string[]; error?: string }
 
 // Upload repair photos to Supabase Storage (server-only via adminClient).
-// La seguridad de tenant ya está garantizada: tallerId proviene de la cookie del middleware
+// La seguridad de tenant ya esta garantizada: tallerId proviene de la cookie del middleware
 // validada por createCurrentTenantClient(). No se usa ssrClient.auth.getUser() porque
-// TallerCloud usa JWT propio (no Supabase Auth estándar) y esa llamada devuelve user=null.
+// TallerCloud usa JWT propio (no Supabase Auth estandar) y esa llamada devuelve user=null.
 async function uploadRepairPhotos(
   repairId: string,
   photoDataArray: string[],
   tallerId: string
 ): Promise<UploadRepairPhotosResult> {
   if (!photoDataArray || photoDataArray.length === 0) return { urls: [] }
-  if (!tallerId) return { urls: [], error: "No se pudo identificar el taller. Recarga la página." }
+  if (!tallerId) return { urls: [], error: "No se pudo identificar el taller. Recarga la pagina." }
 
-  // Verificar que la reparación pertenezca al tenant antes de subir fotos
+  // Verificar que la reparacion pertenezca al tenant antes de subir fotos
   const { supabase } = await createCurrentTenantClient()
   const { data: repair } = await supabase
     .from("reparaciones")
@@ -199,7 +199,7 @@ async function uploadRepairPhotos(
     .eq("taller_id", tallerId)
     .maybeSingle()
   if (!repair) {
-    return { urls: [], error: "Reparación no encontrada o no pertenece al taller" }
+    return { urls: [], error: "Reparacion no encontrada o no pertenece al taller" }
   }
 
   const admin = await createAdminClient()
@@ -214,7 +214,7 @@ async function uploadRepairPhotos(
       try {
         byteCharacters = atob(base64)
       } catch {
-        console.error(`[uploadRepairPhotos] Foto ${i}: base64 inválido`)
+        console.error(`[uploadRepairPhotos] Foto ${i}: base64 invalido`)
         return null
       }
       const byteArray = new Uint8Array(byteCharacters.length)
@@ -222,7 +222,7 @@ async function uploadRepairPhotos(
         byteArray[j] = byteCharacters.charCodeAt(j)
       }
       if (byteArray.byteLength > MAX_REPAIR_IMAGE_BYTES) {
-        console.error(`[uploadRepairPhotos] Foto ${i} excede tamaño máximo`, {
+        console.error(`[uploadRepairPhotos] Foto ${i} excede tamano maximo`, {
           bytes: byteArray.byteLength,
           maxBytes: MAX_REPAIR_IMAGE_BYTES,
         })
@@ -377,8 +377,8 @@ async function createRepairInner(input: CreateRepairInput) {
 
   // El anticipo se guarda en la tabla reparaciones (campo anticipo).
   // El registro de abonos en caja se maneja por separado para evitar
-  // errores de colisión - el usuario puede registrar el abono después
-  // desde el módulo de caja o desde la ficha del ticket.
+  // errores de colision - el usuario puede registrar el abono despues
+  // desde el modulo de caja o desde la ficha del ticket.
 
   let clientId = data.clienteId
 
@@ -427,7 +427,7 @@ async function createRepairInner(input: CreateRepairInput) {
   let serviciosTotal = 0
 
   if (serviciosSeleccionados.length > 0) {
-    // Obtener precios del catálogo para calcular total
+    // Obtener precios del catalogo para calcular total
     const svcIds = serviciosSeleccionados.map((s) => s.servicio_id)
     const { data: catRows } = await supabase
       .from("catalogo_servicios")
@@ -493,7 +493,7 @@ async function createRepairInner(input: CreateRepairInput) {
     insertPayload.usuario_recepcion_id = authUser.id
   }
 
-  // Insert: folio lo asigna el trigger si no viene en insertPayload; historial basal vía trigger DB
+  // Insert: folio lo asigna el trigger si no viene en insertPayload; historial basal via trigger DB
   const { data: inserted, error: repairError } = await supabase
     .from("reparaciones")
     .insert(insertPayload)
@@ -508,7 +508,7 @@ async function createRepairInner(input: CreateRepairInput) {
   const repairId = inserted?.id as string | undefined
   const assignedFolio = inserted?.folio as string | undefined
 
-  /** Primer evento de auditoría (misma migración que retira el trigger basal). */
+  /** Primer evento de auditoria (misma migracion que retira el trigger basal). */
   if (repairId) {
     const actorNombre = await getCurrentActorDisplayName()
     const { error: histErr } = await supabase.from("historial_reparacion").insert({
@@ -533,7 +533,7 @@ async function createRepairInner(input: CreateRepairInput) {
     }
   }
 
-  // Fotos: subir después de tener el folio definitivo (rutas en storage)
+  // Fotos: subir despues de tener el folio definitivo (rutas en storage)
   let uploadedPhotoUrls: string[] = []
   if (data.photos && data.photos.length > 0 && assignedFolio) {
     const up = await uploadRepairPhotos(repairId!, data.photos, tallerId)
@@ -560,10 +560,10 @@ async function createRepairInner(input: CreateRepairInput) {
   }
 }
 
-/** Alias en español (misma acción que `createRepair`). */
+/** Alias en espanol (misma accion que `createRepair`). */
 export const crearReparacion = createRepair
 
-/** Actualiza el arreglo de URLs públicas de fotos (tras subida desde cliente o servidor). */
+/** Actualiza el arreglo de URLs publicas de fotos (tras subida desde cliente o servidor). */
 export async function updateRepairFotos(repairId: string, fotos: string[]) {
   const supabase = await createClient()
   const tallerId = await getCurrentTallerId()
@@ -580,20 +580,20 @@ export async function updateRepairFotos(repairId: string, fotos: string[]) {
 }
 
 /**
- * Genera signed URLs para las fotos de evidencia de una reparación pública.
- * Re-valida los últimos 4 dígitos del teléfono antes de emitir las URLs.
- * Las URLs expiran en 2 horas — seguras para compartir en tracking público.
+ * Genera signed URLs para las fotos de evidencia de una reparacion publica.
+ * Re-valida los ultimos 4 digitos del telefono antes de emitir las URLs.
+ * Las URLs expiran en 2 horas — seguras para compartir en tracking publico.
  */
 /**
- * Devuelve el nombre público del taller asociado a una reparación.
- * Solo expone nombre (dato no sensible). No requiere validación de teléfono.
+ * Devuelve el nombre publico del taller asociado a una reparacion.
+ * Solo expone nombre (dato no sensible). No requiere validacion de telefono.
  */
 export async function getTrackingTallerInfo(
   ticketId: string
 ): Promise<{ name: string } | null> {
   if (!ticketId) return null
 
-  // Usar cliente anónimo con RPC pública en lugar de admin client
+  // Usar cliente anonimo con RPC publica en lugar de admin client
   const { createClient } = await import("@supabase/supabase-js")
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -615,7 +615,7 @@ export async function getTrackingPhotoUrls(
 ): Promise<string[]> {
   if (!ticketId || !last4 || last4.length !== 4) return []
 
-  // Usar RPC pública en lugar de admin client para obtener datos de tracking
+  // Usar RPC publica en lugar de admin client para obtener datos de tracking
   const ssr = await createSsrClient()
   const { data: repair } = await ssr
     .rpc("get_tracking_info", {
@@ -844,7 +844,7 @@ export interface BitacoraRepair {
   anticipo: number
   status: "Recibido" | "Diagnostico" | "En Reparacion" | "Listo" | "Entregado" | "Cancelado" | "Sin Reparacion" | "Reingreso"
   createdAt: string
-  /** ISO; misma base que usa el dashboard para urgentes (7+ días sin movimiento). */
+  /** ISO; misma base que usa el dashboard para urgentes (7+ dias sin movimiento). */
   updatedAtRaw?: string | null
   tecnico?: string
   falla?: string | null
@@ -856,7 +856,7 @@ export interface BitacoraRepair {
 
 /** Full repair detail for the detail modal (includes pin, pattern, photos, deposit) */
 export interface RepairDetail extends Omit<BitacoraRepair, "status"> {
-  /** Estado guardado en el ticket; undefined cuando no hay estado en BD (no auto-seleccionar DIAGNÓSTICO) */
+  /** Estado guardado en el ticket; undefined cuando no hay estado en BD (no auto-seleccionar DIAGNoSTICO) */
   status?: BitacoraRepair["status"]
   pinContrasena?: string | null
   patronDesbloqueo?: string | null
@@ -877,13 +877,13 @@ export interface RepairDetail extends Omit<BitacoraRepair, "status"> {
   costoTotal?: number | null
   /** Saldo pendiente costo_total - anticipo (BD) */
   restante?: number | null
-  /** Quién abrió el ticket (sesión al crear); resuelto vía usuario_recepcion_id + miembros / taller_users. */
+  /** Quien abrio el ticket (sesion al crear); resuelto via usuario_recepcion_id + miembros / taller_users. */
   creadoPorNombre?: string | null
   /** Notas internas (solo taller) */
   notasInternas?: string | null
-  /** Checklist de ingreso (recepción) */
+  /** Checklist de ingreso (recepcion) */
   checklistIngreso?: ChecklistIngreso | null
-  /** Diagnóstico PRO (health check) */
+  /** Diagnostico PRO (health check) */
   checklistPro?: ChecklistProData | null
 }
 
@@ -955,7 +955,7 @@ export type RepairChangeHistoryRow = {
   usuario?: string | null
 }
 
-/** Fila de auditoría de cambio de estado (historial_reparacion + nombre de usuario). */
+/** Fila de auditoria de cambio de estado (historial_reparacion + nombre de usuario). */
 export interface HistorialReparacionAuditRow {
   id: string
   estado_anterior: string | null
@@ -1030,7 +1030,7 @@ async function enrichHistorialReparacionRows(
 export async function getRepairsByTallerId(
   page = 0,
   pageSize = 50,
-  /** Búsqueda por folio (ilike) — empujada a SQL para no depender de datos en memoria */
+  /** Busqueda por folio (ilike) — empujada a SQL para no depender de datos en memoria */
   search?: string,
   /** Filtro por estatus exacto ("Recibido", "En Reparacion", "Listo", "Entregado") — empujado a SQL */
   estatusFilter?: string
@@ -1041,7 +1041,7 @@ export async function getRepairsByTallerId(
   const from = page * pageSize
   const to = from + pageSize - 1
 
-  // PERF: count: "planned" usa estadísticas de Postgres en vez de COUNT(*) exacto.
+  // PERF: count: "planned" usa estadisticas de Postgres en vez de COUNT(*) exacto.
   // Evita el segundo round-trip a la BD que "exact" requiere (escaneo completo).
   let query = supabase
     .from("reparaciones")
@@ -1168,7 +1168,7 @@ export async function getRepairDetailPageData(repairId: string): Promise<{
 
   if (error || !r) {
     if (error?.code === "PGRST116") return { detail: null, changes: [], gastos: [], historialAudit, servicios: [], error: null }
-    console.warn("[getRepairDetailPageData] embed falló, usando fallback:", error?.message ?? error)
+    console.warn("[getRepairDetailPageData] embed fallo, usando fallback:", error?.message ?? error)
     const { getGastosTicket } = await import("@/lib/actions/gastos")
     const { getServiciosReparacion } = await import("@/lib/actions/servicios")
     const [d, h, g, s] = await Promise.all([
@@ -1276,7 +1276,7 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
 }
 
 /**
- * Actualiza el estatus, registra en historial_reparacion y en cambios_reparaciones (bitácora).
+ * Actualiza el estatus, registra en historial_reparacion y en cambios_reparaciones (bitacora).
  * Errores se registran en consola; no relanza excepciones al cliente.
  */
 export async function applyRepairStatusChange(input: {
@@ -1297,7 +1297,7 @@ export async function applyRepairStatusChange(input: {
       .single()
 
     if (rowErr || !rowBefore) {
-      return { success: false, error: "No se encontró la reparación." }
+      return { success: false, error: "No se encontro la reparacion." }
     }
 
     const normPrev = String(input.estadoAnterior ?? "").trim()
@@ -1310,7 +1310,7 @@ export async function applyRepairStatusChange(input: {
         return {
           success: false,
           error:
-            "⚠️ Acción Bloqueada: El taller requiere diagnóstico completo para iniciar reparación",
+            "⚠️ Accion Bloqueada: El taller requiere diagnostico completo para iniciar reparacion",
         }
       }
       if (ajustes.firma_required) {
@@ -1318,7 +1318,7 @@ export async function applyRepairStatusChange(input: {
         if (fp == null || String(fp).trim() === "") {
           return {
             success: false,
-            error: "⚠️ Acción Bloqueada: El taller requiere firma de ingreso antes de avanzar.",
+            error: "⚠️ Accion Bloqueada: El taller requiere firma de ingreso antes de avanzar.",
           }
         }
       }
@@ -1327,7 +1327,7 @@ export async function applyRepairStatusChange(input: {
         if (!Array.isArray(fotos) || fotos.length === 0) {
           return {
             success: false,
-            error: "⚠️ Acción Bloqueada: El taller requiere al menos una foto de evidencia.",
+            error: "⚠️ Accion Bloqueada: El taller requiere al menos una foto de evidencia.",
           }
         }
       }
@@ -1375,10 +1375,10 @@ export async function applyRepairStatusChange(input: {
         } catch (revertErr) {
           console.error("applyRepairStatusChange revert estatus:", revertErr)
         }
-        return { success: false, error: "No se pudo registrar el historial de auditoría." }
+        return { success: false, error: "No se pudo registrar el historial de auditoria." }
       }
     } catch (histErr) {
-      console.error("applyRepairStatusChange historial_reparacion (excepción):", histErr)
+      console.error("applyRepairStatusChange historial_reparacion (excepcion):", histErr)
       try {
         await supabase
           .from("reparaciones")
@@ -1388,7 +1388,7 @@ export async function applyRepairStatusChange(input: {
       } catch (revertErr) {
         console.error("applyRepairStatusChange revert estatus:", revertErr)
       }
-      return { success: false, error: "No se pudo registrar el historial de auditoría." }
+      return { success: false, error: "No se pudo registrar el historial de auditoria." }
     }
 
     try {
@@ -1425,7 +1425,7 @@ export async function updateRepair(repairId: string, updates: { presupuesto?: nu
     updateData.precio_estimado = updates.presupuesto
   }
   if (updates.estado !== undefined) {
-    // Estados críticos solo para propietarios; técnicos pueden cambiar estados operativos
+    // Estados criticos solo para propietarios; tecnicos pueden cambiar estados operativos
     const estadosCriticos = ["entregado", "cancelado", "no_reparable"]
     if (estadosCriticos.includes(updates.estado.toLowerCase()) && !isOwner) {
       return { success: false, error: "Solo el propietario puede cambiar a este estado." }
@@ -1441,15 +1441,15 @@ export async function updateRepair(repairId: string, updates: { presupuesto?: nu
 
   if (error) {
     console.error("Error updating repair:", error)
-    return { success: false, error: "No se pudo actualizar la reparación." }
+    return { success: false, error: "No se pudo actualizar la reparacion." }
   }
 
   return { success: true }
 }
 
 /**
- * Actualiza el presupuesto (precio_estimado) de una reparación y registra
- * el cambio en cambios_reparaciones para auditoría.
+ * Actualiza el presupuesto (precio_estimado) de una reparacion y registra
+ * el cambio en cambios_reparaciones para auditoria.
  */
 export async function actualizarPresupuestoReparacion(
   repairId: string,
@@ -1469,7 +1469,7 @@ export async function actualizarPresupuestoReparacion(
 
   if (fetchErr || !rec) {
     console.error("[actualizarPresupuestoReparacion] fetch error:", fetchErr)
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const presupuestoAnterior = Number(rec.precio_estimado ?? 0)
@@ -1486,7 +1486,7 @@ export async function actualizarPresupuestoReparacion(
     return { success: false, error: "No se pudo actualizar el presupuesto." }
   }
 
-  // 3. Registrar en bitácora usando logRepairChange (patrón probado)
+  // 3. Registrar en bitacora usando logRepairChange (patron probado)
   const razon = descripcion?.trim() || "Presupuesto actualizado"
   const nota = `${razon} — $${presupuestoAnterior.toLocaleString("es-MX")} → $${nuevoPresupuesto.toLocaleString("es-MX")}`
   try {
@@ -1498,11 +1498,11 @@ export async function actualizarPresupuestoReparacion(
       nuevoPresupuesto.toString()
     )
     if (!logRes.success) {
-      return { success: true, nuevoPresupuesto, logError: "El presupuesto se guardó pero no se registró en el historial (logRepairChange falló)." }
+      return { success: true, nuevoPresupuesto, logError: "El presupuesto se guardo pero no se registro en el historial (logRepairChange fallo)." }
     }
   } catch (logErr) {
-    console.error("[actualizarPresupuestoReparacion] logRepairChange excepción:", logErr)
-    return { success: true, nuevoPresupuesto, logError: "El presupuesto se guardó pero no se registró en el historial." }
+    console.error("[actualizarPresupuestoReparacion] logRepairChange excepcion:", logErr)
+    return { success: true, nuevoPresupuesto, logError: "El presupuesto se guardo pero no se registro en el historial." }
   }
 
   return { success: true, nuevoPresupuesto }
@@ -1527,9 +1527,9 @@ export async function deleteRepair(repairId: string): Promise<{ success: boolean
 }
 
 /**
- * Personal asignable a reparaciones: dueño del taller (siempre primero), miembros activos
- * de `miembros_taller`, y técnicos activos de `tecnicos`. Sin duplicados por nombre.
- * La lista no queda vacía: hay al menos una fila de respaldo.
+ * Personal asignable a reparaciones: dueno del taller (siempre primero), miembros activos
+ * de `miembros_taller`, y tecnicos activos de `tecnicos`. Sin duplicados por nombre.
+ * La lista no queda vacia: hay al menos una fila de respaldo.
  */
 export async function getAssignableStaffForRepairs(): Promise<{
   staff: { id: string; nombre: string }[]
@@ -1599,7 +1599,7 @@ export async function getAssignableStaffForRepairs(): Promise<{
   return { staff, error: null }
 }
 
-/** Alias de `getAssignableStaffForRepairs` para código que espera `technicians`. */
+/** Alias de `getAssignableStaffForRepairs` para codigo que espera `technicians`. */
 export async function getAllActiveTechnicians() {
   const { staff, error } = await getAssignableStaffForRepairs()
   if (error) return { technicians: [], error }
@@ -1663,7 +1663,7 @@ export async function getRepairChangeHistory(repairId: string) {
     .single()
 
   if (!repair) {
-    return { changes: [], error: "Reparación no encontrada." }
+    return { changes: [], error: "Reparacion no encontrada." }
   }
 
   const { data, error } = await supabase
@@ -1698,7 +1698,7 @@ export async function updateRepairWithTechnician(
     .single()
 
   if (!currentRepair) {
-    return { success: false, error: "Reparación no encontrada." }
+    return { success: false, error: "Reparacion no encontrada." }
   }
 
   const technicoAnterior = (currentRepair?.tecnico as string) || "No asignado"
@@ -1712,14 +1712,14 @@ export async function updateRepairWithTechnician(
 
   if (updateError) {
     console.error("Error updating technician:", updateError)
-    return { success: false, error: "No se pudo asignar el técnico." }
+    return { success: false, error: "No se pudo asignar el tecnico." }
   }
 
   // Log the change
   await logRepairChange(
     repairId,
     "tecnico",
-    `Técnico reasignado: ${technicoAnterior} → ${tecnicoNombre}`,
+    `Tecnico reasignado: ${technicoAnterior} → ${tecnicoNombre}`,
     technicoAnterior,
     tecnicoNombre
   )
@@ -1734,11 +1734,11 @@ export async function getRepairForTracking(
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
     if (!repairId) {
-      return { success: false, error: "ID de ticket inválido" }
+      return { success: false, error: "ID de ticket invalido" }
     }
 
     if (phoneLastDigits.length !== 4 || !/^\d+$/.test(phoneLastDigits)) {
-      return { success: false, error: "Ingresa los últimos 4 dígitos válidos" }
+      return { success: false, error: "Ingresa los ultimos 4 digitos validos" }
     }
 
     const supabase = await createClient()
@@ -1772,7 +1772,7 @@ export async function getRepairForTracking(
     if (!rawPhone) {
       return {
         success: false,
-        error: "No hay un teléfono asociado a este ticket. Contacta a tu taller.",
+        error: "No hay un telefono asociado a este ticket. Contacta a tu taller.",
       }
     }
 
@@ -1782,7 +1782,7 @@ export async function getRepairForTracking(
     if (last4 !== phoneLastDigits) {
       return {
         success: false,
-        error: "Los dígitos ingresados no coinciden",
+        error: "Los digitos ingresados no coinciden",
       }
     }
 
@@ -1807,13 +1807,13 @@ export async function registrarAbono(input: {
   liquidado?: boolean
   movimientoCajaId?: string | null
 }> {
-  // Validación de entrada
-  if (!input.repairId) return { success: false, error: "ID de reparación requerido." }
+  // Validacion de entrada
+  if (!input.repairId) return { success: false, error: "ID de reparacion requerido." }
   if (!Number.isFinite(input.monto) || input.monto <= 0) {
     return { success: false, error: "El monto debe ser mayor a cero." }
   }
   if (input.monto > 1_000_000) {
-    return { success: false, error: "El monto excede el límite permitido." }
+    return { success: false, error: "El monto excede el limite permitido." }
   }
 
   const supabase = await createClient()
@@ -1828,7 +1828,7 @@ export async function registrarAbono(input: {
     .single()
 
   if (fetchError || !row) {
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const currentAnticipo = Number((row as Record<string, unknown>).anticipo ?? 0)
@@ -1840,7 +1840,7 @@ export async function registrarAbono(input: {
     String((row as Record<string, unknown>).modelo ?? ""),
   ].filter(Boolean).join(" ").trim()
 
-  // No permitir abonar más del saldo pendiente (evita overpayment accidental)
+  // No permitir abonar mas del saldo pendiente (evita overpayment accidental)
   if (presupuesto > 0 && currentAnticipo + input.monto > presupuesto * 1.1) {
     return { success: false, error: `El abono excede el saldo pendiente de $${(presupuesto - currentAnticipo).toLocaleString("es-MX")}.` }
   }
@@ -1872,11 +1872,11 @@ export async function registrarAbono(input: {
   })
 
   if (rpcError) {
-    console.error("[registrarAbono] RPC error — código:", rpcError.code, "— mensaje:", rpcError.message, "— detalle:", rpcError.details)
+    console.error("[registrarAbono] RPC error — codigo:", rpcError.code, "— mensaje:", rpcError.message, "— detalle:", rpcError.details)
     // Distinguish between "function not found" (migration not applied) and other DB errors
     const esFuncionNoExiste = rpcError.code === "PGRST202" || rpcError.message?.includes("Could not find the function")
     if (esFuncionNoExiste) {
-      return { success: false, error: "Función de base de datos no encontrada. Contacta al soporte técnico (migración pendiente)." }
+      return { success: false, error: "Funcion de base de datos no encontrada. Contacta al soporte tecnico (migracion pendiente)." }
     }
     return { success: false, error: `Error al registrar el abono: ${rpcError.message ?? "error desconocido"}.` }
   }
@@ -1899,7 +1899,7 @@ export async function registrarAbono(input: {
   // something unexpected happened — surface it rather than silently succeeding.
   if (!rpc.movimiento_id) {
     console.error("[registrarAbono] RPC ok=true but movimiento_id is missing — possible INSERT failure", rpc)
-    return { success: false, error: "El abono no quedó registrado en caja. Intenta de nuevo." }
+    return { success: false, error: "El abono no quedo registrado en caja. Intenta de nuevo." }
   }
 
   const nuevoAnticipo = rpc.nuevo_anticipo ?? currentAnticipo + input.monto
@@ -1934,7 +1934,7 @@ export async function reactivarReingreso(input: {
   motivo: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!input.repairId) return { success: false, error: "ID de reparación requerido." }
+    if (!input.repairId) return { success: false, error: "ID de reparacion requerido." }
     const motivo = input.motivo.trim()
     if (!motivo) return { success: false, error: "El motivo del reingreso es obligatorio." }
     if (motivo.length > 500) return { success: false, error: "El motivo no puede superar 500 caracteres." }
@@ -1954,7 +1954,7 @@ export async function reactivarReingreso(input: {
       const detail = fetchErr?.message?.trim()
       return {
         success: false,
-        error: detail ? `No se encontró la reparación o no tienes acceso. (${detail})` : "No se encontró la reparación.",
+        error: detail ? `No se encontro la reparacion o no tienes acceso. (${detail})` : "No se encontro la reparacion.",
       }
     }
 
@@ -1978,7 +1978,7 @@ export async function reactivarReingreso(input: {
       console.error("[reactivarReingreso] update error:", updateErr)
       const hint =
         updateErr.code === "23514"
-          ? " Restricción CHECK en estatus — valida que «Reingreso» esté permitido en la columna."
+          ? " Restriccion CHECK en estatus — valida que «Reingreso» este permitido en la columna."
           : ""
       return {
         success: false,
@@ -2043,8 +2043,8 @@ function notaEntregaLiquidada(actor: string, extra?: string | null): string {
 }
 
 /**
- * Marca la reparación como Entregado: opcional venta en PDV/caja por el saldo pendiente
- * y registro en historial con auditoría de liquidación.
+ * Marca la reparacion como Entregado: opcional venta en PDV/caja por el saldo pendiente
+ * y registro en historial con auditoria de liquidacion.
  */
 export async function confirmarEntregaConLiquidacion(input: {
   repairId: string
@@ -2068,12 +2068,12 @@ export async function confirmarEntregaConLiquidacion(input: {
     .single()
 
   if (fetchErr || !row) {
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const rec = row as Record<string, unknown>
   if (String(rec.estatus) === "Entregado") {
-    return { success: false, error: "La orden ya está marcada como entregada." }
+    return { success: false, error: "La orden ya esta marcada como entregada." }
   }
 
   const anticipo = Number(rec.anticipo ?? 0)
@@ -2122,13 +2122,13 @@ export async function confirmarEntregaConLiquidacion(input: {
 
     if (liqErr) {
       console.error("[confirmarEntregaConLiquidacion] RPC error:", liqErr.code, liqErr.message)
-      return { success: false, error: `No se pudo registrar la liquidación: ${liqErr.message ?? "error desconocido"}.` }
+      return { success: false, error: `No se pudo registrar la liquidacion: ${liqErr.message ?? "error desconocido"}.` }
     }
 
     const liq = liqData as { ok: boolean; error?: string; movimiento_id?: string }
     if (!liq.ok) {
       console.error("[confirmarEntregaConLiquidacion] RPC not-ok:", liq.error)
-      return { success: false, error: liq.error ?? "Error al liquidar la reparación." }
+      return { success: false, error: liq.error ?? "Error al liquidar la reparacion." }
     }
   } else {
     // Fully paid — just mark as Entregado, no new cash movement needed
@@ -2155,7 +2155,7 @@ export async function confirmarEntregaConLiquidacion(input: {
 }
 
 /**
- * Ajusta el costo (p. ej. solo revisión o $0) y entrega; cobra saldo si aplica.
+ * Ajusta el costo (p. ej. solo revision o $0) y entrega; cobra saldo si aplica.
  * Registra reembolso del excedente en movimientos_caja (efectivo/transferencia).
  */
 export async function entregarSinReparacionConAjuste(input: {
@@ -2171,7 +2171,7 @@ export async function entregarSinReparacionConAjuste(input: {
   notaTecnica?: string | null
 }): Promise<{ success: boolean; error?: string; warning?: string }> {
   if (!Number.isFinite(input.costoRevision) || input.costoRevision < 0) {
-    return { success: false, error: "El costo de revisión no es válido." }
+    return { success: false, error: "El costo de revision no es valido." }
   }
 
   const supabase = await createClient()
@@ -2186,12 +2186,12 @@ export async function entregarSinReparacionConAjuste(input: {
     .single()
 
   if (fetchErr || !row) {
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const rec = row as Record<string, unknown>
   if (String(rec.estatus) === "Entregado") {
-    return { success: false, error: "La orden ya está marcada como entregada." }
+    return { success: false, error: "La orden ya esta marcada como entregada." }
   }
 
   const curAnt = Number(rec.anticipo ?? 0)
@@ -2223,7 +2223,7 @@ export async function entregarSinReparacionConAjuste(input: {
 
     // Validar que coincida
     if (Math.round((montoEf + montoTr) * 100) / 100 !== surplusRefund) {
-      return { success: false, error: `El monto de devolución debe ser exactamente ${fmtMoney(surplusRefund)}.` }
+      return { success: false, error: `El monto de devolucion debe ser exactamente ${fmtMoney(surplusRefund)}.` }
     }
 
     let cajaId: string | null = null
@@ -2282,7 +2282,7 @@ export async function entregarSinReparacionConAjuste(input: {
     .eq("taller_id", tallerId)
     .single()
 
-  if (!row2) return { success: false, error: "No se pudo releer la reparación." }
+  if (!row2) return { success: false, error: "No se pudo releer la reparacion." }
 
   const r2 = row2 as Record<string, unknown>
   const anticipo2 = Number(r2.anticipo ?? 0)
@@ -2325,7 +2325,7 @@ export async function entregarSinReparacionConAjuste(input: {
       cambio: 0,
       items: [
         {
-          descripcion: `Revisión / sin reparación — ${folio}`,
+          descripcion: `Revision / sin reparacion — ${folio}`,
           cantidad: 1,
           precio_unitario: saldo,
           costo_unitario: 0,
@@ -2340,8 +2340,8 @@ export async function entregarSinReparacionConAjuste(input: {
 
     const nuevoAnticipo = roundMoney(anticipo2 + saldo)
     const notaSin2 = input.notaTecnica?.trim()
-      ? `Entrega sin reparación (${input.notaTecnica.trim()})`
-      : "Entrega sin reparación"
+      ? `Entrega sin reparacion (${input.notaTecnica.trim()})`
+      : "Entrega sin reparacion"
     const { error: rpcErr } = await supabase.rpc("finalizar_entrega_reparacion", {
       p_repair_id: input.repairId,
       p_taller_id: tallerId,
@@ -2356,8 +2356,8 @@ export async function entregarSinReparacionConAjuste(input: {
     }
   } else {
     const notaSin2 = input.notaTecnica?.trim()
-      ? `Entrega sin reparación (${input.notaTecnica.trim()})`
-      : "Entrega sin reparación"
+      ? `Entrega sin reparacion (${input.notaTecnica.trim()})`
+      : "Entrega sin reparacion"
     const { error: rpcErr } = await supabase.rpc("finalizar_entrega_reparacion", {
       p_repair_id: input.repairId,
       p_taller_id: tallerId,
@@ -2425,7 +2425,7 @@ export async function updateRepairFull(
     .single()
 
   if (fetchError || !currentRow) {
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const rec = currentRow as Record<string, unknown>
@@ -2521,7 +2521,7 @@ export async function updateRepairFull(
   return { success: true }
 }
 
-/** Persiste solo el JSON de diagnóstico PRO (health check) en el ticket. */
+/** Persiste solo el JSON de diagnostico PRO (health check) en el ticket. */
 export async function updateRepairChecklistPro(
   repairId: string,
   data: ChecklistProData,
@@ -2540,12 +2540,12 @@ export async function updateRepairChecklistPro(
     return { success: false, error: `Error Supabase: ${error.message} (${error.code})` }
   }
 
-  await logRepairChange(repairId, "edicion", "Diagnóstico PRO (health check) actualizado")
+  await logRepairChange(repairId, "edicion", "Diagnostico PRO (health check) actualizado")
 
   return { success: true }
 }
 
-/** Actualiza observaciones estéticas y/o notas internas sin tocar el resto del ticket. */
+/** Actualiza observaciones esteticas y/o notas internas sin tocar el resto del ticket. */
 export async function updateRepairQuickNotes(
   repairId: string,
   data: { observacionesEsteticas?: string; notasInternas?: string }
@@ -2562,7 +2562,7 @@ export async function updateRepairQuickNotes(
     .single()
 
   if (fetchErr || !row) {
-    return { success: false, error: "No se encontró la reparación." }
+    return { success: false, error: "No se encontro la reparacion." }
   }
 
   const current = parseChecklistIngreso(row.checklist_ingreso) ?? {
@@ -2600,14 +2600,14 @@ export async function updateRepairQuickNotes(
   }
 
   const logMsg = []
-  if (data.observacionesEsteticas !== undefined) logMsg.push("observaciones estéticas")
+  if (data.observacionesEsteticas !== undefined) logMsg.push("observaciones esteticas")
   if (data.notasInternas !== undefined) logMsg.push("notas internas")
   await logRepairChange(repairId, "edicion", logMsg.join(" + ") + " actualizadas")
 
   return { success: true }
 }
 
-// ─── Fetch reparación por folio (para rutas de impresión) ─────────────────────
+// ─── Fetch reparacion por folio (para rutas de impresion) ─────────────────────
 
 export interface RepairPrintData {
   id: string
@@ -2640,11 +2640,11 @@ export async function getRepairByFolio(
 ): Promise<{ data: RepairPrintData | null; error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
 
-  // Normalizar folio: trim + uppercase para evitar fallos por espacios o capitalización
+  // Normalizar folio: trim + uppercase para evitar fallos por espacios o capitalizacion
   const folioNorm = folio.trim().toUpperCase()
 
   // select("*") evita el error 42703 por nombres de columna incorrectos.
-  // Es el mismo patrón que usa getRepairDetail (confirmado funcional).
+  // Es el mismo patron que usa getRepairDetail (confirmado funcional).
   const { data: rep, error } = await supabase
     .from("reparaciones")
     .select("*, clientes ( nombre, telefono )")
@@ -2655,7 +2655,7 @@ export async function getRepairByFolio(
   if (error || !rep) {
     return {
       data: null,
-      error: `No se encontró la reparación (folio: ${folioNorm}, taller: ${tallerId ?? "none"}, err: ${error?.code ?? "none"}).`,
+      error: `No se encontro la reparacion (folio: ${folioNorm}, taller: ${tallerId ?? "none"}, err: ${error?.code ?? "none"}).`,
     }
   }
 
@@ -2746,7 +2746,7 @@ export async function getRepairLabelData(
     .single()
 
   if (error || !rep) {
-    return { data: null, error: "Reparación no encontrada." }
+    return { data: null, error: "Reparacion no encontrada." }
   }
 
   const r = rep as Record<string, unknown>
@@ -2784,7 +2784,7 @@ export async function getCancelacionSummary(repairId: string): Promise<{
   try {
     const supabase = await createClient()
     const tallerId = await getCurrentTallerId()
-    if (!tallerId) return { total: 0, movements: [], error: "Sin sesión" }
+    if (!tallerId) return { total: 0, movements: [], error: "Sin sesion" }
 
     const { data, error } = await supabase
       .from("movimientos_caja")
@@ -2818,7 +2818,7 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
   try {
     const supabase = await createClient()
     const tallerId = await getCurrentTallerId()
-    if (!tallerId) return { success: false, error: "Sin sesión activa." }
+    if (!tallerId) return { success: false, error: "Sin sesion activa." }
 
     // 1. Fetch current repair — validate ownership and guard terminal states
     const { data: repair, error: repairErr } = await supabase
@@ -2829,12 +2829,12 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
       .single()
 
     if (repairErr || !repair) {
-      return { success: false, error: "Reparación no encontrada." }
+      return { success: false, error: "Reparacion no encontrada." }
     }
 
     const TERMINAL = ["Cancelado", "Sin Reparacion", "Entregado"]
     if (TERMINAL.includes(repair.estatus)) {
-      return { success: false, error: `No se puede cancelar una reparación en estado "${repair.estatus}".` }
+      return { success: false, error: `No se puede cancelar una reparacion en estado "${repair.estatus}".` }
     }
 
     // 2. Mirror payment movements as devolucion_cancelacion
@@ -2852,7 +2852,7 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
         metodo_pago: m.metodo_pago,
         referencia_id: repairId,
         caja_id: cajaGuard.caja.id,
-        descripcion: `Devolución por cancelación de reparación #${repair.folio}`,
+        descripcion: `Devolucion por cancelacion de reparacion #${repair.folio}`,
       }))
 
       const { error: reversalErr } = await supabase.from("movimientos_caja").insert(reversals)
@@ -2892,13 +2892,13 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
       repairId,
       estadoAnterior: repair.estatus,
       estadoNuevo: "Cancelado",
-      notaTecnica: "Reparación cancelada con devolución automática.",
+      notaTecnica: "Reparacion cancelada con devolucion automatica.",
     })
 
     return result
   } catch (e) {
     console.error("[cancelarReparacion] fatal:", e)
-    return { success: false, error: "Error inesperado al cancelar la reparación." }
+    return { success: false, error: "Error inesperado al cancelar la reparacion." }
   }
 }
 

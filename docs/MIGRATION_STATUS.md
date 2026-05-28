@@ -239,3 +239,75 @@
 ### Validación técnica
 - `pnpm build` ✅
 - `/dashboard` queda tolerante a cero datos y a fallas transitorias de lectura.
+
+---
+
+## Checkpoint Pausa - 2026-05-27
+
+### Objetivo actual del MVP (activo)
+- Dejar estable y usable:
+  - Ventas (POS)
+  - Reparaciones (incluye ver detalle y editar folio)
+  - Anticipo / movimientos ligados a caja
+  - Historial de ventas
+- Mantener desactivado temporalmente todo modulo/funcion PRO para evitar crash y acelerar salida MVP.
+
+### Reglas de producto vigentes (importante)
+- Todo lo PRO queda desactivado temporalmente.
+- Modulos PRO confirmados:
+  - Compras
+  - Reportes
+  - Servicios
+  - Bitacora de Visitas
+  - Chat Taller
+  - Control de Utilidad
+  - Mercado
+- Tambien quedaron desactivados como PRO:
+  - Barra superior de monitoreo de caja/online/latencia
+  - Integraciones que dependan de Supabase SSR o Resend en runtime del dashboard MVP
+
+### Estado de migracion (resumen corto)
+- Auth base y registro: Prisma/Neon operativo.
+- Clientes: Prisma/Neon operativo.
+- Reparaciones MVP y tracking con R2: operativo.
+- Configuracion MVP + branding: operativo.
+- Dashboard con tolerancia de fallos runtime: aplicado.
+- Ventas: en migracion activa con guardas de caja y estabilizacion incremental.
+
+### Cambios recientes de caja (ultimo ajuste aplicado)
+- Se reforzo la regla de "una sola caja abierta":
+  - `lib/actions/ventas-prisma.ts` -> `abrirCaja()` ahora valida si ya existe caja abierta y evita duplicado.
+- En `app/dashboard/ventas/page.tsx`:
+  - `Mi Arqueo` y `Corte` dependen de `status === "open"` del `CajaContext`.
+  - El boton `Abrir Caja` se muestra cuando `status !== "open"`.
+- Build local verificado en verde despues de este ajuste.
+
+### Pendientes prioritarios al retomar (orden recomendado)
+1. Confirmar en produccion (Vercel) que deploy usa el commit mas reciente antes de QA funcional.
+2. Verificar esquema Neon real para modulo ventas (tablas base usadas por POS):
+   - `caja`
+   - `movimientos_caja`
+   - `ventas`
+   - `detalle_ventas`
+   - `productos`
+3. Cerrar huecos de fallback SQL en acciones que aun pueden lanzar `relation does not exist`.
+4. Completar QA de flujo caja:
+   - abrir caja
+   - arqueo
+   - cierre de caja con monto 0 (permitido)
+   - bloqueo correcto de operaciones financieras cuando no hay caja abierta
+5. Normalizar textos con caracteres corruptos en UI (encoding) y mantener copy sin acentos segun criterio actual del proyecto.
+6. Reparaciones:
+   - asegurar que diagnostico rapido se muestre correctamente en detalle (no "Sin Registrar" si fue capturado)
+   - asegurar historial de actividad inicial (creacion de orden) visible.
+7. Ventas:
+   - resolver por completo errores de inventario al crear producto cuando entorno no tiene tabla `productos`.
+
+### Riesgos conocidos
+- Diferencias entre entorno local y Neon/Vercel (esquema parcial) provocan errores `42P01 relation does not exist`.
+- Persisten componentes legacy con dependencias historicas de Supabase/Resend fuera de scope MVP.
+- Hay mucho codigo modificado en paralelo; conviene seguir con commits pequenos por area (caja, ventas, reparaciones, UI-copy).
+
+### Nota de continuidad (handoff)
+- Esta pausa se deja con enfoque en estabilidad MVP web.
+- Al volver, priorizar barridos por modulo con validacion funcional en Vercel despues de cada commit.

@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 
@@ -55,7 +55,7 @@ export interface ReportesData {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const MESES_CORTO    = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"]
-const ESTATUS_ACTIVOS = ["Recibido", "Diagnóstico", "En Reparación", "Listo"]
+const ESTATUS_ACTIVOS = ["Recibido", "Diagnostico", "En Reparacion", "Listo"]
 const FALLA_SKIP     = new Set(["sin asignar", "no aplica", "n/a", "ninguna", "pendiente", ""])
 
 // ─── Action ───────────────────────────────────────────────────────────────────
@@ -70,12 +70,12 @@ export async function getReportesData(
   const desdeTs = `${desde}T00:00:00`
   const hastaTs = `${hasta}T23:59:59.999`
 
-  // Periodo anterior de igual duración (para crecimiento)
+  // Periodo anterior de igual duracion (para crecimiento)
   const durMs     = new Date(`${hasta}T23:59:59`).getTime() - new Date(`${desde}T00:00:00`).getTime()
   const prevHasta = new Date(new Date(`${desde}T00:00:00`).getTime() - 1).toISOString()
   const prevDesde = new Date(new Date(`${desde}T00:00:00`).getTime() - durMs - 1).toISOString()
 
-  // Inicio de los últimos 6 meses (para gráfico)
+  // Inicio de los ultimos 6 meses (para grafico)
   const seisMesesAtras = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString()
 
   // ── 6 queries en paralelo ─────────────────────────────────────────────────
@@ -118,7 +118,7 @@ export async function getReportesData(
       .lte("created_at", hastaTs)
       .neq("estado", "anulado"),
 
-    // Ventas últimos 6 meses para gráfico
+    // Ventas ultimos 6 meses para grafico
     supabase
       .from("ventas")
       .select("total, created_at")
@@ -135,7 +135,7 @@ export async function getReportesData(
       .lte("fecha", hastaTs)
       .in("tipo", ["anticipo_reparacion", "liquidacion_reparacion"]),
 
-    // Ingresos reales por reparaciones últimos 6 meses (para gráfico)
+    // Ingresos reales por reparaciones ultimos 6 meses (para grafico)
     supabase
       .from("movimientos_caja")
       .select("monto, fecha")
@@ -172,7 +172,7 @@ export async function getReportesData(
   const noCancel        = ticketsTotales - canceladas
   const tasaCierre      = noCancel > 0 ? Math.round((ticketsCerrados / noCancel) * 100) : 0
 
-  // Ingresos reales por reparaciones = dinero que entró a caja (anticipos + liquidaciones)
+  // Ingresos reales por reparaciones = dinero que entro a caja (anticipos + liquidaciones)
   const ingresosRep     = movCaja.reduce((s, m) => s + Number(m.monto ?? 0), 0)
   const ingresosPos     = ventas.reduce((s, v) => s + Number(v.total ?? 0), 0)
   const ingresosTotales = ingresosRep + ingresosPos
@@ -225,7 +225,7 @@ export async function getReportesData(
     }))
     .filter(s => s.count > 0)
 
-  // ── Ingresos últimos 6 meses (gráfico) ───────────────────────────────────
+  // ── Ingresos ultimos 6 meses (grafico) ───────────────────────────────────
 
   const ingresosMensuales: MesIngresos[] = []
   for (let i = 5; i >= 0; i--) {
@@ -246,7 +246,7 @@ export async function getReportesData(
     ingresosMensuales.push({ label: MESES_CORTO[from.getMonth()], pos, reparaciones: rep, total: pos + rep })
   }
 
-  // ── Métodos de pago ───────────────────────────────────────────────────────
+  // ── Metodos de pago ───────────────────────────────────────────────────────
 
   const metodosMap = new Map<string, { total: number; count: number }>()
   for (const v of ventas) {
@@ -262,7 +262,7 @@ export async function getReportesData(
       porcentaje: Math.round((total / totalVentasBase) * 100),
     }))
 
-  // ── Fallas más frecuentes — columna "falla" ───────────────────────────────
+  // ── Fallas mas frecuentes — columna "falla" ───────────────────────────────
 
   const fallaMap = new Map<string, number>()
   for (const r of reps) {
@@ -276,10 +276,10 @@ export async function getReportesData(
     .slice(0, 5)
     .map(([falla, count]) => ({ falla, count }))
 
-  // ── Técnicos — columna "tecnico" (string nombre) ──────────────────────────
+  // ── Tecnicos — columna "tecnico" (string nombre) ──────────────────────────
   // Usamos TODAS las reparaciones del periodo (no solo entregadas) para mostrar
-  // actividad real del técnico. Si no hay entregas en el periodo, al menos se ve
-  // quién está trabajando en los tickets activos.
+  // actividad real del tecnico. Si no hay entregas en el periodo, al menos se ve
+  // quien esta trabajando en los tickets activos.
 
   const tecMap = new Map<string, number>()
   for (const r of reps) {

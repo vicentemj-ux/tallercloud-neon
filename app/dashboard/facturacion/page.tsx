@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
@@ -13,7 +13,7 @@ import { CalendarCheck2, Check, RefreshCw, Sparkles } from "lucide-react"
 const PLAN_BASE = {
   id: "base",
   name: "PLAN CORE",
-  tagline: "Digitalización esencial",
+  tagline: "Digitalizacion esencial",
   price: 189,
   bullets: ["Reparaciones ilimitadas", "Base de clientes", "Inventario"],
 } as const
@@ -21,12 +21,12 @@ const PLAN_BASE = {
 const PLAN_ORO = {
   id: "oro",
   name: "PLAN PRO",
-  tagline: "Operación blindada",
+  tagline: "Operacion blindada",
   price: 299,
   bullets: [
     "Todo lo de PLAN CORE",
     "Firma digital QR",
-    "Evidencia fotográfica",
+    "Evidencia fotografica",
     "Health Check PRO",
   ],
 } as const
@@ -38,14 +38,14 @@ function commercialPlanBadgeLabel(precioMensual: number | null, isPro: boolean):
   return "PLAN ACTIVO"
 }
 
-/** Ancho de referencia para la barra bajo el header (días restantes / ciclo). */
+/** Ancho de referencia para la barra bajo el header (dias restantes / ciclo). */
 const SUBSCRIPTION_CYCLE_DAYS = 30
 
 const FEATURE_PARAM_LABELS: Record<string, string> = {
   firma: "Firma digital",
   "firma-digital": "Firma digital",
-  fotos: "Evidencia fotográfica",
-  evidencia: "Evidencia fotográfica",
+  fotos: "Evidencia fotografica",
+  evidencia: "Evidencia fotografica",
   health: "Health Check PRO",
   "health-check": "Health Check PRO",
   checklist: "Health Check PRO",
@@ -125,7 +125,7 @@ function FacturacionContent() {
     if (ctx.planTipo === "prueba") {
       return {
         big: String(ctx.diasRestantes),
-        caption: "días restantes",
+        caption: "dias restantes",
         showNumber: true,
       }
     }
@@ -139,14 +139,14 @@ function FacturacionContent() {
       }
       return {
         big: String(ctx.diasRestantes),
-        caption: "días restantes",
+        caption: "dias restantes",
         showNumber: true,
       }
     }
     return { big: "—", caption: "", showNumber: false }
   }, [ctx])
 
-  /** Días para barra de progreso (ciclo 30 días); null si no aplica. */
+  /** Dias para barra de progreso (ciclo 30 dias); null si no aplica. */
   const daysForProgress = useMemo(() => {
     if (!ctx) return null
     if (ctx.planTipo === "prueba") return ctx.diasRestantes
@@ -196,7 +196,7 @@ function FacturacionContent() {
                   <CalendarCheck2 className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" aria-hidden />
                 </div>
                 <h1 className="text-2xl font-black italic leading-none tracking-tight text-slate-900 sm:text-3xl lg:text-[2rem]">
-                  MI SUSCRIPCIÓN
+                  MI SUSCRIPCIoN
                 </h1>
               </div>
 
@@ -239,7 +239,7 @@ function FacturacionContent() {
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(progressPercent)}
-                  aria-label={`Tiempo restante respecto a un ciclo de ${SUBSCRIPTION_CYCLE_DAYS} días`}
+                  aria-label={`Tiempo restante respecto a un ciclo de ${SUBSCRIPTION_CYCLE_DAYS} dias`}
                 >
                   <div
                     className={
@@ -271,7 +271,7 @@ function FacturacionContent() {
         ) : null}
 
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-3">
-          {/* Plan Base — fondo sólido */}
+          {/* Plan Base — fondo solido */}
           <Card className="gap-0 overflow-hidden border border-slate-300/90 bg-slate-200/90 py-0 shadow-md">
             <CardHeader className="space-y-1 px-3 pb-1.5 pt-2.5 sm:px-4 sm:pt-3">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -279,17 +279,17 @@ function FacturacionContent() {
                   variant="outline"
                   className="border-blue-600/40 bg-blue-600 text-[9px] font-bold uppercase tracking-wider text-white"
                 >
-                  Empieza aquí
+                  Empieza aqui
                 </Badge>
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-                  Digitalización Esencial
+                  Digitalizacion Esencial
                 </span>
               </div>
               <CardTitle className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
                 {PLAN_BASE.name}
               </CardTitle>
               <p className="text-[11px] leading-snug text-slate-700 sm:text-xs">
-                Operación diaria clara: tickets, clientes e inventario sin fricción.
+                Operacion diaria clara: tickets, clientes e inventario sin friccion.
               </p>
               <p className="pt-0.5 text-4xl font-black tabular-nums tracking-tight text-slate-900 sm:text-5xl">
                 ${PLAN_BASE.price}
@@ -339,8 +339,8 @@ function FacturacionContent() {
                 {PLAN_ORO.name}
               </CardTitle>
               <p className="text-[11px] font-medium leading-snug text-slate-800 sm:text-xs">
-                Todo lo de PLAN CORE, más herramientas que elevan la confianza del cliente y blindan tu
-                operación.
+                Todo lo de PLAN CORE, mas herramientas que elevan la confianza del cliente y blindan tu
+                operacion.
               </p>
               <p className="pt-0.5 text-4xl font-black tabular-nums tracking-tight text-amber-950 sm:text-5xl">
                 ${PLAN_ORO.price}
@@ -376,7 +376,7 @@ function FacturacionContent() {
         </div>
 
         <p className="mt-2 text-center text-[11px] text-slate-500">
-          ¿Dudas sobre tu suscripción?{" "}
+          ¿Dudas sobre tu suscripcion?{" "}
           <Link
             href={buildWhatsAppSendUrl(
               TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS,
@@ -386,7 +386,7 @@ function FacturacionContent() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Escríbenos por WhatsApp
+            Escribenos por WhatsApp
           </Link>
           .
         </p>

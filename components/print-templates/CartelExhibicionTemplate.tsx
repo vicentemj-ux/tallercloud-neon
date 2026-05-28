@@ -1,8 +1,8 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
-/** Azul institucional y grises (impresión); datos del taller vía props. */
+/** Azul institucional y grises (impresion); datos del taller via props. */
 const BLUE = "#185FA5"
 const SLATE_50 = "#f8fafc"
 const SLATE_200 = "#e2e8f0"
@@ -12,18 +12,18 @@ const SLATE_800 = "#1e293b"
 export interface CartelExhibicionTemplateProps {
   /** Nombre comercial del producto */
   nombreProducto: string
-  /** Viñetas (categoría, color, bullets de descripción, etc.) */
+  /** Vinetas (categoria, color, bullets de descripcion, etc.) */
   features: string[]
   /** Precio de contado ya formateado (MXN) */
   precioContadoFormatted: string
-  /** Nombre del negocio (configuración del taller) */
+  /** Nombre del negocio (configuracion del taller) */
   businessName: string
   /** Logo del taller (URL absoluta o de Supabase) */
   logoUrl?: string | null
 }
 
 /**
- * Cartel tipo postal 4" × 6" (vertical) para exhibición en mostrador.
+ * Cartel tipo postal 4" × 6" (vertical) para exhibicion en mostrador.
  * Solo estilos inline: colores literales HEX / RGBA (sin Tailwind, sin lab/oklch) para captura con html2canvas/html-to-image.
  */
 const CartelExhibicionTemplate = forwardRef<HTMLDivElement, CartelExhibicionTemplateProps>(
@@ -99,7 +99,7 @@ const CartelExhibicionTemplate = forwardRef<HTMLDivElement, CartelExhibicionTemp
           </div>
         </div>
 
-        {/* Título producto */}
+        {/* Titulo producto */}
         <h1
           style={{
             margin: 0,
@@ -114,7 +114,7 @@ const CartelExhibicionTemplate = forwardRef<HTMLDivElement, CartelExhibicionTemp
           {nombreProducto.trim() || "Producto"}
         </h1>
 
-        {/* Bloque características */}
+        {/* Bloque caracteristicas */}
         <div
           style={{
             flex: 1,
@@ -136,7 +136,7 @@ const CartelExhibicionTemplate = forwardRef<HTMLDivElement, CartelExhibicionTemp
               marginBottom: "0.1in",
             }}
           >
-            Características
+            Caracteristicas
           </div>
           <ul
             style={{

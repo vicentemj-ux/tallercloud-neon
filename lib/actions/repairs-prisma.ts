@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { getCurrentTenant } from "@/lib/auth"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
@@ -351,7 +351,7 @@ export async function createRepair(input: CreateRepairInput) {
         }
       }
 
-      throw new Error("No se pudo reservar un folio único para el tenant.")
+      throw new Error("No se pudo reservar un folio unico para el tenant.")
     })
 
     const photoFailures: string[] = []
@@ -360,11 +360,11 @@ export async function createRepair(input: CreateRepairInput) {
       const bucketName = getR2BucketName()
       const uploads = input.photos.map(async (dataUrl, i) => {
         if (!dataUrl?.startsWith("data:image")) {
-          throw new Error(`Foto ${i + 1}: formato inválido`)
+          throw new Error(`Foto ${i + 1}: formato invalido`)
         }
         const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/)
         if (!match) {
-          throw new Error(`Foto ${i + 1}: data URL inválida`)
+          throw new Error(`Foto ${i + 1}: data URL invalida`)
         }
         const mimeType = match[1]
         const base64 = match[2]
@@ -398,7 +398,7 @@ export async function createRepair(input: CreateRepairInput) {
             bucket: bucketName,
             key: storageKey,
             storageKey,
-            // opcional; no depender de URL pública para TRACKING_VERIFIED
+            // opcional; no depender de URL publica para TRACKING_VERIFIED
             publicUrl: null,
             fileName,
             mimeType,
@@ -777,7 +777,7 @@ export async function updateRepairFull(input: {
       where: { id: input.repairId, tenantId },
       select: { id: true, clienteId: true },
     })
-    if (!existing) return { success: false, error: "No se encontró la reparación." }
+    if (!existing) return { success: false, error: "No se encontro la reparacion." }
 
     await prisma.$transaction(async (tx: TxClient) => {
       let clientId = input.clienteId?.trim() || existing.clienteId
@@ -815,7 +815,7 @@ export async function updateRepairFull(input: {
     return { success: true }
   } catch (e) {
     console.error("updateRepairFull prisma:", e)
-    return { success: false, error: "No se pudo actualizar la reparación." }
+    return { success: false, error: "No se pudo actualizar la reparacion." }
   }
 }
 
@@ -873,7 +873,7 @@ export async function getAllActiveTechnicians() {
     return { technicians, error: null as string | null }
   } catch (e) {
     console.error("getAllActiveTechnicians prisma:", e)
-    return { technicians: [], error: "No se pudieron cargar técnicos." }
+    return { technicians: [], error: "No se pudieron cargar tecnicos." }
   }
 }
 
@@ -940,7 +940,7 @@ export async function deleteRepair(repairId: string): Promise<{ success: boolean
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
     const row = await prisma.reparacion.findFirst({ where: { id: repairId, tenantId }, select: { id: true } })
-    if (!row) return { success: false, error: "Reparación no encontrada." }
+    if (!row) return { success: false, error: "Reparacion no encontrada." }
     await prisma.reparacion.delete({ where: { id: repairId } })
     return { success: true }
   } catch (e) {
@@ -966,7 +966,7 @@ export async function actualizarPresupuestoReparacion(
       repairId,
       tallerId,
     )
-    if (!recRows[0]) return { success: false, error: "No se encontró la reparación." }
+    if (!recRows[0]) return { success: false, error: "No se encontro la reparacion." }
 
     const prev = Number(recRows[0].precio_estimado ?? 0)
     await prisma.$executeRawUnsafe(
@@ -1007,7 +1007,7 @@ export async function registrarAbono(input: {
   movimientoCajaId?: string | null
 }> {
   try {
-    if (!input.repairId) return { success: false, error: "ID de reparación requerido." }
+    if (!input.repairId) return { success: false, error: "ID de reparacion requerido." }
     if (!Number.isFinite(input.monto) || input.monto <= 0) return { success: false, error: "El monto debe ser mayor a cero." }
 
     const prisma = getPrismaClient()
@@ -1020,7 +1020,7 @@ export async function registrarAbono(input: {
       tallerId,
     )
     const rep = repRows[0]
-    if (!rep) return { success: false, error: "No se encontró la reparación." }
+    if (!rep) return { success: false, error: "No se encontro la reparacion." }
 
     const cajaRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
       "SELECT id FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
@@ -1048,7 +1048,7 @@ export async function registrarAbono(input: {
       tallerId,
       cajaId,
       input.repairId,
-      `Abono reparación #${rep.folio ?? ""}`,
+      `Abono reparacion #${rep.folio ?? ""}`,
       input.monto,
       input.metodoPago,
       actor,

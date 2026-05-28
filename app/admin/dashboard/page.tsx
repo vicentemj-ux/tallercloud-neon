@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
           <div className="flex items-start gap-3 rounded-xl border border-red-800 bg-red-900/20 p-4">
             <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5 shrink-0" />
             <p className="text-sm text-red-200">
-              <strong>{talleres.length}</strong> taller(es) con acceso que vence en menos de 3 días.
+              <strong>{talleres.length}</strong> taller(es) con acceso que vence en menos de 3 dias.
             </p>
           </div>
         )}
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
               <SelectItem value="prueba">Solo prueba</SelectItem>
               <SelectItem value="activo">Solo activos</SelectItem>
               <SelectItem value="suspendido">Suspendidos</SelectItem>
-              <SelectItem value="por_vencer">Vencen en &lt;3 días</SelectItem>
+              <SelectItem value="por_vencer">Vencen en &lt;3 dias</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center gap-1.5 sm:justify-start shrink-0">

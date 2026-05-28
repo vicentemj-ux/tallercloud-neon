@@ -1,4 +1,4 @@
-import { getPrismaClient } from "@/lib/prisma"
+﻿import { getPrismaClient } from "@/lib/prisma"
 
 export type RateLimitAction =
   | "login"
@@ -21,11 +21,11 @@ const LIMITS: Record<RateLimitAction, RateLimitConfig> = {
 }
 
 /**
- * Verifica si el identificador (email o IP) ha superado el límite
- * para la acción dada. Si no lo ha superado, registra el intento.
+ * Verifica si el identificador (email o IP) ha superado el limite
+ * para la accion dada. Si no lo ha superado, registra el intento.
  *
  * @returns { allowed: true }  si puede continuar
- * @returns { allowed: false, retryAfterMinutes } si está bloqueado
+ * @returns { allowed: false, retryAfterMinutes } si esta bloqueado
  */
 export async function checkRateLimit(
   identifier: string,

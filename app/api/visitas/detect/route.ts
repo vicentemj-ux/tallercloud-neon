@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const runtime = "nodejs"
@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic"
 const LOG = "[api/visitas/detect]"
 
 /**
- * Endpoint para recibir eventos de detección desde la app Desktop (Tauri).
+ * Endpoint para recibir eventos de deteccion desde la app Desktop (Tauri).
  *
- * Cuando la cámara Hikvision NO tiene panel web, la app desktop hace polling
- * local a la cámara vía ISAPI y envía los eventos aquí.
+ * Cuando la camara Hikvision NO tiene panel web, la app desktop hace polling
+ * local a la camara via ISAPI y envia los eventos aqui.
  *
  * Body:
  *   {

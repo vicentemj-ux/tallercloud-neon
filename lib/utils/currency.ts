@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Utilidades de formato monetario centralizadas.
- * Fuente única de verdad para todo el formato de pesos mexicanos en TallerCloud.
+ * Fuente unica de verdad para todo el formato de pesos mexicanos en TallerCloud.
  */
 
 export function formatCurrency(value: number | string | null | undefined): string {
@@ -15,16 +15,16 @@ export function formatCurrency(value: number | string | null | undefined): strin
   }).format(num)
 }
 
-/** Alias corto para templates de impresión donde se prefiere legibilidad. */
+/** Alias corto para templates de impresion donde se prefiere legibilidad. */
 export const formatPeso = formatCurrency
 
-/** Alias para compatibilidad con código legacy. */
+/** Alias para compatibilidad con codigo legacy. */
 export const formatMoney = formatCurrency
 
-/** Alias para funciones que esperan formato MXN explícito. */
+/** Alias para funciones que esperan formato MXN explicito. */
 export const formatMoneyMx = formatCurrency
 
-/** Formato para posters / exhibición (sin símbolo $, solo número con comas). */
+/** Formato para posters / exhibicion (sin simbolo $, solo numero con comas). */
 export function formatPosterMoney(value: number | string | null | undefined): string {
   if (value === null || value === undefined) return "—"
   const num = typeof value === "number" ? value : parseFloat(String(value).replace(/[$,\s]/g, ""))

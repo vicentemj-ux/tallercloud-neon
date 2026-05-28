@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const runtime = "nodejs"
@@ -13,7 +13,7 @@ const LOG = "[api/sse/visitas]"
  *   const es = new EventSource('/api/sse/visitas?tallerId=XXX')
  *   es.addEventListener('visita', (e) => { const data = JSON.parse(e.data) })
  *
- * El endpoint hace polling a Supabase cada 3 segundos y envía eventos
+ * El endpoint hace polling a Supabase cada 3 segundos y envia eventos
  * cuando hay nuevas visitas pendientes.
  */
 
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
         }
       }, 3000)
 
-      // Cleanup cuando el cliente cierra la conexión
+      // Cleanup cuando el cliente cierra la conexion
       request.signal.addEventListener("abort", () => {
         closed = true
         clearInterval(pollInterval)

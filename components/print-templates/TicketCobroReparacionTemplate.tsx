@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { CobroReparacionTicketData } from "@/lib/actions/ventas-prisma"
 
@@ -60,7 +60,7 @@ export function TicketCobroReparacionTemplate({
   mensajeDespedida,
   servicios,
 }: TicketCobroReparacionTemplateProps) {
-  const titulo = data.tipoMov === "liquidacion" ? "Liquidación de reparación" : "Anticipo de reparación"
+  const titulo = data.tipoMov === "liquidacion" ? "Liquidacion de reparacion" : "Anticipo de reparacion"
   const metodo = (data.metodo_pago || "").toLowerCase()
 
   return (
@@ -155,7 +155,7 @@ export function TicketCobroReparacionTemplate({
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", marginTop: "2px" }}>
-        <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Método</span>
+        <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Metodo</span>
         <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>{METODOS_LABEL[metodo] ?? data.metodo_pago}</span>
       </div>
 

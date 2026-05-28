@@ -1,4 +1,4 @@
-import { readFile } from "fs/promises"
+﻿import { readFile } from "fs/promises"
 import path from "path"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
@@ -34,7 +34,7 @@ function cloneArrayBuffer(ab: ArrayBuffer): ArrayBuffer {
   return dst.buffer
 }
 
-/** Fuentes servidas en producción como /fonts/*.woff (también en public/fonts). */
+/** Fuentes servidas en produccion como /fonts/*.woff (tambien en public/fonts). */
 const POSTER_FONT_FILES: { file: string; weight: 400 | 600 | 700 | 900 }[] = [
   { file: "inter-latin-400-normal.woff", weight: 400 },
   { file: "inter-latin-600-normal.woff", weight: 600 },
@@ -43,7 +43,7 @@ const POSTER_FONT_FILES: { file: string; weight: 400 | 600 | 700 | 900 }[] = [
 ]
 
 /**
- * Carga robusta: primero fetch desde el sitio público; si falla, lectura local (Vercel incluye `public/`).
+ * Carga robusta: primero fetch desde el sitio publico; si falla, lectura local (Vercel incluye `public/`).
  */
 async function loadPosterFonts(): Promise<SatoriFont[]> {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://tallercloud.net").replace(/\/$/, "")
@@ -57,20 +57,20 @@ async function loadPosterFonts(): Promise<SatoriFont[]> {
       const fontUrl = new URL(`/fonts/${file}`, `${baseUrl}/`)
       const fontRes = await fetch(fontUrl, { cache: "no-store" })
       if (!fontRes.ok) {
-        throw new Error(`Falló la carga de fuente: ${fontRes.status} ${fontRes.statusText}`)
+        throw new Error(`Fallo la carga de fuente: ${fontRes.status} ${fontRes.statusText}`)
       }
       data = await fontRes.arrayBuffer()
-      if (data.byteLength === 0) throw new Error("La fuente está vacía")
+      if (data.byteLength === 0) throw new Error("La fuente esta vacia")
     } catch (e) {
       fetchError = e instanceof Error ? e : new Error(String(e))
       const diskPath = path.join(process.cwd(), "public", "fonts", file)
       try {
         const buf = await readFile(diskPath)
         data = bufferToArrayBuffer(buf)
-        if (data.byteLength === 0) throw new Error("La fuente en disco está vacía")
+        if (data.byteLength === 0) throw new Error("La fuente en disco esta vacia")
       } catch {
         const msg = fetchError.message
-        throw new Error(`Error al cargar recursos estáticos: ${msg}`)
+        throw new Error(`Error al cargar recursos estaticos: ${msg}`)
       }
     }
 
@@ -93,7 +93,7 @@ async function fetchAsDataUrl(
   step: FetchImageStep
 ): Promise<{ success: true; dataUrl: string } | { success: false; reason: string }> {
   const trimmed = url.trim()
-  if (!trimmed) return { success: false, reason: "URL vacía" }
+  if (!trimmed) return { success: false, reason: "URL vacia" }
   if (trimmed.startsWith("data:image/")) {
     return { success: true, dataUrl: trimmed }
   }
@@ -114,7 +114,7 @@ async function fetchAsDataUrl(
     }
     const buf = Buffer.from(await res.arrayBuffer())
     if (buf.length === 0) {
-      return { success: false, reason: "Respuesta vacía" }
+      return { success: false, reason: "Respuesta vacia" }
     }
     const ct = res.headers.get("content-type") || "image/jpeg"
     const mime = ct.startsWith("image/") ? ct.split(";")[0].trim() : "image/jpeg"
@@ -170,7 +170,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get("id")?.trim()
   if (!id) {
-    return NextResponse.json({ error: "Falta parámetro id" }, { status: 400 })
+    return NextResponse.json({ error: "Falta parametro id" }, { status: 400 })
   }
   const isOffer = parseIsOffer(searchParams.get("isOffer"))
   const precioOferta = parsePrecioOferta(searchParams.get("precioOferta"))
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as Record<string, unknown>
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 })
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 })
   }
   const id = typeof body.id === "string" ? body.id.trim() : ""
   if (!id) {
@@ -223,7 +223,7 @@ async function generatePosterResponse(
     const cookieStore = await cookies()
     const tallerId = cookieStore.get("tallerId")?.value
     if (!tallerId?.trim()) {
-      return jsonError(401, { error: "No autorizado: falta cookie de sesión (tallerId) o sesión expirada.", step })
+      return jsonError(401, { error: "No autorizado: falta cookie de sesion (tallerId) o sesion expirada.", step })
     }
 
     step = "supabase-client"
@@ -248,7 +248,7 @@ async function generatePosterResponse(
       return jsonError(403, {
         code: "PLAN_PRO_REQUIRED",
         error:
-          "El formato vertical (WhatsApp / Stories) está disponible en el Plan Pro. Actualiza tu plan en Configuración para descargarlo.",
+          "El formato vertical (WhatsApp / Stories) esta disponible en el Plan Pro. Actualiza tu plan en Configuracion para descargarlo.",
         step,
       })
     }
@@ -319,9 +319,9 @@ async function generatePosterResponse(
       const msg = fontErr instanceof Error ? fontErr.message : String(fontErr)
       console.error(LOG, step, msg)
       return jsonError(500, {
-        error: msg.startsWith("Error al cargar recursos estáticos:")
+        error: msg.startsWith("Error al cargar recursos estaticos:")
           ? msg
-          : `Error al cargar recursos estáticos: ${msg}`,
+          : `Error al cargar recursos estaticos: ${msg}`,
         step,
       })
     }

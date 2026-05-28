@@ -1,4 +1,4 @@
-const fs = require('fs')
+﻿const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
@@ -50,7 +50,7 @@ function removeRecursive(dir, preserveSet = new Set()) {
 // ── 1. Verificar que standalone exista ──
 if (!fs.existsSync(standaloneDir)) {
   console.error(`❌ .next/standalone/ no encontrado.`)
-  console.error(`   Asegúrate de que next.config.mjs tenga output: 'standalone' y que pnpm build haya terminado exitosamente.`)
+  console.error(`   Asegurate de que next.config.mjs tenga output: 'standalone' y que pnpm build haya terminado exitosamente.`)
   process.exit(1)
 }
 
@@ -71,8 +71,8 @@ for (const entry of fs.readdirSync(standaloneDir)) {
   copyRecursive(src, dest, ignoreNodeModules)
 }
 
-// ── 4. Instalar dependencias de producción con npm (archivos reales, no symlinks) ──
-console.log('📦 Instalando dependencias de producción con npm...')
+// ── 4. Instalar dependencias de produccion con npm (archivos reales, no symlinks) ──
+console.log('📦 Instalando dependencias de produccion con npm...')
 const npmCacheDir = path.join(rootDir, '.npm-cache-tauri')
 try {
   execSync('npm install --production --no-audit --no-fund --prefer-offline', {

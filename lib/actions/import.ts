@@ -1,17 +1,17 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { revalidatePath } from "next/cache"
 
 /**
- * Sanitiza campos de texto para prevenir inyección de fórmulas Excel/CSV.
- * Elimina caracteres de inicio de fórmula (=, +, -, @, \t, \r) al inicio del valor.
+ * Sanitiza campos de texto para prevenir inyeccion de formulas Excel/CSV.
+ * Elimina caracteres de inicio de formula (=, +, -, @, \t, \r) al inicio del valor.
  */
 function sanitizeImportField(value: unknown): string {
   if (value === null || value === undefined) return ""
   let str = String(value).trim()
   if (!str) return ""
-  // Eliminar prefijos de fórmula al inicio
+  // Eliminar prefijos de formula al inicio
   str = str.replace(/^[+=\-@\t\r]+/, "")
   return str
 }
@@ -79,7 +79,7 @@ export async function processStagingToFinal(batchId: string) {
     let count = 0
 
     for (const record of stagingRecords) {
-      // A. Lógica de Cliente: Buscar por teléfono o crear uno nuevo
+      // A. Logica de Cliente: Buscar por telefono o crear uno nuevo
       let finalClienteId = null
       
       if (record.cliente_telefono) {
@@ -125,11 +125,11 @@ export async function processStagingToFinal(batchId: string) {
           estatus: record.estatus_original || "Entregado",
           fecha_entrega: record.fecha_entrega_original, // Columna existente en tu DB
           tecnico: record.tecnico_original,
-          notas_internas: `Importación masiva (Lote: ${batchId})`
+          notas_internas: `Importacion masiva (Lote: ${batchId})`
         })
 
       if (!repairError) {
-        // C. Marcar como procesado con éxito
+        // C. Marcar como procesado con exito
         await supabase
           .from("staging_import_reparaciones")
           .update({ procesado: true })

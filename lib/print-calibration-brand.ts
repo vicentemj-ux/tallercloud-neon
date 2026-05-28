@@ -1,4 +1,4 @@
-/** Logo marca SVG para páginas de calibración de impresión (no depende del Storage del taller). */
+﻿/** Logo marca SVG para paginas de calibracion de impresion (no depende del Storage del taller). */
 export const TALLER_CLOUD_CALIBRATION_LOGO =
   "data:image/svg+xml," +
   encodeURIComponent(

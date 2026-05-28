@@ -1,7 +1,7 @@
-"use server"
+﻿"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar settings-prisma.ts).
-// Pendiente migración completa de módulos legacy/PRO.
+// Pendiente migracion completa de modulos legacy/PRO.
 
 import { unstable_noStore } from "next/cache"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
@@ -40,21 +40,21 @@ export interface TallerSettings {
   alertas_stock_bajo?: boolean
   reportes_cierre_caja?: boolean
   alerta_urgentes?: boolean
-  /** Prefijo de folio de reparación (ej. CDS, REP). Trigger concatena con número. */
+  /** Prefijo de folio de reparacion (ej. CDS, REP). Trigger concatena con numero. */
   prefijo_folio?: string
-  /** Siguiente número de folio (concurrencia con FOR UPDATE en trigger). */
+  /** Siguiente numero de folio (concurrencia con FOR UPDATE en trigger). */
   siguiente_folio?: number
-  /** Nombre de impresora para tickets térmicos */
+  /** Nombre de impresora para tickets termicos */
   impresora_ticket?: string | null
   /** Nombre de impresora para etiquetas 2×1" */
   impresora_etiqueta?: string | null
   /** Nombre de impresora para documentos Carta/A4 */
   impresora_documento?: string | null
-  /** Días de garantía en reparaciones (default 30) */
+  /** Dias de garantia en reparaciones (default 30) */
   dias_garantia?: number
   /** Mensaje de despedida personalizado para tickets (estrategia publicitaria) */
   mensaje_despedida?: string
-  /** Configuración de impresión por tipo de documento (JSONB) */
+  /** Configuracion de impresion por tipo de documento (JSONB) */
   impresion_config?: Record<string, unknown> | null
   /** Mostrar precio en etiquetas de inventario (50×25 mm) */
   mostrar_precio_etiqueta?: boolean
@@ -63,7 +63,7 @@ export interface TallerSettings {
   instagram?: string | null
   tiktok?: string | null
   whatsapp?: string | null
-  /** Configuración de cámaras (webcam + Hikvision IP) (JSONB) */
+  /** Configuracion de camaras (webcam + Hikvision IP) (JSONB) */
   camara_config?: Record<string, unknown> | null
 }
 
@@ -80,7 +80,7 @@ export async function getTechnicians() {
 
   if (error) {
     console.error("Error fetching technicians:", error)
-    return { technicians: [], error: "Error al cargar técnicos" }
+    return { technicians: [], error: "Error al cargar tecnicos" }
   }
 
   return { technicians: data || [], error: null }
@@ -103,7 +103,7 @@ export async function createTechnician(nombre: string, estatus: string = "Activo
 
   if (error) {
     console.error("Error creating technician:", error)
-    return { technician: null, error: "No se pudo crear el técnico" }
+    return { technician: null, error: "No se pudo crear el tecnico" }
   }
 
   return { technician: data, error: null }
@@ -123,7 +123,7 @@ export async function updateTechnician(id: string, nombre: string, estatus: stri
 
   if (error) {
     console.error("Error updating technician:", error)
-    return { technician: null, error: "No se pudo actualizar el técnico" }
+    return { technician: null, error: "No se pudo actualizar el tecnico" }
   }
 
   return { technician: data, error: null }
@@ -141,7 +141,7 @@ export async function deleteTechnician(id: string) {
 
   if (error) {
     console.error("Error deleting technician:", error)
-    return { success: false, error: "No se pudo eliminar el técnico" }
+    return { success: false, error: "No se pudo eliminar el tecnico" }
   }
 
   return { success: true, error: null }
@@ -149,11 +149,11 @@ export async function deleteTechnician(id: string) {
 
 // Settings
 export async function getTallerSettings() {
-  // Runtime-safe bridge: evita dependencia de Supabase env en módulos activos.
+  // Runtime-safe bridge: evita dependencia de Supabase env en modulos activos.
   return getTallerSettingsPrisma()
 }
 
-/** Plan de suscripción del taller (PRO = `activo`). */
+/** Plan de suscripcion del taller (PRO = `activo`). */
 export type TallerPlanTipo = "prueba" | "activo" | "suspendido"
 
 export async function getTallerPlanType(): Promise<TallerPlanTipo> {
@@ -173,14 +173,14 @@ export async function getTallerPlanType(): Promise<TallerPlanTipo> {
 }
 
 /**
- * Reglas del banner en Vista General: visible en Trial, o PRO con vencimiento en ≤7 días (o ya vencido).
+ * Reglas del banner en Vista General: visible en Trial, o PRO con vencimiento en ≤7 dias (o ya vencido).
  * PRO estable sin fecha de corte: oculto.
  * PERF: las dos queries (taller_users + configuracion_taller) corren en paralelo internamente.
  */
 export async function getDashboardSubscriptionBannerContext(): Promise<{
   showBanner: boolean
   isPro: boolean
-  /** Días restantes hasta `fecha_vencimiento_plan`, normalizados a UTC (siempre ≥ 0). */
+  /** Dias restantes hasta `fecha_vencimiento_plan`, normalizados a UTC (siempre ≥ 0). */
   diasRestantes: number
   /** true si el plan tiene fecha de vencimiento en la DB. */
   tieneVencimiento: boolean
@@ -190,7 +190,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
   /** Zona horaria del taller — null si no configurada (usado para banner TZ en dashboard). */
   zonaHoraria: string | null
 }> {
-  unstable_noStore() // evita caché de request memoization; la suscripción cambia en tiempo real
+  unstable_noStore() // evita cache de request memoization; la suscripcion cambia en tiempo real
 
   const tallerId = await getCurrentTallerId()
   const prisma = getPrismaClient()
@@ -225,7 +225,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
   const diasDesdeVenc = calcDiasRestantes(fechaVenc)
   let planTipo: TallerPlanTipo = diasDesdeVenc !== null && diasDesdeVenc > 0 ? "prueba" : "activo"
 
-  // Debug temporal: ayuda a diagnosticar discrepancias de suscripción en producción
+  // Debug temporal: ayuda a diagnosticar discrepancias de suscripcion en produccion
 
   // calcDiasRestantes returns null when fechaVenc is null.
   // For prueba plans this means fecha_vencimiento_plan was never set (legacy accounts).
@@ -261,7 +261,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
     }
   }
 
-  // activo = suscripción pagada — ignora lógica de trial
+  // activo = suscripcion pagada — ignora logica de trial
   if (!tieneVencimiento) {
     return {
       showBanner: false,
@@ -289,7 +289,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
   const supabase = await createClient()
   const tallerId = await getCurrentTallerId()
 
-  // Validación backend: el siguiente_folio no puede ser ≤ al folio máximo ya registrado.
+  // Validacion backend: el siguiente_folio no puede ser ≤ al folio maximo ya registrado.
   if (updates.siguiente_folio !== undefined) {
     const sigFolioNum = Math.max(1, Math.floor(Number(updates.siguiente_folio) || 1))
     const admin = await createAdminClient()
@@ -315,7 +315,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
     }
   }
 
-  // Columnas explícitas para evitar enviar campos que no existen en la tabla.
+  // Columnas explicitas para evitar enviar campos que no existen en la tabla.
   const payload: Record<string, unknown> = { taller_id: tallerId }
   if (updates.nombre_taller   !== undefined) payload.nombre_taller   = updates.nombre_taller
   if (updates.direccion       !== undefined) payload.direccion       = updates.direccion
@@ -356,10 +356,10 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
     .single()
 
   if (error) {
-    console.error("Error guardando configuración:", JSON.stringify(error))
+    console.error("Error guardando configuracion:", JSON.stringify(error))
     return {
       settings: null,
-      error: `Supabase: ${error.message} (código: ${error.code}${error.details ? ` · ${error.details}` : ""})`,
+      error: `Supabase: ${error.message} (codigo: ${error.code}${error.details ? ` · ${error.details}` : ""})`,
     }
   }
 

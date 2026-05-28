@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
@@ -24,7 +24,7 @@ const MOCK_RECEIPT: ReceiptData = {
   tipo_equipo: "Smartphone",
   imei: "359876543210987",
   color: "Titanio natural",
-  reportedFault: "Display OLED: líneas verticales tras impacto. Batería 87% salud.",
+  reportedFault: "Display OLED: lineas verticales tras impacto. Bateria 87% salud.",
   estimatedPrice: "4500",
   deposit: "500",
   date: new Date().toLocaleDateString("es-MX", {
@@ -40,7 +40,7 @@ const MOCK_LABEL: LabelRepairTemplateData = {
   deviceName: "iPhone 15 Pro Max Titanium",
   customerName: "Ing. Alejandro Valenzuela",
   customerPhone: "6681234567",
-  reportedFault: "Display OLED: líneas verticales tras impacto.",
+  reportedFault: "Display OLED: lineas verticales tras impacto.",
   estimatedPrice: "4500",
   accessCode: "PIN: 1234",
 }
@@ -48,25 +48,25 @@ const MOCK_LABEL: LabelRepairTemplateData = {
 const MOCK_DOCUMENT_REPAIR: RepairPrintData = {
   id: "00000000-0000-4000-8000-0000000000c1",
   folio: "TC-CAL-001",
-  estado: "Diagnóstico",
+  estado: "Diagnostico",
   fecha_creacion: new Date().toISOString(),
   cliente_nombre: "Ing. Alejandro Valenzuela",
   cliente_telefono: "6681234567",
-  tecnico: "Calibración TC",
+  tecnico: "Calibracion TC",
   dispositivo_marca: "Apple",
   dispositivo_modelo: "iPhone 15 Pro Max Titanium",
   tipo_equipo: "Smartphone",
   imei_serie: "359876543210987",
   color: "Titanio natural",
   falla_reportada:
-    "Display OLED: líneas verticales tras impacto. Cliente solicita cambio de módulo y revisión de batería.",
+    "Display OLED: lineas verticales tras impacto. Cliente solicita cambio de modulo y revision de bateria.",
   precio_estimado: 4500,
   anticipo: 500,
   costo_total: 4200,
   restante: 4000,
   gastos: [
-    { descripcion: "Módulo OLED OEM", costo: 2800 },
-    { descripcion: "Mano de obra diagnóstico", costo: 350 },
+    { descripcion: "Modulo OLED OEM", costo: 2800 },
+    { descripcion: "Mano de obra diagnostico", costo: 350 },
   ],
 }
 
@@ -210,9 +210,9 @@ export default function CalibrationClient() {
   if (!job || !["ticket", "label", "carta"].includes(job)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-2 bg-white p-8 text-center text-sm text-slate-600">
-        <p>Esta vista es solo para calibración de impresoras.</p>
+        <p>Esta vista es solo para calibracion de impresoras.</p>
         <p className="text-xs text-slate-400">
-          Usa los botones en Configuración → Impresoras y hardware → Calibración de impresión.
+          Usa los botones en Configuracion → Impresoras y hardware → Calibracion de impresion.
         </p>
       </div>
     )
@@ -249,10 +249,10 @@ export default function CalibrationClient() {
         businessName="TallerCloud"
         businessPhone={shopPhone || "668 000 0000"}
         businessEmail="contacto@tallercloud.net"
-        businessAddress="Calibración de impresión · México"
+        businessAddress="Calibracion de impresion · Mexico"
         logoUrl={TALLER_CLOUD_CALIBRATION_LOGO}
         trackingUrl={trackingUrl}
-        terminosGarantia={terminos || "Póliza de demostración — no válida como servicio real."}
+        terminosGarantia={terminos || "Poliza de demostracion — no valida como servicio real."}
       />
     </div>
   )

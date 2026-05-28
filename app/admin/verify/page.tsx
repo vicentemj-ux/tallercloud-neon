@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
@@ -29,7 +29,7 @@ export default function AdminVerifyPage() {
       } else if (result.error === "SESSION_EXPIRED") {
         router.replace("/auth/super-admin")
       } else {
-        setError(result.error ?? "Error al enviar el código.")
+        setError(result.error ?? "Error al enviar el codigo.")
       }
     })
   }, [router])
@@ -57,13 +57,13 @@ export default function AdminVerifyPage() {
         } else if (result.error === "SESSION_EXPIRED") {
           router.replace("/auth/super-admin")
         } else {
-          setError(result.error ?? "Código incorrecto.")
+          setError(result.error ?? "Codigo incorrecto.")
           setCode("")
           hasSubmittedRef.current = false
           inputRef.current?.focus()
         }
       } catch {
-        setError("Error de conexión. Intenta de nuevo.")
+        setError("Error de conexion. Intenta de nuevo.")
         hasSubmittedRef.current = false
       }
     })
@@ -81,7 +81,7 @@ export default function AdminVerifyPage() {
             <ShieldCheck className="h-7 w-7 text-blue-400" />
           </div>
           <h1 className="text-xl font-bold text-slate-100 tracking-tight text-center">
-            Verificación de Identidad
+            Verificacion de Identidad
           </h1>
           <p className="mt-1 text-sm text-slate-500 text-center font-medium">
             Propietario de TallerCloud
@@ -103,14 +103,14 @@ export default function AdminVerifyPage() {
               {sendPending ? (
                 <div className="flex items-center gap-2 text-sm text-slate-400 mb-5">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-                  Enviando código a tu correo…
+                  Enviando codigo a tu correo…
                 </div>
               ) : maskedEmail ? (
                 <div className="flex items-start gap-2 text-sm text-slate-400 mb-5">
                   <Mail className="h-4 w-4 mt-0.5 text-blue-400 shrink-0" />
                   <span>
-                    Código enviado a <span className="text-slate-300 font-medium">{maskedEmail}</span>.
-                    Válido por 10 minutos.
+                    Codigo enviado a <span className="text-slate-300 font-medium">{maskedEmail}</span>.
+                    Valido por 10 minutos.
                   </span>
                 </div>
               ) : null}
@@ -160,7 +160,7 @@ export default function AdminVerifyPage() {
                         onClick={() => router.replace("/auth/super-admin")}
                         className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-300 hover:bg-slate-700 transition-colors"
                       >
-                        ← Regresar al inicio de sesión
+                        ← Regresar al inicio de sesion
                       </button>
                       <p className="text-xs text-slate-600 text-center">
                         Si el problema persiste, contacta a soporte con los logs del servidor.
@@ -191,7 +191,7 @@ export default function AdminVerifyPage() {
                   className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
                 >
                   <RotateCw className="h-3 w-3" />
-                  {sendPending ? "Enviando…" : "Reenviar código"}
+                  {sendPending ? "Enviando…" : "Reenviar codigo"}
                 </button>
               </div>
             </>

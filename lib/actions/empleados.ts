@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
@@ -8,7 +8,7 @@ import { issueMemberVerificationPin } from "@/lib/actions/email-verification"
 const createClient = async () => (await createCurrentTenantClient()).supabase
 
 const MVP_LIMIT_MSG =
-  "Has alcanzado el límite de 5 usuarios para la fase MVP. Contacta a soporte para más detalles."
+  "Has alcanzado el limite de 5 usuarios para la fase MVP. Contacta a soporte para mas detalles."
 
 export interface CreateMiembroInput {
   nombre: string
@@ -33,7 +33,7 @@ export interface EquipoOwnerRow {
 }
 
 /**
- * Propietario + miembros + catálogo de roles para la pantalla Mi Equipo.
+ * Propietario + miembros + catalogo de roles para la pantalla Mi Equipo.
  * PERF: las 3 queries (taller_users, miembros_taller, roles_taller) corren en paralelo.
  */
 export async function getEquipoPageData(): Promise<{
@@ -87,7 +87,7 @@ export async function getEquipoPageData(): Promise<{
       owner,
       miembros: [],
       roles: [],
-      error: "No se pudo cargar el equipo. Asegúrate de aplicar las migraciones recientes.",
+      error: "No se pudo cargar el equipo. Asegurate de aplicar las migraciones recientes.",
     }
   }
 
@@ -125,7 +125,7 @@ export async function getEquipoPageData(): Promise<{
 }
 
 /**
- * Crea usuario en Supabase Auth e inserta en miembros_taller (máx. 5 activos MVP).
+ * Crea usuario en Supabase Auth e inserta en miembros_taller (max. 5 activos MVP).
  */
 export async function createMiembro(
   input: CreateMiembroInput
@@ -139,7 +139,7 @@ export async function createMiembro(
   if (!nombre) return { success: false, error: "El nombre es obligatorio." }
   if (!email) return { success: false, error: "El email es obligatorio." }
   if (!password || password.length < 6) {
-    return { success: false, error: "La contraseña debe tener al menos 6 caracteres." }
+    return { success: false, error: "La contrasena debe tener al menos 6 caracteres." }
   }
   if (!rolId) return { success: false, error: "Debes seleccionar un puesto/rol." }
 
@@ -173,7 +173,7 @@ export async function createMiembro(
 
   const { data: rolOk } = await supabase.from("roles_taller").select("id").eq("id", rolId).maybeSingle()
   if (!rolOk) {
-    return { success: false, error: "El rol seleccionado no es válido." }
+    return { success: false, error: "El rol seleccionado no es valido." }
   }
 
   let userId: string
@@ -191,7 +191,7 @@ export async function createMiembro(
     if (authError) {
       console.error("Auth createUser error:", authError)
       if (authError.message?.toLowerCase().includes("already been registered")) {
-        return { success: false, error: "Ese correo ya está registrado." }
+        return { success: false, error: "Ese correo ya esta registrado." }
       }
       return { success: false, error: authError.message || "No se pudo crear el usuario." }
     }
@@ -202,7 +202,7 @@ export async function createMiembro(
     console.error("createMiembro admin auth error:", e)
     const msg = e instanceof Error ? e.message : "Error al crear el usuario."
     if (msg.includes("SUPABASE_SERVICE_ROLE_KEY") || msg.includes("Missing")) {
-      return { success: false, error: "Configuración del servidor incompleta (clave de administración)." }
+      return { success: false, error: "Configuracion del servidor incompleta (clave de administracion)." }
     }
     return { success: false, error: msg }
   }
@@ -256,7 +256,7 @@ export async function createMiembro(
     }
     return {
       success: false,
-      error: pinResult.error || "No se pudo enviar el correo de verificación por PIN.",
+      error: pinResult.error || "No se pudo enviar el correo de verificacion por PIN.",
     }
   }
 
@@ -278,7 +278,7 @@ export interface UpdateMiembroInput {
 }
 
 /**
- * Edita nombre/rol del miembro y opcionalmente actualiza su contraseña en Supabase Auth.
+ * Edita nombre/rol del miembro y opcionalmente actualiza su contrasena en Supabase Auth.
  */
 export async function updateMiembro(
   input: UpdateMiembroInput
@@ -289,11 +289,11 @@ export async function updateMiembro(
   const rolId = (input.rolId || "").trim()
   const password = (input.password || "").trim()
 
-  if (!miembroId) return { success: false, error: "Miembro inválido." }
+  if (!miembroId) return { success: false, error: "Miembro invalido." }
   if (!nombre) return { success: false, error: "El nombre es obligatorio." }
   if (!rolId) return { success: false, error: "Debes seleccionar un puesto/rol." }
   if (password && password.length < 6) {
-    return { success: false, error: "La contraseña debe tener al menos 6 caracteres." }
+    return { success: false, error: "La contrasena debe tener al menos 6 caracteres." }
   }
 
   const supabase = await createClient()
@@ -307,7 +307,7 @@ export async function updateMiembro(
     .single()
 
   if (memberErr || !member) {
-    return { success: false, error: "No se encontró el miembro para editar." }
+    return { success: false, error: "No se encontro el miembro para editar." }
   }
 
   const { data: rolOk } = await supabase
@@ -316,7 +316,7 @@ export async function updateMiembro(
     .eq("id", rolId)
     .maybeSingle()
   if (!rolOk) {
-    return { success: false, error: "El rol seleccionado no es válido." }
+    return { success: false, error: "El rol seleccionado no es valido." }
   }
 
   const { error: updErr } = await supabase
@@ -345,7 +345,7 @@ export async function updateMiembro(
       console.error("updateMiembro auth updateUserById:", authErr)
       return {
         success: false,
-        error: "Se actualizó el miembro, pero no se pudo sincronizar su usuario de acceso.",
+        error: "Se actualizo el miembro, pero no se pudo sincronizar su usuario de acceso.",
       }
     }
   }
@@ -368,7 +368,7 @@ export async function deleteMiembro(
 ): Promise<{ success: boolean; error?: string }> {
   try {
   const id = (miembroId || "").trim()
-  if (!id) return { success: false, error: "Miembro inválido." }
+  if (!id) return { success: false, error: "Miembro invalido." }
 
   const supabase = await createClient()
   const tallerId = await getCurrentTallerId()
@@ -381,7 +381,7 @@ export async function deleteMiembro(
     .single()
 
   if (memberErr || !member) {
-    return { success: false, error: "No se encontró el miembro para eliminar." }
+    return { success: false, error: "No se encontro el miembro para eliminar." }
   }
 
   const authUserId = (member as { auth_user_id?: string | null }).auth_user_id
@@ -403,7 +403,7 @@ export async function deleteMiembro(
       console.error("deleteMiembro auth deleteUser:", authErr)
       return {
         success: false,
-        error: "Se eliminó el miembro, pero no se pudo revocar su usuario de acceso.",
+        error: "Se elimino el miembro, pero no se pudo revocar su usuario de acceso.",
       }
     }
   }

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -231,7 +231,7 @@ function DetalleModal({ data, onClose }: { data: DetalleCajaData; onClose: () =>
             >
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-4 w-4 shrink-0" />
-                Enviar al Dueño
+                Enviar al Dueno
               </a>
             </Button>
           ) : null}
@@ -326,7 +326,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
     setDetalleData(null)
   }
 
-  /** KPIs sobre la página cargada (misma fuente que la lista). */
+  /** KPIs sobre la pagina cargada (misma fuente que la lista). */
   const kpiVista = useMemo(() => {
     let sumaDiferencia = 0
     let sumaEfectivoSistema = 0
@@ -368,7 +368,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center rounded-xl border border-dashed border-slate-200">
         <p className="text-slate-500 font-medium">No hay cortes de caja registrados</p>
         <p className="text-xs text-slate-400">
-          Los cortes aparecerán aquí una vez que cierres la caja por primera vez
+          Los cortes apareceran aqui una vez que cierres la caja por primera vez
         </p>
       </div>
     )
@@ -446,7 +446,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
       <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-900/5">
         <div className="hidden min-w-[920px] grid-cols-[minmax(200px,1.1fr)_minmax(200px,1fr)_minmax(140px,0.9fr)_minmax(140px,0.9fr)_minmax(168px,auto)_88px] gap-4 border-b border-slate-100 bg-slate-50/90 px-5 py-3 lg:grid">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Periodo auditoría
+            Periodo auditoria
           </span>
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
             Cajero responsable
@@ -455,13 +455,13 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
             Efectivo sistema
           </span>
           <span className="text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Efectivo físico
+            Efectivo fisico
           </span>
           <span className="text-center text-[11px] font-bold uppercase tracking-wider text-slate-500">
             Cuadre
           </span>
           <span className="text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Acción
+            Accion
           </span>
         </div>
 
@@ -484,7 +484,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
               >
                 <div className="min-w-0 space-y-1">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
-                    Periodo auditoría
+                    Periodo auditoria
                   </p>
                   <p className="text-sm font-semibold text-slate-900">
                     {fmtDate(c.fecha_apertura)}
@@ -496,7 +496,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
                   </p>
                   <p className="text-xs font-medium text-blue-600">
                     Corte {fmtCorte(c.numero_corte)}
-                    {c.nota_cierre ? " · Cierre automático" : " · Cierre manual"}
+                    {c.nota_cierre ? " · Cierre automatico" : " · Cierre manual"}
                   </p>
                 </div>
 
@@ -528,7 +528,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
 
                 <div className="text-left lg:text-right">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
-                    Efectivo físico
+                    Efectivo fisico
                   </p>
                   <p className="text-base font-bold tracking-tight tabular-nums text-slate-900">
                     {c.monto_cierre !== null ? money(c.monto_cierre) : "—"}
@@ -544,7 +544,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
 
                 <div className="flex flex-col gap-2 lg:items-end">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
-                    Acción
+                    Accion
                   </p>
                   <div className="flex justify-end gap-2">
                     <button
@@ -577,7 +577,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
         )
       )}
 
-      {/* Paginación historial de caja */}
+      {/* Paginacion historial de caja */}
       {total > PAGE_SIZE_CAJA && (
         <div className="flex items-center justify-between text-sm text-slate-500 pt-3">
           <span>

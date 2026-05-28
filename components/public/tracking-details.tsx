@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,12 +17,12 @@ const STATUS_CONFIG = {
     color: "bg-blue-600/20 text-blue-400 border-blue-600/50",
     step: 1,
   },
-  "En Revisión": {
+  "En Revision": {
     icon: Clock,
     color: "bg-cyan-600/20 text-cyan-400 border-cyan-600/50",
     step: 2,
   },
-  "Esperando Refacción": {
+  "Esperando Refaccion": {
     icon: Wrench,
     color: "bg-amber-600/20 text-amber-400 border-amber-600/50",
     step: 3,
@@ -118,7 +118,7 @@ export function TrackingDetails({
       <div className="relative z-10 px-4 max-w-2xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Tu Reparación</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Tu Reparacion</h1>
           <Button
             onClick={onBack}
             variant="ghost"
@@ -215,7 +215,7 @@ export function TrackingDetails({
 
           {/* Timeline Card */}
           <Card className="bg-slate-900/60 backdrop-blur border-slate-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-6">Estado de tu Reparación</h2>
+            <h2 className="text-lg font-semibold text-white mb-6">Estado de tu Reparacion</h2>
             <RepairTimeline repair={selectedRepair} />
           </Card>
 
@@ -261,7 +261,7 @@ export function TrackingDetails({
           {/* Contact Info */}
           <Card className="bg-slate-900/60 backdrop-blur border-slate-800 p-6">
             <p className="text-sm text-slate-400 text-center">
-              ¿Tienes preguntas? Contacta con el taller al número registrado.
+              ¿Tienes preguntas? Contacta con el taller al numero registrado.
             </p>
           </Card>
         </div>

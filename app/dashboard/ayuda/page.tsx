@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useMemo, useState, type ReactNode } from "react"
 import Link from "next/link"
@@ -18,22 +18,22 @@ import { cn } from "@/lib/utils"
 const TOPICS = [
   {
     id: "recepcion",
-    title: "Recepción",
-    description: "Nuevo ticket y validación en recepción.",
+    title: "Recepcion",
+    description: "Nuevo ticket y validacion en recepcion.",
     icon: ClipboardList,
     keywords:
-      "cliente equipo marca falla revisión patrón seguridad pin badge ayuda footer crítico",
+      "cliente equipo marca falla revision patron seguridad pin badge ayuda footer critico",
   },
   {
     id: "offline",
     title: "Modo offline",
-    description: "Emergencia, cola local y sincronización.",
+    description: "Emergencia, cola local y sincronizacion.",
     icon: WifiOff,
     keywords: "indexeddb cola sincronizar nube indicador verde rojo emergencia red",
   },
   {
     id: "diagnostico-pro",
-    title: "Diagnóstico PRO",
+    title: "Diagnostico PRO",
     description: "Health check y pruebas por tipo de equipo.",
     icon: Stethoscope,
     keywords: "funciona falla sin probar smartphone laptop health checklist pro",
@@ -48,9 +48,9 @@ const TOPICS = [
   {
     id: "faq",
     title: "FAQ",
-    description: "Respuestas rápidas a dudas habituales.",
+    description: "Respuestas rapidas a dudas habituales.",
     icon: HelpCircle,
-    keywords: "botón deshabilitado crear ticket express diagnóstico",
+    keywords: "boton deshabilitado crear ticket express diagnostico",
   },
 ] as const
 
@@ -82,7 +82,7 @@ export default function AyudaPage() {
             Centro de Ayuda
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
-            Documentación para el staff de TallerCloud: recepción, resiliencia offline, diagnóstico PRO y firma
+            Documentacion para el staff de TallerCloud: recepcion, resiliencia offline, diagnostico PRO y firma
             digital.
           </p>
           <div className="relative mt-8 max-w-xl">
@@ -125,13 +125,13 @@ export default function AyudaPage() {
         </div>
 
         {visibleTopics.length === 0 ? (
-          <p className="mt-8 text-center text-sm text-slate-500">No hay temas que coincidan con tu búsqueda.</p>
+          <p className="mt-8 text-center text-sm text-slate-500">No hay temas que coincidan con tu busqueda.</p>
         ) : null}
 
         <div className="mt-16 space-y-12 scroll-mt-24">
           <ManualSection
             id="recepcion"
-            title="Gestión de recepción (nuevo ticket)"
+            title="Gestion de recepcion (nuevo ticket)"
             visible={matchesQuery(
               "recepcion nuevo ticket cliente " + TOPICS[0].keywords,
               query,
@@ -140,18 +140,18 @@ export default function AyudaPage() {
             <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-700">
               <li>
                 Antes de crear el ticket, el sistema valida{" "}
-                <strong className="font-semibold text-slate-900">cinco puntos críticos</strong>: cliente válido
-                (nombre y teléfono), tipo de equipo, marca, descripción de la falla y{" "}
-                <strong className="font-semibold text-slate-900">revisión rápida</strong> (encendido / checklist de
+                <strong className="font-semibold text-slate-900">cinco puntos criticos</strong>: cliente valido
+                (nombre y telefono), tipo de equipo, marca, descripcion de la falla y{" "}
+                <strong className="font-semibold text-slate-900">revision rapida</strong> (encendido / checklist de
                 ingreso).
               </li>
               <li>
-                En el pie del formulario encontrarás un <strong className="font-semibold text-slate-900">badge de ayuda</strong>{" "}
-                que resume qué falta por completar para poder registrar la orden con seguridad.
+                En el pie del formulario encontraras un <strong className="font-semibold text-slate-900">badge de ayuda</strong>{" "}
+                que resume que falta por completar para poder registrar la orden con seguridad.
               </li>
               <li>
-                Si el equipo tiene <strong className="font-semibold text-slate-900">patrón de desbloqueo</strong>, abre el
-                sub-modal de seguridad: la secuencia se registra en una cuadrícula numerada para no equivocar el orden al
+                Si el equipo tiene <strong className="font-semibold text-slate-900">patron de desbloqueo</strong>, abre el
+                sub-modal de seguridad: la secuencia se registra en una cuadricula numerada para no equivocar el orden al
                 diagnosticar o entregar el equipo.
               </li>
             </ul>
@@ -164,31 +164,31 @@ export default function AyudaPage() {
           >
             <p className="text-sm leading-relaxed text-slate-700">
               Si no hay red al pulsar <strong className="font-semibold text-slate-900">Crear ticket</strong>, el sistema no
-              muestra un error genérico: guarda el borrador y puede encolar el ticket en el navegador (IndexedDB o
-              respaldo en almacenamiento local). Al recuperar la conexión, la cola se sincroniza automáticamente con la
+              muestra un error generico: guarda el borrador y puede encolar el ticket en el navegador (IndexedDB o
+              respaldo en almacenamiento local). Al recuperar la conexion, la cola se sincroniza automaticamente con la
               nube.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-slate-700">
-              En la <strong className="font-semibold text-slate-900">barra superior</strong> verás el estado{" "}
+              En la <strong className="font-semibold text-slate-900">barra superior</strong> veras el estado{" "}
               <span className="text-emerald-600">Cloud Online</span> o <span className="text-red-600">Offline</span> y,
               si hay pendientes, un contador <strong className="font-semibold text-slate-900">en cola</strong>. Una franja
-              de aviso también indica cuando TallerCloud opera en local.
+              de aviso tambien indica cuando TallerCloud opera en local.
             </p>
           </ManualSection>
 
           <ManualSection
             id="diagnostico-pro"
-            title="Health Check PRO (diagnóstico)"
+            title="Health Check PRO (diagnostico)"
             visible={matchesQuery("diagnostico health pro " + TOPICS[2].keywords, query)}
           >
             <p className="text-sm leading-relaxed text-slate-700">
-              Cada prueba usa una lógica <strong className="font-semibold text-slate-900">ternaria</strong>:{" "}
+              Cada prueba usa una logica <strong className="font-semibold text-slate-900">ternaria</strong>:{" "}
               <span className="whitespace-nowrap">✅ FUNCIONA</span>, <span className="whitespace-nowrap">❌ FALLA</span> o{" "}
-              <span className="whitespace-nowrap">➖ SIN PROBAR</span>, para dejar claro qué se comprobó en recepción.
+              <span className="whitespace-nowrap">➖ SIN PROBAR</span>, para dejar claro que se comprobo en recepcion.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-slate-700">
-              El conjunto de ítems se adapta al <strong className="font-semibold text-slate-900">ADN del equipo</strong>{" "}
-              (por ejemplo smartphone frente a laptop): no verás teclas físicas en un celular ni pantalla táctil en un
+              El conjunto de items se adapta al <strong className="font-semibold text-slate-900">ADN del equipo</strong>{" "}
+              (por ejemplo smartphone frente a laptop): no veras teclas fisicas en un celular ni pantalla tactil en un
               equipo que no la tenga.
             </p>
           </ManualSection>
@@ -200,12 +200,12 @@ export default function AyudaPage() {
           >
             <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-700">
               <li>
-                En planes con firma PRO puedes generar un <strong className="font-semibold text-slate-900">código QR</strong>{" "}
-                asociado al proceso de ingreso (incluso antes de persistir el ticket, según el flujo activo).
+                En planes con firma PRO puedes generar un <strong className="font-semibold text-slate-900">codigo QR</strong>{" "}
+                asociado al proceso de ingreso (incluso antes de persistir el ticket, segun el flujo activo).
               </li>
               <li>
                 El <strong className="font-semibold text-slate-900">cliente escanea el QR con su propio dispositivo</strong>,
-                abre la página de firma y acepta el consentimiento desde su celular, sin compartir la sesión del mostrador.
+                abre la pagina de firma y acepta el consentimiento desde su celular, sin compartir la sesion del mostrador.
               </li>
             </ul>
           </ManualSection>
@@ -219,29 +219,29 @@ export default function AyudaPage() {
           >
             <h2 className="text-xl font-semibold tracking-tight text-slate-900">Preguntas frecuentes</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Respuestas sobre el flujo de ticket y el diagnóstico express.
+              Respuestas sobre el flujo de ticket y el diagnostico express.
             </p>
             <Card className="mt-6 border-slate-200 bg-white shadow-sm">
               <CardContent className="pt-6">
                 <Accordion type="multiple" className="w-full">
                   <AccordionItem value="faq-1" className="border-slate-200">
                     <AccordionTrigger className="text-left text-sm font-medium text-slate-900 hover:no-underline">
-                      ¿Por qué el botón «Crear ticket» sigue deshabilitado?
+                      ¿Por que el boton «Crear ticket» sigue deshabilitado?
                     </AccordionTrigger>
                     <AccordionContent className="text-sm leading-relaxed text-slate-700">
-                      El botón solo se habilita cuando el cliente cumple la validación mínima (por ejemplo teléfono con
-                      suficientes dígitos y datos coherentes). Completa los puntos críticos del formulario y revisa el
+                      El boton solo se habilita cuando el cliente cumple la validacion minima (por ejemplo telefono con
+                      suficientes digitos y datos coherentes). Completa los puntos criticos del formulario y revisa el
                       badge de ayuda en el pie si algo falta.
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="faq-2" className="border-slate-200">
                     <AccordionTrigger className="text-left text-sm font-medium text-slate-900 hover:no-underline">
-                      ¿Qué es el diagnóstico express y cómo se relaciona con la revisión rápida?
+                      ¿Que es el diagnostico express y como se relaciona con la revision rapida?
                     </AccordionTrigger>
                     <AccordionContent className="text-sm leading-relaxed text-slate-700">
-                      La <strong className="font-semibold text-slate-900">revisión rápida</strong> cubre encendido y checklist
+                      La <strong className="font-semibold text-slate-900">revision rapida</strong> cubre encendido y checklist
                       de ingreso obligatorio para registrar el equipo. El <strong className="font-semibold text-slate-900">Health Check PRO</strong>{" "}
-                      amplía pruebas funcionales con la lógica ternaria; ambos ayudan a documentar el estado real del
+                      amplia pruebas funcionales con la logica ternaria; ambos ayudan a documentar el estado real del
                       dispositivo antes del taller.
                     </AccordionContent>
                   </AccordionItem>
@@ -250,8 +250,8 @@ export default function AyudaPage() {
                       ¿Puedo trabajar sin internet?
                     </AccordionTrigger>
                     <AccordionContent className="text-sm leading-relaxed text-slate-700">
-                      Sí, en modo offline puedes seguir capturando y dejar tickets en cola; al volver la red se
-                      sincronizan. La edición de tickets ya existentes puede requerir conexión según la acción.
+                      Si, en modo offline puedes seguir capturando y dejar tickets en cola; al volver la red se
+                      sincronizan. La edicion de tickets ya existentes puede requerir conexion segun la accion.
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

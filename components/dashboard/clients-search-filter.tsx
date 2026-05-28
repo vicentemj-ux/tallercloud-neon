@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useCallback } from "react"
 import { Input } from "@/components/ui/input"
@@ -25,7 +25,7 @@ export function ClientsSearchFilter({ onSearch, isLoading = false }: ClientsSear
     <div className="relative rounded-2xl border border-slate-200 bg-white shadow-sm">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
       <Input
-        placeholder="Buscar por nombre, teléfono o ID..."
+        placeholder="Buscar por nombre, telefono o ID..."
         value={query}
         onChange={handleChange}
         disabled={isLoading}

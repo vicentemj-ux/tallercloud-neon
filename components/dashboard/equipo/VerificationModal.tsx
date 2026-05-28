@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
@@ -53,7 +53,7 @@ export function VerificationModal({
             ¡Falta poco para configurar tu acceso!
           </DialogTitle>
           <p className="text-sm text-gray-600">
-            Ingresa el código de verificación de 6 dígitos que enviamos a tu correo{" "}
+            Ingresa el codigo de verificacion de 6 digitos que enviamos a tu correo{" "}
             <span className="font-semibold text-gray-800">{email}</span>
           </p>
         </DialogHeader>
@@ -61,7 +61,7 @@ export function VerificationModal({
         <div className="space-y-4 px-6 pb-6 pt-4">
           <div className="space-y-2">
             <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Código PIN
+              Codigo PIN
             </Label>
             <Input
               ref={inputRef}
@@ -91,7 +91,7 @@ export function VerificationModal({
             onClick={onConfirm}
             className="h-11 w-full rounded-xl bg-blue-600 text-sm font-bold uppercase tracking-wide text-white hover:bg-blue-700"
           >
-            {isSubmitting ? "Confirmando..." : "Confirmar código"}
+            {isSubmitting ? "Confirmando..." : "Confirmar codigo"}
           </Button>
 
           <div className="flex flex-col items-center gap-2 pt-1 text-sm">
@@ -101,7 +101,7 @@ export function VerificationModal({
               disabled={isSubmitting}
               className="text-gray-700 underline underline-offset-2 hover:text-blue-600 disabled:opacity-50"
             >
-              ¿No recibiste el código? Reenviar correo
+              ¿No recibiste el codigo? Reenviar correo
             </button>
             <button
               type="button"

@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 /** Todas las consultas usan la tabla `productos` (inventario); no hay tabla `inventario` en este proyecto. */
 
@@ -128,9 +128,9 @@ export async function getProductos(
 }
 
 /**
- * KPIs de inventario (todos los productos del taller, no solo la página actual):
- * - valorEnRiesgo: Σ (costo × stock) donde stock ≤ mínimo (costo = costo de adquisición en BD).
- * - rotacionDiasPromedio: promedio en días entre alta del producto y fecha de venta (últimas 20 líneas PDV con producto).
+ * KPIs de inventario (todos los productos del taller, no solo la pagina actual):
+ * - valorEnRiesgo: Σ (costo × stock) donde stock ≤ minimo (costo = costo de adquisicion en BD).
+ * - rotacionDiasPromedio: promedio en dias entre alta del producto y fecha de venta (ultimas 20 lineas PDV con producto).
  */
 export async function getInventoryOperationalKpis(): Promise<{
   valorEnRiesgo: number
@@ -170,7 +170,7 @@ export async function createProducto(
   const tallerId = await getCurrentTallerId()
 
   if (!tallerId?.trim()) {
-    const msg = "No se pudo obtener el taller (taller_id). Inicia sesión de nuevo."
+    const msg = "No se pudo obtener el taller (taller_id). Inicia sesion de nuevo."
     console.error("[createProducto] taller_id ausente")
     throw new Error(msg)
   }
@@ -208,7 +208,7 @@ export async function createProducto(
     condicion: (input.condicion || "").trim() || null,
   }
 
-  // Validación de unicidad de código de barras (manual o autogenerado)
+  // Validacion de unicidad de codigo de barras (manual o autogenerado)
   if (formData.codigo_barras) {
     const { data: existing, error: lookupError } = await supabase
       .from("productos")
@@ -218,14 +218,14 @@ export async function createProducto(
       .maybeSingle()
 
     if (lookupError && lookupError.code !== "PGRST116") {
-      console.error("ERROR_SUPABASE: error verificando codigo_barras único:", lookupError)
-      return { success: false, error: "No se pudo validar el código de barras. Inténtalo de nuevo." }
+      console.error("ERROR_SUPABASE: error verificando codigo_barras unico:", lookupError)
+      return { success: false, error: "No se pudo validar el codigo de barras. Intentalo de nuevo." }
     }
 
     if (existing && (!input.id || existing.id !== input.id)) {
       return {
         success: false,
-        error: "Error: El código de barras ya está asignado a otro producto.",
+        error: "Error: El codigo de barras ya esta asignado a otro producto.",
       }
     }
   }
@@ -252,7 +252,7 @@ export async function createProducto(
         return { success: true }
       }
 
-      // Nuevo producto con UUID de borrador (imagen previa): UPDATE no afectó filas → INSERT con id fijo
+      // Nuevo producto con UUID de borrador (imagen previa): UPDATE no afecto filas → INSERT con id fijo
       const { data: insertedDraft, error: insDraftErr } = await supabase
         .from("productos")
         .insert({ ...formData, id: input.id! })
@@ -287,7 +287,7 @@ export async function createProducto(
 
 const PRODUCT_PHOTOS_BUCKET = BUCKETS.INVENTORY
 
-/** Límite recomendado en cliente (browser-image-compression); si supera esto, el fallo puede ser "Payload too large" en API. */
+/** Limite recomendado en cliente (browser-image-compression); si supera esto, el fallo puede ser "Payload too large" en API. */
 const MAX_INVENTORY_IMAGE_BYTES = 6 * 1024 * 1024
 
 export type UploadProductImageResult =
@@ -296,7 +296,7 @@ export type UploadProductImageResult =
 
 /**
  * Sube una imagen en base64 al bucket de inventario.
- * Devuelve el **path relativo** para `productos.imagen_url` (URL pública vía `getInventoryPublicUrl()` en UI).
+ * Devuelve el **path relativo** para `productos.imagen_url` (URL publica via `getInventoryPublicUrl()` en UI).
  * No lanza: siempre devuelve `{ success, ... }`.
  */
 export async function uploadProductImage(
@@ -309,14 +309,14 @@ export async function uploadProductImage(
       return {
         success: false,
         error:
-          "Falta NEXT_PUBLIC_SUPABASE_URL en el servidor. Configúrala en Vercel (Settings → Environment Variables) y vuelve a desplegar.",
+          "Falta NEXT_PUBLIC_SUPABASE_URL en el servidor. Configurala en Vercel (Settings → Environment Variables) y vuelve a desplegar.",
       }
     }
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
       return {
         success: false,
         error:
-          "Falta SUPABASE_SERVICE_ROLE_KEY en el servidor. Añádela en Vercel (Settings → Environment Variables), marca Production/Preview según corresponda, y vuelve a desplegar.",
+          "Falta SUPABASE_SERVICE_ROLE_KEY en el servidor. Anadela en Vercel (Settings → Environment Variables), marca Production/Preview segun corresponda, y vuelve a desplegar.",
       }
     }
 
@@ -331,14 +331,14 @@ export async function uploadProductImage(
     const UUID_RE =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
     if (!UUID_RE.test(rawProductId)) {
-      return { success: false, error: "ID de producto inválido" }
+      return { success: false, error: "ID de producto invalido" }
     }
 
     const tallerId = await getCurrentTallerId()
     if (!tallerId) {
       return {
         success: false,
-        error: "No se pudo identificar el taller. Cierra sesión e inicia de nuevo.",
+        error: "No se pudo identificar el taller. Cierra sesion e inicia de nuevo.",
       }
     }
 
@@ -357,12 +357,12 @@ export async function uploadProductImage(
     admin = await createAdminClient()
     if (!admin) {
       console.error("[uploadProductImage] createAdminClient returned undefined. Check Supabase env vars.")
-      return { success: false, error: "Error de configuración del servidor. Contacta soporte." }
+      return { success: false, error: "Error de configuracion del servidor. Contacta soporte." }
     }
 
     const base64 = base64Image.startsWith("data:image") ? base64Image.split(",")[1] : base64Image
     if (!base64) {
-      return { success: false, error: "Formato de imagen no válido" }
+      return { success: false, error: "Formato de imagen no valido" }
     }
 
     const buffer = Buffer.from(base64, "base64")
@@ -401,11 +401,11 @@ export async function uploadProductImage(
           : (error.message || "").toLowerCase().includes("payload") ||
               (error.message || "").toLowerCase().includes("too large") ||
               storageErr.statusCode === "413"
-            ? "Payload too large — reduce tamaño en el cliente o sube el límite del bucket."
+            ? "Payload too large — reduce tamano en el cliente o sube el limite del bucket."
             : (error.message || "").toLowerCase().includes("row-level security") ||
                 (error.message || "").toLowerCase().includes("policy") ||
                 (error.message || "").toLowerCase().includes("denied")
-              ? "RLS / políticas de Storage — revisa las políticas del bucket de inventario."
+              ? "RLS / politicas de Storage — revisa las politicas del bucket de inventario."
               : null
 
       let serialized = ""
@@ -473,7 +473,7 @@ export async function bulkImportProductos(
     const tallerId = await getCurrentTallerId()
 
     if (!tallerId) {
-      const msg = "No se pudo obtener el taller (taller_id). Inicia sesión de nuevo."
+      const msg = "No se pudo obtener el taller (taller_id). Inicia sesion de nuevo."
       console.error("ERROR_SUPABASE: taller_id faltante —", msg)
       return { success: false, insertedCount: 0, skippedCount: rows.length, totalCostoCarga: 0, errors: [msg] }
     }
@@ -492,7 +492,7 @@ export async function bulkImportProductos(
         if (val === undefined || val === null || val === "") return undefined
         const n = Number(val)
         if (Number.isNaN(n)) {
-          errors.push(`Fila ${index + 1}: el campo ${field} no es un número válido.`)
+          errors.push(`Fila ${index + 1}: el campo ${field} no es un numero valido.`)
           return undefined
         }
         return n
@@ -520,12 +520,12 @@ export async function bulkImportProductos(
     })
 
     if (!datos.length) {
-      const msg = "No hay filas válidas para importar."
-      console.error("ERROR_SUPABASE: bulk import sin filas válidas —", msg)
+      const msg = "No hay filas validas para importar."
+      console.error("ERROR_SUPABASE: bulk import sin filas validas —", msg)
       return { success: false, insertedCount: 0, skippedCount: rows.length, totalCostoCarga: 0, errors: [...errors, msg] }
     }
 
-    // Pre-fetch todos los códigos de barras existentes en 1 query
+    // Pre-fetch todos los codigos de barras existentes en 1 query
     // en lugar de validar uno por uno dentro del loop (PERF-16)
     const codigosEnImport = datos
       .map((d) => d.codigo_barras as string | null)
@@ -543,7 +543,7 @@ export async function bulkImportProductos(
 
     const datosFiltrados = datos.filter((d, i) => {
       if (d.codigo_barras && codigosExistentes.has(d.codigo_barras as string)) {
-        errors.push(`Fila ${i + 1}: código de barras "${d.codigo_barras}" ya existe — omitido.`)
+        errors.push(`Fila ${i + 1}: codigo de barras "${d.codigo_barras}" ya existe — omitido.`)
         return false
       }
       return true
@@ -588,12 +588,12 @@ export async function deleteProducto(id: string): Promise<{ success: boolean; er
     const tallerId = await getCurrentTallerId()
 
     if (!tallerId) {
-      const msg = "No se pudo obtener el taller (taller_id). Inicia sesión de nuevo."
+      const msg = "No se pudo obtener el taller (taller_id). Inicia sesion de nuevo."
       console.error("ERROR_SUPABASE: taller_id faltante —", msg)
       return { success: false, error: msg }
     }
 
-    if (!id) return { success: false, error: "ID de producto no válido." }
+    if (!id) return { success: false, error: "ID de producto no valido." }
 
     const { error } = await supabase.from("productos").delete().eq("id", id).eq("taller_id", tallerId)
 

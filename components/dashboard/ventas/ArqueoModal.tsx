@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo, useEffect, useMemo, useState } from "react"
 import { Calculator, Clock, X, Loader2 } from "lucide-react"
@@ -275,7 +275,7 @@ export const ArqueoModal = memo(function ArqueoModal({
                           </span>
                         </div>
 
-                        {/* Fila 2: descripción */}
+                        {/* Fila 2: descripcion */}
                         <p
                           className={`text-xs font-black uppercase tracking-wide mt-2 ${
                             m.esEgreso ? "text-red-600" : "text-slate-800"

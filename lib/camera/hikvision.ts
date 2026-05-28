@@ -1,7 +1,7 @@
-/**
+﻿/**
  * lib/camera/hikvision.ts
  *
- * Helpers para interactuar con cámaras Hikvision vía ISAPI y RTSP.
+ * Helpers para interactuar con camaras Hikvision via ISAPI y RTSP.
  * Puros — sin side effects. Usables desde cliente y servidor.
  */
 
@@ -29,7 +29,7 @@ export interface CamaraConfig {
 }
 
 /**
- * Construye la URL RTSP principal de una cámara Hikvision.
+ * Construye la URL RTSP principal de una camara Hikvision.
  * Canal 101 = stream principal (HD), 102 = substream (SD para preview).
  */
 export function buildRtspUrl(
@@ -53,7 +53,7 @@ export function buildSnapshotUrl(
 }
 
 /**
- * Valida que la configuración tenga los campos mínimos para operar.
+ * Valida que la configuracion tenga los campos minimos para operar.
  */
 export function validateHikvisionConfig(
   config: Partial<HikvisionConfig>
@@ -66,7 +66,7 @@ export function validateHikvisionConfig(
 }
 
 /**
- * Extrae la configuración de cámara desde el row de configuracion_taller.
+ * Extrae la configuracion de camara desde el row de configuracion_taller.
  */
 export function extractCamaraConfig(
   row: Record<string, unknown> | null

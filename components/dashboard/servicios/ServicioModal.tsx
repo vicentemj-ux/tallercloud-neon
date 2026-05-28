@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useTransition } from "react"
 import {
@@ -39,7 +39,7 @@ export function ServicioModal({ open, onClose, onSuccess, servicio }: ServicioMo
       return
     }
     if (Number.isNaN(priceNum) || priceNum < 0) {
-      toast({ variant: "destructive", title: "Precio inválido" })
+      toast({ variant: "destructive", title: "Precio invalido" })
       return
     }
 
@@ -107,13 +107,13 @@ export function ServicioModal({ open, onClose, onSuccess, servicio }: ServicioMo
 
           <div className="space-y-2">
             <Label htmlFor="svc-desc" className="text-sm font-semibold text-slate-700">
-              Descripción
+              Descripcion
             </Label>
             <Textarea
               id="svc-desc"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Incluye instalación de sistema operativo, office y programas básicos."
+              placeholder="Incluye instalacion de sistema operativo, office y programas basicos."
               className="min-h-[80px] resize-y"
             />
           </div>

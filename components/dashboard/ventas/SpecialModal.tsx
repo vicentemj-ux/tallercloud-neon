@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo, useState } from "react"
 import { Plus, X } from "lucide-react"
@@ -93,7 +93,7 @@ export const SpecialModal = memo(function SpecialModal({
           <div>
             <label className={labelClass}>Nombre del producto / servicio</label>
             <Input
-              placeholder="Ej: Recarga Digital, Código de Desbloq..."
+              placeholder="Ej: Recarga Digital, Codigo de Desbloq..."
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               autoFocus
@@ -115,7 +115,7 @@ export const SpecialModal = memo(function SpecialModal({
               />
             </div>
             <div>
-              <label className={labelClass}>Costo (inversión)</label>
+              <label className={labelClass}>Costo (inversion)</label>
               <Input
                 type="number"
                 min="0"
@@ -129,9 +129,9 @@ export const SpecialModal = memo(function SpecialModal({
           </div>
 
           <div>
-            <label className={labelClass}>Referencia / código (opcional)</label>
+            <label className={labelClass}>Referencia / codigo (opcional)</label>
             <Input
-              placeholder="Ej: TRX-12345, Código: ABCDEF..."
+              placeholder="Ej: TRX-12345, Codigo: ABCDEF..."
               value={referencia}
               onChange={(e) => setReferencia(e.target.value)}
               className={inputClass}

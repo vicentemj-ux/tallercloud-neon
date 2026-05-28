@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { revalidatePath } from "next/cache"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
@@ -101,7 +101,7 @@ export interface CorteVentaLinea {
   descripcion?: string
 }
 
-/** Totales del corte para impresión y email (misma fuente que `getCajaConDetalle`). */
+/** Totales del corte para impresion y email (misma fuente que `getCajaConDetalle`). */
 export interface CortePrintData {
   numero_corte: number
   fecha_apertura: string
@@ -117,7 +117,7 @@ export interface CortePrintData {
   total_abonos_transferencia: number
   total_gastos: number
   saldo_final: number
-  /** Efectivo físico contado al cerrar (BD). */
+  /** Efectivo fisico contado al cerrar (BD). */
   monto_cierre?: number | null
   nota_cierre?: string
   /** Line items for the "Cobros Reparaciones" section of the ticket. */
@@ -265,13 +265,13 @@ function escapeHtmlEmail(s: string): string {
     .replace(/"/g, "&quot;")
 }
 
-/** Paleta genérica cabeceras HTML email (cierre de caja) */
+/** Paleta generica cabeceras HTML email (cierre de caja) */
 const EMAIL_HEADER_NAVY = "#0a1f33"
 const EMAIL_HEADER_ACCENT = "#185FA5"
 
 /**
  * Nueva plantilla de cierre de caja — detallada, mobile-first, profesional.
- * Muestra desglose completo por método de pago, ventas, cobros y gastos.
+ * Muestra desglose completo por metodo de pago, ventas, cobros y gastos.
  */
 function buildCierreEmailHtmlV2(params: {
   ownerName: string
@@ -324,7 +324,7 @@ function buildCierreEmailHtmlV2(params: {
     </tr>`
   }
 
-  // Helper: fila de tabla con 4 columnas (métodos de pago)
+  // Helper: fila de tabla con 4 columnas (metodos de pago)
   const methodRow = (label: string, ef: number, ta: number, tr: number, bold = false, bg = "") => {
     const f = bold ? "font-weight:700;color:#0f172a;" : "color:#475569;"
     const b = bold ? "" : "border-bottom:1px solid #e2e8f0;"
@@ -337,7 +337,7 @@ function buildCierreEmailHtmlV2(params: {
     </tr>`
   }
 
-  // Tabla de ingresos por método
+  // Tabla de ingresos por metodo
   const ingresosTable = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff;margin-bottom:18px;">
     <thead>
       <tr>
@@ -391,7 +391,7 @@ function buildCierreEmailHtmlV2(params: {
   const resumenTable = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff;margin-bottom:18px;">
     <tbody>
       ${row("Fondo inicial", formatCurrency(montoInicial))}
-      ${row("Ventas del día", formatCurrency(totalVentasMedios), "#f8fafc")}
+      ${row("Ventas del dia", formatCurrency(totalVentasMedios), "#f8fafc")}
       ${row("Cobros reparaciones", formatCurrency(c.total_abonos))}
       ${row("Gastos / egresos", formatCurrency(totalEgresos), "#f8fafc")}
       ${row("Total esperado", formatCurrency(efectivoEsperado), "#f1f5f9", true)}
@@ -441,7 +441,7 @@ function buildCierreEmailHtmlV2(params: {
     <thead>
       <tr>
         <th style="padding:8px 12px;background:#f8fafc;font-size:10px;font-weight:700;color:#64748b;text-align:left;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;border-bottom:1px solid #e2e8f0;">Folio</th>
-        <th style="padding:8px 12px;background:#f8fafc;font-size:10px;font-weight:700;color:#64748b;text-align:left;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;border-bottom:1px solid #e2e8f0;">Método</th>
+        <th style="padding:8px 12px;background:#f8fafc;font-size:10px;font-weight:700;color:#64748b;text-align:left;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;border-bottom:1px solid #e2e8f0;">Metodo</th>
         <th style="padding:8px 12px;background:#f8fafc;font-size:10px;font-weight:700;color:#64748b;text-align:right;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;border-bottom:1px solid #e2e8f0;">Monto</th>
       </tr>
     </thead>
@@ -518,10 +518,10 @@ function buildCierreEmailHtmlV2(params: {
               ${resumenTable}
             </td>
           </tr>
-          <!-- Ingresos por método -->
+          <!-- Ingresos por metodo -->
           <tr>
             <td class="email-body-pad" style="padding:0 22px 4px;">
-              <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;">Ingresos por método de pago</p>
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;font-family:system-ui,sans-serif;">Ingresos por metodo de pago</p>
               ${ingresosTable}
             </td>
           </tr>
@@ -674,7 +674,7 @@ function buildCierreEmailHtml(params: {
                     <td style="padding:14px 16px;font-size:14px;color:#0f172a;text-align:right;border-bottom:1px solid #e2e8f0;font-variant-numeric:tabular-nums;font-family:system-ui,-apple-system,Segoe UI,sans-serif;">${formatCurrency(montoInicial)}</td>
                   </tr>
                   <tr>
-                    <td style="padding:14px 16px;font-size:14px;color:#475569;border-bottom:1px solid #e2e8f0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background-color:#f8fafc;">Ventas del día</td>
+                    <td style="padding:14px 16px;font-size:14px;color:#475569;border-bottom:1px solid #e2e8f0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background-color:#f8fafc;">Ventas del dia</td>
                     <td style="padding:14px 16px;font-size:14px;color:#0f172a;text-align:right;border-bottom:1px solid #e2e8f0;font-variant-numeric:tabular-nums;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background-color:#f8fafc;">${formatCurrency(totalVentasDia)}</td>
                   </tr>
                   <tr>
@@ -692,7 +692,7 @@ function buildCierreEmailHtml(params: {
                   ${highlightRow}
                 </tbody>
               </table>
-              <p style="margin:14px 0 0;font-size:12px;color:#94a3b8;font-family:system-ui,-apple-system,Segoe UI,sans-serif;">Tickets de venta del día: ${ticketsVentas}</p>
+              <p style="margin:14px 0 0;font-size:12px;color:#94a3b8;font-family:system-ui,-apple-system,Segoe UI,sans-serif;">Tickets de venta del dia: ${ticketsVentas}</p>
             </td>
           </tr>
           <tr>
@@ -750,7 +750,7 @@ async function sendCajaClosureEmail(params: {
     emailHeaderLogoUrl,
   })
 
-  // Verificar tamaño del HTML (Resend limita a ~10MB)
+  // Verificar tamano del HTML (Resend limita a ~10MB)
   const htmlSizeMB = Buffer.byteLength(html, "utf8") / (1024 * 1024)
   if (htmlSizeMB > 9) {
     console.warn(`[sendCajaClosureEmail] HTML muy grande (${htmlSizeMB.toFixed(2)} MB). Puede ser rechazado por Resend.`)
@@ -778,13 +778,13 @@ async function sendCajaClosureEmail(params: {
     return { success: true }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    console.error("[sendCajaClosureEmail] excepción:", msg)
+    console.error("[sendCajaClosureEmail] excepcion:", msg)
     return { success: false, error: msg }
   }
 }
 
 /**
- * Reenvía el correo de cierre de caja desde el historial.
+ * Reenvia el correo de cierre de caja desde el historial.
  */
 export async function reenviarCorteEmail(cajaId: string): Promise<{ success: boolean; sentTo?: string; error?: string }> {
   if (!resend) {
@@ -800,7 +800,7 @@ export async function reenviarCorteEmail(cajaId: string): Promise<{ success: boo
   const { ownerEmail, ownerName, nombreTaller } = await getOwnerAlertContext(supabase, (await getCurrentTallerId()))
 
   if (!ownerEmail) {
-    return { success: false, error: "No hay correo del propietario configurado. Revisa Configuración > Mi Cuenta." }
+    return { success: false, error: "No hay correo del propietario configurado. Revisa Configuracion > Mi Cuenta." }
   }
 
   const sendResult = await sendCajaClosureEmail({
@@ -820,8 +820,8 @@ export async function reenviarCorteEmail(cajaId: string): Promise<{ success: boo
 export interface CrearVentaInput {
   caja_id: string | null
   cliente_nombre?: string
-  cliente_id?: string        // UUID del cliente si se seleccionó de la DB
-  cliente_telefono?: string  // teléfono normalizado para WhatsApp
+  cliente_id?: string        // UUID del cliente si se selecciono de la DB
+  cliente_telefono?: string  // telefono normalizado para WhatsApp
   total: number
   descuento: number
   metodo_pago: "efectivo" | "tarjeta" | "transferencia" | "mixto"
@@ -893,7 +893,7 @@ export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: s
 export async function requireCajaAbierta(): Promise<{ caja: CajaRow; error: null } | { caja: null; error: string }> {
   const { caja, error } = await getCajaAbierta()
   if (error) return { caja: null, error: `Error al verificar caja: ${error}` }
-  if (!caja) return { caja: null, error: "No hay una caja abierta. Abre la caja antes de realizar esta operación." }
+  if (!caja) return { caja: null, error: "No hay una caja abierta. Abre la caja antes de realizar esta operacion." }
   return { caja, error: null }
 }
 
@@ -1027,12 +1027,12 @@ export async function abrirCaja(
         }
       } catch (fallbackErr) {
         console.error("[abrirCaja] prisma fallback fatal:", fallbackErr)
-        return { caja: null, error: "Error al abrir caja. Revisa conexión y estructura de base de datos." }
+        return { caja: null, error: "Error al abrir caja. Revisa conexion y estructura de base de datos." }
       }
     }
 
     console.error("[abrirCaja] fatal:", e)
-    return { caja: null, error: "Error al abrir caja. Revisa conexión y estructura de base de datos." }
+    return { caja: null, error: "Error al abrir caja. Revisa conexion y estructura de base de datos." }
   }
 }
 
@@ -1053,7 +1053,7 @@ export async function cerrarCaja(
     .single()
 
   if (cajaErr || !cajaRow) {
-    return { error: cajaErr?.message || "No se encontró la caja" }
+    return { error: cajaErr?.message || "No se encontro la caja" }
   }
 
   const { puedeCerrar, visitasPendientes } = await verificarVisitasPendientesCierre(
@@ -1063,7 +1063,7 @@ export async function cerrarCaja(
 
   if (!puedeCerrar) {
     return {
-      error: `No puedes cerrar caja: hay ${visitasPendientes} visita${visitasPendientes === 1 ? "" : "s"} pendiente${visitasPendientes === 1 ? "" : "s"} sin registrar. Ve a Bitácora de Visitas para atenderla${visitasPendientes === 1 ? "" : "s"}.`,
+      error: `No puedes cerrar caja: hay ${visitasPendientes} visita${visitasPendientes === 1 ? "" : "s"} pendiente${visitasPendientes === 1 ? "" : "s"} sin registrar. Ve a Bitacora de Visitas para atenderla${visitasPendientes === 1 ? "" : "s"}.`,
     }
   }
 
@@ -1082,9 +1082,9 @@ export async function cerrarCaja(
   try {
     const ctx = await getOwnerAlertContext(supabase, tallerId)
     if (!ctx.reportesCierreCaja) {
-      // reportesCierreCaja desactivado; no se envía correo
+      // reportesCierreCaja desactivado; no se envia correo
     } else if (!ctx.ownerEmail) {
-      console.warn("[cerrarCaja] no hay correo configurado. No se envía reporte.")
+      console.warn("[cerrarCaja] no hay correo configurado. No se envia reporte.")
     } else {
       const { data: corteData, error: corteErr } = await getCajaConDetalle(cajaId)
       if (corteErr || !corteData) {
@@ -1119,7 +1119,7 @@ export async function getProductosDisponibles(): Promise<{
   const { supabase, tallerId } = await createCurrentTenantClient()
 
   // PERF: limit 300 previene queries ilimitadas en inventarios grandes.
-  // Inventarios >300 SKUs activos deben implementar búsqueda server-side.
+  // Inventarios >300 SKUs activos deben implementar busqueda server-side.
   const { data, error } = await supabase
     .from("productos")
     .select("id, taller_id, nombre, sku, categoria, precio_venta, costo, stock_actual, imagen_url, es_equipo, imei_serie, color, capacidad, condicion, marca, modelo, procesador, ram, almacenamiento")
@@ -1172,7 +1172,7 @@ export async function crearVenta(
   }
 
   if (!input.items || input.items.length === 0) {
-    return { venta: null, error: "El carrito está vacío" }
+    return { venta: null, error: "El carrito esta vacio" }
   }
 
   if (input.cliente_id) {
@@ -1183,7 +1183,7 @@ export async function crearVenta(
       .eq("taller_id", tallerId)
       .single()
     if (!clienteCheck) {
-      return { venta: null, error: "Cliente no válido para este taller." }
+      return { venta: null, error: "Cliente no valido para este taller." }
     }
   }
 
@@ -1195,7 +1195,7 @@ export async function crearVenta(
       .eq("taller_id", tallerId)
       .single()
     if (!cajaCheck) {
-      return { venta: null, error: "Caja no válida para este taller." }
+      return { venta: null, error: "Caja no valida para este taller." }
     }
   }
 
@@ -1263,7 +1263,7 @@ export async function crearVenta(
 
   const { error: detalleError } = await supabase.from("detalle_ventas").insert(detalles)
   if (detalleError) {
-    // Rollback: eliminar la venta huérfana antes de retornar el error
+    // Rollback: eliminar la venta huerfana antes de retornar el error
     await supabase.from("ventas").delete().eq("id", ventaId).eq("taller_id", tallerId)
     return { venta: null, error: detalleError.message }
   }
@@ -1478,7 +1478,7 @@ export async function getHistorialCaja(
       return acc
     }, {})
 
-    // Gastos de bitácora (sin caja_id; hay que mapear por rango de fechas)
+    // Gastos de bitacora (sin caja_id; hay que mapear por rango de fechas)
     const minApertura = rows.length > 0
       ? rows.reduce((min, r) => (r.fecha_apertura as string) < min ? (r.fecha_apertura as string) : min, rows[0].fecha_apertura as string)
       : new Date().toISOString()
@@ -1496,7 +1496,7 @@ export async function getHistorialCaja(
       .gte("created_at", minApertura)
       .lte("created_at", maxCierre)
 
-    // Asignar cada gasto de bitácora a la caja cuyo rango de fechas lo contenga
+    // Asignar cada gasto de bitacora a la caja cuyo rango de fechas lo contenga
     const gastosBitacora = (gastosBitacoraRows ?? []) as Record<string, unknown>[]
     for (const g of gastosBitacora) {
       const gFecha = g.created_at as string
@@ -1698,7 +1698,7 @@ export async function getAbonoById(
     .eq("taller_id", tallerId)
     .single()
 
-  if (!rep) return { data: null, error: "Reparación no encontrada." }
+  if (!rep) return { data: null, error: "Reparacion no encontrada." }
   const r = rep as Record<string, unknown>
 
   const presupuesto = Number(r.precio_estimado ?? 0)
@@ -1949,9 +1949,9 @@ export async function getVentaLabelData(
   }
 }
 
-// ─── Historial: ticket PDV + anulación ───────────────────────────────────────
+// ─── Historial: ticket PDV + anulacion ───────────────────────────────────────
 
-/** Cualquier usuario autenticado del taller puede anular ventas. La seguridad real está en el RPC `anular_venta_pdv`. */
+/** Cualquier usuario autenticado del taller puede anular ventas. La seguridad real esta en el RPC `anular_venta_pdv`. */
 export async function canAnularVentas(): Promise<boolean> {
   const tallerId = await getCurrentTallerId()
   return !!tallerId
@@ -2055,7 +2055,7 @@ export async function getCobroReparacionParaTicket(
   const m = mov as Record<string, unknown>
   const tipo = m.tipo as string
   if (tipo !== "anticipo_reparacion" && tipo !== "liquidacion_reparacion") {
-    return { data: null, error: "Este movimiento no es un cobro de reparación." }
+    return { data: null, error: "Este movimiento no es un cobro de reparacion." }
   }
 
   const rid = m.referencia_id as string | undefined
@@ -2083,7 +2083,7 @@ export async function getCobroReparacionParaTicket(
   const tipoMov = tipo === "liquidacion_reparacion" ? "liquidacion" : "anticipo"
   const descripcion = String(m.descripcion ?? "").trim()
   const conceptos = [
-    tipoMov === "liquidacion" ? "Liquidación" : "Anticipo",
+    tipoMov === "liquidacion" ? "Liquidacion" : "Anticipo",
     equipo ? `· ${equipo}` : "",
     descripcion ? `· ${descripcion}` : "",
   ]
@@ -2107,8 +2107,8 @@ export async function getCobroReparacionParaTicket(
 }
 
 /**
- * Anula una venta de mostrador en una sola transacción (RPC `anular_venta_pdv`):
- * estado `anulado`, auditoría, movimiento de caja, reversión de stock en `productos`.
+ * Anula una venta de mostrador en una sola transaccion (RPC `anular_venta_pdv`):
+ * estado `anulado`, auditoria, movimiento de caja, reversion de stock en `productos`.
  */
 export async function anularVenta(
   ventaId: string,

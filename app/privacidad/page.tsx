@@ -1,12 +1,12 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ArrowLeft } from "lucide-react"
 import { buildWhatsAppOpenChatUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 
 export const metadata = {
-  title: "Política de Privacidad — TallerCloud",
-  description: "Cómo TallerCloud recopila, usa y protege los datos de sus usuarios.",
+  title: "Politica de Privacidad — TallerCloud",
+  description: "Como TallerCloud recopila, usa y protege los datos de sus usuarios.",
 }
 
 export default function PrivacidadPage() {
@@ -32,17 +32,17 @@ export default function PrivacidadPage() {
               Legal
             </p>
             <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-              Política de Privacidad
+              Politica de Privacidad
             </h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Última actualización: marzo de 2026
+              ultima actualizacion: marzo de 2026
             </p>
           </div>
 
           {/* Intro */}
           <p className="mb-10 leading-relaxed text-muted-foreground">
-            En TallerCloud nos tomamos en serio la privacidad de tus datos. Esta política explica
-            qué información recopilamos, cómo la usamos y cómo la protegemos.
+            En TallerCloud nos tomamos en serio la privacidad de tus datos. Esta politica explica
+            que informacion recopilamos, como la usamos y como la protegemos.
           </p>
 
           {/* Content */}
@@ -62,11 +62,11 @@ export default function PrivacidadPage() {
                     </li>
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Correo electrónico y número de teléfono de contacto
+                      Correo electronico y numero de telefono de contacto
                     </li>
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Contraseña almacenada con cifrado (nunca en texto plano)
+                      Contrasena almacenada con cifrado (nunca en texto plano)
                     </li>
                   </ul>
                 </div>
@@ -77,7 +77,7 @@ export default function PrivacidadPage() {
                   <ul className="space-y-1.5">
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Información de clientes: nombre, teléfono, correo
+                      Informacion de clientes: nombre, telefono, correo
                     </li>
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -85,18 +85,18 @@ export default function PrivacidadPage() {
                     </li>
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Imágenes de dispositivos subidas al sistema
+                      Imagenes de dispositivos subidas al sistema
                     </li>
                   </ul>
                 </div>
                 <div>
                   <h3 className="mb-1.5 text-sm font-semibold text-foreground">
-                    Datos técnicos de uso
+                    Datos tecnicos de uso
                   </h3>
                   <ul className="space-y-1.5">
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Registros de acceso (fecha, hora, dirección IP) para seguridad
+                      Registros de acceso (fecha, hora, direccion IP) para seguridad
                     </li>
                     <li className="flex gap-2 leading-relaxed text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -108,7 +108,7 @@ export default function PrivacidadPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-foreground">2. Cómo usamos los datos</h2>
+              <h2 className="mb-3 text-xl font-bold text-foreground">2. Como usamos los datos</h2>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -116,7 +116,7 @@ export default function PrivacidadPage() {
                 </li>
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                  Para enviar notificaciones relacionadas con tu cuenta (renovación, cambios
+                  Para enviar notificaciones relacionadas con tu cuenta (renovacion, cambios
                   importantes, soporte).
                 </li>
                 <li className="flex gap-2 leading-relaxed">
@@ -144,15 +144,15 @@ export default function PrivacidadPage() {
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 text-lg">🖼️</span>
                   <div>
-                    <p className="font-semibold text-foreground">Almacenamiento de imágenes</p>
-                    <p>Supabase Storage con acceso controlado por políticas de seguridad.</p>
+                    <p className="font-semibold text-foreground">Almacenamiento de imagenes</p>
+                    <p>Supabase Storage con acceso controlado por politicas de seguridad.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 text-lg">🔒</span>
                   <div>
-                    <p className="font-semibold text-foreground">Transmisión</p>
-                    <p>Todas las conexiones están cifradas con SSL/TLS. Nunca se transmiten
+                    <p className="font-semibold text-foreground">Transmision</p>
+                    <p>Todas las conexiones estan cifradas con SSL/TLS. Nunca se transmiten
                       datos sensibles en texto plano.</p>
                   </div>
                 </div>
@@ -176,21 +176,21 @@ export default function PrivacidadPage() {
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                   <span>
                     <strong className="font-semibold text-foreground">Exportar</strong> tus datos
-                    operativos en formato CSV desde el módulo de configuración.
+                    operativos en formato CSV desde el modulo de configuracion.
                   </span>
                 </li>
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                   <span>
                     <strong className="font-semibold text-foreground">Eliminar</strong> tu
-                    cuenta y todos los datos asociados solicitándolo por WhatsApp.
+                    cuenta y todos los datos asociados solicitandolo por WhatsApp.
                   </span>
                 </li>
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                   <span>
                     <strong className="font-semibold text-foreground">Corregir</strong> cualquier
-                    dato incorrecto directamente desde la configuración de tu taller.
+                    dato incorrecto directamente desde la configuracion de tu taller.
                   </span>
                 </li>
               </ul>
@@ -213,26 +213,26 @@ export default function PrivacidadPage() {
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                  TallerCloud utiliza únicamente cookies esenciales para mantener tu sesión
-                  activa y recordar tu autenticación.
+                  TallerCloud utiliza unicamente cookies esenciales para mantener tu sesion
+                  activa y recordar tu autenticacion.
                 </li>
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                  No se utilizan cookies de rastreo, publicidad ni analítica de terceros.
+                  No se utilizan cookies de rastreo, publicidad ni analitica de terceros.
                 </li>
                 <li className="flex gap-2 leading-relaxed">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                  Las cookies de sesión se eliminan al cerrar sesión o al expirar tu plan.
+                  Las cookies de sesion se eliminan al cerrar sesion o al expirar tu plan.
                 </li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-foreground">6. Cambios a esta política</h2>
+              <h2 className="mb-3 text-xl font-bold text-foreground">6. Cambios a esta politica</h2>
               <p className="leading-relaxed text-muted-foreground">
-                Si realizamos cambios relevantes a esta política de privacidad, te notificaremos
-                por correo electrónico con al menos 15 días de anticipación. El uso continuado
-                del servicio después de ese período constituye aceptación de los cambios.
+                Si realizamos cambios relevantes a esta politica de privacidad, te notificaremos
+                por correo electronico con al menos 15 dias de anticipacion. El uso continuado
+                del servicio despues de ese periodo constituye aceptacion de los cambios.
               </p>
             </section>
 
@@ -252,7 +252,7 @@ export default function PrivacidadPage() {
                 </p>
                 <p>
                   <span className="font-semibold text-foreground">Operado por:</span>{" "}
-                  Vicente Munguia · Los Mochis, Sinaloa, México
+                  Vicente Munguia · Los Mochis, Sinaloa, Mexico
                 </p>
               </div>
             </section>

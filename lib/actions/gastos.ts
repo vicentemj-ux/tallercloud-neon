@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
@@ -91,7 +91,7 @@ export async function addGastoTicket(
   
   const tipoLabel = {
     mano_obra: "Mano de Obra",
-    refaccion: "Refacción",
+    refaccion: "Refaccion",
     maquila: "Maquila/Externo",
     insumo: "Insumos",
     otro: "Otros"
@@ -125,7 +125,7 @@ export async function addGastoTicket(
     tipo:            "gasto_reparacion",
     /** ID de `reparacion_gastos` (1:1 con el movimiento; antes se usaba `reparacion_id` y fallaba con varios gastos). */
     referencia_id:   gastoRow.id,
-    descripcion:     `Inversión Folio #${folio} - ${tipoLabel}: ${input.concepto.trim()}`,
+    descripcion:     `Inversion Folio #${folio} - ${tipoLabel}: ${input.concepto.trim()}`,
     monto:           -Math.abs(input.monto),
     metodo_pago:     "efectivo",
     fecha:           new Date().toISOString(),
@@ -209,7 +209,7 @@ export async function deleteGastoTicket(
       await supabase.from("movimientos_caja").delete().eq("id", originalMov.id)
     } else {
       console.warn(
-        "[deleteGastoTicket] No se encontró movimiento de caja para el gasto; omitiendo ajuste (legacy o caja distinta).",
+        "[deleteGastoTicket] No se encontro movimiento de caja para el gasto; omitiendo ajuste (legacy o caja distinta).",
         { gastoId: id, reparacionId: gastoRow.reparacion_id },
       )
     }

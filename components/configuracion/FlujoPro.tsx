@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -59,7 +59,7 @@ export function FlujoPro({
               <div className="text-center px-6">
                 <p className="font-bold text-slate-800">Plan PRO requerido</p>
                 <p className="text-sm text-slate-500 mt-1 max-w-xs">
-                  Activa una suscripción PRO para configurar y activar el Flujo PRO.
+                  Activa una suscripcion PRO para configurar y activar el Flujo PRO.
                 </p>
               </div>
               <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl px-5">
@@ -75,13 +75,13 @@ export function FlujoPro({
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-700 shadow-sm ring-1 ring-amber-300">
                   <ClipboardList className="h-6 w-6" aria-hidden />
                 </div>
-                <h4 className="text-lg font-bold text-slate-900">Diagnóstico</h4>
+                <h4 className="text-lg font-bold text-slate-900">Diagnostico</h4>
               </div>
               <p className="text-xs text-slate-600 mb-4">
                 Checklist obligatorio antes de avanzar estado
               </p>
               <p className="text-xs text-amber-700 font-medium bg-amber-50 px-3 py-2 rounded-lg mb-4">
-                Mínimo 5 pruebas o motivo de express
+                Minimo 5 pruebas o motivo de express
               </p>
               <div className="flex items-center justify-between">
                 <Label htmlFor="hc-req" className="text-sm font-semibold text-slate-700 cursor-pointer">
@@ -108,7 +108,7 @@ export function FlujoPro({
                 Firma digital del cliente en ingreso
               </p>
               <p className="text-xs text-amber-700 font-medium bg-amber-50 px-3 py-2 rounded-lg mb-4">
-                Capturada electrónicamente con timestamp
+                Capturada electronicamente con timestamp
               </p>
               <div className="flex items-center justify-between">
                 <Label htmlFor="firma-req" className="text-sm font-semibold text-slate-700 cursor-pointer">
@@ -135,7 +135,7 @@ export function FlujoPro({
                 Fotos obligatorias antes de avanzar
               </p>
               <p className="text-xs text-amber-700 font-medium bg-amber-50 px-3 py-2 rounded-lg mb-4">
-                Mínimo 2 fotos con fecha y hora
+                Minimo 2 fotos con fecha y hora
               </p>
               <div className="flex items-center justify-between">
                 <Label htmlFor="fotos-req" className="text-sm font-semibold text-slate-700 cursor-pointer">

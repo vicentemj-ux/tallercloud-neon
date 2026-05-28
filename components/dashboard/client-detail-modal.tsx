@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Phone, Mail, Plus, ExternalLink, Inbox, Copy, Receipt } from "lucide-react"
 import { WhatsAppButton } from "./whatsapp-button"
 import type { ClientDetail } from "@/lib/actions/clients-prisma"
-import type { BitacoraRepair } from "@/lib/actions/repairs"
+import type { BitacoraRepair } from "@/lib/actions/repairs-prisma"
 
 interface ClientDetailModalProps {
   client: ClientDetail | null
@@ -24,12 +24,12 @@ interface ClientDetailModalProps {
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   Recibido:       { label: "RECIBIDO",            className: "bg-blue-50 text-blue-700 border-blue-200" },
-  Diagnostico:    { label: "DIAGNÓSTICO",         className: "bg-amber-50 text-amber-700 border-amber-200" },
-  "En Reparacion":{ label: "EN REPARACIÓN",       className: "bg-orange-50 text-orange-700 border-orange-200" },
+  Diagnostico:    { label: "DIAGNÃ“STICO",         className: "bg-amber-50 text-amber-700 border-amber-200" },
+  "En Reparacion":{ label: "EN REPARACIÃ“N",       className: "bg-orange-50 text-orange-700 border-orange-200" },
   Listo:          { label: "LISTO",               className: "bg-green-50 text-green-700 border-green-200" },
   Entregado:      { label: "ENTREGADO",           className: "bg-purple-50 text-purple-700 border-purple-200" },
   Cancelado:      { label: "CANCELADO",           className: "bg-red-50 text-red-700 border-red-200" },
-  "Sin Reparacion":{ label: "SIN REPARACIÓN",     className: "bg-slate-50 text-slate-700 border-slate-200" },
+  "Sin Reparacion":{ label: "SIN REPARACIÃ“N",     className: "bg-slate-50 text-slate-700 border-slate-200" },
   Reingreso:      { label: "REINGRESO",           className: "bg-orange-50 text-orange-700 border-orange-200" },
 }
 
@@ -51,7 +51,7 @@ function toRepairSummary(order: ClientDetail["ordenes"][0], client: ClientDetail
       day: "numeric", month: "short", year: "numeric",
     }),
     anticipo: 0,
-    tecnico: "—",
+    tecnico: "â€”",
   }
 }
 
@@ -76,7 +76,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
   const formatCurrency = (amount: number | null) =>
     amount != null
       ? amount.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })
-      : "—"
+      : "â€”"
 
   return (
     <>
@@ -84,7 +84,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-slate-200 bg-white p-0 gap-0 shadow-sm">
           {/* Header */}
           <DialogHeader className="px-6 py-5 border-b border-slate-100 shrink-0">
-            <DialogDescription className="sr-only">Información detallada del cliente</DialogDescription>
+            <DialogDescription className="sr-only">InformaciÃ³n detallada del cliente</DialogDescription>
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <DialogTitle className="text-xl font-bold text-slate-900 truncate">
@@ -112,7 +112,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                       <Receipt className="h-3 w-3" />
                       {client.rfc}
                       <Copy className="h-3 w-3" />
-                      {rfcCopied && <span className="text-green-600 not-italic font-sans">¡Copiado!</span>}
+                      {rfcCopied && <span className="text-green-600 not-italic font-sans">Â¡Copiado!</span>}
                     </button>
                   )}
                   <Badge variant="outline" className={
@@ -120,7 +120,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                       ? "border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold"
                       : "border-slate-200 bg-slate-50 text-slate-400 text-xs font-semibold"
                   }>
-                    {client.ordenes.length} {client.ordenes.length === 1 ? "orden" : "órdenes"}
+                    {client.ordenes.length} {client.ordenes.length === 1 ? "orden" : "Ã³rdenes"}
                   </Badge>
                 </div>
               </div>
@@ -135,9 +135,9 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                   <Inbox className="h-7 w-7 text-slate-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-700">Sin órdenes de reparación</p>
+                  <p className="font-semibold text-slate-700">Sin Ã³rdenes de reparaciÃ³n</p>
                   <p className="text-sm text-slate-500 mt-1">
-                    Este cliente aún no tiene órdenes registradas.
+                    Este cliente aÃºn no tiene Ã³rdenes registradas.
                   </p>
                 </div>
                 <Button
@@ -148,13 +148,13 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                   }}
                 >
                   <Plus className="h-4 w-4" />
-                  Nueva Reparación
+                  Nueva ReparaciÃ³n
                 </Button>
               </div>
             ) : (
               <div className="space-y-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                  Historial de Órdenes
+                  Historial de Ã“rdenes
                 </p>
                 {client.ordenes.map((order) => {
                   const sc = getStatusConfig(order.estatus)
@@ -175,7 +175,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                           {order.marca} {order.modelo}
                         </p>
                         <p className="text-xs text-slate-500 truncate">
-                          {order.falla?.slice(0, 48)}{order.falla && order.falla.length > 48 ? "…" : ""}
+                          {order.falla?.slice(0, 48)}{order.falla && order.falla.length > 48 ? "â€¦" : ""}
                         </p>
                       </div>
 
@@ -221,3 +221,4 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
     </>
   )
 }
+

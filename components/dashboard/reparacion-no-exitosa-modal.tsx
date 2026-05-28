@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import {
@@ -23,20 +23,20 @@ import { Loader2, AlertTriangle } from "lucide-react"
 
 const RAZONES_SIN_REPARAR = [
   "Pieza no disponible / Descontinuada",
-  "Daño irreparable (placa, CPU, etc.)",
-  "Costo de reparación mayor al valor del equipo",
-  "Cliente rechazó el presupuesto",
-  "Equipo mojado / Corrosión severa",
-  "Falla recurrente, no se logró solucionar",
+  "Dano irreparable (placa, CPU, etc.)",
+  "Costo de reparacion mayor al valor del equipo",
+  "Cliente rechazo el presupuesto",
+  "Equipo mojado / Corrosion severa",
+  "Falla recurrente, no se logro solucionar",
   "Otro",
 ]
 
 const RAZONES_CANCELAR = [
-  "Cliente solicitó cancelación",
-  "Cliente no contesta / No se presentó",
+  "Cliente solicito cancelacion",
+  "Cliente no contesta / No se presento",
   "Folio duplicado / Error de captura",
   "Equipo retirado sin reparar",
-  "Garantía no cubre el daño",
+  "Garantia no cubre el dano",
   "Otro",
 ]
 
@@ -59,11 +59,11 @@ export function ReparacionNoExitosaModal({
   const [nota, setNota] = useState("")
 
   const razones = tipo === "sin_reparar" ? RAZONES_SIN_REPARAR : RAZONES_CANCELAR
-  const titulo = tipo === "sin_reparar" ? "Marcar como sin reparar" : "Cancelar reparación"
+  const titulo = tipo === "sin_reparar" ? "Marcar como sin reparar" : "Cancelar reparacion"
   const descripcion =
     tipo === "sin_reparar"
-      ? "Registra por qué no fue posible reparar el equipo. Esta información es clave para métricas internas."
-      : "Registra la razón de la cancelación. Ayuda a identificar patrones y mejorar el servicio."
+      ? "Registra por que no fue posible reparar el equipo. Esta informacion es clave para metricas internas."
+      : "Registra la razon de la cancelacion. Ayuda a identificar patrones y mejorar el servicio."
 
   const handleConfirm = () => {
     if (!razon.trim()) return
@@ -84,11 +84,11 @@ export function ReparacionNoExitosaModal({
         <div className="space-y-4 px-5 py-4">
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-wide text-slate-600">
-              Razón <span className="text-red-500">*</span>
+              Razon <span className="text-red-500">*</span>
             </Label>
             <Select value={razon} onValueChange={setRazon} disabled={pending}>
               <SelectTrigger className="rounded-lg border-slate-200 text-sm">
-                <SelectValue placeholder="Selecciona una razón…" />
+                <SelectValue placeholder="Selecciona una razon…" />
               </SelectTrigger>
               <SelectContent>
                 {razones.map((r) => (

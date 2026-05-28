@@ -1,4 +1,4 @@
-import { decodePattern, MIN_PATTERN } from "@/lib/reparaciones/pattern"
+﻿import { decodePattern, MIN_PATTERN } from "@/lib/reparaciones/pattern"
 
 export type SecurityTab = "none" | "pin" | "password" | "pattern"
 
@@ -92,7 +92,7 @@ export function normalizeSecurityForDb(input: {
 export function mapRecordToSecurityDisplay(rec: Record<string, unknown>): {
   securityType: SecurityTab
   securityValue: string | null
-  /** Compat: PIN/contraseña unificados en pin legado */
+  /** Compat: PIN/contrasena unificados en pin legado */
   pinContrasena: string | null
   patronDesbloqueo: string | null
 } {

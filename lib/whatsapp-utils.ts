@@ -1,4 +1,4 @@
-import { getCodigoTelefono } from "@/lib/constants/paises"
+﻿import { getCodigoTelefono } from "@/lib/constants/paises"
 
 export function normalizePhoneForWhatsApp(
   raw: string | null | undefined,
@@ -24,5 +24,5 @@ export function buildWhatsAppUrl(
 }
 
 export function getTallerWhatsAppCountryCode(paisNombre: string | null | undefined): string {
-  return getCodigoTelefono(paisNombre ?? "México")
+  return getCodigoTelefono(paisNombre ?? "Mexico")
 }

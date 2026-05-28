@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic"
+﻿import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, DatabaseBackup } from "lucide-react"
 import Link from "next/link"
@@ -19,7 +19,7 @@ export default function ImportacionPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <DatabaseBackup className="h-6 w-6 text-blue-600" />
-              Importación de Historial
+              Importacion de Historial
             </h1>
             <p className="text-sm text-slate-500">
               Migra tus datos de Morelos, Reparatech o sistemas externos.

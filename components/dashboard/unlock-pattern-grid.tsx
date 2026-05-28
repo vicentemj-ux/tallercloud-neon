@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 /**
  * 3x3 unlock pattern grid. Parses a string like "1-4-7-8-9" or "1,4,7,8,9"
@@ -47,7 +47,7 @@ export function UnlockPatternGrid({ pattern, className = "", size = 120 }: Unloc
   return (
     <div className={className}>
       <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">
-        Patrón de desbloqueo
+        Patron de desbloqueo
       </p>
       <svg
         width={size}
@@ -107,7 +107,7 @@ export function UnlockPatternGrid({ pattern, className = "", size = 120 }: Unloc
         ))}
       </svg>
       {indices.length === 0 && (
-        <p className="text-xs text-muted-foreground mt-1">Sin patrón registrado</p>
+        <p className="text-xs text-muted-foreground mt-1">Sin patron registrado</p>
       )}
     </div>
   )

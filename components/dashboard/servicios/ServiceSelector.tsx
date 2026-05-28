@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Input } from "@/components/ui/input"
@@ -107,7 +107,7 @@ export function ServiceSelector({ selected, onChange }: ServiceSelectorProps) {
                 <Wrench className="h-4 w-4 text-blue-600 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-slate-900 truncate">{svc.nombre}</p>
-                  <p className="text-xs text-slate-500 truncate">{svc.descripcion || "Sin descripción"}</p>
+                  <p className="text-xs text-slate-500 truncate">{svc.descripcion || "Sin descripcion"}</p>
                 </div>
                 <span className="text-sm font-bold text-slate-900 shrink-0">
                   ${svc.precio.toLocaleString("es-MX")}

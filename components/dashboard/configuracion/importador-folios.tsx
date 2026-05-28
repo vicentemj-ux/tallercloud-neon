@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
@@ -13,9 +13,9 @@ import { uploadToStaging } from "@/lib/actions/import"
 
 // Definimos las columnas que nuestra base de datos (Staging) espera
 const COLUMNAS_DESTINO = [
-  { id: "folio", label: "Folio / Número de Orden" },
+  { id: "folio", label: "Folio / Numero de Orden" },
   { id: "cliente_nombre", label: "Nombre del Cliente" },
-  { id: "cliente_telefono", label: "Teléfono del Cliente" },
+  { id: "cliente_telefono", label: "Telefono del Cliente" },
   { id: "marca", label: "Marca" },
   { id: "modelo", label: "Modelo" },
   { id: "falla", label: "Falla Reportada" },
@@ -51,7 +51,7 @@ export function ImportadorFolios() {
           setFullData(json)
           setPreviewData(json.slice(0, 5))
           setPaso(2)
-          toast.success("Archivo leído: " + json.length + " registros detectados")
+          toast.success("Archivo leido: " + json.length + " registros detectados")
         }
       } catch (err) {
         toast.error("Error al leer el archivo Excel")
@@ -82,7 +82,7 @@ export function ImportadorFolios() {
     setLoading(true)
     const batchId = uuidv4()
 
-    // Preparamos TODOS los datos según el mapeo seleccionado
+    // Preparamos TODOS los datos segun el mapeo seleccionado
     const datosMapeados = fullData.map(row => ({
       folio: row[mapping.folio],
       cliente_nombre: row[mapping.cliente_nombre],
@@ -98,7 +98,7 @@ export function ImportadorFolios() {
     const result = await uploadToStaging(datosMapeados, batchId)
 
     if (result.success) {
-      toast.success(`¡Migración iniciada! ${result.count} registros en la tabla de transición.`)
+      toast.success(`¡Migracion iniciada! ${result.count} registros en la tabla de transicion.`)
       setPaso(1)
       setMapping({})
       setFullData([])
@@ -159,7 +159,7 @@ export function ImportadorFolios() {
             ))}
           </div>
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setPaso(1)}>Atrás</Button>
+            <Button variant="outline" onClick={() => setPaso(1)}>Atras</Button>
             <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setPaso(3)}>Vista Previa</Button>
           </div>
         </div>
@@ -190,11 +190,11 @@ export function ImportadorFolios() {
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
             <p className="text-xs text-amber-700">
-              Se procesarán <strong>{fullData.length}</strong> registros. Se guardarán en la tabla transitoria para validación manual antes de pasar a la base de datos oficial.
+              Se procesaran <strong>{fullData.length}</strong> registros. Se guardaran en la tabla transitoria para validacion manual antes de pasar a la base de datos oficial.
             </p>
           </div>
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setPaso(2)} disabled={loading}>Atrás</Button>
+            <Button variant="outline" onClick={() => setPaso(2)} disabled={loading}>Atras</Button>
             <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleIniciarCarga} disabled={loading}>
               {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Iniciar Carga a Staging"}
             </Button>

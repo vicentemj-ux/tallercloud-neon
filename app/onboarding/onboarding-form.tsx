@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
@@ -45,7 +45,7 @@ export function OnboardingForm() {
           required
           minLength={2}
           maxLength={100}
-          placeholder="Ej. Taller García Reparaciones"
+          placeholder="Ej. Taller Garcia Reparaciones"
           value={nombreTaller}
           onChange={(e) => setNombreTaller(e.target.value)}
           disabled={loading}

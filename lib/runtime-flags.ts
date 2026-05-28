@@ -1,4 +1,4 @@
-export const PRO_FEATURES_TEMP_DISABLED = true
+﻿export const PRO_FEATURES_TEMP_DISABLED = true
 
 export const PRO_DISABLED_ROUTES = [
   "/dashboard/bitacora-visitas",
@@ -11,5 +11,5 @@ export const PRO_DISABLED_ROUTES = [
   "/dashboard/servicios",
 ] as const
 
-// Caja se mantiene únicamente dentro del módulo de Ventas durante la migración.
+// Caja se mantiene unicamente dentro del modulo de Ventas durante la migracion.
 export const GLOBAL_CAJA_GUARD_DISABLED = true

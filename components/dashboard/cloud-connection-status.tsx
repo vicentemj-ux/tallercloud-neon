@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
@@ -44,7 +44,7 @@ export function CloudConnectionStatus({ className }: { className?: string }) {
         toast({
           title: "Modo offline",
           description:
-            "Sin conexión a internet. Puedes seguir capturando; al volver la señal se sincronizan los tickets en cola.",
+            "Sin conexion a internet. Puedes seguir capturando; al volver la senal se sincronizan los tickets en cola.",
         })
       }
       prevOnlineRef.current = now
@@ -69,10 +69,10 @@ export function CloudConnectionStatus({ className }: { className?: string }) {
   // ── Derived ─────────────────────────────────────────────────────────────────
   const title =
     pendingCount > 0
-      ? `${online ? "Conexión a internet" : "Sin conexión"} · ${pendingCount} ticket${pendingCount === 1 ? "" : "s"} pendiente${pendingCount === 1 ? "" : "s"} de sincronizar`
+      ? `${online ? "Conexion a internet" : "Sin conexion"} · ${pendingCount} ticket${pendingCount === 1 ? "" : "s"} pendiente${pendingCount === 1 ? "" : "s"} de sincronizar`
       : online
-        ? "Conexión a internet"
-        : "Sin conexión — los tickets nuevos se pueden guardar en cola"
+        ? "Conexion a internet"
+        : "Sin conexion — los tickets nuevos se pueden guardar en cola"
 
   const perfColor =
     perf === null
@@ -85,9 +85,9 @@ export function CloudConnectionStatus({ className }: { className?: string }) {
 
   const perfTooltip =
     avgMs !== null
-      ? `Último: ${perf?.ms}ms · Promedio sesión: ${avgMs}ms`
+      ? `ultimo: ${perf?.ms}ms · Promedio sesion: ${avgMs}ms`
       : perf
-        ? `Último: ${perf.ms}ms`
+        ? `ultimo: ${perf.ms}ms`
         : undefined
 
   return (

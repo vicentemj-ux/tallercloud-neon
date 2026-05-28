@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -7,7 +7,7 @@ export default function FlujoProRedirectPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirigir a la pestaña Flujo PRO en la página de Configuración
+    // Redirigir a la pestana Flujo PRO en la pagina de Configuracion
     router.push("/dashboard/configuracion?tab=flujo-pro")
   }, [router])
 

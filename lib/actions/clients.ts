@@ -1,7 +1,7 @@
-"use server"
+﻿"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar clients-prisma.ts).
-// Pendiente migración completa de módulos legacy/PRO.
+// Pendiente migracion completa de modulos legacy/PRO.
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
@@ -114,7 +114,7 @@ export async function searchClients(
 
   if (clientRes.error) {
     console.error("Error searching clients:", clientRes.error)
-    return { clients: [], error: "Error en la búsqueda" }
+    return { clients: [], error: "Error en la busqueda" }
   }
 
   const countMap = buildCountMap((repRes.data ?? []) as Array<{ cliente_id: string | null }>)
@@ -154,7 +154,7 @@ export async function getClientDetail(
 
   if (ordenesError) {
     console.error("Error fetching orders:", ordenesError)
-    return { client: null, error: "Error al cargar órdenes" }
+    return { client: null, error: "Error al cargar ordenes" }
   }
 
   return {
@@ -178,11 +178,11 @@ export async function updateClient(clientId: string, updates: Partial<Client>) {
   if (updates.telefono_secundario !== undefined) {
     cleanedData.telefono_secundario = updates.telefono_secundario?.replace(/\D/g, "") || null
   }
-  // RFC: siempre mayúsculas; vacío → null
+  // RFC: siempre mayusculas; vacio → null
   if (updates.rfc !== undefined) {
     cleanedData.rfc = updates.rfc?.trim().toUpperCase() || null
   }
-  // Campos fiscales opcionales: vacío → null
+  // Campos fiscales opcionales: vacio → null
   const nullableFields = ["razon_social", "codigo_postal_fiscal", "regimen_fiscal", "uso_cfdi"] as const
   for (const field of nullableFields) {
     if (updates[field] !== undefined) {

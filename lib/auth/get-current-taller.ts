@@ -1,11 +1,11 @@
-"use server"
+﻿"use server"
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { getCurrentTenant } from "@/lib/auth"
 import { calcDiasRestantes } from "@/lib/utils/subscription"
 
-/** Días de prueba gratuita desde la creación del perfil (fallback para cuentas sin fecha_vencimiento_plan) */
+/** Dias de prueba gratuita desde la creacion del perfil (fallback para cuentas sin fecha_vencimiento_plan) */
 const TRIAL_DAYS = 30
 
 /**
@@ -63,7 +63,7 @@ export async function getCurrentTallerInfo(): Promise<{ id: string; name: string
 }
 
 /**
- * Días de prueba / suscripción restantes.
+ * Dias de prueba / suscripcion restantes.
  * Priority: fecha_vencimiento_plan (explicit expiry) → created_at + TRIAL_DAYS (legacy fallback).
  * Always returns ≥ 0 (never negative).
  * Throws redirect to login if not authenticated.

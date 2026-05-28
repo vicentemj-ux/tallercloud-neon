@@ -1,8 +1,8 @@
-import type { Metadata } from "next"
+﻿import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Garantía digital | TallerCloud",
-  description: "Comprobante de salida y garantía de tu reparación.",
+  title: "Garantia digital | TallerCloud",
+  description: "Comprobante de salida y garantia de tu reparacion.",
   robots: {
     index: false,
     follow: false,

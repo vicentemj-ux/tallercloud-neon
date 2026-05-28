@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { randomUUID } from "crypto"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -11,7 +11,7 @@ function baseUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL || "https://tallercloud.net").replace(/\/$/, "")
 }
 
-/** URL pública de la página de firma (segmento dinámico = token UUID). */
+/** URL publica de la pagina de firma (segmento dinamico = token UUID). */
 function buildFirmaDigitalPageUrl(token: string): string {
   return `${baseUrl()}/firma-digital/${token}`
 }
@@ -35,7 +35,7 @@ export async function getActiveFirmaDigitalUrl(
     .maybeSingle()
 
   if (repErr || !rep) {
-    return { error: "No se encontró la reparación." }
+    return { error: "No se encontro la reparacion." }
   }
 
   const admin = await createAdminClient()
@@ -64,8 +64,8 @@ const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 /**
- * Crea un token de firma para una reparación (plan PRO).
- * URL pública: /firma-digital/[id] (id = token en la ruta dinámica)
+ * Crea un token de firma para una reparacion (plan PRO).
+ * URL publica: /firma-digital/[id] (id = token en la ruta dinamica)
  * @param preferredToken — UUID opcional (p. ej. ya mostrado en el QR antes de guardar el ticket).
  */
 export async function createFirmaDigitalToken(
@@ -85,7 +85,7 @@ export async function createFirmaDigitalToken(
     .maybeSingle()
 
   if (repErr || !rep) {
-    return { error: "No se encontró la reparación." }
+    return { error: "No se encontro la reparacion." }
   }
 
   const admin = await createAdminClient()
@@ -136,7 +136,7 @@ export async function saveFirmaSignatureBase64(
     .maybeSingle()
 
   if (tokErr || !row) {
-    return { success: false, error: "Enlace inválido o expirado." }
+    return { success: false, error: "Enlace invalido o expirado." }
   }
 
   if (row.used_at) {
@@ -144,7 +144,7 @@ export async function saveFirmaSignatureBase64(
   }
 
   if (new Date(row.expires_at as string).getTime() < Date.now()) {
-    return { success: false, error: "El enlace de firma expiró." }
+    return { success: false, error: "El enlace de firma expiro." }
   }
 
   const tallerId = row.taller_id as string
@@ -155,11 +155,11 @@ export async function saveFirmaSignatureBase64(
   try {
     buffer = Buffer.from(raw, "base64")
   } catch {
-    return { success: false, error: "Imagen no válida." }
+    return { success: false, error: "Imagen no valida." }
   }
 
   if (buffer.length < 50 || buffer.length > 5 * 1024 * 1024) {
-    return { success: false, error: "El archivo de firma no es válido." }
+    return { success: false, error: "El archivo de firma no es valido." }
   }
 
   const path = `${tallerId}/${repairId}/firma-${Date.now()}.png`

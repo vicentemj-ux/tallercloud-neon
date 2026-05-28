@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -56,12 +56,12 @@ export function TrackingValidation({ onValidate, isLoading, error }: TrackingVal
 
           {/* Title */}
           <h2 className="text-center text-2xl font-bold text-white mb-2">
-            VERIFICACIÓN DE SEGURIDAD
+            VERIFICACIoN DE SEGURIDAD
           </h2>
 
           {/* Visual instructions */}
           <p className="text-center text-sm text-slate-300 mb-2">
-            Ingresa los últimos 4 dígitos del celular registrado en tu ticket de recepción.
+            Ingresa los ultimos 4 digitos del celular registrado en tu ticket de recepcion.
           </p>
           <div className="flex items-center justify-center gap-2 mb-6 text-xs text-slate-400">
             <Phone className="w-4 h-4 text-blue-400" />
@@ -77,11 +77,11 @@ export function TrackingValidation({ onValidate, isLoading, error }: TrackingVal
               id="tracking-phone-last4"
               type="tel"
               inputMode="numeric"
-              placeholder="Últimos 4 dígitos de tu celular"
+              placeholder="ultimos 4 digitos de tu celular"
               value={last4}
               onChange={handleInputChange}
               maxLength={4}
-              aria-label="Ingresa los últimos 4 dígitos de tu celular"
+              aria-label="Ingresa los ultimos 4 digitos de tu celular"
               aria-invalid={!!error}
               aria-describedby={error ? "tracking-folio-error" : undefined}
               className="h-14 text-center text-lg font-semibold bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/30"
@@ -106,7 +106,7 @@ export function TrackingValidation({ onValidate, isLoading, error }: TrackingVal
 
         {/* Footer text */}
         <p className="text-center text-xs text-slate-500 px-4">
-          Tu información está protegida y segura. Estos datos solo serán utilizados para verificar tu solicitud.
+          Tu informacion esta protegida y segura. Estos datos solo seran utilizados para verificar tu solicitud.
         </p>
       </div>
 

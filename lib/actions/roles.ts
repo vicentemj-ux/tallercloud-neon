@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
@@ -37,7 +37,7 @@ export interface RolOption {
   categoria?: "estandar" | "especial"
 }
 
-/** Catálogo global de roles (Mi Equipo MVP). */
+/** Catalogo global de roles (Mi Equipo MVP). */
 export async function getRolesByTallerId(): Promise<{ data: RolOption[]; error: string | null }> {
   try {
     const supabase = await createClient()

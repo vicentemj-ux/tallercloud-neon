@@ -1,4 +1,4 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+﻿import type { ProductoRow } from "@/lib/actions/productos"
 import { getInventoryPublicUrl } from "@/lib/storage"
 import { buildWhatsAppSendUrl } from "@/lib/whatsapp-send-url"
 
@@ -16,7 +16,7 @@ export interface PosterTechLine {
   ssd: string
 }
 
-/** Líneas tipo "Procesador: Intel Core i5-1135G7" o "RAM: 8GB". */
+/** Lineas tipo "Procesador: Intel Core i5-1135G7" o "RAM: 8GB". */
 function extractLabeledSpecs(descripcion: string): { cpu?: string; ram?: string; storage?: string } {
   const out: { cpu?: string; ram?: string; storage?: string } = {}
   const lines = descripcion.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
@@ -98,7 +98,7 @@ function extractStorageFromBlob(d: string): string | null {
 }
 
 /**
- * Ficha técnica: prioriza datos explícitos en descripción/capacidad (BD), luego patrones en texto.
+ * Ficha tecnica: prioriza datos explicitos en descripcion/capacidad (BD), luego patrones en texto.
  */
 export function inferPosterTechSpecs(producto: ProductoRow): PosterTechLine {
   const nombre = producto.nombre ?? ""
@@ -124,7 +124,7 @@ export function inferPosterTechSpecs(producto: ProductoRow): PosterTechLine {
     else if (/ryzen\s*5/i.test(dLower)) cpu = "AMD Ryzen 5 (o equivalente)"
     else if (/snapdragon/i.test(rawName)) cpu = "Qualcomm Snapdragon"
     else if (/mediatek|dimensity/i.test(rawName)) cpu = "MediaTek / Dimensity"
-    else cpu = "Ver descripción o consultar en tienda"
+    else cpu = "Ver descripcion o consultar en tienda"
   }
 
   let ram = labeled.ram?.trim()
@@ -151,7 +151,7 @@ export function inferPosterTechSpecs(producto: ProductoRow): PosterTechLine {
     if (/nvme/i.test(dLower)) ssd = "SSD NVMe"
     else if (/\bhdd\b/i.test(dLower)) ssd = "Disco duro (HDD)"
     else if (cap && !ramUsedCap) ssd = `${cap} · almacenamiento`
-    else ssd = "Ver descripción o consultar en tienda"
+    else ssd = "Ver descripcion o consultar en tienda"
   }
 
   return { cpu, ram, ssd }
@@ -166,7 +166,7 @@ export function buildWhatsAppPosterMessage(
 ): string {
   const tn = tallerNombre.trim() || "su taller"
   const pn = (productoNombre || "este producto").trim()
-  return `Hola ${tn}, me interesa el ${pn} que vi por ${precioMenudeoFormatted}. ¿Me dan más info?`
+  return `Hola ${tn}, me interesa el ${pn} que vi por ${precioMenudeoFormatted}. ¿Me dan mas info?`
 }
 
 export function buildWhatsAppApiSendUrl(phoneDigits: string, message: string): string {
@@ -174,9 +174,9 @@ export function buildWhatsAppApiSendUrl(phoneDigits: string, message: string): s
 }
 
 /**
- * URL absoluta para `<img>` en poster (html2canvas / impresión).
+ * URL absoluta para `<img>` en poster (html2canvas / impresion).
  * Devuelve null si no hay imagen almacenada para evitar peticiones 400
- * a rutas canónicas que no existen (productos sin foto).
+ * a rutas canonicas que no existen (productos sin foto).
  */
 export function resolvePosterProductImageUrl(producto: ProductoRow): string | null {
   const stored = producto.imagen_url

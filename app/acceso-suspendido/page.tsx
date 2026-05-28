@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useSearchParams } from "next/navigation"
 import { Suspense, useState } from "react"
@@ -14,18 +14,18 @@ function AccesoSuspendidoContent() {
   const titulo =
     razon === "suspendido"
       ? "Acceso suspendido"
-      : "Período de acceso vencido"
+      : "Periodo de acceso vencido"
 
   const mensaje =
     razon === "suspendido"
       ? "Tu acceso ha sido suspendido por el administrador del sistema."
-      : "Tu período de acceso ha vencido."
+      : "Tu periodo de acceso ha vencido."
 
   const waUrl = buildWhatsAppSendUrl(
     TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS,
-    `Hola, soy usuario de TallerCloud. Mi acceso está ${
+    `Hola, soy usuario de TallerCloud. Mi acceso esta ${
       razon === "suspendido" ? "suspendido" : "vencido"
-    } y quisiera renovar mi suscripción. ¿Me pueden ayudar?`,
+    } y quisiera renovar mi suscripcion. ¿Me pueden ayudar?`,
   )
 
   const handleLogout = async () => {
@@ -50,7 +50,7 @@ function AccesoSuspendidoContent() {
           <p className="text-slate-600 leading-relaxed">
             {mensaje}
             <br />
-            Contáctanos para renovar tu suscripción y continuar usando TallerCloud.
+            Contactanos para renovar tu suscripcion y continuar usando TallerCloud.
           </p>
         </div>
 
@@ -85,13 +85,13 @@ function AccesoSuspendidoContent() {
             ) : (
               <LogOut className="h-4 w-4" />
             )}
-            {loggingOut ? "Cerrando sesión…" : "Cerrar sesión / Cambiar cuenta"}
+            {loggingOut ? "Cerrando sesion…" : "Cerrar sesion / Cambiar cuenta"}
           </button>
         </div>
 
         {/* Support note */}
         <p className="text-xs text-slate-500">
-          TallerCloud &mdash; Si crees que es un error, escríbenos y lo resolvemos de inmediato.
+          TallerCloud &mdash; Si crees que es un error, escribenos y lo resolvemos de inmediato.
         </p>
       </div>
     </div>

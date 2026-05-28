@@ -1,4 +1,4 @@
-import * as React from "react"
+﻿import * as React from "react"
 
 interface WelcomeEmailProps {
   ownerName: string
@@ -55,10 +55,10 @@ export function WelcomeEmail({ ownerName, workshopName, dashboardUrl }: WelcomeE
             Hola {ownerName},
           </p>
           <p style={{ margin: "0 0 12px 0", fontSize: "15px", lineHeight: "24px", color: "#0f172a" }}>
-            Tu cuenta para <strong>{workshopName}</strong> se creó correctamente.
+            Tu cuenta para <strong>{workshopName}</strong> se creo correctamente.
           </p>
           <p style={{ margin: "0 0 12px 0", fontSize: "15px", lineHeight: "24px", color: "#0f172a" }}>
-            Tus <strong>30 días de prueba gratuita</strong> ya comenzaron automáticamente.
+            Tus <strong>30 dias de prueba gratuita</strong> ya comenzaron automaticamente.
           </p>
           <p style={{ margin: "0 0 20px 0", fontSize: "14px", lineHeight: "22px", color: "#475569" }}>
             Ingresa a tu panel para empezar a gestionar reparaciones, inventario y ventas.
@@ -94,7 +94,7 @@ export function WelcomeEmail({ ownerName, workshopName, dashboardUrl }: WelcomeE
             textAlign: "center",
           }}
         >
-          TallerCloud · Plataforma SaaS para talleres de reparación
+          TallerCloud · Plataforma SaaS para talleres de reparacion
         </div>
       </div>
     </div>

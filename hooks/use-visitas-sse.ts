@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
 
@@ -38,7 +38,7 @@ export function useVisitasSSE(options: UseVisitasSSEOptions) {
   const connect = useCallback(() => {
     if (!tallerId || !enabled) return
 
-    // Cerrar conexión previa si existe
+    // Cerrar conexion previa si existe
     if (esRef.current) {
       esRef.current.close()
       esRef.current = null
@@ -67,8 +67,8 @@ export function useVisitasSSE(options: UseVisitasSSEOptions) {
 
     es.addEventListener("error", () => {
       setConnected(false)
-      setError("Conexión perdida")
-      // Reconectar automáticamente en 5 segundos
+      setError("Conexion perdida")
+      // Reconectar automaticamente en 5 segundos
       setTimeout(() => {
         if (esRef.current === es) {
           connect()

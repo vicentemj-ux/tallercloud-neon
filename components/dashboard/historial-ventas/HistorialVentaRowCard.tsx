@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Printer, CreditCard, DollarSign, ShoppingBag, Store, TrendingUp, Trash2, Loader2 } from "lucide-react"
@@ -64,7 +64,7 @@ function CategoriaBadge({ source }: { source: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-blue-700">
       <ShoppingBag className="h-2.5 w-2.5" />
-      Reparación
+      Reparacion
     </span>
   )
 }
@@ -268,7 +268,7 @@ export function HistorialVentaRowCard({
     <>
       {variant === "card" ? cardContent : rowContent}
 
-      {/* Modal Éxito Venta (POS) — para ventas PDV */}
+      {/* Modal exito Venta (POS) — para ventas PDV */}
       {ventaParaModal && (
         <SuccessModal
           open={!!ventaParaModal}
@@ -282,7 +282,7 @@ export function HistorialVentaRowCard({
         />
       )}
 
-      {/* Modal Preview Reparación — fallback para cobros de reparación */}
+      {/* Modal Preview Reparacion — fallback para cobros de reparacion */}
       <Dialog open={previewRep !== null} onOpenChange={(o) => !o && setPreviewRep(null)}>
         <DialogContent className="max-w-lg border-slate-200 bg-white p-0 shadow-lg">
           <DialogHeader className="border-b border-slate-200 px-6 py-4">

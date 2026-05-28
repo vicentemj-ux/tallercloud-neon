@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
@@ -48,15 +48,15 @@ function fmtMoney(value?: string | null): string {
 }
 
 /**
- * Etiqueta de reparación — formato ÚNICO: 2×1" (50.8mm × 25.4mm).
+ * Etiqueta de reparacion — formato uNICO: 2×1" (50.8mm × 25.4mm).
  * @page CSS: size: 50.8mm 25.4mm; margin: 0;
  *
- * Layout de 5 líneas optimizado:
+ * Layout de 5 lineas optimizado:
  *   1. TALLER NAME          #FOLIO      ← branding + id
- *   2. CLIENTE                          ← más grande, quién trajo el equipo
+ *   2. CLIENTE                          ← mas grande, quien trajo el equipo
  *   3. DISPOSITIVO          PIN:xxxx    ← modelo + seguridad
- *   4-5. FALLA REPORTADA (wrap)         ← ocupa ~1.5 líneas
- *        PRESP. $X            ← al extremo derecho, última línea
+ *   4-5. FALLA REPORTADA (wrap)         ← ocupa ~1.5 lineas
+ *        PRESP. $X            ← al extremo derecho, ultima linea
  */
 const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>(
   ({ data, mostrarPrecios = true }, ref) => {
@@ -74,7 +74,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
           position: "relative",
           width: "50.8mm",
           height: "25.4mm",
-          /* Padding mínimo para eliminar márgenes libres */
+          /* Padding minimo para eliminar margenes libres */
           padding: "0.5mm 0.3mm 0.4mm 0.3mm",
           boxSizing: "border-box",
           display: "flex",
@@ -93,7 +93,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
           printColorAdjust: "exact",
         } as React.CSSProperties}
       >
-        {/* ── Línea 1: Branding (Taller) + Folio ── */}
+        {/* ── Linea 1: Branding (Taller) + Folio ── */}
         <div
           style={{
             display: "flex",
@@ -123,7 +123,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
           </span>
         </div>
 
-        {/* ── Línea 2: Cliente (más grande) ── */}
+        {/* ── Linea 2: Cliente (mas grande) ── */}
         <div
           style={{
             fontSize: "9px",
@@ -137,7 +137,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
           {data.customerName}
         </div>
 
-        {/* ── Línea 3: Dispositivo + Código de acceso ── */}
+        {/* ── Linea 3: Dispositivo + Codigo de acceso ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <span
             style={{
@@ -170,7 +170,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
           )}
         </div>
 
-        {/* ── Líneas 4-5: Falla reportada (wrap ~1.5 líneas) + Presupuesto al extremo derecho ── */}
+        {/* ── Lineas 4-5: Falla reportada (wrap ~1.5 lineas) + Presupuesto al extremo derecho ── */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexShrink: 0, gap: "1.5mm" }}>
           <div
             style={{
@@ -187,7 +187,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
             }}
           >
             <span style={{ fontWeight: 900 }}>FALLA REPORTADA:</span>{" "}
-            {data.reportedFault || "Sin descripción"}
+            {data.reportedFault || "Sin descripcion"}
           </div>
           {hasPrice && (
             <span

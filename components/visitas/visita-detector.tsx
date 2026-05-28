@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback } from "react"
 import { getCamaraConfig } from "@/lib/actions/bitacora-visitas"
@@ -25,7 +25,7 @@ export function VisitaDetector() {
     setTallerId(getTallerIdFromCookie())
   }, [])
 
-  // Cargar configuración de cámara
+  // Cargar configuracion de camara
   useEffect(() => {
     if (!tallerId) return
     getCamaraConfig(tallerId).then(({ config }) => {
@@ -36,7 +36,7 @@ export function VisitaDetector() {
     })
   }, [tallerId])
 
-  // Polling: modo Básico usa webcam local, modo PRO usa webhook (sin polling)
+  // Polling: modo Basico usa webcam local, modo PRO usa webhook (sin polling)
   const webcamConfig = cameraMode === "snapshot" && tallerId ? { tallerId } : null
   const { active: pollingActive, error: pollingError } = useWebcamPolling(webcamConfig)
 

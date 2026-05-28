@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -142,7 +142,7 @@ export default function ServiciosPage() {
             </h2>
             <p className="text-sm text-slate-500">
               {searchQuery
-                ? "Intenta con otra búsqueda."
+                ? "Intenta con otra busqueda."
                 : "Agrega tu primer servicio para empezar."}
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function ServiciosPage() {
                   {svc.nombre}
                 </h3>
                 <p className="mt-2 text-xs text-slate-500 leading-relaxed line-clamp-3">
-                  {svc.descripcion || "Sin descripción"}
+                  {svc.descripcion || "Sin descripcion"}
                 </p>
 
                 {/* Price */}

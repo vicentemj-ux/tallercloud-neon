@@ -1,5 +1,5 @@
-/**
- * Etiquetas neutras / dinámicas según categoría (sin amarrar a marcas comerciales).
+﻿/**
+ * Etiquetas neutras / dinamicas segun categoria (sin amarrar a marcas comerciales).
  */
 export function getInventoryFieldLabels(categoria: string) {
   const cat = (categoria || "").trim().toUpperCase()
@@ -8,8 +8,8 @@ export function getInventoryFieldLabels(categoria: string) {
     return {
       marca: "Marca del equipo",
       modelo: "Modelo o referencia",
-      condicion: "Condición del equipo",
-      ubicacion: "Ubicación en almacén",
+      condicion: "Condicion del equipo",
+      ubicacion: "Ubicacion en almacen",
       procesador: "Procesador / SoC",
       ram: "Memoria RAM",
       almacenamiento: "Almacenamiento",
@@ -21,11 +21,11 @@ export function getInventoryFieldLabels(categoria: string) {
     return {
       marca: "Marca compatible",
       modelo: "Referencia / modelo",
-      condicion: "Condición",
-      ubicacion: "Ubicación en almacén",
-      procesador: "Especificación principal",
+      condicion: "Condicion",
+      ubicacion: "Ubicacion en almacen",
+      procesador: "Especificacion principal",
       ram: "Detalle adicional",
-      almacenamiento: "Capacidad / tamaño",
+      almacenamiento: "Capacidad / tamano",
       color: "Color",
     }
   }
@@ -33,11 +33,11 @@ export function getInventoryFieldLabels(categoria: string) {
   return {
     marca: "Marca / fabricante",
     modelo: "Modelo o referencia",
-    condicion: "Condición",
-    ubicacion: "Ubicación en almacén",
-    procesador: "Especificación 1",
-    ram: "Especificación 2",
-    almacenamiento: "Especificación 3",
+    condicion: "Condicion",
+    ubicacion: "Ubicacion en almacen",
+    procesador: "Especificacion 1",
+    ram: "Especificacion 2",
+    almacenamiento: "Especificacion 3",
     color: "Color / variante",
   }
 }

@@ -102,7 +102,7 @@ export default function HistorialVentasPage() {
     })
   }, [])
 
-  /** Totales de las tarjetas segÃºn las filas visibles (mismo criterio que la tabla). */
+  /** Totales de las tarjetas segun las filas visibles (mismo criterio que la tabla). */
   const totalesResumen = useMemo((): HistorialVentasTotales => {
     let efectivo = 0
     let tarjeta = 0
@@ -169,7 +169,7 @@ export default function HistorialVentasPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Reporte Carta: capa oculta para react-to-print (mismo patrÃ³n que cortes de caja) */}
+      {/* Reporte Carta: capa oculta para react-to-print (mismo patron que cortes de caja) */}
       <div
         ref={reportPrintRef}
         className="print-letter-report-offscreen"
@@ -207,7 +207,7 @@ export default function HistorialVentasPage() {
             size="icon"
             className="h-10 w-10 rounded-lg border border-slate-200 hover:bg-slate-100"
             disabled={loading}
-            title="Reporte de ventas del perÃ­odo (Carta)"
+            title="Reporte de ventas del periodo (Carta)"
             onClick={() => void handlePrintReport()}
           >
             {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-500" /> : <Printer className="h-5 w-5 text-slate-500" />}
@@ -228,7 +228,7 @@ export default function HistorialVentasPage() {
                 onChange={(e) => setDateFrom(e.target.value)}
                 className="w-auto min-w-[10rem] border-slate-200 bg-white text-sm text-slate-900"
               />
-              <span className="text-slate-500">â€”</span>
+              <span className="text-slate-500">—</span>
               <Input
                 type="date"
                 value={dateTo}
@@ -340,7 +340,7 @@ export default function HistorialVentasPage() {
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Total PerÃ­odo</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Total Periodo</p>
                 <p className="text-2xl font-bold text-slate-900">{formatMoneyCompact(totalesResumen.total)}</p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/15">
@@ -355,20 +355,20 @@ export default function HistorialVentasPage() {
         <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p>
       ) : null}
 
-      {/* Sales List â€” Single Card Container */}
+      {/* Sales List — Single Card Container */}
       {loading ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white py-16 shadow-sm">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden />
-          <p className="mt-3 text-sm text-slate-500">Cargando historialâ€¦</p>
+          <p className="mt-3 text-sm text-slate-500">Cargando historial…</p>
         </div>
       ) : rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white py-16 shadow-sm">
           <Store className="h-10 w-10 text-slate-300" />
-          <p className="mt-3 text-sm text-slate-500">No hay ventas en este perÃ­odo.</p>
+          <p className="mt-3 text-sm text-slate-500">No hay ventas en este periodo.</p>
         </div>
       ) : (
         <>
-          {/* Mobile â€” cards */}
+          {/* Mobile — cards */}
           <div className="sm:hidden flex flex-col gap-3">
             {rows.map((row) => (
               <Card key={row.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white py-0 shadow-sm">
@@ -386,19 +386,19 @@ export default function HistorialVentasPage() {
             ))}
           </div>
 
-          {/* Desktop â€” table with divs */}
+          {/* Desktop — table with divs */}
           <Card className="hidden sm:block gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white py-0 shadow-sm">
             <div className="w-full overflow-x-auto">
               <div className="table w-full border-collapse">
                 <div className="table-row border-b border-slate-100 bg-slate-50/60">
                   <div className="table-cell w-[150px] px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Referencia / Fecha</div>
-                  <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">CategorÃ­a</div>
+                  <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Categoria</div>
                   <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Titular</div>
                   <div className="table-cell w-[100px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Vendedor</div>
                   <div className="table-cell px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Resumen Conceptos</div>
-                  <div className="table-cell w-[110px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">MÃ©todo</div>
+                  <div className="table-cell w-[110px] px-2 py-3 text-left text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Metodo</div>
                   <div className="table-cell w-[120px] px-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Monto Neto</div>
-                  <div className="table-cell w-[50px] pl-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">AcciÃ³n</div>
+                  <div className="table-cell w-[50px] pl-2 py-3 text-right text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Accion</div>
                 </div>
                 {rows.map((row) => (
                   <HistorialVentaRowCard

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
@@ -182,7 +182,7 @@ const AbonoReceipt = forwardRef<HTMLDivElement, AbonoReceiptProps>(
 
         <Divider />
 
-        {/* ── TÍTULO ── */}
+        {/* ── TiTULO ── */}
         <div style={{ textAlign: "center", margin: "4px 0" }}>
           <div
             style={{
@@ -279,7 +279,7 @@ const AbonoReceipt = forwardRef<HTMLDivElement, AbonoReceiptProps>(
         {/* ── DETALLE DEL PAGO ── */}
         <div style={{ margin: "4px 0" }}>
           <SectionLabel>DETALLE DEL PAGO</SectionLabel>
-          <Row label="Método:" value={metodoStr} />
+          <Row label="Metodo:" value={metodoStr} />
           <div
             style={{
               display: "flex",

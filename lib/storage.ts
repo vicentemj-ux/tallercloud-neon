@@ -1,4 +1,4 @@
-/**
+﻿/**
  * lib/storage.ts — Constantes y utilidades puras de Supabase Storage.
  * Sin "use server" — importable desde cualquier contexto (cliente, servidor, actions).
  *
@@ -7,7 +7,7 @@
 
 // ─── Constantes de buckets ────────────────────────────────────────────────────
 /**
- * Fotos del módulo Inventario (tabla **`productos`**).
+ * Fotos del modulo Inventario (tabla **`productos`**).
  * Debe coincidir con el bucket en Supabase; override con `NEXT_PUBLIC_SUPABASE_INVENTORY_BUCKET`
  * (p. ej. `inventario` o `product-photos`).
  */
@@ -19,8 +19,8 @@ export const BUCKETS = {
   REPAIR_PHOTOS: "repair-photos", // privado → signed URLs
   /** @alias INVENTORY_PRODUCT_IMAGES_BUCKET — fotos en `productos.imagen_url` */
   INVENTORY: INVENTORY_PRODUCT_IMAGES_BUCKET,
-  CATALOG: "catalogo", // público → getPublicUrl
-  TALLER: "taller", // público → getPublicUrl (logos)
+  CATALOG: "catalogo", // publico → getPublicUrl
+  TALLER: "taller", // publico → getPublicUrl (logos)
 } as const
 
 export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS]
@@ -29,7 +29,7 @@ export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS]
 
 /**
  * Extrae el path relativo de un URL de Supabase Storage.
- * Soporta URLs públicas, signed URLs y paths bare.
+ * Soporta URLs publicas, signed URLs y paths bare.
  */
 export function extractStoragePath(urlOrPath: string, bucket: string): string {
   if (!urlOrPath.startsWith("http")) return urlOrPath
@@ -47,7 +47,7 @@ export function extractStoragePath(urlOrPath: string, bucket: string): string {
 }
 
 /**
- * Construye la URL pública de un archivo en un bucket PÚBLICO.
+ * Construye la URL publica de un archivo en un bucket PuBLICO.
  * Puro — no hace ninguna llamada de red ni usa claves privadas.
  * Para buckets privados usa getSignedUrl() de lib/storage-server.ts.
  */
@@ -68,9 +68,9 @@ export function getInventoryCanonicalImageUrl(tallerId: string, productId: strin
 /**
  * URL lista para `<img>` / `next/image` a partir de lo guardado en `productos.imagen_url`.
  * - Si ya es una URL absoluta (http/https), se devuelve tal cual (no se concatena dos veces).
- * - Si es un path relativo del bucket (ej. `{taller_id}/producto-….jpg`), se antepone el prefijo público de Supabase.
+ * - Si es un path relativo del bucket (ej. `{taller_id}/producto-….jpg`), se antepone el prefijo publico de Supabase.
  *
- * Recomendación: guardar en BD solo el path relativo (ver `normalizeInventoryImagePathForDb`).
+ * Recomendacion: guardar en BD solo el path relativo (ver `normalizeInventoryImagePathForDb`).
  */
 export function getInventoryPublicUrl(stored: string | null | undefined): string | null {
   if (stored == null) return null
@@ -87,7 +87,7 @@ export function getInventoryPublicUrl(stored: string | null | undefined): string
 
 /**
  * Normaliza el valor antes de guardar en `imagen_url`: solo path dentro del bucket de fotos.
- * Si llega una URL pública completa, extrae el path (bucket oficial y legados `inventario` / `productos`).
+ * Si llega una URL publica completa, extrae el path (bucket oficial y legados `inventario` / `productos`).
  */
 export function normalizeInventoryImagePathForDb(raw: string | null | undefined): string | null {
   const s = (raw ?? "").trim()

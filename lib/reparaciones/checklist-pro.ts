@@ -1,6 +1,6 @@
-/**
- * Diagnóstico PRO (health check) persistido en `reparaciones.checklist_pro`.
- * Cada ítem es ternario: pass / fail / na (sin probar, por defecto).
+﻿/**
+ * Diagnostico PRO (health check) persistido en `reparaciones.checklist_pro`.
+ * Cada item es ternario: pass / fail / na (sin probar, por defecto).
  */
 import { itemsForDeviceType } from "@/lib/reparaciones/checklist-ingreso"
 
@@ -8,7 +8,7 @@ export type HealthProbeStatus = "pass" | "fail" | "na"
 
 export interface ChecklistProData {
   funcional: Record<string, HealthProbeStatus>
-  /** Si el técnico omite el mínimo de pruebas (express). */
+  /** Si el tecnico omite el minimo de pruebas (express). */
   expressOmitReason?: string | null
 }
 
@@ -53,7 +53,7 @@ export function parseChecklistPro(raw: unknown): ChecklistProData | null {
 }
 
 /**
- * Nunca lanza: útil en visor / UI ante JSON corrupto o tipos inesperados.
+ * Nunca lanza: util en visor / UI ante JSON corrupto o tipos inesperados.
  * Convierte boolean legacy y valores raros a pass / fail / na.
  */
 export function safeNormalizeChecklistPro(raw: unknown): ChecklistProData {
@@ -93,7 +93,7 @@ export function hasMeaningfulChecklistProData(cp: ChecklistProData): boolean {
   return Object.values(cp.funcional).some((v) => v !== "na")
 }
 
-/** Cumple regla de mínimo 5 pruebas OK o omisión express documentada. */
+/** Cumple regla de minimo 5 pruebas OK o omision express documentada. */
 export function passesHealthCheckRequirement(checklistProRaw: unknown): boolean {
   const cp = parseChecklistPro(checklistProRaw)
   if (!cp) return false
@@ -149,18 +149,18 @@ export function getDiagnosisProBadgeText(
     const anyNonNa = keys.some((k) => func[k] !== "na")
 
     if (!anyNonNa && !hasExpress) {
-      return { text: "Diagnóstico: Express / Sin Probar", variant: "empty" }
+      return { text: "Diagnostico: Express / Sin Probar", variant: "empty" }
     }
     if (hasExpress && !anyNonNa) {
-      return { text: "Diagnóstico: Express (omitido)", variant: "empty" }
+      return { text: "Diagnostico: Express (omitido)", variant: "empty" }
     }
     const total = keys.length
     const passCount = keys.filter((k) => func[k] === "pass").length
     return {
-      text: `Diagnóstico Pro: ${passCount}/${total} puntos verificados ✔️`,
+      text: `Diagnostico Pro: ${passCount}/${total} puntos verificados ✔️`,
       variant: "filled",
     }
   } catch {
-    return { text: "Información de diagnóstico no disponible", variant: "empty" }
+    return { text: "Informacion de diagnostico no disponible", variant: "empty" }
   }
 }

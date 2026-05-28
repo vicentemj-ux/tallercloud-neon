@@ -100,7 +100,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         type="button"
         onClick={() => setMobileOpen(true)}
         className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg lg:hidden"
-        aria-label="Abrir menú"
+        aria-label="Abrir menu"
       >
         <Menu className="h-5 w-5" />
       </button>

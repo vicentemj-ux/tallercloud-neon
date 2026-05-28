@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { cn } from "@/lib/utils"
 
@@ -83,7 +83,7 @@ function fmtCorte(n: number | null) {
 
 const TIPO_LABELS: Record<string, string> = {
   anticipo_reparacion: "ANTICIPO",
-  liquidacion_reparacion: "LIQUIDACIÓN",
+  liquidacion_reparacion: "LIQUIDACIoN",
   gasto: "GASTO",
 }
 
@@ -146,7 +146,7 @@ export function TicketCorteTemplate({
         </div>
         <div className="flex justify-between items-center w-full">
           <span className="text-black">Tipo Cierre</span>
-          <span className="font-semibold text-black">{tipoCierre ?? (notaCierre ? "Automático" : "Manual")}</span>
+          <span className="font-semibold text-black">{tipoCierre ?? (notaCierre ? "Automatico" : "Manual")}</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span className="text-black">Fondo Inicial</span>
@@ -226,7 +226,7 @@ export function TicketCorteTemplate({
         Resumen Final
       </div>
       <div className="space-y-1">
-        {/* Desglose por método de pago */}
+        {/* Desglose por metodo de pago */}
         <div className="flex justify-between items-center w-full">
           <span className="text-black">Efectivo PDV</span>
           <span className="font-mono font-semibold text-black">${fmt(totalEfectivo)}</span>
@@ -244,7 +244,7 @@ export function TicketCorteTemplate({
           <span className="font-mono font-semibold text-black">${fmt(totalTransferencia + totalAbonosTransferencia)}</span>
         </div>
 
-        {/* Fórmula del efectivo esperado en caja */}
+        {/* Formula del efectivo esperado en caja */}
         <div className="border-t border-dashed border-black pt-1 mt-1 space-y-0.5">
           <div className="flex justify-between items-center w-full">
             <span className="text-black">(+) Fondo Inicial</span>

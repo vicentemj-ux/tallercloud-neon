@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState } from "react"
 import { Loader2, ShieldAlert } from "lucide-react"
@@ -56,7 +56,7 @@ export function OfflineBanner() {
         <>
           <ShieldAlert className="h-4 w-4 shrink-0 opacity-95" aria-hidden />
           <span>
-            TallerCloud está operando localmente por falta de red. Tu progreso está seguro.
+            TallerCloud esta operando localmente por falta de red. Tu progreso esta seguro.
           </span>
         </>
       ) : (

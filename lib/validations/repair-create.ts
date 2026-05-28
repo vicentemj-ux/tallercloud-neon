@@ -1,7 +1,7 @@
-import { z } from "zod"
+﻿import { z } from "zod"
 
 /**
- * Mensaje explícito por campo (Zod issue) para depuración en servidor y UI.
+ * Mensaje explicito por campo (Zod issue) para depuracion en servidor y UI.
  * Ej.: Error: 'checklistIngreso' — ...
  */
 export function formatCreateRepairValidationError(err: z.ZodError): string {
@@ -19,7 +19,7 @@ const optionalStr = z.union([z.string(), z.undefined(), z.null()]).transform((v)
   return s === "" ? undefined : s
 })
 
-/** Cadena permitida vacía (p. ej. modelo o falla aún no detallada). */
+/** Cadena permitida vacia (p. ej. modelo o falla aun no detallada). */
 const optionalStrOrEmpty = z
   .union([z.string(), z.undefined(), z.null()])
   .optional()
@@ -40,17 +40,17 @@ export const createRepairInputSchema = z
     folio: z.union([z.string(), z.null(), z.undefined()]).optional(),
     customerName: z.preprocess(
       (v) => (typeof v === "string" ? v.trim() : v),
-      z.string().min(1, "es requerido pero llegó vacío"),
+      z.string().min(1, "es requerido pero llego vacio"),
     ),
     customerPhone: z.preprocess(
       (v) => (typeof v === "string" ? v.trim() : v),
-      z.string().min(1, "es requerido pero llegó vacío"),
+      z.string().min(1, "es requerido pero llego vacio"),
     ),
     customerEmail: optionalStr,
     tipo_equipo: optionalStr,
     deviceBrand: z.preprocess(
       (v) => (typeof v === "string" ? v.trim() : v),
-      z.string().min(1, "es requerido pero llegó vacío"),
+      z.string().min(1, "es requerido pero llego vacio"),
     ),
     deviceModel: optionalStrOrEmpty,
     deviceSerial: optionalStr,

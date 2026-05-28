@@ -1,8 +1,8 @@
-/**
- * URL oficial de envío WhatsApp (`https://api.whatsapp.com/send`).
+﻿/**
+ * URL oficial de envio WhatsApp (`https://api.whatsapp.com/send`).
  * No usar wa.me: mejor compatibilidad en apps y escritorio.
  *
- * @param phoneDigits Solo dígitos, formato internacional sin + (ej. 526681227393).
+ * @param phoneDigits Solo digitos, formato internacional sin + (ej. 526681227393).
  * @param text Mensaje en claro; se codifica con encodeURIComponent.
  */
 export function buildWhatsAppSendUrl(phoneDigits: string, text: string): string {
@@ -16,5 +16,5 @@ export function buildWhatsAppOpenChatUrl(phoneDigits: string): string {
   return `https://api.whatsapp.com/send?phone=${phone}`
 }
 
-/** Soporte y ventas TallerCloud (México). */
+/** Soporte y ventas TallerCloud (Mexico). */
 export const TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS = "526681227393"

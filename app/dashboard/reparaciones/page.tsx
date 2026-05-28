@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -33,7 +33,7 @@ const STATUS_CARDS = [
   {
     id:         "all",
     label:      "Total",
-    sublabel:   "Todas las órdenes",
+    sublabel:   "Todas las ordenes",
     values:     [] as string[],
     Icon:       ClipboardList,
     iconBg:     "bg-slate-100",
@@ -56,8 +56,8 @@ const STATUS_CARDS = [
   },
   {
     id:         "diagnostico",
-    label:      "Diagnóstico",
-    sublabel:   "En revisión",
+    label:      "Diagnostico",
+    sublabel:   "En revision",
     values:     ["Diagnostico"],
     Icon:       Clock,
     iconBg:     "bg-amber-100",
@@ -69,7 +69,7 @@ const STATUS_CARDS = [
   {
     id:         "en-reparacion",
     label:      "En Proceso",
-    sublabel:   "En reparación activa",
+    sublabel:   "En reparacion activa",
     values:     ["En Reparacion"],
     Icon:       Wrench,
     iconBg:     "bg-blue-100",
@@ -105,7 +105,7 @@ const STATUS_CARDS = [
   {
     id:         "reingreso",
     label:      "Reingresos",
-    sublabel:   "Garantías / retornos",
+    sublabel:   "Garantias / retornos",
     values:     ["Reingreso"],
     Icon:       RotateCcw,
     iconBg:     "bg-orange-100",
@@ -168,7 +168,7 @@ function ReparacionesContent() {
     if (filterPreset === "queue") setActiveStatusId("en-reparacion")
   }, [filterPreset])
 
-  // Debounce búsqueda 300ms + reset página al cambiar búsqueda
+  // Debounce busqueda 300ms + reset pagina al cambiar busqueda
   useEffect(() => {
     const id = setTimeout(() => {
       setPage(0)
@@ -177,7 +177,7 @@ function ReparacionesContent() {
     return () => clearTimeout(id)
   }, [searchTerm])
 
-  // Load repairs — búsqueda y estatus empujados a SQL (server-side)
+  // Load repairs — busqueda y estatus empujados a SQL (server-side)
   useEffect(() => {
     const loadRepairs = async () => {
       setIsLoading(true)
@@ -208,19 +208,19 @@ function ReparacionesContent() {
     return c
   }, [repairs])
 
-  // "Total" usa el conteo real del servidor (count: planned); los demás cuentan la página actual
+  // "Total" usa el conteo real del servidor (count: planned); los demas cuentan la pagina actual
   const cardCount = (card: (typeof STATUS_CARDS)[number]) =>
     card.values.length === 0
       ? totalRepairs
       : card.values.reduce((sum, v) => sum + (statusCounts[v] ?? 0), 0)
 
-  // Click KPI card: toggle (deselects si ya está activo → vuelve a "all"); resetea página
+  // Click KPI card: toggle (deselects si ya esta activo → vuelve a "all"); resetea pagina
   const handleCardClick = (id: string) => {
     setPage(0)
     setActiveStatusId((prev) => (prev === id ? "all" : id))
   }
 
-  // Filtrado solo para "critical" (por antigüedad) — búsqueda y estatus ya van server-side
+  // Filtrado solo para "critical" (por antiguedad) — busqueda y estatus ya van server-side
   const filteredRepairs = useMemo(() => {
     if (filterParam !== "critical") return repairs
     return repairs.filter((r) => {
@@ -263,14 +263,14 @@ function ReparacionesContent() {
                     REPARACIONES
                   </h1>
                   <span className="rounded-full bg-slate-100 px-3 py-0.5 text-sm font-bold text-slate-600 tabular-nums">
-                    {totalRepairs.toLocaleString("es-MX")} órdenes
+                    {totalRepairs.toLocaleString("es-MX")} ordenes
                   </span>
                 </div>
                 <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
-                  GESTIÓN DE ÓRDENES Y SERVICIOS TÉCNICOS
+                  GESTIoN DE oRDENES Y SERVICIOS TeCNICOS
                 </p>
                 <p className="mt-1 text-sm tracking-tight text-slate-500">
-                  Flujo operativo en tiempo real para recepción, diagnóstico y entrega.
+                  Flujo operativo en tiempo real para recepcion, diagnostico y entrega.
                 </p>
               </div>
             </div>
@@ -293,7 +293,7 @@ function ReparacionesContent() {
                     type="button"
                     onClick={() => setSearchTerm("")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600 transition-colors"
-                    aria-label="Limpiar búsqueda"
+                    aria-label="Limpiar busqueda"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>

@@ -1,4 +1,4 @@
-import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
+﻿import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 import { getPublicAppBaseUrl } from "@/lib/app-public"
 
 export type RepairWelcomeWhatsAppPayload = {
@@ -17,7 +17,7 @@ export function buildRepairWelcomeWhatsAppMessage(p: RepairWelcomeWhatsAppPayloa
   const equipoMarcaModelo = `${p.deviceBrand || ""} ${p.deviceModel || ""}`.trim() || "tu equipo"
   const baseUrl = getPublicAppBaseUrl()
   const trackingUrl = `${baseUrl}/track/${encodeURIComponent(p.repairId)}`
-  return `Hola ${clienteNombre}, te informamos que tu equipo ${equipoMarcaModelo} (Ticket #${p.folio}) se encuentra en estado: RECIBIDO. Puedes consultar el avance aquí: ${trackingUrl}`
+  return `Hola ${clienteNombre}, te informamos que tu equipo ${equipoMarcaModelo} (Ticket #${p.folio}) se encuentra en estado: RECIBIDO. Puedes consultar el avance aqui: ${trackingUrl}`
 }
 
 export async function openRepairWelcomeWhatsApp(p: RepairWelcomeWhatsAppPayload): Promise<void> {

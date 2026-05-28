@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { getCurrentTenant } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
@@ -52,12 +52,12 @@ function toSettings(row: Awaited<ReturnType<typeof getPrismaClient>>["configurac
     email_contacto: row?.emailContacto ?? "",
     ciudad: row?.ciudad ?? "",
     estado: row?.estado ?? "",
-    pais: row?.pais ?? "México",
+    pais: row?.pais ?? "Mexico",
     zona_horaria: row?.timezone ?? "UTC",
     logo_url: row?.logoUrl ?? null,
     logo_storage_key: row?.logoStorageKey ?? null,
     pie_pagina: "Gracias por su confianza",
-    terminos_garantia: row?.terminosGarantia ?? "Garantía de 30 días en reparaciones",
+    terminos_garantia: row?.terminosGarantia ?? "Garantia de 30 dias en reparaciones",
     descripcion_publica: "",
     tamano_papel: (row?.paperSize as "80mm" | "58mm") ?? "80mm",
     label_size: row?.labelSize ?? "2x1",
@@ -82,7 +82,7 @@ function toSettings(row: Awaited<ReturnType<typeof getPrismaClient>>["configurac
 
 async function getTenantIdOrThrow() {
   const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesión inválida")
+  if (!tenant?.id) throw new Error("Sesion invalida")
   return tenant.id
 }
 
@@ -104,7 +104,7 @@ export async function getTallerSettings() {
     return { settings: toSettings(row, tenantId), error: null as string | null }
   } catch (e) {
     console.error("[settings-prisma] getTallerSettings:", e)
-    return { settings: null, error: "Error al cargar configuración" }
+    return { settings: null, error: "Error al cargar configuracion" }
   }
 }
 
@@ -112,7 +112,7 @@ export async function updateTallerLogo(input: { dataUrl: string }) {
   try {
     const tenantId = await getTenantIdOrThrow()
     const parsed = parseDataUrlImage(input.dataUrl)
-    if (!parsed) return { logoUrl: null, logoStorageKey: null, error: "Formato de logo inválido." }
+    if (!parsed) return { logoUrl: null, logoStorageKey: null, error: "Formato de logo invalido." }
 
     const ts = Date.now()
     const fileName = sanitizeFileName(`logo-${ts}.${parsed.ext}`)
@@ -156,7 +156,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
         emailContacto: updates.email_contacto ?? "",
         ciudad: updates.ciudad ?? "",
         estado: updates.estado ?? "",
-        pais: updates.pais ?? "México",
+        pais: updates.pais ?? "Mexico",
         timezone: updates.zona_horaria ?? "UTC",
         logoUrl: logoUrl ?? null,
         logoStorageKey: logoStorageKey ?? null,
@@ -164,7 +164,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
         paperSize: updates.tamano_papel ?? "80mm",
         labelSize: updates.label_size ?? "2x1",
         printSettings: (updates.impresion_config as object | null | undefined) ?? {},
-        terminosGarantia: updates.terminos_garantia ?? "Garantía de 30 días en reparaciones",
+        terminosGarantia: updates.terminos_garantia ?? "Garantia de 30 dias en reparaciones",
         diasGarantia: updates.dias_garantia ?? 30,
         mensajeDespedida: updates.mensaje_despedida ?? "¡Gracias por confiar en nosotros!",
         alertasStockBajo: updates.alertas_stock_bajo ?? false,
@@ -208,7 +208,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
     return { settings: toSettings(row, tenantId), error: null as string | null }
   } catch (e) {
     console.error("[settings-prisma] updateTallerSettings:", e)
-    return { settings: null, error: "No se pudo guardar configuración." }
+    return { settings: null, error: "No se pudo guardar configuracion." }
   }
 }
 

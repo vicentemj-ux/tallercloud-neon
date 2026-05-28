@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import { getPrismaClient } from "@/lib/prisma"
 import { last4, onlyDigits } from "@/lib/phone"
 import { getArchivoDisplayUrl } from "@/lib/archivo-url"
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     if (!ticketId || phoneLast4.length !== 4) {
       return NextResponse.json(
-        { ok: false, error: "Ingresa los últimos 4 dígitos válidos." },
+        { ok: false, error: "Ingresa los ultimos 4 digitos validos." },
         { status: 400 },
       )
     }
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     if (last4(reparacion.cliente?.telefono) !== phoneLast4) {
       return NextResponse.json(
-        { ok: false, error: "Los últimos 4 dígitos no coinciden." },
+        { ok: false, error: "Los ultimos 4 digitos no coinciden." },
         { status: 403 },
       )
     }

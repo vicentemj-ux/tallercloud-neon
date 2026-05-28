@@ -1,4 +1,4 @@
-/**
+﻿/**
  * lib/utils/visitas.ts
  *
  * Utilidades puras para visitas (no dependen de servidor).
@@ -13,8 +13,8 @@ export type MotivoVisita =
   | "otro"
 
 const MOTIVO_LABELS: Record<MotivoVisita, string> = {
-  reparacion: "Reparación / Diagnóstico",
-  cotizacion: "Cotización",
+  reparacion: "Reparacion / Diagnostico",
+  cotizacion: "Cotizacion",
   compra: "Comprar producto",
   recoger: "Recoger equipo",
   personal: "Personal del negocio",

@@ -126,7 +126,7 @@ export async function getOrdenes(opts?: { search?: string; estatus?: string }): 
       error: null,
     }
   } catch (error) {
-    return { data: [], error: error instanceof Error ? error.message : "Error al cargar órdenes" }
+    return { data: [], error: error instanceof Error ? error.message : "Error al cargar ordenes" }
   }
 }
 

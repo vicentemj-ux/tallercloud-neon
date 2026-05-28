@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { ClipboardList } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import type { EncendidoRecepcion } from "@/lib/reparaciones/checklist-ingreso"
 
 export interface DiagnosisProSummaryCardProps {
-  /** Revisión rápida (encendido) desde `checklist_ingreso` — mismo criterio que el modal de ingreso. */
+  /** Revision rapida (encendido) desde checklist_ingreso. */
   encendido?: EncendidoRecepcion | null
   onOpenDetails: () => void
   className?: string
@@ -16,8 +16,8 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
   if (encendido == null) {
     return (
       <div className="rounded-lg border border-dashed border-slate-200 bg-white/80 px-2.5 py-2 text-center">
-        <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">Revisión rápida</p>
-        <p className="mt-0.5 text-[11px] text-slate-500">Sin registrar en recepción</p>
+        <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">Revision rapida</p>
+        <p className="mt-0.5 text-[11px] text-slate-500">Sin registrar en recepcion</p>
       </div>
     )
   }
@@ -25,11 +25,11 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
   if (encendido === "ok") {
     return (
       <div className="flex items-center gap-2.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-2.5 py-2 shadow-sm ring-1 ring-emerald-200/80">
-        <span className="text-lg leading-none" aria-hidden>
-          ✅
+        <span className="text-lg leading-none font-bold" aria-hidden>
+          OK
         </span>
         <div className="min-w-0 text-left">
-          <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-800">Revisión rápida</p>
+          <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-800">Revision rapida</p>
           <p className="text-xs font-semibold leading-tight text-emerald-900">Enciende bien</p>
           <p className="text-[10px] leading-snug text-emerald-800/90">Entra a sistema</p>
         </div>
@@ -40,11 +40,11 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
   if (encendido === "intermitente") {
     return (
       <div className="flex items-center gap-2.5 rounded-lg border-2 border-amber-400 bg-amber-50 px-2.5 py-2 shadow-sm ring-1 ring-amber-200/80">
-        <span className="text-lg leading-none" aria-hidden>
-          ⚡
+        <span className="text-lg leading-none font-bold" aria-hidden>
+          !
         </span>
         <div className="min-w-0 text-left">
-          <p className="text-[9px] font-bold uppercase tracking-wide text-amber-900">Revisión rápida</p>
+          <p className="text-[9px] font-bold uppercase tracking-wide text-amber-900">Revision rapida</p>
           <p className="text-xs font-semibold leading-tight text-amber-950">Con dificultad</p>
           <p className="text-[10px] leading-snug text-amber-900/90">Encendido intermitente</p>
         </div>
@@ -54,20 +54,20 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
 
   return (
     <div className="flex items-center gap-2.5 rounded-lg border-2 border-rose-400 bg-rose-50 px-2.5 py-2 shadow-sm ring-1 ring-rose-200/80">
-      <span className="text-lg leading-none" aria-hidden>
-        ❌
+      <span className="text-lg leading-none font-bold" aria-hidden>
+        X
       </span>
       <div className="min-w-0 text-left">
-        <p className="text-[9px] font-bold uppercase tracking-wide text-rose-900">Revisión rápida</p>
+        <p className="text-[9px] font-bold uppercase tracking-wide text-rose-900">Revision rapida</p>
         <p className="text-xs font-semibold leading-tight text-rose-950">No enciende</p>
-        <p className="text-[10px] leading-snug text-rose-900/90">Reportado en recepción</p>
+        <p className="text-[10px] leading-snug text-rose-900/90">Reportado en recepcion</p>
       </div>
     </div>
   )
 }
 
 /**
- * Resumen compacto en el visor: revisión rápida + botón Health Check en un solo bloque.
+ * Resumen compacto en el visor: revision rapida + boton Health Check en un solo bloque.
  */
 export function DiagnosisProSummaryCard({ encendido, onOpenDetails, className }: DiagnosisProSummaryCardProps) {
   return (

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ClipboardList,
   MessageCircle,
   ShoppingCart,
@@ -14,7 +14,7 @@ const features = [
     icon: ClipboardList,
     title: "Folios digitales ilimitados",
     description:
-      "Crea órdenes de reparación con folio único, sin límite de tickets al mes.",
+      "Crea ordenes de reparacion con folio unico, sin limite de tickets al mes.",
   },
   {
     icon: MessageCircle,
@@ -32,7 +32,7 @@ const features = [
     icon: Barcode,
     title: "Control de inventario con IMEI",
     description:
-      "Registra equipos de venta con número de serie o IMEI para trazabilidad total.",
+      "Registra equipos de venta con numero de serie o IMEI para trazabilidad total.",
   },
   {
     icon: Users,
@@ -42,9 +42,9 @@ const features = [
   },
   {
     icon: Printer,
-    title: "Ticket e impresión térmica",
+    title: "Ticket e impresion termica",
     description:
-      "Compatible con impresoras térmicas de 58mm y 80mm. También imprime etiquetas 2×1 pulgadas.",
+      "Compatible con impresoras termicas de 58mm y 80mm. Tambien imprime etiquetas 2×1 pulgadas.",
   },
   {
     icon: Monitor,
@@ -56,7 +56,7 @@ const features = [
     icon: UsersRound,
     title: "Multi-usuario",
     description:
-      "Agrega a tu equipo técnico con acceso controlado según su rol.",
+      "Agrega a tu equipo tecnico con acceso controlado segun su rol.",
   },
 ]
 
@@ -66,13 +66,13 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-14 flex flex-col items-center gap-3 text-center">
           <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Características
+            Caracteristicas
           </span>
           <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Todo lo que necesitas en un solo lugar
           </h2>
           <p className="max-w-lg text-pretty leading-relaxed text-muted-foreground">
-            Herramientas diseñadas para la operación diaria de un taller de reparación.
+            Herramientas disenadas para la operacion diaria de un taller de reparacion.
           </p>
         </div>
 

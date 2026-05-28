@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useTransition, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
@@ -34,29 +34,29 @@ type TimezoneGroup = { label: string; options: TimezoneOption[] }
 
 const TIMEZONE_GROUPS: TimezoneGroup[] = [
   {
-    label: "Norteamérica",
+    label: "Norteamerica",
     options: [
-      { value: "America/Tijuana", city: "Tijuana", country: "México" },
-      { value: "America/Hermosillo", city: "Hermosillo", country: "México" },
-      { value: "America/Mazatlan", city: "Mazatlán", country: "México" },
-      { value: "America/Mexico_City", city: "Ciudad de México", country: "México" },
-      { value: "America/Monterrey", city: "Monterrey", country: "México" },
+      { value: "America/Tijuana", city: "Tijuana", country: "Mexico" },
+      { value: "America/Hermosillo", city: "Hermosillo", country: "Mexico" },
+      { value: "America/Mazatlan", city: "Mazatlan", country: "Mexico" },
+      { value: "America/Mexico_City", city: "Ciudad de Mexico", country: "Mexico" },
+      { value: "America/Monterrey", city: "Monterrey", country: "Mexico" },
       { value: "America/New_York", city: "Nueva York", country: "Estados Unidos" },
     ],
   },
   {
-    label: "Centroamérica",
+    label: "Centroamerica",
     options: [
       { value: "America/Guatemala", city: "Ciudad de Guatemala", country: "Guatemala" },
-      { value: "America/Costa_Rica", city: "San José", country: "Costa Rica" },
-      { value: "America/Panama", city: "Ciudad de Panamá", country: "Panamá" },
+      { value: "America/Costa_Rica", city: "San Jose", country: "Costa Rica" },
+      { value: "America/Panama", city: "Ciudad de Panama", country: "Panama" },
     ],
   },
   {
-    label: "Sudamérica",
+    label: "Sudamerica",
     options: [
-      { value: "America/Bogota", city: "Bogotá", country: "Colombia" },
-      { value: "America/Lima", city: "Lima", country: "Perú" },
+      { value: "America/Bogota", city: "Bogota", country: "Colombia" },
+      { value: "America/Lima", city: "Lima", country: "Peru" },
       { value: "America/Santiago", city: "Santiago", country: "Chile" },
       { value: "America/Argentina/Buenos_Aires", city: "Buenos Aires", country: "Argentina" },
     ],
@@ -65,7 +65,7 @@ const TIMEZONE_GROUPS: TimezoneGroup[] = [
     label: "Otros",
     options: [
       { value: "UTC", city: "UTC", country: "Universal" },
-      { value: "Europe/Madrid", city: "Madrid", country: "España" },
+      { value: "Europe/Madrid", city: "Madrid", country: "Espana" },
     ],
   },
 ]
@@ -85,20 +85,20 @@ type Tab = "taller" | "cuenta" | "alertas" | "flujo-pro" | "imprenta" | "hardwar
 type FieldErrors = Partial<Record<keyof TallerSettings, string>>
 const TEMP_DISABLED_TABS: Tab[] = ["alertas", "flujo-pro"]
 
-// ─── Validación cliente ────────────────────────────────────────────────────
+// ─── Validacion cliente ────────────────────────────────────────────────────
 
 function validateSettings(s: TallerSettings): FieldErrors {
   const errors: FieldErrors = {}
   if (!s.nombre_taller || s.nombre_taller.trim().length < 3)
-    errors.nombre_taller = "El nombre del taller es requerido (mínimo 3 caracteres)."
+    errors.nombre_taller = "El nombre del taller es requerido (minimo 3 caracteres)."
   const digits = s.telefono.replace(/\D/g, "")
-  if (!digits) errors.telefono = "El teléfono del taller es requerido."
-  else if (digits.length < 6 || digits.length > 15) errors.telefono = `El teléfono debe tener entre 6 y 15 dígitos (tiene ${digits.length}).`
+  if (!digits) errors.telefono = "El telefono del taller es requerido."
+  else if (digits.length < 6 || digits.length > 15) errors.telefono = `El telefono debe tener entre 6 y 15 digitos (tiene ${digits.length}).`
   if (s.email_contacto?.trim()) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email_contacto.trim()))
-      errors.email_contacto = "El formato del email no es válido."
+      errors.email_contacto = "El formato del email no es valido."
   }
-  if (!s.pais?.trim()) errors.pais = "Debes seleccionar un país."
+  if (!s.pais?.trim()) errors.pais = "Debes seleccionar un pais."
   if (!s.ciudad?.trim()) errors.ciudad = "La ciudad es requerida."
   if (!s.estado?.trim()) errors.estado = "El estado es requerido."
   if (!s.zona_horaria?.trim()) errors.zona_horaria = "Selecciona la zona horaria del taller."
@@ -219,7 +219,7 @@ function ConfiguracionContent() {
     load()
   }, [])
 
-  // Cargar ajustes de Flujo PRO cuando la pestaña esté activa
+  // Cargar ajustes de Flujo PRO cuando la pestana este activa
   useEffect(() => {
     if (PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(activeTab)) {
       setActiveTab("taller")
@@ -237,7 +237,7 @@ function ConfiguracionContent() {
     load()
   }, [activeTab])
 
-  // Función para actualizar ajustes de Flujo PRO
+  // Funcion para actualizar ajustes de Flujo PRO
   const handlePatchFluJoPro = <K extends keyof AjustesTallerFlujoPro>(
     key: K,
     value: AjustesTallerFlujoPro[K]
@@ -249,7 +249,7 @@ function ConfiguracionContent() {
     startTransitionFluJoPro(async () => {
       const r = await updateAjustesTallerFlujoPro({ [key]: value })
       if (!r.success) {
-        toast({ variant: "destructive", title: "No se guardó", description: r.error })
+        toast({ variant: "destructive", title: "No se guardo", description: r.error })
         setAjustesFluJoPro(prevSnapshot)
         return
       }
@@ -268,7 +268,7 @@ function ConfiguracionContent() {
       return
     }
     if (file.size > 2 * 1024 * 1024) {
-      setLogoError("El archivo supera el límite de 2MB.")
+      setLogoError("El archivo supera el limite de 2MB.")
       e.target.value = ""
       return
     }
@@ -284,7 +284,7 @@ function ConfiguracionContent() {
   // ── Guardar taller ──────────────────────────────────────────────────────
   const handleSaveTaller = () => {
     if (!settings) {
-      setTallerMsg({ type: "error", text: "Configuración no cargada." })
+      setTallerMsg({ type: "error", text: "Configuracion no cargada." })
       return
     }
     if (!settings) return
@@ -321,13 +321,13 @@ function ConfiguracionContent() {
       if (error) {
         setTallerMsg({ type: "error", text: `Error al guardar: ${error}` })
       } else {
-        setTallerMsg({ type: "success", text: "Configuración guardada correctamente." })
+        setTallerMsg({ type: "success", text: "Configuracion guardada correctamente." })
         setTimeout(() => setTallerMsg(null), 3000)
       }
     })
   }
 
-  // ── Cambiar contraseña ──────────────────────────────────────────────────
+  // ── Cambiar contrasena ──────────────────────────────────────────────────
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
       setPasswordMsg({ type: "error", text: "Completa ambos campos." })
@@ -337,11 +337,11 @@ function ConfiguracionContent() {
     setPasswordMsg(null)
     const result = await changeOwnerPassword(currentPassword, newPassword)
     if (result.success) {
-      setPasswordMsg({ type: "success", text: "Contraseña actualizada correctamente." })
+      setPasswordMsg({ type: "success", text: "Contrasena actualizada correctamente." })
       setCurrentPassword("")
       setNewPassword("")
     } else {
-      setPasswordMsg({ type: "error", text: result.error || "No se pudo actualizar la contraseña." })
+      setPasswordMsg({ type: "error", text: result.error || "No se pudo actualizar la contrasena." })
     }
     setPasswordLoading(false)
   }
@@ -352,7 +352,7 @@ function ConfiguracionContent() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex items-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Cargando configuración de tu taller...
+          Cargando configuracion de tu taller...
         </div>
       </div>
     )
@@ -412,7 +412,7 @@ function ConfiguracionContent() {
 
         {/* Tab Content */}
         <div className="space-y-8">
-          {/* ════ PESTAÑA TALLER ══════════════════════════════════════════════ */}
+          {/* ════ PESTAnA TALLER ══════════════════════════════════════════════ */}
           {activeTab === "taller" && (
             <Empresa
               settings={settings}
@@ -431,7 +431,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAÑA MI CUENTA ═══════════════════════════════════════════ */}
+          {/* ════ PESTAnA MI CUENTA ═══════════════════════════════════════════ */}
           {activeTab === "cuenta" && (
             <Perfil
               loginEmail={loginEmail}
@@ -446,7 +446,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAÑA REPORTES Y ALERTAS ═══════════════════════════════════ */}
+          {/* ════ PESTAnA REPORTES Y ALERTAS ═══════════════════════════════════ */}
           {activeTab === "alertas" && (
             <Notificaciones
               settings={settings}
@@ -455,7 +455,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAÑA FLUJO PRO ═══════════════════════════════════════════ */}
+          {/* ════ PESTAnA FLUJO PRO ═══════════════════════════════════════════ */}
           {activeTab === "flujo-pro" && (
             <FlujoPro
               loadingFluJoPro={loadingFluJoPro}
@@ -466,12 +466,12 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAÑA IMPRENTA ════════════════════════════════════════════ */}
+          {/* ════ PESTAnA IMPRENTA ════════════════════════════════════════════ */}
           {activeTab === "imprenta" && (
             <Imprenta settings={settings} />
           )}
 
-          {/* ════ PESTAÑA HARDWARE ════════════════════════════════════════════ */}
+          {/* ════ PESTAnA HARDWARE ════════════════════════════════════════════ */}
           {activeTab === "hardware" && (
             <Hardware
               settings={settings}
@@ -492,7 +492,7 @@ export default function ConfiguracionPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex items-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Cargando configuración...
+          Cargando configuracion...
         </div>
       </div>
     }>

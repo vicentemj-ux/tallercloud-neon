@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useRef } from "react"
 import { LabelRepairTemplate, type LabelRepairTemplateData } from "@/components/print-templates/LabelRepairTemplate"
@@ -9,13 +9,13 @@ import { usePrintWindowClose } from "@/hooks/use-print-window-close"
 type AnyLabelData = LabelRepairTemplateData | ProductSaleLabelTemplateData | VentaLabelData
 
 /**
- * Impresión de etiquetas (localStorage) sin layout del dashboard.
+ * Impresion de etiquetas (localStorage) sin layout del dashboard.
  * Ruta: /print-label
  *
  * Dispatch por campo "kind":
  *   "venta-label"        → VentaLabel (50mm×25mm)
  *   "product-sale-label" → ProductSaleLabelTemplate (80mm auto)
- *   undefined/otro       → LabelRepairTemplate (50mm×25mm landscape) ← fuente única para tickets de reparación
+ *   undefined/otro       → LabelRepairTemplate (50mm×25mm landscape) ← fuente unica para tickets de reparacion
  */
 export default function PrintLabelStandalonePage() {
   const [data, setData] = useState<AnyLabelData | null>(null)
@@ -35,7 +35,7 @@ export default function PrintLabelStandalonePage() {
 
     const kind = (parsed as VentaLabelData | ProductSaleLabelTemplateData).kind
 
-    // Etiqueta estándar 2×1" (50.8mm × 25.4mm) para todos los tipos
+    // Etiqueta estandar 2×1" (50.8mm × 25.4mm) para todos los tipos
     const style = document.createElement("style")
     style.id = "label-page-style"
     style.textContent = `

@@ -120,7 +120,7 @@ export async function addGastoTicket(input: AddGastoTicketInput): Promise<{ data
 
     const tipoLabel = {
       mano_obra: "Mano de Obra",
-      refaccion: "Refacción",
+      refaccion: "Refaccion",
       maquila: "Maquila/Externo",
       insumo: "Insumos",
       otro: "Otros",
@@ -132,7 +132,7 @@ export async function addGastoTicket(input: AddGastoTicketInput): Promise<{ data
       tallerId,
       cajaId,
       String(gasto.id),
-      `Inversión Folio #${folio} - ${tipoLabel}: ${input.concepto.trim()}`,
+      `Inversion Folio #${folio} - ${tipoLabel}: ${input.concepto.trim()}`,
       -Math.abs(input.monto),
       actor || "Sistema",
     )

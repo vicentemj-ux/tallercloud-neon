@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { Wallet, CheckCircle2, Loader2 } from "lucide-react"
@@ -73,7 +73,7 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
 
             {/* Title */}
             <h3 className="mb-3 text-center text-lg font-black uppercase italic tracking-wide text-slate-900">
-              ¿DE DÓNDE SALE EL DINERO?
+              ¿DE DoNDE SALE EL DINERO?
             </h3>
 
             {/* Subtitle */}
@@ -81,7 +81,7 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
               Estas anulando la <span className="text-amber-500">Venta #{folio}</span>.
             </p>
             <p className="mb-6 text-center text-[11px] font-bold uppercase tracking-widest text-slate-500">
-              Selecciona la caja abierta que entregará el efectivo al cliente.
+              Selecciona la caja abierta que entregara el efectivo al cliente.
             </p>
 
             {/* Caja card */}
@@ -129,14 +129,14 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
                 onClick={onClose}
                 disabled={anulando}
               >
-                Cancelar operación
+                Cancelar operacion
               </Button>
               <Button
                 className="w-full rounded-full bg-blue-600 py-5 text-xs font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-blue-700 btn-glow"
                 onClick={handleConfirm}
                 disabled={anulando || !caja}
               >
-                {anulando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar anulación"}
+                {anulando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar anulacion"}
               </Button>
             </div>
           </div>
@@ -147,7 +147,7 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
             </div>
             <h3 className="mb-1 text-center text-lg font-black text-slate-900">Venta Anulada</h3>
             <p className="mb-6 text-center text-sm text-slate-500">
-              Se revirtió el inventario y se actualizó la caja correctamente.
+              Se revirtio el inventario y se actualizo la caja correctamente.
             </p>
             <Button
               className="w-full rounded-full bg-blue-600 py-5 text-xs font-bold uppercase tracking-[0.2em] text-white hover:bg-blue-700 btn-glow"

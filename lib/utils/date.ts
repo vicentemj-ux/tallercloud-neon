@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Utilidades de formato de fecha centralizadas.
- * Fuente única de verdad para todo el formateo de fechas en TallerCloud.
+ * Fuente unica de verdad para todo el formateo de fechas en TallerCloud.
  */
 
 export function formatDate(iso: string | null | undefined): string {

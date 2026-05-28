@@ -1,151 +1,142 @@
-"use client"
+﻿const fs = require('fs')
+const path = require('path')
+const { execSync } = require('child_process')
 
-import { useEffect, useRef, useState } from "react"
-import { useParams } from "next/navigation"
-import { AbonoReceipt, type AbonoReceiptData } from "@/components/dashboard/abono-receipt"
-import { getAbonoById } from "@/lib/actions/ventas"
-import { getTallerSettings } from "@/lib/actions/settings"
-import { usePrintWindowClose } from "@/hooks/use-print-window-close"
-import {
-  isTauriAvailable,
-  printTicketDirecto,
-  printTicketRasterDirecto,
-  buildTicketDataFromAbono,
-} from "@/lib/tauri/desktop-bridge"
-import { toast } from "@/hooks/use-toast"
+const rootDir = path.resolve(__dirname, '..')
+const serverDir = path.join(rootDir, 'src-tauri', 'server')
+const standaloneDir = path.join(rootDir, '.next', 'standalone')
+const staticDir = path.join(rootDir, '.next', 'static')
+const publicDir = path.join(rootDir, 'public')
+const envSource = path.join(rootDir, '.env.local')
+const envDest = path.join(serverDir, '.env')
 
-interface BusinessSettings {
-  name: string
-  phone: string
-  logoUrl: string | null
-  direccion?: string
+function copyRecursive(src, dest, ignoreSet = new Set()) {
+  if (!fs.existsSync(src)) return
+  if (ignoreSet.has(path.basename(src))) return
+
+  const stat = fs.lstatSync(src)
+  if (stat.isSymbolicLink()) {
+    return
+  }
+  if (stat.isDirectory()) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true })
+    }
+    for (const entry of fs.readdirSync(src)) {
+      copyRecursive(path.join(src, entry), path.join(dest, entry), ignoreSet)
+    }
+  } else {
+    fs.copyFileSync(src, dest)
+  }
 }
 
-export default function PrintAbonoDynamicPage() {
-  const { id } = useParams<{ id: string }>()
-  const [data, setData] = useState<AbonoReceiptData | null>(null)
-  const [business, setBusiness] = useState<BusinessSettings | null>(null)
-  const [mensajeDespedida, setMensajeDespedida] = useState<string>("")
-  const ticketRef = useRef<HTMLDivElement>(null)
-  usePrintWindowClose()
-
-  useEffect(() => {
-    if (!id) return
-
-    const load = async () => {
-      const [abonoResult, settingsResult] = await Promise.all([
-        getAbonoById(decodeURIComponent(id)),
-        getTallerSettings(),
-      ])
-
-      if (abonoResult.error || !abonoResult.data) {
-        console.error("[print-abono/[id]]", abonoResult.error)
-        return
-      }
-
-      const abono = abonoResult.data
-      const cfg = settingsResult.settings
-      // Map AbonoPrintData → AbonoReceiptData
-      setData({
-        folio: abono.folio,
-        customerName: abono.clienteNombre,
-        customerPhone: abono.clienteTelefono,
-        deviceName: abono.dispositivo,
-        metodoPago: abono.metodoPago,
-        monto: abono.monto,
-        totalPagado: abono.totalAbonado,
-        presupuesto: abono.presupuesto,
-        saldoRestante: abono.saldoRestante,
-        date: abono.fecha,
-      })
-
-      setBusiness({
-        name: cfg?.nombre_taller || "Mi Taller",
-        phone: cfg?.telefono || "",
-        logoUrl: cfg?.logo_url ?? null,
-        direccion: cfg?.direccion?.trim() || undefined,
-      })
-      setMensajeDespedida(cfg?.mensaje_despedida?.trim() || "")
+function removeRecursive(dir, preserveSet = new Set()) {
+  if (!fs.existsSync(dir)) return
+  for (const entry of fs.readdirSync(dir)) {
+    if (preserveSet.has(entry.toLowerCase())) continue
+    const entryPath = path.join(dir, entry)
+    const stat = fs.lstatSync(entryPath)
+    if (stat.isSymbolicLink()) {
+      fs.unlinkSync(entryPath)
+    } else if (stat.isDirectory()) {
+      removeRecursive(entryPath, preserveSet)
+      fs.rmdirSync(entryPath)
+    } else {
+      fs.unlinkSync(entryPath)
     }
-
-    void load()
-  }, [id])
-
-  useEffect(() => {
-    if (!data || !business) return
-
-    const runPrint = async () => {
-      // Desktop direct print (Tauri) — raster de alta calidad
-      if (await isTauriAvailable()) {
-        try {
-          const { settings } = await getTallerSettings()
-          const printerName = settings?.impresora_ticket?.trim()
-          if (!printerName) {
-            toast({
-              title: "Impresora no configurada",
-              description: "Ve a Configuracion > Hardware y selecciona la impresora de tickets.",
-              variant: "destructive",
-            })
-            return
-          }
-          await new Promise<void>((resolve) => setTimeout(resolve, 300))
-          if (ticketRef.current) {
-            await printTicketRasterDirecto(printerName, ticketRef.current)
-          } else {
-            const ticketData = buildTicketDataFromAbono(
-              {
-                folio: data.folio,
-                customerName: data.customerName,
-                deviceBrand: data.deviceName,
-                monto: data.monto,
-                metodoPago: data.metodoPago,
-                nuevoAnticipo: data.totalPagado,
-                presupuesto: data.presupuesto,
-                date: data.date,
-                direccion: business.direccion,
-              },
-              business.name,
-              business.phone,
-              mensajeDespedida || undefined
-            )
-            await printTicketDirecto(printerName, ticketData)
-          }
-          toast({ title: "Ticket enviado a impresora" })
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : "Error al imprimir"
-          toast({ title: "Error de impresion", description: msg, variant: "destructive" })
-        }
-        return
-      }
-
-      // Fallback web
-      document.body.classList.add("print-ticket-mode")
-      const style = document.createElement("style")
-      style.id = "print-abono-page-style"
-      style.textContent = `@page { size: 80mm auto; margin: 0; }`
-      document.head.appendChild(style)
-      window.setTimeout(() => window.print(), 500)
-    }
-
-    runPrint()
-
-    return () => {
-      document.body.classList.remove("print-ticket-mode")
-      document.getElementById("print-abono-page-style")?.remove()
-    }
-  }, [data, business])
-
-  if (!data || !business) return null
-
-  return (
-    <div className="print-ticket-only flex items-center justify-center bg-white p-4">
-      <AbonoReceipt
-        data={data}
-        businessName={business.name}
-        businessPhone={business.phone}
-        logoUrl={business.logoUrl || undefined}
-        mensajeDespedida={mensajeDespedida || undefined}
-      />
-    </div>
-  )
+  }
 }
+
+// ── 1. Verificar que standalone exista ──
+if (!fs.existsSync(standaloneDir)) {
+  console.error(`❌ .next/standalone/ no encontrado.`)
+  console.error(`   Asegurate de que next.config.mjs tenga output: 'standalone' y que pnpm build haya terminado exitosamente.`)
+  process.exit(1)
+}
+
+// ── 2. Limpiar src-tauri/server preservando node.exe ──
+console.log('🧹 Limpiando src-tauri/server (preservando node.exe)...')
+if (!fs.existsSync(serverDir)) {
+  fs.mkdirSync(serverDir, { recursive: true })
+}
+removeRecursive(serverDir, new Set(['node.exe']))
+
+// ── 3. Copiar .next/standalone/ → src-tauri/server/ (omitir node_modules) ──
+console.log('📦 Copiando .next/standalone/ → src-tauri/server/ (sin node_modules)...')
+const ignoreNodeModules = new Set(['node_modules'])
+for (const entry of fs.readdirSync(standaloneDir)) {
+  if (entry === 'node_modules') continue
+  const src = path.join(standaloneDir, entry)
+  const dest = path.join(serverDir, entry)
+  copyRecursive(src, dest, ignoreNodeModules)
+}
+
+// ── 4. Instalar dependencias de produccion con npm (archivos reales, no symlinks) ──
+console.log('📦 Instalando dependencias de produccion con npm...')
+const npmCacheDir = path.join(rootDir, '.npm-cache-tauri')
+try {
+  execSync('npm install --production --no-audit --no-fund --prefer-offline', {
+    cwd: serverDir,
+    stdio: 'inherit',
+    env: { ...process.env, npm_config_cache: npmCacheDir },
+  })
+} catch (e) {
+  console.error('❌ Error al instalar dependencias en src-tauri/server/:')
+  console.error(e.message)
+  process.exit(1)
+}
+
+// Clean npm cache from server dir (should not be here but safety cleanup)
+const serverNpmCache = path.join(serverDir, '.npm-cache')
+if (fs.existsSync(serverNpmCache)) {
+  fs.rmSync(serverNpmCache, { recursive: true, force: true })
+  console.log('🧹 Limpiado .npm-cache residual en server/')
+}
+
+// Strip dev/test/docs files from node_modules to reduce bundle size
+console.log('📦 Optimizando node_modules para bundle...')
+const stripPatterns = [
+  /\.(md|txt|markdown|yml|yaml|tsx?|map|flow|tsbuildinfo)$/,
+  /^(README|CHANGELOG|LICENSE|CONTRIBUTING|AUTHORS|\.npmignore|\.gitignore|\.editorconfig|\.eslintrc|\.prettierrc|tsconfig)/,
+  /^(test|tests|__tests__|spec|__mocks__|examples?|docs?|benchmarks?|coverage|\.github)$/,
+]
+function stripNodeModules(dir) {
+  if (!fs.existsSync(dir)) return
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      if (stripPatterns.some(p => p.test(entry.name))) {
+        fs.rmSync(fullPath, { recursive: true, force: true })
+      } else {
+        stripNodeModules(fullPath)
+      }
+    } else if (entry.isFile()) {
+      if (stripPatterns.some(p => p.test(entry.name))) {
+        fs.unlinkSync(fullPath)
+      }
+    }
+  }
+}
+stripNodeModules(path.join(serverDir, 'node_modules'))
+
+// ── 5. Copiar .next/static/ → src-tauri/server/.next/static/ ──
+if (fs.existsSync(staticDir)) {
+  console.log('📦 Copiando .next/static/ → src-tauri/server/.next/static/...')
+  copyRecursive(staticDir, path.join(serverDir, '.next', 'static'), ignoreNodeModules)
+}
+
+// ── 6. Copiar public/ → src-tauri/server/public/ ──
+if (fs.existsSync(publicDir)) {
+  console.log('📦 Copiando public/ → src-tauri/server/public/...')
+  copyRecursive(publicDir, path.join(serverDir, 'public'), ignoreNodeModules)
+}
+
+// ── 7. Copiar .env.local → src-tauri/server/.env ──
+if (fs.existsSync(envSource)) {
+  fs.copyFileSync(envSource, envDest)
+  console.log('✅ Copiado .env.local → src-tauri/server/.env')
+} else {
+  console.warn('⚠️ .env.local no encontrado. El servidor puede fallar si requiere variables de entorno.')
+}
+
+console.log('✅ src-tauri/server/ listo para empaquetar con Tauri.')

@@ -1,4 +1,4 @@
-import * as React from "react"
+﻿import * as React from "react"
 
 interface TrialExpiringEmailProps {
   ownerName: string
@@ -49,7 +49,7 @@ export function TrialExpiringEmail({
               textTransform: "uppercase",
             }}
           >
-            Tu prueba vence en 3 días
+            Tu prueba vence en 3 dias
           </h1>
         </div>
 
@@ -59,7 +59,7 @@ export function TrialExpiringEmail({
           </p>
           <p style={{ margin: "0 0 12px 0", fontSize: "15px", lineHeight: "24px", color: "#0f172a" }}>
             Tu prueba gratuita de <strong>TallerCloud</strong> para <strong>{workshopName}</strong>{" "}
-            está por finalizar en <strong>3 días</strong>.
+            esta por finalizar en <strong>3 dias</strong>.
           </p>
           <p style={{ margin: "0 0 20px 0", fontSize: "14px", lineHeight: "22px", color: "#475569" }}>
             Para mantener acceso continuo y evitar interrupciones, te recomendamos actualizar tu plan o
@@ -96,7 +96,7 @@ export function TrialExpiringEmail({
             textAlign: "center",
           }}
         >
-          TallerCloud · Plataforma SaaS para talleres de reparación
+          TallerCloud · Plataforma SaaS para talleres de reparacion
         </div>
       </div>
     </div>

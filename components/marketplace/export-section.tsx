@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { File, Table2, FileText } from 'lucide-react';
@@ -23,7 +23,7 @@ export function ExportSection({ products }: ExportSectionProps) {
   };
 
   const exportAsCSV = () => {
-    const headers = ['Nombre', 'Categoría', 'Precio', 'Descripción'];
+    const headers = ['Nombre', 'Categoria', 'Precio', 'Descripcion'];
     const rows = products.map(p => [
       `"${p.name.replace(/"/g, '""')}"`,
       `"${p.category.replace(/"/g, '""')}"`,
@@ -52,7 +52,7 @@ export function ExportSection({ products }: ExportSectionProps) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos - Catálogo</title>
+    <title>Productos - Catalogo</title>
     <style>
         * {
             margin: 0;
@@ -130,7 +130,7 @@ export function ExportSection({ products }: ExportSectionProps) {
 </head>
 <body>
     <div class="container">
-        <h1>Catálogo de Productos</h1>
+        <h1>Catalogo de Productos</h1>
         <div class="grid">
 `;
 
@@ -150,7 +150,7 @@ export function ExportSection({ products }: ExportSectionProps) {
     htmlContent += `
         </div>
         <div class="footer">
-            <p>Catálogo generado con Taller Cloud • ${new Date().toLocaleDateString('es-ES')}</p>
+            <p>Catalogo generado con Taller Cloud • ${new Date().toLocaleDateString('es-ES')}</p>
         </div>
     </div>
 </body>
@@ -231,10 +231,10 @@ export function ExportSection({ products }: ExportSectionProps) {
                 <strong>JSON:</strong> Para importar datos en otras aplicaciones o hacer backup completo.
               </p>
               <p>
-                <strong>CSV:</strong> Compatible con Excel, Google Sheets y otras herramientas de análisis.
+                <strong>CSV:</strong> Compatible con Excel, Google Sheets y otras herramientas de analisis.
               </p>
               <p>
-                <strong>HTML:</strong> Catálogo visual listo para compartir o publicar en tu sitio web.
+                <strong>HTML:</strong> Catalogo visual listo para compartir o publicar en tu sitio web.
               </p>
             </div>
           </div>
@@ -247,9 +247,9 @@ export function ExportSection({ products }: ExportSectionProps) {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-2 px-3 font-medium text-foreground">Nombre</th>
-                    <th className="text-left py-2 px-3 font-medium text-foreground">Categoría</th>
+                    <th className="text-left py-2 px-3 font-medium text-foreground">Categoria</th>
                     <th className="text-right py-2 px-3 font-medium text-foreground">Precio</th>
-                    <th className="text-left py-2 px-3 font-medium text-foreground">Descripción</th>
+                    <th className="text-left py-2 px-3 font-medium text-foreground">Descripcion</th>
                   </tr>
                 </thead>
                 <tbody>

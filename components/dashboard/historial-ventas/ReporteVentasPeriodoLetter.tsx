@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { HistorialVentaRow, HistorialVentasTotales } from "@/lib/actions/historial-ventas"
 import { getPublicAppHostname } from "@/lib/app-public"
@@ -14,7 +14,7 @@ export interface ReporteVentasPeriodoLetterProps {
   rows: HistorialVentaRow[]
   tallerNombre: string
   tallerTelefono: string
-  /** Logo del taller (p. ej. Storage `taller` / URL en configuración) */
+  /** Logo del taller (p. ej. Storage `taller` / URL en configuracion) */
   tallerLogoUrl?: string | null
 }
 
@@ -82,7 +82,7 @@ export function ReporteVentasPeriodoLetter({
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Reporte operativo
               </p>
-              <p className="text-lg font-bold text-slate-900">Ventas del período</p>
+              <p className="text-lg font-bold text-slate-900">Ventas del periodo</p>
               {appHost ? (
                 <p className="text-xs text-slate-500">{appHost}</p>
               ) : null}
@@ -96,10 +96,10 @@ export function ReporteVentasPeriodoLetter({
       </header>
 
       <section className="mb-6">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Parámetros del reporte</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Parametros del reporte</h2>
         <dl className="mt-2 grid gap-1 text-sm">
           <div className="flex gap-2">
-            <dt className="w-36 shrink-0 text-slate-500">Período</dt>
+            <dt className="w-36 shrink-0 text-slate-500">Periodo</dt>
             <dd className="font-medium text-slate-900">{fmtRange(dateFrom, dateTo)}</dd>
           </div>
           <div className="flex gap-2">
@@ -108,7 +108,7 @@ export function ReporteVentasPeriodoLetter({
           </div>
           {searchQuery.trim() ? (
             <div className="flex gap-2">
-              <dt className="w-36 shrink-0 text-slate-500">Búsqueda</dt>
+              <dt className="w-36 shrink-0 text-slate-500">Busqueda</dt>
               <dd className="font-medium text-slate-900">{searchQuery.trim()}</dd>
             </div>
           ) : null}
@@ -116,7 +116,7 @@ export function ReporteVentasPeriodoLetter({
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Totales por método de pago</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Totales por metodo de pago</h2>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded border border-slate-200 px-3 py-2">
             <p className="text-[10px] font-semibold uppercase text-slate-500">Efectivo</p>
@@ -131,7 +131,7 @@ export function ReporteVentasPeriodoLetter({
             <p className="text-base font-bold tabular-nums text-slate-900">{fmtMoney(totales.transferencia)}</p>
           </div>
           <div className="rounded border border-blue-100 bg-blue-50/80 px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase text-blue-700">Total período</p>
+            <p className="text-[10px] font-semibold uppercase text-blue-700">Total periodo</p>
             <p className="text-base font-bold tabular-nums text-blue-900">{fmtMoney(totales.total)}</p>
           </div>
         </div>
@@ -154,7 +154,7 @@ export function ReporteVentasPeriodoLetter({
             {rows.length === 0 ? (
               <tr>
                 <td colSpan={6} className="border border-slate-200 px-3 py-8 text-center text-slate-500">
-                  No hay movimientos en este período con los filtros seleccionados.
+                  No hay movimientos en este periodo con los filtros seleccionados.
                 </td>
               </tr>
             ) : (

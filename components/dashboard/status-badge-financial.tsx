@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { cn } from "@/lib/utils"
 
@@ -12,9 +12,9 @@ export interface StatusBadgeFinancialProps {
 }
 
 /**
- * Estado visual del cuadre de caja: cuadrado, sobrante o faltante (pastel, píldora).
- * - diferencia > 0: sobró efectivo en caja → "Sobrante" (azul/cyan)
- * - diferencia < 0: faltó efectivo → "Faltante" (rojo) - solo si realmente falta
+ * Estado visual del cuadre de caja: cuadrado, sobrante o faltante (pastel, pildora).
+ * - diferencia > 0: sobro efectivo en caja → "Sobrante" (azul/cyan)
+ * - diferencia < 0: falto efectivo → "Faltante" (rojo) - solo si realmente falta
  */
 export function StatusBadgeFinancial({ diferencia, className }: StatusBadgeFinancialProps) {
   if (diferencia === null) {

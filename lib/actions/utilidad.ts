@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 
@@ -125,7 +125,7 @@ export async function getUtilidadData(
     ...reps.map(r => ({
       id: r.id as string,
       fecha: (r.created_at as string)?.slice(0, 10) ?? "",
-      descripcion: `Reparación #${(r.folio as string) || r.id}`,
+      descripcion: `Reparacion #${(r.folio as string) || r.id}`,
       monto: Number(r.costo_total ?? 0),
       tipo: "reparacion" as const,
     })),

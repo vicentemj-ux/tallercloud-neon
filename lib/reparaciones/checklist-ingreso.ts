@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Checklist de ingreso — almacenado en `reparaciones.checklist_ingreso` (JSONB).
  */
 export type EncendidoRecepcion = "ok" | "intermitente" | "no"
@@ -17,45 +17,45 @@ export interface ChecklistIngreso {
   observacionesEsteticas: string
 }
 
-/** Health check por tipo de equipo — 10 puntos de diagnóstico funcional por categoría. */
+/** Health check por tipo de equipo — 10 puntos de diagnostico funcional por categoria. */
 export const CHECKLIST_FUNCIONAL_ITEMS: Record<
   string,
   readonly { key: string; label: string }[]
 > = {
   Celular: [
-    { key: "camaras", label: "Cámaras" },
+    { key: "camaras", label: "Camaras" },
     { key: "sensores", label: "Sensores" },
     { key: "puertos", label: "Puertos" },
     { key: "pantalla", label: "Pantalla" },
     { key: "audio", label: "Audio / altavoz" },
-    { key: "bateria", label: "Batería / carga" },
+    { key: "bateria", label: "Bateria / carga" },
     { key: "wifi_bt", label: "Wi‑Fi / Bluetooth" },
     { key: "botones", label: "Botones laterales" },
-    { key: "microfono", label: "Micrófono" },
+    { key: "microfono", label: "Microfono" },
     { key: "biometria", label: "Face ID / huella" },
   ],
   Tablet: [
-    { key: "camaras", label: "Cámaras" },
+    { key: "camaras", label: "Camaras" },
     { key: "sensores", label: "Sensores" },
     { key: "puertos", label: "Puertos" },
-    { key: "pantalla", label: "Pantalla / táctil" },
+    { key: "pantalla", label: "Pantalla / tactil" },
     { key: "audio", label: "Audio" },
-    { key: "bateria", label: "Batería / carga" },
+    { key: "bateria", label: "Bateria / carga" },
     { key: "wifi_bt", label: "Wi‑Fi / Bluetooth" },
     { key: "botones", label: "Botones" },
-    { key: "microfono", label: "Micrófono" },
+    { key: "microfono", label: "Microfono" },
     { key: "estructura", label: "Estructura / bisagras" },
   ],
   Laptop: [
     { key: "pantalla", label: "Pantalla" },
     { key: "teclado", label: "Teclado" },
-    { key: "trackpad", label: "Trackpad / ratón" },
+    { key: "trackpad", label: "Trackpad / raton" },
     { key: "puertos", label: "Puertos / USB" },
     { key: "audio", label: "Audio" },
     { key: "wifi_bt", label: "Wi‑Fi / Bluetooth" },
-    { key: "bateria", label: "Batería / carga" },
-    { key: "camara", label: "Cámara" },
-    { key: "ventilacion", label: "Ventilación" },
+    { key: "bateria", label: "Bateria / carga" },
+    { key: "camara", label: "Camara" },
+    { key: "ventilacion", label: "Ventilacion" },
     { key: "estructura", label: "Estructura / bisagras" },
   ],
   Videojuego: [
@@ -64,33 +64,33 @@ export const CHECKLIST_FUNCIONAL_ITEMS: Record<
     { key: "video", label: "Video / HDMI" },
     { key: "audio", label: "Audio" },
     { key: "disco", label: "Disco / almacenamiento" },
-    { key: "ventilacion", label: "Ventilación" },
+    { key: "ventilacion", label: "Ventilacion" },
     { key: "lector", label: "Lector de cartuchos / discos" },
     { key: "wifi_bt", label: "Wi‑Fi / Bluetooth" },
-    { key: "alimentacion", label: "Alimentación" },
+    { key: "alimentacion", label: "Alimentacion" },
     { key: "estructura", label: "Estructura" },
   ],
   Impresora: [
-    { key: "alimentacion_electrica", label: "Alimentación / encendido" },
+    { key: "alimentacion_electrica", label: "Alimentacion / encendido" },
     { key: "conectividad", label: "Conectividad (USB / Wi‑Fi / Ethernet)" },
-    { key: "calidad_impresion", label: "Calidad de impresión" },
-    { key: "alimentacion_papel", label: "Alimentación de papel" },
-    { key: "escaner", label: "Escáner / copiadora" },
+    { key: "calidad_impresion", label: "Calidad de impresion" },
+    { key: "alimentacion_papel", label: "Alimentacion de papel" },
+    { key: "escaner", label: "Escaner / copiadora" },
     { key: "panel_control", label: "Panel de control / pantalla" },
-    { key: "consumibles", label: "Tóner / tinta / cartuchos" },
+    { key: "consumibles", label: "Toner / tinta / cartuchos" },
     { key: "rodillos", label: "Rodillos / mecanismo de arrastre" },
-    { key: "ruido", label: "Ruido / vibración" },
+    { key: "ruido", label: "Ruido / vibracion" },
     { key: "estructura", label: "Estructura / carcasa" },
   ],
   Reloj: [
-    { key: "pantalla", label: "Pantalla / táctil" },
-    { key: "bateria", label: "Batería / carga" },
+    { key: "pantalla", label: "Pantalla / tactil" },
+    { key: "bateria", label: "Bateria / carga" },
     { key: "conectividad", label: "Conectividad (Bluetooth / Wi‑Fi / GPS)" },
     { key: "sensores", label: "Sensores (frecuencia, pasos, etc.)" },
     { key: "botones", label: "Botones / corona / bisel" },
-    { key: "audio", label: "Micrófono / altavoz" },
+    { key: "audio", label: "Microfono / altavoz" },
     { key: "estructura", label: "Estructura / cristal / caja" },
-    { key: "notificaciones", label: "Notificaciones / vibración" },
+    { key: "notificaciones", label: "Notificaciones / vibracion" },
     { key: "sellado", label: "Sellado / resistencia al agua" },
     { key: "alimentacion", label: "Cargador / dock" },
   ],
@@ -99,23 +99,23 @@ export const CHECKLIST_FUNCIONAL_ITEMS: Record<
     { key: "pantalla", label: "Pantalla / monitor" },
     { key: "puertos", label: "Puertos USB / conectividad" },
     { key: "audio", label: "Audio / altavoces" },
-    { key: "ventilacion", label: "Ventilación / temperatura" },
+    { key: "ventilacion", label: "Ventilacion / temperatura" },
     { key: "almacenamiento", label: "Almacenamiento / disco" },
     { key: "ram", label: "RAM / rendimiento" },
     { key: "red", label: "Red / Wi‑Fi / Ethernet" },
-    { key: "perifericos", label: "Periféricos (teclado / ratón)" },
+    { key: "perifericos", label: "Perifericos (teclado / raton)" },
     { key: "fuente", label: "Fuente de poder" },
   ],
   Proyector: [
-    { key: "encendido", label: "Encendido / lámpara" },
+    { key: "encendido", label: "Encendido / lampara" },
     { key: "imagen", label: "Imagen / enfoque / color" },
     { key: "conectividad", label: "Conectividad (HDMI / VGA / USB / Wi‑Fi)" },
-    { key: "ventilacion", label: "Ventilación / ruido" },
+    { key: "ventilacion", label: "Ventilacion / ruido" },
     { key: "audio", label: "Audio / altavoz" },
     { key: "control_remoto", label: "Control remoto / botones" },
-    { key: "lente", label: "Lente / óptica" },
-    { key: "alimentacion", label: "Alimentación / cableado" },
-    { key: "keystone", label: "Corrección keystone / zoom" },
+    { key: "lente", label: "Lente / optica" },
+    { key: "alimentacion", label: "Alimentacion / cableado" },
+    { key: "keystone", label: "Correccion keystone / zoom" },
     { key: "estructura", label: "Estructura / soporte" },
   ],
   Otro: [
@@ -123,11 +123,11 @@ export const CHECKLIST_FUNCIONAL_ITEMS: Record<
     { key: "pantalla", label: "Pantalla" },
     { key: "conectividad", label: "Conectividad" },
     { key: "audio", label: "Audio" },
-    { key: "alimentacion", label: "Alimentación" },
+    { key: "alimentacion", label: "Alimentacion" },
     { key: "sensores", label: "Sensores" },
     { key: "puertos", label: "Puertos" },
     { key: "botones", label: "Botones / controles" },
-    { key: "bateria", label: "Batería / energía" },
+    { key: "bateria", label: "Bateria / energia" },
     { key: "otros", label: "Otros" },
   ],
 }
@@ -170,7 +170,7 @@ export function checklistIngresoToJson(c: ChecklistIngreso): Record<string, unkn
   }
 }
 
-/** Normaliza checklist cargado de BD o valores por defecto según tipo de equipo. */
+/** Normaliza checklist cargado de BD o valores por defecto segun tipo de equipo. */
 export function ensureChecklistIngreso(
   deviceType: string,
   raw: ChecklistIngreso | null | undefined,

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { AlertTriangle, ClipboardList, Loader2 } from "lucide-react"
@@ -46,8 +46,8 @@ export interface HealthCheckSheetProps {
 }
 
 /**
- * Health check PRO: ítems según tipo de equipo; estados pass / fail / na (sin probar por defecto).
- * Mínimo 5 pruebas OK o «Omitir (Express)» con motivo.
+ * Health check PRO: items segun tipo de equipo; estados pass / fail / na (sin probar por defecto).
+ * Minimo 5 pruebas OK o «Omitir (Express)» con motivo.
  */
 export function HealthCheckSheet({
   open,
@@ -78,11 +78,11 @@ export function HealthCheckSheet({
       }
       const r = await persistRepair.save(normalized)
       if (!r.success) {
-        toast({ variant: "destructive", title: "No se guardó", description: r.error })
+        toast({ variant: "destructive", title: "No se guardo", description: r.error })
         return false
       }
       await persistRepair.onSaved?.()
-      toast({ title: "Diagnóstico guardado", description: "El health check quedó registrado en el ticket." })
+      toast({ title: "Diagnostico guardado", description: "El health check quedo registrado en el ticket." })
       return true
     } finally {
       setPersisting(false)
@@ -139,7 +139,7 @@ export function HealthCheckSheet({
                   </span>
                 </div>
                 <SheetDescription className="text-xs text-slate-500">
-                  Lista según tipo de equipo: <span className="font-medium text-slate-700">{dt}</span>
+                  Lista segun tipo de equipo: <span className="font-medium text-slate-700">{dt}</span>
                 </SheetDescription>
               </div>
             </div>
@@ -149,8 +149,8 @@ export function HealthCheckSheet({
             <div className="flex items-start gap-2 text-xs text-amber-950">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
               <p>
-                <span className="font-semibold">Diagnóstico PRO:</span> marca cada punto como funciona, con falla o sin
-                probar. Si el taller exige health check para pasar a En reparación, necesitas al menos{" "}
+                <span className="font-semibold">Diagnostico PRO:</span> marca cada punto como funciona, con falla o sin
+                probar. Si el taller exige health check para pasar a En reparacion, necesitas al menos{" "}
                 <span className="font-bold tabular-nums">{MIN_HEALTH_PROBES}</span> en «Funciona». Llevas{" "}
                 <span className="font-bold tabular-nums">{okCount}</span> / {MIN_HEALTH_PROBES}.
               </p>
@@ -205,7 +205,7 @@ export function HealthCheckSheet({
               ) : meetsMin ? (
                 persistRepair ? "Guardar y listo" : "Listo"
               ) : (
-                `✨ ¡Casi listo! Realiza al menos ${MIN_HEALTH_PROBES} pruebas para un diagnóstico PRO`
+                `✨ ¡Casi listo! Realiza al menos ${MIN_HEALTH_PROBES} pruebas para un diagnostico PRO`
               )}
             </Button>
           </div>
@@ -226,7 +226,7 @@ export function HealthCheckSheet({
               id="omit-reason"
               value={omitReason}
               onChange={(e) => setOmitReason(e.target.value)}
-              placeholder="Ej. Cliente urgente — diagnóstico express acordado verbalmente"
+              placeholder="Ej. Cliente urgente — diagnostico express acordado verbalmente"
               className="min-h-[100px] resize-y"
             />
           </div>

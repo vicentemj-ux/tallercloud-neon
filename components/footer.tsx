@@ -1,4 +1,4 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { buildWhatsAppSendUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
               <span className="text-lg font-bold text-foreground">TallerCloud</span>
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              La plataforma en la nube que simplifica la gestión de talleres de reparación.
+              La plataforma en la nube que simplifica la gestion de talleres de reparacion.
             </p>
             <p className="text-sm text-muted-foreground">
               Hecho en Los Mochis, Sinaloa 🇲🇽
@@ -29,7 +29,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground">Producto</h4>
             <nav className="flex flex-col gap-2" aria-label="Enlaces del producto">
               <Link href="#caracteristicas" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                Características
+                Caracteristicas
               </Link>
               <Link href="#precios" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                 Precios
@@ -53,10 +53,10 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground">Legal</h4>
             <nav className="flex flex-col gap-2" aria-label="Enlaces legales">
               <Link href="/terminos" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                Términos de Servicio
+                Terminos de Servicio
               </Link>
               <Link href="/privacidad" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                Política de Privacidad
+                Politica de Privacidad
               </Link>
             </nav>
           </div>
@@ -68,7 +68,7 @@ export function Footer() {
             © 2026 TallerCloud. Todos los derechos reservados.
           </p>
           <p className="text-sm text-muted-foreground">
-            Los Mochis, Sinaloa, México
+            Los Mochis, Sinaloa, Mexico
           </p>
         </div>
       </div>

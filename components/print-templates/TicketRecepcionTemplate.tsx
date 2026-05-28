@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import dynamic from "next/dynamic"
 import { forwardRef, useMemo } from "react"
@@ -52,11 +52,11 @@ interface TicketRecepcionTemplateProps {
     whatsapp?: string | null
   }
   tecnicoNombre?: string
-  /** Servicios aplicados del catálogo */
+  /** Servicios aplicados del catalogo */
   servicios?: { nombre: string; precio: number; cantidad: number }[]
 }
 
-// ─── Tokens de diseño ─────────────────────────────────────────────────────────
+// ─── Tokens de diseno ─────────────────────────────────────────────────────────
 // Todo inline → garantiza negro puro e impacto en cualquier driver de impresora
 
 const FONT  = "Arial, Helvetica, sans-serif"
@@ -71,7 +71,7 @@ const SHARP: React.CSSProperties = {
   color: BLACK,
 }
 
-// Pesos: mínimo 700 en cuerpo, 900 en encabezados de sección
+// Pesos: minimo 700 en cuerpo, 900 en encabezados de seccion
 const w700: React.CSSProperties = { ...SHARP, fontWeight: 700, fontFamily: FONT }
 const w900: React.CSSProperties = { ...SHARP, fontWeight: 900, fontFamily: FONT }
 const w600: React.CSSProperties = { ...SHARP, fontWeight: 600, fontFamily: FONT }
@@ -149,10 +149,10 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
     const terminosArr: string[] = terminosGarantia
       ? terminosGarantia.split(/\n/).map(t => t.trim()).filter(Boolean)
       : [
-          "No nos hacemos responsables por pérdida de datos, SD o SIM.",
-          "Equipos no reclamados después de 90 días serán desechados.",
-          "Garantía cubre únicamente la reparación realizada (30 días).",
-          "Al firmar este ticket acepta los términos anteriores.",
+          "No nos hacemos responsables por perdida de datos, SD o SIM.",
+          "Equipos no reclamados despues de 90 dias seran desechados.",
+          "Garantia cubre unicamente la reparacion realizada (30 dias).",
+          "Al firmar este ticket acepta los terminos anteriores.",
         ]
 
     const obsEsteticas = data.checklistIngreso?.observacionesEsteticas?.trim() || ""
@@ -163,7 +163,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
         id="ticket"
         className="receipt-ticket"
         style={{
-          // ── Área segura 72mm — globals.css lo sobreescribe en @media print con !important ──
+          // ── area segura 72mm — globals.css lo sobreescribe en @media print con !important ──
           width: "72mm",
           maxWidth: "72mm",
           margin: "0",
@@ -238,15 +238,15 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           Falla reportada:
         </div>
         <div style={{ ...w700, fontSize: "11px", textTransform: "uppercase", lineHeight: "1.2", wordBreak: "break-word" }}>
-          {faultText || "Sin descripción inicial"}
+          {faultText || "Sin descripcion inicial"}
         </div>
 
-        {/* ── REVISIÓN RÁPIDA (siempre que exista checklistIngreso) ── */}
+        {/* ── REVISIoN RaPIDA (siempre que exista checklistIngreso) ── */}
         {data.checklistIngreso && (
           <>
             <Divider />
             <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px" }}>
-              Revisión rápida:
+              Revision rapida:
             </div>
             <Row
               label="Enciende"
@@ -275,12 +275,12 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── OBSERVACIONES ESTÉTICAS (solo si tiene contenido) ── */}
+        {/* ── OBSERVACIONES ESTeTICAS (solo si tiene contenido) ── */}
         {obsEsteticas && (
           <>
             <Divider />
             <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "1px" }}>
-              Observaciones estéticas:
+              Observaciones esteticas:
             </div>
             <div style={{ ...w700, fontSize: "10px", lineHeight: "1.3", wordBreak: "break-word" }}>
               {obsEsteticas}
@@ -290,10 +290,10 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
 
         <Divider />
 
-        {/* ── TÉCNICO ── */}
+        {/* ── TeCNICO ── */}
         {mostrarTecnico && tecnicoNombre && (
           <>
-            <Row label="Técnico" value={tecnicoNombre} valSz="10px" />
+            <Row label="Tecnico" value={tecnicoNombre} valSz="10px" />
             <Divider />
           </>
         )}
@@ -330,17 +330,17 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
               </span>
             </div>
             <div style={{ textAlign: "center", ...w700, fontSize: "9px", fontStyle: "italic", marginTop: "1px" }}>
-              * Sujeto a cambios tras diagnóstico
+              * Sujeto a cambios tras diagnostico
             </div>
             <Divider />
           </>
         )}
 
-        {/* ── TÉRMINOS ── */}
+        {/* ── TeRMINOS ── */}
         {terminosArr.length > 0 && (
           <>
             <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>
-              Términos y condiciones:
+              Terminos y condiciones:
             </div>
             <p style={{ ...w700, fontSize: "10px", lineHeight: "1.3", margin: 0, wordBreak: "break-word" }}>
               {terminosArr.join(" • ")}
@@ -357,7 +357,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           <div style={{ height: "1.4cm", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
             <div style={{ width: "65%", borderBottom: `1px solid ${BLACK}` }} />
           </div>
-          <div style={{ ...w700, fontSize: "9px" }}>Acepto los términos y condiciones</div>
+          <div style={{ ...w700, fontSize: "9px" }}>Acepto los terminos y condiciones</div>
         </div>
 
         <Divider />
@@ -365,13 +365,13 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
         {/* ── QR ── */}
         <div style={{ textAlign: "center" }}>
           <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "3px" }}>
-            Rastrea tu equipo en línea
+            Rastrea tu equipo en linea
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <QRCodeSVG value={trackingUrl} size={66} level="M" bgColor="#ffffff" fgColor="#000000" />
           </div>
           <div style={{ ...w700, fontSize: "9px", marginTop: "2px" }}>
-            Escanea para ver el estado de tu reparación
+            Escanea para ver el estado de tu reparacion
           </div>
         </div>
 
@@ -388,7 +388,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── CIERRE — límite físico inferior del documento ── */}
+        {/* ── CIERRE — limite fisico inferior del documento ── */}
         <div style={{ textAlign: "center", ...w900, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>
           {mensajeDespedida || "¡ Gracias por su preferencia !"}
         </div>

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 import type { RepairPrintData } from "@/lib/actions/repairs"
@@ -15,14 +15,14 @@ interface TicketGarantiaTemplateProps {
 }
 
 const DEFAULT_CLAUSULAS = [
-  "La garantía cubre exclusivamente las partes y mano de obra descritas en este documento.",
-  "La garantía queda sin efecto si el equipo presenta daño por líquidos, golpes o manipulación no autorizada posterior a la reparación.",
-  "No se cubre desgaste natural ni daños ocasionados por uso inadecuado del equipo.",
-  "El cliente debe presentar este documento para hacer válida la garantía.",
-  "La garantía no es transferible y aplica únicamente al equipo registrado.",
-  "En caso de reclamación, el tiempo de diagnóstico puede ser de hasta 3 días hábiles.",
+  "La garantia cubre exclusivamente las partes y mano de obra descritas en este documento.",
+  "La garantia queda sin efecto si el equipo presenta dano por liquidos, golpes o manipulacion no autorizada posterior a la reparacion.",
+  "No se cubre desgaste natural ni danos ocasionados por uso inadecuado del equipo.",
+  "El cliente debe presentar este documento para hacer valida la garantia.",
+  "La garantia no es transferible y aplica unicamente al equipo registrado.",
+  "En caso de reclamacion, el tiempo de diagnostico puede ser de hasta 3 dias habiles.",
   "El establecimiento se reserva el derecho de reparar, reemplazar o reembolsar el importe pagado.",
-  "Esta póliza no cubre pérdida de datos almacenados en el dispositivo.",
+  "Esta poliza no cubre perdida de datos almacenados en el dispositivo.",
 ]
 
 const fmtDate = (iso: string) =>
@@ -54,14 +54,14 @@ const TicketGarantiaTemplate = forwardRef<HTMLDivElement, TicketGarantiaTemplate
             {businessEmail ? <span>{businessEmail}</span> : null}
           </div>
           <div style={{ fontSize: "13pt", fontWeight: 700, letterSpacing: "0.08em", color: "#475569", marginTop: "8px", textTransform: "uppercase" }}>
-            Póliza de Garantía de Servicio
+            Poliza de Garantia de Servicio
           </div>
           <div style={{ height: "3px", background: "linear-gradient(90deg, #2563eb, #3b82f6)", borderRadius: "2px", margin: "6px auto 0", width: "80px" }} />
         </div>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "7mm" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: "999px", padding: "5px 16px", fontSize: "9.5pt", fontWeight: 700, color: "#1d4ed8", letterSpacing: "0.02em" }}>
             <span style={{ fontSize: "11pt" }}>✓</span>
-            VÁLIDA HASTA: {fmtDate(fechaVencimiento)}
+            VaLIDA HASTA: {fmtDate(fechaVencimiento)}
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm", marginBottom: "6mm" }}>
@@ -69,13 +69,13 @@ const TicketGarantiaTemplate = forwardRef<HTMLDivElement, TicketGarantiaTemplate
             <div style={{ fontSize: "7pt", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "5px" }}>Datos del Servicio</div>
             <InfoRow label="Folio" value={repair.folio} />
             <InfoRow label="Entrega" value={fmtDate(repair.fecha_entrega ?? repair.fecha_creacion)} />
-            <InfoRow label="Técnico" value={repair.tecnico ?? "—"} />
+            <InfoRow label="Tecnico" value={repair.tecnico ?? "—"} />
             <InfoRow label="Servicio" value={repair.falla_reportada} />
           </div>
           <div style={{ background: "#f8fafc", borderRadius: "10px", padding: "10px 12px", border: "1px solid #e2e8f0" }}>
             <div style={{ fontSize: "7pt", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "5px" }}>Cliente / Equipo</div>
             <InfoRow label="Cliente" value={repair.cliente_nombre} />
-            <InfoRow label="Teléfono" value={repair.cliente_telefono} />
+            <InfoRow label="Telefono" value={repair.cliente_telefono} />
             <InfoRow label="Equipo" value={`${repair.tipo_equipo ? repair.tipo_equipo + " " : ""}${repair.dispositivo_marca} ${repair.dispositivo_modelo}`} />
             {repair.imei_serie ? <InfoRow label="IMEI/Serie" value={repair.imei_serie} /> : null}
             {repair.color ? <InfoRow label="Color" value={repair.color} /> : null}
@@ -83,7 +83,7 @@ const TicketGarantiaTemplate = forwardRef<HTMLDivElement, TicketGarantiaTemplate
         </div>
         <div style={{ background: "#f8fafc", borderRadius: "10px", padding: "10px 14px", border: "1px solid #e2e8f0", marginBottom: "6mm" }}>
           <div style={{ fontSize: "7pt", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "6px" }}>
-            Términos y Condiciones de Garantía
+            Terminos y Condiciones de Garantia
           </div>
           <ol style={{ paddingLeft: "16px", margin: 0 }}>
             {clausulas.map((c, i) => (

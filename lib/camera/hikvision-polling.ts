@@ -1,7 +1,7 @@
-/**
+﻿/**
  * lib/camera/hikvision-polling.ts
  *
- * Servicio de polling para cámaras Hikvision sin panel web.
+ * Servicio de polling para camaras Hikvision sin panel web.
  * Se ejecuta desde la app desktop (misma red local) para detectar eventos IVS.
  */
 
@@ -30,7 +30,7 @@ export interface HikvisionEventSearchResult {
 }
 
 /**
- * Consulta eventos recientes de la cámara vía ISAPI /ISAPI/Event/triggers
+ * Consulta eventos recientes de la camara via ISAPI /ISAPI/Event/triggers
  */
 export async function pollHikvisionEvents(config: {
   ip: string
@@ -59,7 +59,7 @@ export async function pollHikvisionEvents(config: {
 }
 
 /**
- * Alternativa: consultar eventos almacenados en la cámara (search)
+ * Alternativa: consultar eventos almacenados en la camara (search)
  */
 export async function searchHikvisionEvents(config: {
   ip: string
@@ -112,7 +112,7 @@ export async function searchHikvisionEvents(config: {
 
 function parseEventsFromText(xmlText: string): HikvisionEventDetected[] {
   const events: HikvisionEventDetected[] = []
-  // Buscar múltiples eventos en el XML
+  // Buscar multiples eventos en el XML
   const eventRegex = /<EventNotificationAlert[\s\S]*?<\/EventNotificationAlert>/gi
   const matches = xmlText.match(eventRegex) || []
 
@@ -135,12 +135,12 @@ function parseEventsFromText(xmlText: string): HikvisionEventDetected[] {
 }
 
 /**
- * Modo BÁSICO: Captura un snapshot periódicamente y lo devuelve como evento.
- * Como la cámara no tiene eventos IVS configurados (sin panel web),
- * usamos snapshots como mecanismo de "detección".
+ * Modo BaSICO: Captura un snapshot periodicamente y lo devuelve como evento.
+ * Como la camara no tiene eventos IVS configurados (sin panel web),
+ * usamos snapshots como mecanismo de "deteccion".
  *
  * Limitantes:
- *   - No es detección inteligente (cualquier snapshot = visita).
+ *   - No es deteccion inteligente (cualquier snapshot = visita).
  *   - Requiere PC encendida con app desktop corriendo.
  *   - Consume ancho de banda de red por cada snapshot.
  */
@@ -169,7 +169,7 @@ export async function pollHikvisionSnapshot(config: {
 
     const blob = await res.blob()
     if (blob.size === 0) {
-      return { type: "error", message: "Imagen vacía" }
+      return { type: "error", message: "Imagen vacia" }
     }
 
     const arrayBuffer = await blob.arrayBuffer()
@@ -196,8 +196,8 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 /**
- * Verifica si la cámara responde a ISAPI (snapshot).
- * Usado para test de conexión sin panel web.
+ * Verifica si la camara responde a ISAPI (snapshot).
+ * Usado para test de conexion sin panel web.
  */
 export async function testHikvisionConnection(config: {
   ip: string
@@ -216,12 +216,12 @@ export async function testHikvisionConnection(config: {
     })
 
     if (!res.ok) {
-      return { ok: false, error: `HTTP ${res.status}: La cámara no respondió al snapshot.` }
+      return { ok: false, error: `HTTP ${res.status}: La camara no respondio al snapshot.` }
     }
 
     const blob = await res.blob()
     if (blob.size === 0) {
-      return { ok: false, error: "La cámara respondió pero la imagen está vacía." }
+      return { ok: false, error: "La camara respondio pero la imagen esta vacia." }
     }
 
     return { ok: true, imageSize: blob.size }

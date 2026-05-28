@@ -1,17 +1,17 @@
-export const MS_PER_DAY = 1000 * 60 * 60 * 24
+﻿export const MS_PER_DAY = 1000 * 60 * 60 * 24
 
 /**
- * Días restantes hasta `fechaVencimiento`, comparando en UTC a nivel de día.
- * - Valida fechas inválidas
+ * Dias restantes hasta `fechaVencimiento`, comparando en UTC a nivel de dia.
+ * - Valida fechas invalidas
  * - Devuelve `null` para ausencia de fecha
  * - Devuelve siempre >= 0
  *
- * Semántica: `fecha_vencimiento_plan` es el ÚLTIMO DÍA VÁLIDO (no el primer día inválido).
- * El admin guarda el timestamp del momento de creación + N días (incluye componente de hora).
+ * Semantica: `fecha_vencimiento_plan` es el uLTIMO DiA VaLIDO (no el primer dia invalido).
+ * El admin guarda el timestamp del momento de creacion + N dias (incluye componente de hora).
  * El proxy bloquea cuando `timestamp < Date.now()` (compara hora exacta).
- * Esta función usa "fin del día almacenado UTC" como target para alinear con el proxy:
- *   - Día de vencimiento (ej. April 10): muestra "1 día" → proxy no bloquea aún ✓
- *   - Día siguiente (ej. April 11):     muestra "0 días" → proxy bloquea después de la hora exacta ✓
+ * Esta funcion usa "fin del dia almacenado UTC" como target para alinear con el proxy:
+ *   - Dia de vencimiento (ej. April 10): muestra "1 dia" → proxy no bloquea aun ✓
+ *   - Dia siguiente (ej. April 11):     muestra "0 dias" → proxy bloquea despues de la hora exacta ✓
  */
 export function calcDiasRestantes(fechaVencimiento: string | null | undefined): number | null {
   if (!fechaVencimiento) return null
@@ -41,15 +41,15 @@ export function calcDiasRestantes(fechaVencimiento: string | null | undefined): 
 
     if (!year || !month || !day) return null
 
-    // Fecha-only: misma semántica de fin-de-día (+1)
+    // Fecha-only: misma semantica de fin-de-dia (+1)
     const fallbackUtc = Date.UTC(year, month - 1, day + 1)
     const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate())
     const dias = Math.ceil((fallbackUtc - todayUtc) / MS_PER_DAY)
     return Math.max(0, dias)
   }
 
-  // Usar el día siguiente al almacenado como límite ("fin del día UTC")
-  // Esto alinea el conteo de días con la lógica del proxy (que compara timestamp exacto).
+  // Usar el dia siguiente al almacenado como limite ("fin del dia UTC")
+  // Esto alinea el conteo de dias con la logica del proxy (que compara timestamp exacto).
   const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate())
   const targetUtc = Date.UTC(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate() + 1)
   const dias = Math.ceil((targetUtc - todayUtc) / MS_PER_DAY)

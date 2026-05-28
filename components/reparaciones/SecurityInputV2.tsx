@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
@@ -17,8 +17,8 @@ export interface SecurityInputV2Props {
   onChange: (next: SecurityValue) => void
   className?: string
   /**
-   * `inline`: lienzo 3×3 dentro del bloque de seguridad (p. ej. formulario página completa).
-   * `external`: el editor abre en un modal; se invoca al elegir la pestaña «Patrón» (y al volver a pulsarla).
+   * `inline`: lienzo 3×3 dentro del bloque de seguridad (p. ej. formulario pagina completa).
+   * `external`: el editor abre en un modal; se invoca al elegir la pestana «Patron» (y al volver a pulsarla).
    */
   patternPlacement?: "inline" | "external"
   /** Solo con `patternPlacement="external"`: abre el modal del lienzo 3×3. */
@@ -37,7 +37,7 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
   onPatternChange: (patternDash: string) => void
 }) {
   const svgRef = useRef<SVGSVGElement>(null)
-  /** Evita re-sincronizar `selected` cuando el padre ya refleja nuestro último emit. */
+  /** Evita re-sincronizar `selected` cuando el padre ya refleja nuestro ultimo emit. */
   const skipNextValueSync = useRef(false)
   const onPatternChangeRef = useRef(onPatternChange)
   onPatternChangeRef.current = onPatternChange
@@ -46,7 +46,7 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
   const [drawing, setDrawing] = useState(false)
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null)
 
-  /** Padre → hijo: solo cuando el valor no viene de nuestro último emit. */
+  /** Padre → hijo: solo cuando el valor no viene de nuestro ultimo emit. */
   useEffect(() => {
     if (skipNextValueSync.current) {
       skipNextValueSync.current = false
@@ -176,9 +176,9 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="space-y-2">
         <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
-          Dibuja el patrón de desbloqueo
+          Dibuja el patron de desbloqueo
         </p>
-        <p className="text-xs text-slate-500">Toca o arrastra entre puntos en orden (mín. {MIN_PATTERN}).</p>
+        <p className="text-xs text-slate-500">Toca o arrastra entre puntos en orden (min. {MIN_PATTERN}).</p>
         <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
           <svg
             ref={svgRef}
@@ -251,7 +251,7 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
         </div>
       </div>
       <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Patrón registrado</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Patron registrado</p>
         <p className="mt-2 break-words font-mono text-base font-semibold leading-relaxed text-slate-900">
           {patternSummary(seqNums)}
         </p>
@@ -264,8 +264,8 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
 const TAB_CONFIG: { id: SecurityTab; label: string; icon: React.ReactNode }[] = [
   { id: "none", label: "Sin bloqueo", icon: <Lock className="h-4 w-4 text-amber-600" /> },
   { id: "pin", label: "PIN", icon: <Hash className="h-4 w-4 text-blue-600" /> },
-  { id: "password", label: "Contraseña", icon: <KeyRound className="h-4 w-4 text-blue-600" /> },
-  { id: "pattern", label: "Patrón", icon: <Grid3x3 className="h-4 w-4 text-blue-600" /> },
+  { id: "password", label: "Contrasena", icon: <KeyRound className="h-4 w-4 text-blue-600" /> },
+  { id: "pattern", label: "Patron", icon: <Grid3x3 className="h-4 w-4 text-blue-600" /> },
 ]
 
 export const SecurityInputV2 = memo(function SecurityInputV2({
@@ -334,13 +334,13 @@ export const SecurityInputV2 = memo(function SecurityInputV2({
       </div>
 
       {value.type === "none" && (
-        <p className="text-xs text-slate-500">No se guardará PIN, contraseña ni patrón para este equipo.</p>
+        <p className="text-xs text-slate-500">No se guardara PIN, contrasena ni patron para este equipo.</p>
       )}
 
       {value.type === "pin" && (
         <div className="space-y-2">
           <Label htmlFor="sec-pin" className="text-xs font-medium text-slate-600">
-            PIN numérico
+            PIN numerico
           </Label>
           <Input
             id="sec-pin"
@@ -353,7 +353,7 @@ export const SecurityInputV2 = memo(function SecurityInputV2({
             onChange={(e) => onChange({ type: "pin", value: e.target.value.replace(/\D/g, "") })}
           />
           {!pinOk && value.value.length > 0 ? (
-            <p className="text-xs text-amber-700">Usa entre 4 y 12 dígitos.</p>
+            <p className="text-xs text-amber-700">Usa entre 4 y 12 digitos.</p>
           ) : null}
         </div>
       )}
@@ -361,18 +361,18 @@ export const SecurityInputV2 = memo(function SecurityInputV2({
       {value.type === "password" && (
         <div className="space-y-2">
           <Label htmlFor="sec-pass" className="text-xs font-medium text-slate-600">
-            Contraseña del equipo
+            Contrasena del equipo
           </Label>
           <Input
             id="sec-pass"
             type="text"
             autoComplete="new-password"
-            placeholder="Contraseña o frase"
+            placeholder="Contrasena o frase"
             className="rounded-xl border-slate-200"
             value={value.value}
             onChange={(e) => onChange({ type: "password", value: e.target.value })}
           />
-          {!passOk ? <p className="text-xs text-slate-500">Ingresa al menos un carácter.</p> : null}
+          {!passOk ? <p className="text-xs text-slate-500">Ingresa al menos un caracter.</p> : null}
         </div>
       )}
 
@@ -381,7 +381,7 @@ export const SecurityInputV2 = memo(function SecurityInputV2({
       ) : null}
 
       {value.type === "pattern" && !patOk && value.value.length > 0 ? (
-        <p className="text-xs text-amber-700">El patrón debe tener al menos {MIN_PATTERN} puntos.</p>
+        <p className="text-xs text-amber-700">El patron debe tener al menos {MIN_PATTERN} puntos.</p>
       ) : null}
     </div>
   )

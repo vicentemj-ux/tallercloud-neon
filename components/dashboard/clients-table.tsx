@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -49,7 +49,7 @@ export function ClientsTable({
         </div>
         <p className="text-sm font-medium text-slate-700">No se encontraron clientes</p>
         <p className="text-xs text-slate-500">
-          Intenta con otro término de búsqueda o registra un nuevo cliente.
+          Intenta con otro termino de busqueda o registra un nuevo cliente.
         </p>
       </div>
     )

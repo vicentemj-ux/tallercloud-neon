@@ -1,4 +1,4 @@
-import type { CortePrintData } from "@/lib/actions/ventas-prisma"
+﻿import type { CortePrintData } from "@/lib/actions/ventas-prisma"
 import { buildWhatsAppUrl, normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 
 function fmtMoney(n: number) {
@@ -16,7 +16,7 @@ function fmtDateTime(iso: string) {
 }
 
 /**
- * Número del dueño: `NEXT_PUBLIC_OWNER_WHATSAPP` (recomendado) o teléfono del taller en configuración.
+ * Numero del dueno: `NEXT_PUBLIC_OWNER_WHATSAPP` (recomendado) o telefono del taller en configuracion.
  */
 export function resolveOwnerWhatsAppDigits(options: {
   envOwnerPhone?: string | null
@@ -64,14 +64,14 @@ export function formatCorteOwnerWhatsAppMessage(nombreTaller: string, corte: Cor
     "🔧 *Reparaciones (movimientos en caja)*",
     `• Cobros reparaciones: $${fmtMoney(corte.total_abonos)}`,
     "",
-    "📉 *Gastos (período del corte)*",
+    "📉 *Gastos (periodo del corte)*",
     `• Total gastos: $${fmtMoney(corte.total_gastos)}`,
     "",
     "✅ *Cuadre de efectivo*",
     `• Fondo inicial: $${fmtMoney(corte.monto_inicial)}`,
     `• Efectivo esperado (fondo + ventas en efectivo): $${fmtMoney(efectivoEsperado)}`,
     tieneContadoFisico
-      ? `• Efectivo contado (físico en caja): $${fmtMoney(efectivoReal)}`
+      ? `• Efectivo contado (fisico en caja): $${fmtMoney(efectivoReal)}`
       : `• Total sistema (referencia): $${fmtMoney(efectivoReal)}`,
     `• Diferencia (real vs esperado): ${diferencia >= 0 ? "+" : ""}$${fmtMoney(diferencia)}`,
     "",
@@ -81,7 +81,7 @@ export function formatCorteOwnerWhatsAppMessage(nombreTaller: string, corte: Cor
   return lines.join("\n")
 }
 
-/** Dígitos internacionales sin +; usa la API oficial de WhatsApp. */
+/** Digitos internacionales sin +; usa la API oficial de WhatsApp. */
 export function buildWaMeUrl(phoneDigits: string, message: string): string {
   return buildWhatsAppUrl(phoneDigits, message)
 }

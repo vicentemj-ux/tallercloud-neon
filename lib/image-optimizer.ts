@@ -1,7 +1,7 @@
-/**
- * Optimización de imágenes para subida (solo ejecutar en el navegador: usa Canvas).
- * - Máximo 1280px en el lado mayor
- * - Salida WebP calidad ~0.8, con reducción hasta cumplir ≤ 400KB
+﻿/**
+ * Optimizacion de imagenes para subida (solo ejecutar en el navegador: usa Canvas).
+ * - Maximo 1280px en el lado mayor
+ * - Salida WebP calidad ~0.8, con reduccion hasta cumplir ≤ 400KB
  */
 
 const MAX_DIMENSION = 1280
@@ -106,20 +106,20 @@ async function encodeUnderBudget(
     blob = await canvasToBlob(small, "image/jpeg", 0.78)
     if (!blob) break
   }
-  if (!blob) throw new Error("No se pudo codificar la imagen después de reescalar")
+  if (!blob) throw new Error("No se pudo codificar la imagen despues de reescalar")
 
   return { blob, mime: "image/jpeg", ext: ".jpg" }
 }
 
 /**
- * Redimensiona, convierte a WebP (o JPEG si hace falta) y garantiza tamaño ≤ 400KB por defecto.
+ * Redimensiona, convierte a WebP (o JPEG si hace falta) y garantiza tamano ≤ 400KB por defecto.
  */
 export async function optimizeImageForUpload(
   file: File,
   maxSizeBytes: number = MAX_BYTES
 ): Promise<File> {
   if (typeof window === "undefined" || typeof document === "undefined") {
-    throw new Error("optimizeImageForUpload solo está disponible en el cliente")
+    throw new Error("optimizeImageForUpload solo esta disponible en el cliente")
   }
   if (!file.type.startsWith("image/")) {
     return file

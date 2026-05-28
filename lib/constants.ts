@@ -1,4 +1,4 @@
-export type InventarioCategoriaValue =
+﻿export type InventarioCategoriaValue =
   | "EQUIPOS"
   | "REFACCIONES"
   | "ACCESORIOS"
@@ -41,7 +41,7 @@ export const PERMISOS_DISPONIBLES: { slug: string; label: string }[] = [
   { slug: "ver_reportes", label: "Ver Reportes" },
   { slug: "exportar_datos", label: "Exportar Datos" },
   { slug: "gestionar_clientes", label: "Gestionar Clientes" },
-  { slug: "configuracion_taller", label: "Configuración del Taller" },
+  { slug: "configuracion_taller", label: "Configuracion del Taller" },
   { slug: "ver_ventas", label: "Ver Ventas" },
   { slug: "registrar_ventas", label: "Registrar Ventas" },
 ]

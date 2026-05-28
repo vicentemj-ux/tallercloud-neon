@@ -1,7 +1,7 @@
-"use server"
+﻿"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar auth-prisma.ts).
-// Pendiente migración completa de módulos legacy/PRO.
+// Pendiente migracion completa de modulos legacy/PRO.
 
 import { createClient } from "@/lib/supabase/server"
 import bcrypt from "bcryptjs"
@@ -14,10 +14,10 @@ import { esUsuarioPro } from "@/lib/auth-server"
 import { z } from "zod"
 import { WelcomeEmail } from "@/components/emails/WelcomeEmail"
 
-// ── Schemas de validación ────────────────────────────────────────────────────
+// ── Schemas de validacion ────────────────────────────────────────────────────
 
-const emailSchema = z.string().email("Email inválido").max(254)
-const passwordSchema = z.string().min(8, "La contraseña debe tener al menos 8 caracteres").max(128)
+const emailSchema = z.string().email("Email invalido").max(254)
+const passwordSchema = z.string().min(8, "La contrasena debe tener al menos 8 caracteres").max(128)
 
 const registerSchema = z.object({
   nombrePropietario: z.string().min(2, "Nombre muy corto").max(100).trim(),
@@ -28,11 +28,11 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   email:    emailSchema,
-  password: z.string().min(1, "Contraseña requerida").max(128),
+  password: z.string().min(1, "Contrasena requerida").max(128),
 })
 
 const resetPasswordSchema = z.object({
-  token:       z.string().length(64, "Token inválido"),
+  token:       z.string().length(64, "Token invalido"),
   newPassword: passwordSchema,
 })
 
@@ -53,13 +53,13 @@ function generateToken(): string {
 
 /**
  * Firma un token con HMAC-SHA256 usando SUPABASE_JWT_SECRET.
- * Se usa para validar la integridad de los links de verificación y reset.
+ * Se usa para validar la integridad de los links de verificacion y reset.
  */
 function signToken(token: string): string {
   const { createHmac } = require("crypto")
   const secret = process.env.SUPABASE_JWT_SECRET || ""
   if (!secret) {
-    console.error("[signToken] SUPABASE_JWT_SECRET no está configurado")
+    console.error("[signToken] SUPABASE_JWT_SECRET no esta configurado")
     return ""
   }
   return createHmac("sha256", secret).update(token).digest("hex")
@@ -94,7 +94,7 @@ export async function registerTaller(data: {
     .single()
 
   if (existing) {
-    return { success: false, error: "El email ya está registrado" }
+    return { success: false, error: "El email ya esta registrado" }
   }
 
   // Hash password
@@ -134,7 +134,7 @@ export async function registerTaller(data: {
     await resend.emails.send({
       from: "TallerCloud <hola@tallercloud.net>",
       to: newUser.email,
-      subject: "Bienvenido a TallerCloud - Tu prueba de 30 días ya inició",
+      subject: "Bienvenido a TallerCloud - Tu prueba de 30 dias ya inicio",
       react: WelcomeEmail({
         ownerName: data.nombrePropietario.trim(),
         workshopName: data.nombreTaller.trim(),
@@ -162,7 +162,7 @@ export async function registerTaller(data: {
 
   return { 
     success: true, 
-    message: "Registro exitoso. Por favor verifica tu correo electrónico para activar tu cuenta.",
+    message: "Registro exitoso. Por favor verifica tu correo electronico para activar tu cuenta.",
     data: newUser 
   }
 }
@@ -170,7 +170,7 @@ export async function registerTaller(data: {
 export async function loginTaller(email: string, password: string) {
   const parsed = loginSchema.safeParse({ email, password })
   if (!parsed.success) {
-    return { success: false, error: "Email o contraseña incorrectos" }
+    return { success: false, error: "Email o contrasena incorrectos" }
   }
 
   const rl = await checkRateLimit(email, "login")
@@ -189,7 +189,7 @@ export async function loginTaller(email: string, password: string) {
 
   if (error || !user) {
     console.error("[v0] Login error - user not found:", error)
-    return { success: false, error: "Email o contraseña incorrectos" }
+    return { success: false, error: "Email o contrasena incorrectos" }
   }
 
   if (user.password_hash == null) {
@@ -201,14 +201,14 @@ export async function loginTaller(email: string, password: string) {
 
   // Check if email is verified
   if (!user.email_verified) {
-    return { success: false, error: "Por favor verifica tu email antes de iniciar sesión", needsVerification: true }
+    return { success: false, error: "Por favor verifica tu email antes de iniciar sesion", needsVerification: true }
   }
 
   // Verify password with bcrypt.compare
   const passwordMatch = await bcrypt.compare(password, user.password_hash as string)
 
   if (!passwordMatch) {
-    return { success: false, error: "Email o contraseña incorrectos" }
+    return { success: false, error: "Email o contrasena incorrectos" }
   }
 
   // Create session cookies
@@ -263,7 +263,7 @@ export async function logoutTaller() {
 export async function loginAdmin(email: string, password: string) {
   const parsed = loginSchema.safeParse({ email, password })
   if (!parsed.success) {
-    return { success: false, error: "Email o contraseña incorrectos" }
+    return { success: false, error: "Email o contrasena incorrectos" }
   }
 
   const rl = await checkRateLimit(email, "login_admin")
@@ -280,12 +280,12 @@ export async function loginAdmin(email: string, password: string) {
     })
 
     if (!user) {
-      return { success: false, error: "Email o contraseña incorrectos" }
+      return { success: false, error: "Email o contrasena incorrectos" }
     }
 
     const passwordMatch = await bcrypt.compare(password, user.passwordHash)
     if (!passwordMatch) {
-      return { success: false, error: "Email o contraseña incorrectos" }
+      return { success: false, error: "Email o contrasena incorrectos" }
     }
 
     const cookieStore = await cookies()
@@ -414,11 +414,11 @@ export async function changeOwnerPassword(
 
   const match = await bcrypt.compare(currentPassword, (user as { password_hash: string }).password_hash)
   if (!match) {
-    return { success: false, error: "La contraseña actual no es correcta" }
+    return { success: false, error: "La contrasena actual no es correcta" }
   }
 
   if (newPassword.length < 8) {
-    return { success: false, error: "La nueva contraseña debe tener al menos 8 caracteres" }
+    return { success: false, error: "La nueva contrasena debe tener al menos 8 caracteres" }
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 12)
@@ -433,7 +433,7 @@ export async function changeOwnerPassword(
 
   if (updateError) {
     console.error("Error updating owner password:", updateError)
-    return { success: false, error: "No se pudo actualizar la contraseña" }
+    return { success: false, error: "No se pudo actualizar la contrasena" }
   }
 
   // Actualizar cookie de session_version para el dispositivo actual
@@ -481,7 +481,7 @@ export async function requestEmailVerification(email: string) {
 
   if (updateError) {
     console.error("[v0] Error updating verification token:", updateError)
-    return { success: false, error: "Error al generar token de verificación" }
+    return { success: false, error: "Error al generar token de verificacion" }
   }
 
   // Send verification email with HMAC signature
@@ -497,7 +497,7 @@ export async function requestEmailVerification(email: string) {
     return emailResult
   }
 
-  return { success: true, message: "Correo de verificación enviado" }
+  return { success: true, message: "Correo de verificacion enviado" }
 }
 
 // Verify email with token
@@ -505,7 +505,7 @@ export async function verifyEmailToken(token: string, signature?: string) {
   // Validar firma HMAC antes de procesar el token
   const expectedSig = signToken(token)
   if (!expectedSig || signature !== expectedSig) {
-    return { success: false, error: "Token inválido o manipulado" }
+    return { success: false, error: "Token invalido o manipulado" }
   }
 
   const supabase = await createClient()
@@ -518,12 +518,12 @@ export async function verifyEmailToken(token: string, signature?: string) {
     .single()
 
   if (error || !user) {
-    return { success: false, error: "Token inválido o expirado" }
+    return { success: false, error: "Token invalido o expirado" }
   }
 
   // Check token expiry
   if (new Date(user.verification_expires_at) < new Date()) {
-    return { success: false, error: "El token de verificación ha expirado" }
+    return { success: false, error: "El token de verificacion ha expirado" }
   }
 
   // Mark email as verified
@@ -562,7 +562,7 @@ export async function requestPasswordReset(email: string) {
 
   if (error || !user) {
     // Don't reveal if email exists for security
-    return { success: true, message: "Si el email existe, recibirás un correo de recuperación" }
+    return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
   }
 
   // Generate reset token
@@ -577,7 +577,7 @@ export async function requestPasswordReset(email: string) {
 
   if (updateError) {
     console.error("[v0] Error updating reset token:", updateError)
-    return { success: true, message: "Si el email existe, recibirás un correo de recuperación" }
+    return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
   }
 
   // Send password reset email with HMAC signature
@@ -593,7 +593,7 @@ export async function requestPasswordReset(email: string) {
     console.error("[v0] Error sending reset email:", emailResult.error)
   }
 
-  return { success: true, message: "Si el email existe, recibirás un correo de recuperación" }
+  return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
 }
 
 // Verify reset token and reset password
@@ -606,7 +606,7 @@ export async function resetPasswordWithToken(token: string, newPassword: string,
   // Validar firma HMAC antes de procesar el token
   const expectedSig = signToken(token)
   if (!expectedSig || signature !== expectedSig) {
-    return { success: false, error: "Token inválido o manipulado" }
+    return { success: false, error: "Token invalido o manipulado" }
   }
 
   const supabase = await createClient()
@@ -619,12 +619,12 @@ export async function resetPasswordWithToken(token: string, newPassword: string,
     .single()
 
   if (error || !user) {
-    return { success: false, error: "Token inválido o expirado" }
+    return { success: false, error: "Token invalido o expirado" }
   }
 
   // Check token expiry
   if (new Date(user.reset_expires_at) < new Date()) {
-    return { success: false, error: "El token de recuperación ha expirado" }
+    return { success: false, error: "El token de recuperacion ha expirado" }
   }
 
   // Hash new password
@@ -642,8 +642,8 @@ export async function resetPasswordWithToken(token: string, newPassword: string,
 
   if (updateError) {
     console.error("[v0] Error resetting password:", updateError)
-    return { success: false, error: "Error al restablecer contraseña" }
+    return { success: false, error: "Error al restablecer contrasena" }
   }
 
-  return { success: true, message: "Contraseña restablecida correctamente" }
+  return { success: true, message: "Contrasena restablecida correctamente" }
 }

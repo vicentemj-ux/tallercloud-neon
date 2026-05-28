@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import { useEffect } from "react"
 
 /**
- * Cierra la ventana al cerrar el diálogo de impresión (imprimir o cancelar).
+ * Cierra la ventana al cerrar el dialogo de impresion (imprimir o cancelar).
  * Solo funciona en ventanas abiertas con `window.open`.
  */
 export function usePrintWindowClose() {

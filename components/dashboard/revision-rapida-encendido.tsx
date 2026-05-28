@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { cn } from "@/lib/utils"
 import type { ChecklistIngreso, EncendidoRecepcion } from "@/lib/reparaciones/checklist-ingreso"
@@ -38,7 +38,7 @@ const ICON_ROW: {
   },
   {
     id: "clear",
-    tooltip: "Sin evaluar (quitar selección)",
+    tooltip: "Sin evaluar (quitar seleccion)",
     Icon: CircleDashed,
     activeClass: "border-slate-400 bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   },
@@ -47,7 +47,7 @@ const ICON_ROW: {
 export interface RevisionRapidaEncendidoProps {
   value: ChecklistIngreso
   onChange: (next: ChecklistIngreso) => void
-  /** Fila compacta de iconos + tooltips (modal nueva reparación). */
+  /** Fila compacta de iconos + tooltips (modal nueva reparacion). */
   variant?: "default" | "icons"
 }
 
@@ -62,7 +62,7 @@ export function RevisionRapidaEncendido({ value, onChange, variant = "default" }
       : null
     return (
       <div className="space-y-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Revisión rápida</Label>
+        <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Revision rapida</Label>
         <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
           {ICON_ROW.map(({ id, tooltip, Icon, activeClass }) => {
             const isClear = id === "clear"
@@ -112,7 +112,7 @@ export function RevisionRapidaEncendido({ value, onChange, variant = "default" }
   return (
     <div className="space-y-2 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
       <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-        Revisión rápida
+        Revision rapida
       </Label>
       <div className="flex flex-col gap-2">
         {OPCIONES.map(({ id, label }) => {
@@ -137,3 +137,4 @@ export function RevisionRapidaEncendido({ value, onChange, variant = "default" }
     </div>
   )
 }
+

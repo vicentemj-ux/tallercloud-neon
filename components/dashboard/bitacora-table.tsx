@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -34,7 +34,7 @@ interface BitacoraTableProps {
   repairs: BitacoraRepair[]
   onRepairUpdated: (updated: BitacoraRepair) => void
   onRepairDeleted?: (repairId: string) => void
-  /** Abre el formulario de ticket para modificar este folio (solo en página Reparaciones). */
+  /** Abre el formulario de ticket para modificar este folio (solo en pÃ¡gina Reparaciones). */
   onEditTicket?: (repair: BitacoraRepair) => void
 }
 
@@ -45,11 +45,11 @@ const statusConfig: Record<BitacoraRepair["status"], { className: string; label:
   },
   Diagnostico: {
     className: "bg-amber-100/20 text-amber-700 border-amber-200",
-    label: "DIAGNÓSTICO",
+    label: "DIAGNÃ“STICO",
   },
   "En Reparacion": {
     className: "bg-orange-100/20 text-orange-700 border-orange-200",
-    label: "EN REPARACIÓN",
+    label: "EN REPARACIÃ“N",
   },
   Listo: {
     className: "bg-green-100/20 text-green-700 border-green-200",
@@ -65,7 +65,7 @@ const statusConfig: Record<BitacoraRepair["status"], { className: string; label:
   },
   "Sin Reparacion": {
     className: "bg-slate-100/40 text-slate-700 border-slate-300",
-    label: "SIN REPARACIÓN",
+    label: "SIN REPARACIÃ“N",
   },
   Reingreso: {
     className: "bg-orange-100 text-orange-700 border-orange-300 font-bold",
@@ -122,7 +122,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
     const modelo = repair.deviceModel || ""
     const trackingUrl = `${window.location.origin}/track/${encodeURIComponent(repair.id)}`
 
-    const message = `Hola ${cliente}, te informamos que tu equipo ${marca} ${modelo} (Ticket #${repair.folio}) se encuentra en estado: ${estadoLabel}. Puedes consultar el avance aquí: ${trackingUrl}`
+    const message = `Hola ${cliente}, te informamos que tu equipo ${marca} ${modelo} (Ticket #${repair.folio}) se encuentra en estado: ${estadoLabel}. Puedes consultar el avance aquÃ­: ${trackingUrl}`
     const encodedMessage = encodeURIComponent(message)
 
     const url = `https://api.whatsapp.com/send?phone=${digits}&text=${encodedMessage}`
@@ -153,7 +153,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
         <Card className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardContent className="p-0">
 
-            {/* ── Mobile cards ── */}
+            {/* â”€â”€ Mobile cards â”€â”€ */}
             <div className="md:hidden divide-y divide-border">
               {repairs.map((repair) => {
                 const config = statusConfig[repair.status]
@@ -232,7 +232,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
                               marginTop: "2px",
                             }}
                           >
-                            <span style={{ fontSize: "10px" }}>✓</span>
+                            <span style={{ fontSize: "10px" }}>âœ“</span>
                             <div>
                               <div style={{ fontWeight: 600, fontSize: "11px", lineHeight: 1.2 }}>CONCLUIDO</div>
                               <div style={{ fontSize: "9px", opacity: 0.7, lineHeight: 1 }}>FASE FINAL</div>
@@ -282,7 +282,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
               })}
             </div>
 
-            {/* ── Desktop table ── */}
+            {/* â”€â”€ Desktop table â”€â”€ */}
             <div className="hidden md:block max-w-full overflow-x-auto custom-scrollbar pb-4">
               <Table className="min-w-[1000px]">
                 <TableHeader>
@@ -403,7 +403,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
                                   gap: "6px",
                                 }}
                               >
-                                <span style={{ fontSize: "11px" }}>✓</span>
+                                <span style={{ fontSize: "11px" }}>âœ“</span>
                                 <div>
                                   <div style={{ fontWeight: 600, fontSize: "12px", lineHeight: 1.2 }}>CONCLUIDO</div>
                                   <div style={{ fontSize: "9px", opacity: 0.7, lineHeight: 1 }}>FASE FINAL</div>
@@ -454,7 +454,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
                               <TooltipContent>WhatsApp</TooltipContent>
                             </Tooltip>
 
-                            {/* Imprimir — menú unificado (Ticket / Carta / Garantía / Etiqueta) */}
+                            {/* Imprimir â€” menÃº unificado (Ticket / Carta / GarantÃ­a / Etiqueta) */}
                             <div onClick={(e) => e.stopPropagation()} className="inline-flex">
                               <PrintMenuDropdown repair={repair} trigger="icon" />
                             </div>
@@ -502,3 +502,5 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
     </>
   )
 }
+
+

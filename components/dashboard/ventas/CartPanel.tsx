@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo } from "react"
 import { ShoppingBag, Banknote, CreditCard, Landmark, Plus, Minus, X, Check, AlertCircle, Tag } from "lucide-react"
@@ -114,7 +114,7 @@ export const CartPanel = memo(function CartPanel({
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-slate-900">Tu Carrito</p>
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            {itemCount} artículo{itemCount !== 1 ? "s" : ""}
+            {itemCount} articulo{itemCount !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export const CartPanel = memo(function CartPanel({
             <div className="h-12 w-12 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-300">
               <ShoppingBag className="h-6 w-6" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">Carrito vacío</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">Carrito vacio</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -169,7 +169,7 @@ export const CartPanel = memo(function CartPanel({
                   </div>
                 </div>
 
-                {/* Fila 2: precio + inversión + eliminar */}
+                {/* Fila 2: precio + inversion + eliminar */}
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center gap-3">
                     <div>
@@ -177,7 +177,7 @@ export const CartPanel = memo(function CartPanel({
                       <p className="text-sm font-black italic text-blue-600">${fmt(item.precio)}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-rose-300">Inversión</p>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-rose-300">Inversion</p>
                       <p className="text-sm font-black italic text-rose-300">${fmt(item.costo)}</p>
                     </div>
                   </div>
@@ -315,7 +315,7 @@ export const CartPanel = memo(function CartPanel({
           </div>
         )}
 
-        {/* Pago único / Pago mixto tabs */}
+        {/* Pago unico / Pago mixto tabs */}
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -326,7 +326,7 @@ export const CartPanel = memo(function CartPanel({
                 : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
             }`}
           >
-            PAGO ÚNICO
+            PAGO uNICO
           </button>
           <button
             type="button"
@@ -341,7 +341,7 @@ export const CartPanel = memo(function CartPanel({
           </button>
         </div>
 
-        {/* Method buttons (only for pago único) */}
+        {/* Method buttons (only for pago unico) */}
         {pagoMode === "unico" && (
           <div className="grid grid-cols-3 gap-2">
             {(

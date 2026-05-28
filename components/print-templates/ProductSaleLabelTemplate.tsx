@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { forwardRef } from "react"
 
@@ -30,12 +30,12 @@ function fmt(n: number) {
 }
 
 /**
- * Etiqueta de equipo en venta — formato ÚNICO: 2×1" horizontal (50mm × 25mm landscape).
+ * Etiqueta de equipo en venta — formato uNICO: 2×1" horizontal (50mm × 25mm landscape).
  * Etiqueta PRE-CORTADA: width y height son fijos e inamovibles.
  * @page CSS: size: 50mm 25mm; margin: 0;
  */
 const ProductSaleLabelTemplate = forwardRef<HTMLDivElement, Props>(({ data, mostrarPrecios = true }, ref) => {
-  // Specs comprimidas en una sola línea separadas por " · "
+  // Specs comprimidas en una sola linea separadas por " · "
   const specParts: string[] = [
     data.ram          ? `RAM ${data.ram}`         : null,
     data.almacenamiento ? data.almacenamiento      : data.capacidad ?? null,
@@ -124,7 +124,7 @@ const ProductSaleLabelTemplate = forwardRef<HTMLDivElement, Props>(({ data, most
         {data.deviceName || "—"}
       </div>
 
-      {/* ── FILA 3: Specs comprimidas en 1 línea ── */}
+      {/* ── FILA 3: Specs comprimidas en 1 linea ── */}
       {specsLine && (
         <div
           style={{

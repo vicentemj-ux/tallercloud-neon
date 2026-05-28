@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
@@ -8,7 +8,7 @@ import { getPrismaClient } from "@/lib/prisma"
 
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 
-const nombreSchema = z.string().min(2, "El nombre del taller es obligatorio (mínimo 2 caracteres)").max(100).trim()
+const nombreSchema = z.string().min(2, "El nombre del taller es obligatorio (minimo 2 caracteres)").max(100).trim()
 
 const cookieBase = {
   secure: process.env.NODE_ENV === "production",
@@ -28,7 +28,7 @@ export async function completeOnboardingTaller(
 ): Promise<{ success: boolean; error?: string }> {
   const parsed = nombreSchema.safeParse(nombreTallerRaw)
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0]?.message ?? "Datos inválidos" }
+    return { success: false, error: parsed.error.errors[0]?.message ?? "Datos invalidos" }
   }
   const nombreTaller = parsed.data
 
@@ -36,7 +36,7 @@ export async function completeOnboardingTaller(
   const userId = (user as any)?.id as string | undefined
   const userEmail = user?.email?.toLowerCase().trim()
   if (!userId || !userEmail) {
-    return { success: false, error: "Sesión no válida. Inicia sesión nuevamente." }
+    return { success: false, error: "Sesion no valida. Inicia sesion nuevamente." }
   }
 
   const prisma = getPrismaClient()
@@ -59,7 +59,7 @@ export async function completeOnboardingTaller(
     }))
 
   if (!targetUser) {
-    return { success: false, error: "No se encontró una cuenta de usuario para completar onboarding." }
+    return { success: false, error: "No se encontro una cuenta de usuario para completar onboarding." }
   }
 
   const baseSlug = nombreTaller

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type { VentaCreada } from "@/lib/actions/ventas-prisma"
 
@@ -144,7 +144,7 @@ export function TicketVentaTemplate({
 
       <Divider />
 
-      {/* ── Artículos ── */}
+      {/* ── Articulos ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         {venta.items.map((item, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "flex-start" }}>
@@ -192,7 +192,7 @@ export function TicketVentaTemplate({
             </>
           ) : (
             <div style={{ display: "flex", justifyContent: "space-between", gap: "6px" }}>
-              <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Método de pago</span>
+              <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>Metodo de pago</span>
               <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700 }}>{METODOS_LABEL[venta.metodo_pago] ?? venta.metodo_pago}</span>
             </div>
           )}

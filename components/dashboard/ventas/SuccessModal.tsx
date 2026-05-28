@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { memo, useEffect, useRef, useState, type CSSProperties } from "react"
 import { useReactToPrint } from "react-to-print"
@@ -113,7 +113,7 @@ export const SuccessModal = memo(function SuccessModal({
     const msg = [
       `¡Hola ${nombre}! 📱 Gracias por tu compra en ${tallerNombre}.`,
       `📄 Folio: ${venta.folio ?? venta.id}`,
-      `📦 Artículos:\n${itemLines}`,
+      `📦 Articulos:\n${itemLines}`,
       `💰 Total: $${venta.total.toLocaleString("es-MX")}`,
       `¡Esperamos verte pronto! 🚀`,
     ].join("\n")
@@ -123,7 +123,7 @@ export const SuccessModal = memo(function SuccessModal({
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
-  // Detectar ítems de tipo equipo (tienen marca, modelo o IMEI)
+  // Detectar items de tipo equipo (tienen marca, modelo o IMEI)
   const equipoItems = (venta.items ?? []).filter(
     (i) => i.marca || i.modelo || i.imei_serie
   )
@@ -165,7 +165,7 @@ export const SuccessModal = memo(function SuccessModal({
         }
       }}
     >
-      {/* Área de impresión aislada — react-to-print la copia a un iframe propio */}
+      {/* area de impresion aislada — react-to-print la copia a un iframe propio */}
       <div
         ref={printRef}
         className="print-ticket-offscreen-layer"
@@ -258,7 +258,7 @@ export const SuccessModal = memo(function SuccessModal({
             <div className="flex gap-2">
               <Input
                 type="tel"
-                placeholder="Número de WhatsApp"
+                placeholder="Numero de WhatsApp"
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 className="flex-1 text-sm rounded-xl"
