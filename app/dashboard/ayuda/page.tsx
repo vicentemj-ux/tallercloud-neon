@@ -92,7 +92,7 @@ export default function AyudaPage() {
             />
             <Input
               type="search"
-              placeholder="Buscar temas…"
+              placeholder="Buscar temas..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="h-11 border-slate-200 bg-white pl-10 shadow-sm placeholder:text-slate-400 focus-visible:ring-amber-500/30"

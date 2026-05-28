@@ -149,14 +149,14 @@ export function TicketVentaEquipoTemplate({
               {/* Linea principal del articulo */}
               <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "flex-start" }}>
                 <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700, textAlign: "left", flex: 1, minWidth: 0, lineHeight: 1.2 }}>
-                  {item.cantidad}× {(item.categoria ? item.categoria + " " : "") + item.descripcion}
+                  {item.cantidad}x {(item.categoria ? item.categoria + " " : "") + item.descripcion}
                 </span>
                 <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 900, textAlign: "right", whiteSpace: "nowrap", flexShrink: 0 }}>
                   ${fmt(item.precio_unitario * item.cantidad)}
                 </span>
               </div>
 
-              {/* Seccion de dispositivo — solo si el articulo es equipo */}
+              {/* Seccion de dispositivo - solo si el articulo es equipo */}
               {esEquipo && (
                 <div style={{ marginTop: "2px", marginLeft: "6px", paddingLeft: "6px", borderLeft: "1.5px solid black" }}>
                   {(item.marca || item.modelo) && (

@@ -85,7 +85,7 @@ function RepairTimeline({ repair }: { repair: any }) {
                 </h3>
                 {isActive && (
                   <p className="text-xs text-blue-300 mt-1">
-                    Estado actual • Actualizado hace poco
+                    Estado actual * Actualizado hace poco
                   </p>
                 )}
               </div>

@@ -62,7 +62,7 @@ function formatMetodoVenta(metodo: string, mE: number, mT: number, mTr: number):
   if (m === "efectivo") return "Efectivo"
   if (m === "tarjeta") return "Tarjeta"
   if (m === "transferencia") return "Transferencia"
-  return metodo || "—"
+  return metodo || "-"
 }
 
 function formatMetodoReparacion(raw: string | null): string {
@@ -70,7 +70,7 @@ function formatMetodoReparacion(raw: string | null): string {
   if (x === "efectivo") return "Efectivo"
   if (x === "tarjeta") return "Tarjeta"
   if (x === "transferencia") return "Transferencia"
-  return raw?.trim() || "—"
+  return raw?.trim() || "-"
 }
 
 function metodoVentaCodigo(metodo: string): HistorialMetodoPagoCodigo {
@@ -161,8 +161,8 @@ async function fetchVentasMostrador(tallerId: string, from: string, to: string, 
   return ventas.map((v) => {
     const detalles = detallesByVenta.get(v.id) ?? []
     const conceptos = detalles.length
-      ? detalles.map((d) => `${d.cantidad > 1 ? `${d.cantidad}× ` : ""}${d.descripcion}`).join(", ")
-      : "—"
+      ? detalles.map((d) => `${d.cantidad > 1 ? `${d.cantidad}x ` : ""}${d.descripcion}`).join(", ")
+      : "-"
 
     const metodo = v.metodo_pago ?? ""
     const mE = Number(v.monto_efectivo ?? 0)
@@ -176,8 +176,8 @@ async function fetchVentasMostrador(tallerId: string, from: string, to: string, 
       folio: String(v.folio ?? ""),
       fechaIso: new Date(v.created_at).toISOString(),
       tipoLabel: "Mostrador",
-      cliente: (v.cliente_nombre ?? "").trim() || "—",
-      vendedor: (v.vendedor_nombre ?? "").trim() || "—",
+      cliente: (v.cliente_nombre ?? "").trim() || "-",
+      vendedor: (v.vendedor_nombre ?? "").trim() || "-",
       conceptos,
       metodoPago: formatMetodoVenta(metodo, mE, mT, mTr),
       metodoPagoCodigo: codigo,
@@ -230,8 +230,8 @@ async function fetchCobrosReparacion(tallerId: string, from: string, to: string,
     if (q.trim() && rid && !rep) continue
 
     const movFolio = m.folio ?? null
-    const folio = movFolio ?? (rep?.folio ? `A-${rep.folio}` : "—")
-    const cliente = (rep?.cliente_nombre ?? "").trim() || "—"
+    const folio = movFolio ?? (rep?.folio ? `A-${rep.folio}` : "-")
+    const cliente = (rep?.cliente_nombre ?? "").trim() || "-"
     const equipo = `${(rep?.marca ?? "").trim()} ${(rep?.modelo ?? "").trim()}`.trim()
     const tipoMov = m.tipo === "liquidacion_reparacion" ? "Liquidacion" : "Anticipo"
     const descripcion = (m.descripcion ?? "").trim()
@@ -246,8 +246,8 @@ async function fetchCobrosReparacion(tallerId: string, from: string, to: string,
       fechaIso: new Date(m.fecha).toISOString(),
       tipoLabel: "Reparacion",
       cliente,
-      vendedor: (m.vendedor_nombre ?? "").trim() || "—",
-      conceptos: conceptos || "—",
+      vendedor: (m.vendedor_nombre ?? "").trim() || "-",
+      conceptos: conceptos || "-",
       metodoPago: formatMetodoReparacion(m.metodo_pago),
       metodoPagoCodigo: metodoReparacionCodigo(m.metodo_pago),
       total: Number(m.monto ?? 0),

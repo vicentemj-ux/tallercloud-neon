@@ -79,7 +79,7 @@ export default function EquipoPage() {
   const [deleteMemberId, setDeleteMemberId] = useState("")
   const [deleteMemberName, setDeleteMemberName] = useState("")
 
-  // PERF: getEquipoPageData ya retorna roles — una sola llamada en vez de dos useEffects separados
+  // PERF: getEquipoPageData ya retorna roles - una sola llamada en vez de dos useEffects separados
   const load = async () => {
     setLoading(true)
     setLoadError(null)
@@ -479,7 +479,7 @@ export default function EquipoPage() {
                 type="password"
                 value={passwordMiembro}
                 onChange={(e) => setPasswordMiembro(e.target.value)}
-                placeholder="••••••••"
+                placeholder="********"
                 className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
               />
             </div>

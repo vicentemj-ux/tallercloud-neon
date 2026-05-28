@@ -22,7 +22,7 @@ const OfflineSyncListener = dynamic(
   { ssr: false }
 )
 
-// â”€â”€â”€ Skeleton para sidebar mientras carga DnD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Skeleton para sidebar mientras carga DnD â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 function SidebarSkeleton() {
   return (
@@ -44,7 +44,7 @@ function SidebarSkeleton() {
   )
 }
 
-// â”€â”€â”€ Dashboard Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Dashboard Content â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -70,7 +70,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen [height:100dvh] bg-muted/30">
-      {/* Desktop Sidebar â€” lazy loaded */}
+      {/* Desktop Sidebar â€" lazy loaded */}
       <aside className="hidden w-64 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
         <SidebarContent pathname={pathname} />
       </aside>
@@ -108,7 +108,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   )
 }
 
-// â”€â”€â”€ Dashboard Shell (Client Component) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Dashboard Shell (Client Component) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (

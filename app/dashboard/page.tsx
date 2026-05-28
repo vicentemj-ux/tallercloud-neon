@@ -106,7 +106,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="min-w-0">
                     {subCtx.planTipo === "suspendido" ? (
-                      <p className="text-sm font-semibold text-blue-900">Cuenta suspendida — regulariza tu suscripcion.</p>
+                      <p className="text-sm font-semibold text-blue-900">Cuenta suspendida - regulariza tu suscripcion.</p>
                     ) : subCtx.planTipo === "prueba" ? (
                       <p className="text-sm font-semibold text-blue-900">
                         Te quedan <span className="font-black text-blue-700">{subCtx.diasRestantes}</span> {subCtx.diasRestantes === 1 ? "dia" : "dias"} de prueba.
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
           aria-label="Metricas operativas"
         >
 
-          {/* ── HERO: Ingresos del Mes — col-span-2 row-span-2 ── */}
+          {/* ── HERO: Ingresos del Mes - col-span-2 row-span-2 ── */}
           <Link
             href="/dashboard/ventas"
             aria-label="Ver ventas e ingresos del mes"
@@ -254,7 +254,7 @@ export default async function DashboardPage() {
             </div>
           </Link>
 
-          {/* ── Tickets en Cola — col-span-2 ── */}
+          {/* ── Tickets en Cola - col-span-2 ── */}
           <Link
             href="/dashboard/reparaciones?filter=queue"
             aria-label="Ver tickets en cola"
@@ -293,7 +293,7 @@ export default async function DashboardPage() {
             </div>
           </Link>
 
-          {/* ── CTA: Nueva Reparacion — col-span-4 ── */}
+          {/* ── CTA: Nueva Reparacion - col-span-4 ── */}
           <div className="
               col-span-1 sm:col-span-2 lg:col-span-4
             group relative overflow-hidden rounded-3xl

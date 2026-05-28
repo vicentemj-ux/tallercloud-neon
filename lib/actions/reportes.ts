@@ -81,8 +81,8 @@ export async function getReportesData(
   // ── 6 queries en paralelo ─────────────────────────────────────────────────
   //
   // Columnas correctas en reparaciones:
-  //   • "falla"    (no "falla_reportada" — no existe)
-  //   • "tecnico"  (string nombre, no tecnico_id — no es FK)
+  //   * "falla"    (no "falla_reportada" - no existe)
+  //   * "tecnico"  (string nombre, no tecnico_id - no es FK)
   //
   // Ingresos por reparaciones AHORA vienen de movimientos_caja (dinero real en caja),
   // no de reparaciones.costo_total (que es costo de refacciones, no ingreso).
@@ -94,7 +94,7 @@ export async function getReportesData(
     movimientosCajaResult,
     movimientosCajaSeisResult,
   ] = await Promise.all([
-    // Reparaciones del periodo — estatus + falla + tecnico (sin costo_total)
+    // Reparaciones del periodo - estatus + falla + tecnico (sin costo_total)
     supabase
       .from("reparaciones")
       .select("estatus, falla, tecnico")
@@ -262,7 +262,7 @@ export async function getReportesData(
       porcentaje: Math.round((total / totalVentasBase) * 100),
     }))
 
-  // ── Fallas mas frecuentes — columna "falla" ───────────────────────────────
+  // ── Fallas mas frecuentes - columna "falla" ───────────────────────────────
 
   const fallaMap = new Map<string, number>()
   for (const r of reps) {
@@ -276,7 +276,7 @@ export async function getReportesData(
     .slice(0, 5)
     .map(([falla, count]) => ({ falla, count }))
 
-  // ── Tecnicos — columna "tecnico" (string nombre) ──────────────────────────
+  // ── Tecnicos - columna "tecnico" (string nombre) ──────────────────────────
   // Usamos TODAS las reparaciones del periodo (no solo entregadas) para mostrar
   // actividad real del tecnico. Si no hay entregas en el periodo, al menos se ve
   // quien esta trabajando en los tickets activos.

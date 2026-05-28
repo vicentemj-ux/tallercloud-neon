@@ -53,17 +53,17 @@ export function Imprenta({ settings }: ImprentaProps) {
       if (error) {
         toast({ variant: "destructive", title: "Error", description: error })
       } else {
-        toast({ title: "Guardado", description: "ConfiguraciÃ³n de impresiÃ³n actualizada." })
+        toast({ title: "Guardado", description: "Configuracion de impresion actualizada." })
       }
     })
   }
 
   const handlePrintTest = () => {
     startPrinting(async () => {
-      // En fases posteriores se integrarÃ¡ con imprimirTicket()
+      // En fases posteriores se integrara con imprimirTicket()
       toast({
-        title: "ImpresiÃ³n de prueba",
-        description: `Se enviarÃ¡ una prueba de ${selectedDoc} a la impresora configurada (prÃ³ximamente).`,
+        title: "Impresion de prueba",
+        description: `Se enviara una prueba de ${selectedDoc} a la impresora configurada (proximamente).`,
       })
     })
   }
@@ -80,7 +80,7 @@ export function Imprenta({ settings }: ImprentaProps) {
         <Textarea
           value={mensajeDespedidaGlobal}
           onChange={(e) => setMensajeDespedidaGlobal(e.target.value)}
-          placeholder="Ej. Â¡Gracias por confiar en nosotros! SÃ­guenos en redes sociales."
+          placeholder="Ej. Â¡Gracias por confiar en nosotros! Siguenos en redes sociales."
           className="min-h-[60px] border-slate-200 bg-white text-sm resize-y"
         />
         <p className="text-[11px] text-slate-500 mt-1.5">
@@ -98,12 +98,12 @@ export function Imprenta({ settings }: ImprentaProps) {
 
       {/* Layout 45/55 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Panel de controles â€” 45% en desktop */}
+        {/* Panel de controles â€" 45% en desktop */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
             <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-600" />
-              ConfiguraciÃ³n â€”{" "}
+              Configuracion â€"{" "}
               {selectedDoc.charAt(0).toUpperCase() + selectedDoc.slice(1)}
             </h4>
             <ImprentaControlsPanel
@@ -113,7 +113,7 @@ export function Imprenta({ settings }: ImprentaProps) {
             />
           </div>
 
-          {/* Botones de acciÃ³n */}
+          {/* Botones de accion */}
           <div className="flex gap-3">
             <Button
               variant="outline"
@@ -137,7 +137,7 @@ export function Imprenta({ settings }: ImprentaProps) {
           </div>
         </div>
 
-        {/* Canvas de preview â€” 55% en desktop */}
+        {/* Canvas de preview â€" 55% en desktop */}
         <div className="lg:col-span-7">
           <ImprentaPreviewCanvas docType={selectedDoc} config={currentConfig} settings={settings} />
         </div>

@@ -270,7 +270,7 @@ const EMAIL_HEADER_NAVY = "#0a1f33"
 const EMAIL_HEADER_ACCENT = "#185FA5"
 
 /**
- * Nueva plantilla de cierre de caja — detallada, mobile-first, profesional.
+ * Nueva plantilla de cierre de caja - detallada, mobile-first, profesional.
  * Muestra desglose completo por metodo de pago, ventas, cobros y gastos.
  */
 function buildCierreEmailHtmlV2(params: {
@@ -428,8 +428,8 @@ function buildCierreEmailHtmlV2(params: {
   let cobrosRows = ""
   if (c.cobrosRep.length > 0) {
     cobrosRows = c.cobrosRep.map((r) => `<tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(r.folio ?? "—")}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(r.metodo_pago ?? "—")}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(r.folio ?? "-")}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(r.metodo_pago ?? "-")}</td>
       <td style="padding:8px 12px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:12px;color:#0f172a;font-variant-numeric:tabular-nums;font-family:system-ui,sans-serif;">${formatCurrency(r.monto)}</td>
     </tr>`).join("")
   } else {
@@ -452,7 +452,7 @@ function buildCierreEmailHtmlV2(params: {
   let gastosRows = ""
   if (c.listaGastos.length > 0) {
     gastosRows = c.listaGastos.map((g) => `<tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(g.descripcion ?? "—")}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;font-family:system-ui,sans-serif;">${safe(g.descripcion ?? "-")}</td>
       <td style="padding:8px 12px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:12px;color:#b91c1c;font-variant-numeric:tabular-nums;font-family:system-ui,sans-serif;">${formatCurrency(g.monto)}</td>
     </tr>`).join("")
   } else {
@@ -561,7 +561,7 @@ function buildCierreEmailHtmlV2(params: {
 </html>`
 }
 
-/** PLANTILLA ANTIGUA — mantenida por compatibilidad, pero ya no se usa en cierres nuevos */
+/** PLANTILLA ANTIGUA - mantenida por compatibilidad, pero ya no se usa en cierres nuevos */
 function buildCierreEmailHtml(params: {
   ownerName: string
   nombreTaller: string
@@ -721,7 +721,7 @@ async function sendCajaClosureEmail(params: {
   if (!resend) return { success: false, error: "Servicio de correo no configurado." }
 
   const c = params.corte
-  const numCorte = c.numero_corte != null ? String(c.numero_corte).padStart(3, "0") : "—"
+  const numCorte = c.numero_corte != null ? String(c.numero_corte).padStart(3, "0") : "-"
 
   const appBase = (process.env.NEXT_PUBLIC_APP_URL || "https://tallercloud.net").replace(/\/$/, "")
   const detailUrl = `${appBase}/dashboard/ventas`
@@ -756,7 +756,7 @@ async function sendCajaClosureEmail(params: {
     console.warn(`[sendCajaClosureEmail] HTML muy grande (${htmlSizeMB.toFixed(2)} MB). Puede ser rechazado por Resend.`)
   }
 
-  const text = `Cierre de caja #${numCorte} — ${params.nombreTaller}\n` +
+  const text = `Cierre de caja #${numCorte} - ${params.nombreTaller}\n` +
     `Responsable: ${responsableLine}\n` +
     `Fecha: ${formatDate(c.fecha_cierre)}\n` +
     `Monto de cierre: $${(c.monto_cierre ?? 0).toLocaleString("es-MX")}\n` +
@@ -767,7 +767,7 @@ async function sendCajaClosureEmail(params: {
     const result = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: params.to,
-      subject: `Cierre de caja #${numCorte} — ${params.nombreTaller}`,
+      subject: `Cierre de caja #${numCorte} - ${params.nombreTaller}`,
       html,
       text,
     })
@@ -1133,7 +1133,7 @@ export async function getProductosDisponibles(): Promise<{
     return { data: [], error: error.message }
   }
 
-  // Map to ProductoDisponible — handle tables that may not yet have device columns
+  // Map to ProductoDisponible - handle tables that may not yet have device columns
   const mapped: ProductoDisponible[] = (data ?? []).map((row: Record<string, unknown>) => ({
     id: row.id as string,
     taller_id: row.taller_id as string,
@@ -1268,7 +1268,7 @@ export async function crearVenta(
     return { venta: null, error: detalleError.message }
   }
 
-  // Decrement stock — 1 round-trip via RPC batch_decrement_stock
+  // Decrement stock - 1 round-trip via RPC batch_decrement_stock
   const stockItems = input.items
     .filter((item) => item.producto_id && !item.es_especial)
     .map((item) => ({ producto_id: item.producto_id, taller_id: tallerId, cantidad: item.cantidad }))
@@ -1330,13 +1330,13 @@ export async function crearVenta(
         .eq("id", input.caja_id)
     }
 
-    // Register movement in movimientos_caja (best-effort — table may not exist until migration runs)
+    // Register movement in movimientos_caja (best-effort - table may not exist until migration runs)
     await supabase.from("movimientos_caja").insert({
       taller_id: tallerId,
       caja_id: input.caja_id,
       tipo: "venta_pdv",
       referencia_id: ventaId,
-      descripcion: `Venta ${folio}${input.cliente_nombre ? ` — ${input.cliente_nombre}` : ""}`,
+      descripcion: `Venta ${folio}${input.cliente_nombre ? ` - ${input.cliente_nombre}` : ""}`,
       monto: input.total,
       metodo_pago: input.metodo_pago,
       fecha: ventaData.created_at as string,
@@ -1852,7 +1852,7 @@ export async function getCajaConDetalle(
     const vid = r.id as string
     return {
       id: vid,
-      folio: (r.folio as string | null) ?? "—",
+      folio: (r.folio as string | null) ?? "-",
       created_at: r.created_at as string,
       total: Number(r.total ?? 0),
       metodo_pago: (r.metodo_pago as string | null) ?? undefined,
@@ -1900,7 +1900,7 @@ export async function getCajaConDetalle(
   }
 }
 
-// ─── Label data for /print-label/[id] — venta-label kind ─────────────────────
+// ─── Label data for /print-label/[id] - venta-label kind ─────────────────────
 
 export interface VentaLabelFetchData {
   id: string
@@ -2059,8 +2059,8 @@ export async function getCobroReparacionParaTicket(
   }
 
   const rid = m.referencia_id as string | undefined
-  let folio = "—"
-  let cliente = "—"
+  let folio = "-"
+  let cliente = "-"
   let equipo = ""
   if (rid) {
     const { data: rep } = await supabase
@@ -2071,8 +2071,8 @@ export async function getCobroReparacionParaTicket(
       .maybeSingle()
     if (rep) {
       const r = rep as Record<string, unknown>
-      folio = String(r.folio ?? "—")
-      cliente = String(r.cliente_nombre ?? "").trim() || "—"
+      folio = String(r.folio ?? "-")
+      cliente = String(r.cliente_nombre ?? "").trim() || "-"
       const tipo = String(r.tipo_equipo ?? "").trim()
       const marca = String(r.marca ?? "").trim()
       const modelo = String(r.modelo ?? "").trim()
@@ -2096,7 +2096,7 @@ export async function getCobroReparacionParaTicket(
     data: {
       folio,
       cliente,
-      conceptos: conceptos || "—",
+      conceptos: conceptos || "-",
       monto: Number(m.monto ?? 0),
       metodo_pago: String(m.metodo_pago ?? "efectivo"),
       fechaIso,

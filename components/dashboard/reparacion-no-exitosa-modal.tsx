@@ -88,7 +88,7 @@ export function ReparacionNoExitosaModal({
             </Label>
             <Select value={razon} onValueChange={setRazon} disabled={pending}>
               <SelectTrigger className="rounded-lg border-slate-200 text-sm">
-                <SelectValue placeholder="Selecciona una razon…" />
+                <SelectValue placeholder="Selecciona una razon..." />
               </SelectTrigger>
               <SelectContent>
                 {razones.map((r) => (
@@ -107,7 +107,7 @@ export function ReparacionNoExitosaModal({
             <Textarea
               value={nota}
               onChange={(e) => setNota(e.target.value)}
-              placeholder="Detalles adicionales…"
+              placeholder="Detalles adicionales..."
               rows={3}
               disabled={pending}
               className="min-h-[80px] resize-none rounded-lg border-slate-200 text-sm"
@@ -134,7 +134,7 @@ export function ReparacionNoExitosaModal({
             {pending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Guardando…
+                Guardando...
               </>
             ) : (
               "Confirmar"

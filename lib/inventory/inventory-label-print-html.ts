@@ -165,7 +165,7 @@ export function buildInventoryLabelPrintDocument(params: {
         <div class="name">${esc(nombreProd)}</div>
         ${barcodeSvg ? `<div class="barcode">${barcodeSvg}</div>` : ""}
         <div class="meta">
-          ${numero ? `<div class="num">${esc(numero)}</div>` : `<div class="num">—</div>`}
+          ${numero ? `<div class="num">${esc(numero)}</div>` : `<div class="num">-</div>`}
           ${showPrice ? `<div class="price">${esc(precioFormateado)}</div>` : ""}
         </div>
       </div>`

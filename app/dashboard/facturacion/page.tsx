@@ -114,10 +114,10 @@ function FacturacionContent() {
   }, [refreshKey])
 
   const statusLine = useMemo(() => {
-    if (!ctx) return { big: "—" as string, caption: "", showNumber: false }
+    if (!ctx) return { big: "-" as string, caption: "", showNumber: false }
     if (ctx.planTipo === "suspendido") {
       return {
-        big: "—",
+        big: "-",
         caption: "Contacta soporte por WhatsApp.",
         showNumber: false,
       }
@@ -132,7 +132,7 @@ function FacturacionContent() {
     if (ctx.planTipo === "activo") {
       if (!ctx.tieneVencimiento) {
         return {
-          big: "—",
+          big: "-",
           caption: "Sin vencimiento programado",
           showNumber: false,
         }
@@ -143,7 +143,7 @@ function FacturacionContent() {
         showNumber: true,
       }
     }
-    return { big: "—", caption: "", showNumber: false }
+    return { big: "-", caption: "", showNumber: false }
   }, [ctx])
 
   /** Dias para barra de progreso (ciclo 30 dias); null si no aplica. */
@@ -213,7 +213,7 @@ function FacturacionContent() {
                   <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
                 </button>
                 {loading ? (
-                  <p className="text-sm text-slate-500">Cargando estatus…</p>
+                  <p className="text-sm text-slate-500">Cargando estatus...</p>
                 ) : statusLine.showNumber ? (
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-black tabular-nums leading-none tracking-tighter text-slate-900 sm:text-5xl">
@@ -271,7 +271,7 @@ function FacturacionContent() {
         ) : null}
 
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-3">
-          {/* Plan Base — fondo solido */}
+          {/* Plan Base - fondo solido */}
           <Card className="gap-0 overflow-hidden border border-slate-300/90 bg-slate-200/90 py-0 shadow-md">
             <CardHeader className="space-y-1 px-3 pb-1.5 pt-2.5 sm:px-4 sm:pt-3">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -323,7 +323,7 @@ function FacturacionContent() {
             </CardContent>
           </Card>
 
-          {/* PLAN PRO — bloque dominante */}
+          {/* PLAN PRO - bloque dominante */}
           <Card className="relative gap-0 overflow-hidden border-2 border-amber-400/70 bg-gradient-to-b from-amber-200 via-amber-100 to-amber-50 py-0 shadow-lg ring-2 ring-amber-300/40">
             <div className="absolute right-2 top-2 sm:right-3 sm:top-2.5">
               <span className="inline-flex items-center gap-1 rounded-md border-2 border-amber-800/30 bg-amber-950 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-50 shadow-md">
@@ -400,7 +400,7 @@ export default function FacturacionPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-slate-50 px-3 pb-4 pt-0 text-center text-sm text-slate-500 sm:pt-1">
-          Cargando…
+          Cargando...
         </div>
       }
     >

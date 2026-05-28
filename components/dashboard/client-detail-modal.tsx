@@ -51,7 +51,7 @@ function toRepairSummary(order: ClientDetail["ordenes"][0], client: ClientDetail
       day: "numeric", month: "short", year: "numeric",
     }),
     anticipo: 0,
-    tecnico: "—",
+    tecnico: "-",
   }
 }
 
@@ -76,7 +76,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
   const formatCurrency = (amount: number | null) =>
     amount != null
       ? amount.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })
-      : "—"
+      : "-"
 
   return (
     <>
@@ -175,7 +175,7 @@ export function ClientDetailModal({ client, isOpen, onClose }: ClientDetailModal
                           {order.marca} {order.modelo}
                         </p>
                         <p className="text-xs text-slate-500 truncate">
-                          {order.falla?.slice(0, 48)}{order.falla && order.falla.length > 48 ? "…" : ""}
+                          {order.falla?.slice(0, 48)}{order.falla && order.falla.length > 48 ? "..." : ""}
                         </p>
                       </div>
 

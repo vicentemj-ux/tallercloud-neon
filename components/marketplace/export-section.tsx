@@ -150,7 +150,7 @@ export function ExportSection({ products }: ExportSectionProps) {
     htmlContent += `
         </div>
         <div class="footer">
-            <p>Catalogo generado con Taller Cloud • ${new Date().toLocaleDateString('es-ES')}</p>
+            <p>Catalogo generado con Taller Cloud * ${new Date().toLocaleDateString('es-ES')}</p>
         </div>
     </div>
 </body>

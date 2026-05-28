@@ -75,7 +75,7 @@ function buildEquipoLabel(
   deviceModel?: string
 ): string {
   const parts = [tipo_equipo, deviceBrand, deviceModel].filter(Boolean)
-  return parts.join(" ") || "—"
+  return parts.join(" ") || "-"
 }
 
 export function TicketSalidaGarantia({
@@ -176,7 +176,7 @@ export function TicketSalidaGarantia({
         CLIENTE
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700, wordBreak: "break-word" }}>
-        {clienteNombre || "—"}
+        {clienteNombre || "-"}
       </div>
 
       <Divider />
@@ -254,8 +254,8 @@ export function TicketSalidaGarantia({
         TERMINOS
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "9px", fontWeight: 700, lineHeight: 1.25, wordBreak: "break-word" }}>
-        {terminosGarantiaCortos.split(" • ").map((t, i) => (
-          <div key={i} style={{ marginBottom: "1px" }}>• {t}</div>
+        {terminosGarantiaCortos.split(" * ").map((t, i) => (
+          <div key={i} style={{ marginBottom: "1px" }}>* {t}</div>
         ))}
       </div>
 

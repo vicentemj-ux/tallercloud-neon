@@ -159,14 +159,14 @@ function TalleresTable({
                           ? "Vencido"
                           : dias !== null
                             ? `${dias}d restantes`
-                            : "—"}
+                            : "-"}
                       </p>
                       <p className="text-[10px] text-slate-500">
                         {new Date(t.fecha_vencimiento_plan).toLocaleDateString("es-MX")}
                       </p>
                     </div>
                   ) : (
-                    <span className="text-slate-500 text-xs">—</span>
+                    <span className="text-slate-500 text-xs">-</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">

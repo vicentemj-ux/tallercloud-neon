@@ -48,9 +48,9 @@ function money(n: number) {
 }
 
 function fmtDate(iso: string | null | undefined) {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
-  if (isNaN(d.getTime())) return "—"
+  if (isNaN(d.getTime())) return "-"
   return d.toLocaleDateString("es-MX", {
     day: "2-digit",
     month: "short",
@@ -59,9 +59,9 @@ function fmtDate(iso: string | null | undefined) {
 }
 
 function fmtTime(iso: string | null | undefined) {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
-  if (isNaN(d.getTime())) return "—"
+  if (isNaN(d.getTime())) return "-"
   return d.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
@@ -69,7 +69,7 @@ function fmtTime(iso: string | null | undefined) {
 }
 
 function fmtCorte(n: number | null) {
-  if (n === null) return "—"
+  if (n === null) return "-"
   return `#${String(n).padStart(3, "0")}`
 }
 
@@ -190,7 +190,7 @@ function DetalleModal({ data, onClose }: { data: DetalleCajaData; onClose: () =>
           </button>
         </div>
 
-        {/* Body — ticket preview only */}
+        {/* Body - ticket preview only */}
         <div className="flex-1 overflow-y-auto max-h-[min(70vh,580px)] px-5 py-4 bg-slate-50">
           <div className="overflow-hidden rounded border border-slate-200 bg-white shadow-sm mx-auto" style={{ width: 288 }}>
             <TicketCorteTemplate
@@ -220,7 +220,7 @@ function DetalleModal({ data, onClose }: { data: DetalleCajaData; onClose: () =>
           </div>
         </div>
 
-        {/* Footer — actions */}
+        {/* Footer - actions */}
         <DialogFooter className="flex-col sm:flex-row gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50/50">
           {whatsappHref ? (
             <Button
@@ -492,7 +492,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
                   <p className="text-sm tabular-nums text-slate-500">
                     {fmtTime(c.fecha_apertura)}
                     <span className="mx-1.5 text-slate-300">→</span>
-                    {c.fecha_cierre ? fmtTime(c.fecha_cierre) : "—"}
+                    {c.fecha_cierre ? fmtTime(c.fecha_cierre) : "-"}
                   </p>
                   <p className="text-xs font-medium text-blue-600">
                     Corte {fmtCorte(c.numero_corte)}
@@ -531,7 +531,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
                     Efectivo fisico
                   </p>
                   <p className="text-base font-bold tracking-tight tabular-nums text-slate-900">
-                    {c.monto_cierre !== null ? money(c.monto_cierre) : "—"}
+                    {c.monto_cierre !== null ? money(c.monto_cierre) : "-"}
                   </p>
                 </div>
 
@@ -581,7 +581,7 @@ export function HistorialCaja({ autoOpenId, onAutoOpenHandled }: { autoOpenId?: 
       {total > PAGE_SIZE_CAJA && (
         <div className="flex items-center justify-between text-sm text-slate-500 pt-3">
           <span>
-            Mostrando {page * PAGE_SIZE_CAJA + 1}–{Math.min((page + 1) * PAGE_SIZE_CAJA, total)} de {total} cortes
+            Mostrando {page * PAGE_SIZE_CAJA + 1}-{Math.min((page + 1) * PAGE_SIZE_CAJA, total)} de {total} cortes
           </span>
           <div className="flex gap-2">
             <button

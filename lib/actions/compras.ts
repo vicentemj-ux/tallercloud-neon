@@ -385,7 +385,7 @@ export async function deleteProveedor(
 ): Promise<{ error: string | null }> {
   const { supabase, tallerId } = await createCurrentTenantClient()
 
-  // Soft delete — mantiene historial en ordenes existentes
+  // Soft delete - mantiene historial en ordenes existentes
   const { error } = await supabase
     .from("proveedores")
     .update({ activo: false })

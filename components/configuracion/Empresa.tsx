@@ -44,12 +44,12 @@ export function Empresa({
 }: EmpresaProps) {
   return (
     <div className="space-y-8">
-      {/* SecciÃ³n: Identidad del negocio + Logo */}
+      {/* Seccion: Identidad del negocio + Logo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <h3 className="text-lg font-semibold text-slate-900 mb-2">Identidad del negocio</h3>
           <p className="text-sm text-slate-600">
-            InformaciÃ³n bÃ¡sica que aparece en tickets, comprobantes y comunicaciones.
+            Informacion basica que aparece en tickets, comprobantes y comunicaciones.
           </p>
         </div>
         <div className="lg:col-span-2 space-y-6">
@@ -58,11 +58,11 @@ export function Empresa({
               <Input
                 value={settings?.nombre_taller || ""}
                 onChange={(e) => settings && setSettings({ ...settings, nombre_taller: e.target.value })}
-                placeholder="Ej. ElectrÃ³nica del Centro"
+                placeholder="Ej. Electronica del Centro"
                 className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
-            <FieldWrap field="telefono" label="TelÃ©fono" errors={fieldErrors}>
+            <FieldWrap field="telefono" label="Telefono" errors={fieldErrors}>
               <Input
                 value={settings?.telefono || ""}
                 onChange={(e) => settings && setSettings({ ...settings, telefono: e.target.value })}
@@ -106,7 +106,7 @@ export function Empresa({
                   >
                     Subir logo
                   </Button>
-                  <p className="text-[10px] text-slate-500 leading-tight">JPG/PNG mÃ¡x. 2MB</p>
+                  <p className="text-[10px] text-slate-500 leading-tight">JPG/PNG max. 2MB</p>
                 </>
               )}
               <input id="logo-input" type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
@@ -116,17 +116,17 @@ export function Empresa({
         </div>
       </div>
 
-      {/* SecciÃ³n: UbicaciÃ³n â€” fila compacta */}
+      {/* Seccion: Ubicacion â€" fila compacta */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">UbicaciÃ³n</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Ubicacion</h3>
           <p className="text-sm text-slate-600">
-            DirecciÃ³n fÃ­sica del taller para facturaciÃ³n y ubicaciÃ³n en mapas.
+            Direccion fisica del taller para facturacion y ubicacion en mapas.
           </p>
         </div>
         <div className="lg:col-span-2">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <FieldWrap field="pais" label="PaÃ­s" errors={fieldErrors}>
+            <FieldWrap field="pais" label="Pais" errors={fieldErrors}>
               <Select
                 value={settings?.pais || ""}
                 onValueChange={(v) => settings && setSettings({ ...settings, pais: v, estado: "" })}
@@ -144,7 +144,7 @@ export function Empresa({
               </Select>
             </FieldWrap>
             <FieldWrap field="estado" label="Estado / Provincia" errors={fieldErrors}>
-              {settings?.pais === "MÃ©xico" ? (
+              {settings?.pais === "Mexico" ? (
                 <Select
                   value={settings?.estado || ""}
                   onValueChange={(v) => settings && setSettings({ ...settings, estado: v })}
@@ -177,11 +177,11 @@ export function Empresa({
                 className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
-            <FieldWrap field="direccion" label="DirecciÃ³n (opcional)" errors={fieldErrors}>
+            <FieldWrap field="direccion" label="Direccion (opcional)" errors={fieldErrors}>
               <Input
                 value={settings?.direccion || ""}
                 onChange={(e) => settings && setSettings({ ...settings, direccion: e.target.value })}
-                placeholder="Calle, nÃºmero, colonia"
+                placeholder="Calle, numero, colonia"
                 className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
@@ -189,12 +189,12 @@ export function Empresa({
         </div>
       </div>
 
-      {/* SecciÃ³n: ConfiguraciÃ³n operativa */}
+      {/* Seccion: Configuracion operativa */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">ConfiguraciÃ³n operativa</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Configuracion operativa</h3>
           <p className="text-sm text-slate-600">
-            Ajustes tÃ©cnicos para zona horaria y numeraciÃ³n de folios.
+            Ajustes tecnicos para zona horaria y numeracion de folios.
           </p>
         </div>
         <div className="lg:col-span-2 space-y-6">
@@ -236,7 +236,7 @@ export function Empresa({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <FieldWrap field="dias_garantia" label="DÃ­as de garantÃ­a" errors={fieldErrors}>
+              <FieldWrap field="dias_garantia" label="Dias de garantia" errors={fieldErrors}>
                 <Input
                   type="number"
                   min={1}
@@ -254,11 +254,11 @@ export function Empresa({
         </div>
       </div>
 
-      {/* SecciÃ³n: ImportaciÃ³n de Datos */}
+      {/* Seccion: Importacion de Datos */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold text-slate-900">Importar Folios HistÃ³ricos</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Importar Folios Historicos</h3>
             <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-600 border-slate-200">
               Herramienta Admin
             </Badge>
@@ -277,7 +277,7 @@ export function Empresa({
                   </div>
                   <div className="flex-1">
                     <h4 className="text-sm font-semibold text-slate-900 mb-1">
-                      Importar Folios HistÃ³ricos
+                      Importar Folios Historicos
                     </h4>
                     <p className="text-xs text-slate-600">
                       Carga archivos Excel o CSV para migrar datos de otros sistemas.
@@ -285,7 +285,7 @@ export function Empresa({
                   </div>
                   <div className="flex-shrink-0">
                     <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                      Configurar â†’
+                      Configurar â†'
                     </Button>
                   </div>
                 </div>

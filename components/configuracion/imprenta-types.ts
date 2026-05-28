@@ -58,7 +58,7 @@ export const DOCUMENT_TYPES: {
     id: "etiqueta",
     label: "Etiqueta",
     icon: Tag,
-    description: "Etiqueta de reparacion 2×1″",
+    description: "Etiqueta de reparacion 2x1″",
   },
   {
     id: "barras",

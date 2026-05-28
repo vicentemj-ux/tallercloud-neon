@@ -95,7 +95,7 @@ export default function AdminVerifyPage() {
             <div className="flex flex-col items-center gap-3 py-4">
               <CheckCircle2 className="h-10 w-10 text-emerald-400" />
               <p className="text-emerald-400 font-semibold text-sm">Acceso autorizado</p>
-              <p className="text-slate-500 text-xs">Redirigiendo al panel…</p>
+              <p className="text-slate-500 text-xs">Redirigiendo al panel...</p>
             </div>
           ) : (
             <>
@@ -103,7 +103,7 @@ export default function AdminVerifyPage() {
               {sendPending ? (
                 <div className="flex items-center gap-2 text-sm text-slate-400 mb-5">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-                  Enviando codigo a tu correo…
+                  Enviando codigo a tu correo...
                 </div>
               ) : maskedEmail ? (
                 <div className="flex items-start gap-2 text-sm text-slate-400 mb-5">
@@ -177,7 +177,7 @@ export default function AdminVerifyPage() {
                 className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 {verifyPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Verificando…</>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Verificando...</>
                 ) : (
                   <><ShieldCheck className="h-4 w-4" /> Verificar acceso</>
                 )}
@@ -191,7 +191,7 @@ export default function AdminVerifyPage() {
                   className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
                 >
                   <RotateCw className="h-3 w-3" />
-                  {sendPending ? "Enviando…" : "Reenviar codigo"}
+                  {sendPending ? "Enviando..." : "Reenviar codigo"}
                 </button>
               </div>
             </>

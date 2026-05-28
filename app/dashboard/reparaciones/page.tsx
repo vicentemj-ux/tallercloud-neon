@@ -138,7 +138,7 @@ function ReparacionesContent() {
   const [refreshKey, setRefreshKey]                  = useState(0)
   const PAGE_SIZE = 50
 
-  // Estatus para query SQL — derivado de la tarjeta activa
+  // Estatus para query SQL - derivado de la tarjeta activa
   const estatusFilter = useMemo(() => {
     const card = STATUS_CARDS.find((c) => c.id === activeStatusId)
     return card && card.values.length > 0 ? card.values[0] : undefined
@@ -177,7 +177,7 @@ function ReparacionesContent() {
     return () => clearTimeout(id)
   }, [searchTerm])
 
-  // Load repairs — busqueda y estatus empujados a SQL (server-side)
+  // Load repairs - busqueda y estatus empujados a SQL (server-side)
   useEffect(() => {
     const loadRepairs = async () => {
       setIsLoading(true)
@@ -220,7 +220,7 @@ function ReparacionesContent() {
     setActiveStatusId((prev) => (prev === id ? "all" : id))
   }
 
-  // Filtrado solo para "critical" (por antiguedad) — busqueda y estatus ya van server-side
+  // Filtrado solo para "critical" (por antiguedad) - busqueda y estatus ya van server-side
   const filteredRepairs = useMemo(() => {
     if (filterParam !== "critical") return repairs
     return repairs.filter((r) => {
@@ -283,7 +283,7 @@ function ReparacionesContent() {
                   aria-hidden
                 />
                 <Input
-                  placeholder="Buscar folio o cliente…"
+                  placeholder="Buscar folio o cliente..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="h-11 rounded-xl border-slate-200 bg-slate-50 pl-9 pr-8 text-base placeholder:text-slate-400 transition-colors focus:bg-white md:text-sm"
@@ -324,7 +324,7 @@ function ReparacionesContent() {
           onEditSuccess={handleNewTicketSuccess}
         />
 
-        {/* ── KPI Cards (6 operativos — Total movido al header) ────────────── */}
+        {/* ── KPI Cards (6 operativos - Total movido al header) ────────────── */}
         {!isLoading && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {STATUS_CARDS.filter((c) => c.id !== "all").map((card) => {
@@ -402,7 +402,7 @@ function ReparacionesContent() {
             {totalRepairs > PAGE_SIZE && (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
                 <span>
-                  Mostrando {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalRepairs)} de {totalRepairs}
+                  Mostrando {page * PAGE_SIZE + 1}-{Math.min((page + 1) * PAGE_SIZE, totalRepairs)} de {totalRepairs}
                 </span>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="rounded-2xl border-slate-200" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>

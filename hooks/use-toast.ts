@@ -35,7 +35,7 @@ function toast({ title = "", description, variant, duration }: ToastInput) {
   }
 }
 
-// Variantes de conveniencia — para nuevos componentes que quieran la API moderna directa
+// Variantes de conveniencia - para nuevos componentes que quieran la API moderna directa
 toast.success = (title: string, opts?: Omit<ToastInput, "title" | "variant">) =>
   sonner.success(title, opts)
 
@@ -53,7 +53,7 @@ toast.loading = (title: string, opts?: Omit<ToastInput, "title" | "variant">) =>
 
 toast.dismiss = (id?: string | number) => sonner.dismiss(id)
 
-/** Hook legacy — algunos componentes hacen const { toast } = useToast() */
+/** Hook legacy - algunos componentes hacen const { toast } = useToast() */
 function useToast() {
   return { toast }
 }

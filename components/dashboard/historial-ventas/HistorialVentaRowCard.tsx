@@ -268,7 +268,7 @@ export function HistorialVentaRowCard({
     <>
       {variant === "card" ? cardContent : rowContent}
 
-      {/* Modal Exito Venta (POS) — para ventas PDV */}
+      {/* Modal Exito Venta (POS) - para ventas PDV */}
       {ventaParaModal && (
         <SuccessModal
           open={!!ventaParaModal}
@@ -282,7 +282,7 @@ export function HistorialVentaRowCard({
         />
       )}
 
-      {/* Modal Preview Reparacion — fallback para cobros de reparacion */}
+      {/* Modal Preview Reparacion - fallback para cobros de reparacion */}
       <Dialog open={previewRep !== null} onOpenChange={(o) => !o && setPreviewRep(null)}>
         <DialogContent className="max-w-lg border-slate-200 bg-white p-0 shadow-lg">
           <DialogHeader className="border-b border-slate-200 px-6 py-4">

@@ -200,7 +200,7 @@ export function HealthCheckSheet({
               {persisting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando…
+                  Guardando...
                 </>
               ) : meetsMin ? (
                 persistRepair ? "Guardar y listo" : "Listo"
@@ -226,7 +226,7 @@ export function HealthCheckSheet({
               id="omit-reason"
               value={omitReason}
               onChange={(e) => setOmitReason(e.target.value)}
-              placeholder="Ej. Cliente urgente — diagnostico express acordado verbalmente"
+              placeholder="Ej. Cliente urgente - diagnostico express acordado verbalmente"
               className="min-h-[100px] resize-y"
             />
           </div>

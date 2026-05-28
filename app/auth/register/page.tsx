@@ -156,7 +156,7 @@ export default function RegisterPage() {
                   id="password"
                   type="password"
                   name="password"
-                  placeholder="••••••••"
+                  placeholder="********"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -174,7 +174,7 @@ export default function RegisterPage() {
                   id="confirmPassword"
                   type="password"
                   name="confirmPassword"
-                  placeholder="••••••••"
+                  placeholder="********"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required

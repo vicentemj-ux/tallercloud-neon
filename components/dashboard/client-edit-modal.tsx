@@ -28,25 +28,25 @@ import type { Client } from "@/lib/actions/clients-prisma"
 // ─── Catalogos SAT CFDI 4.0 ──────────────────────────────────────────────────
 
 const REGIMENES_FISCALES = [
-  { value: "601", label: "601 — General de Ley Personas Morales" },
-  { value: "605", label: "605 — Sueldos y Salarios" },
-  { value: "606", label: "606 — Arrendamiento" },
-  { value: "612", label: "612 — Personas Fisicas con Act. Empresariales" },
-  { value: "616", label: "616 — Sin obligaciones fiscales" },
-  { value: "621", label: "621 — Incorporacion Fiscal" },
-  { value: "625", label: "625 — Plataformas Tecnologicas" },
-  { value: "626", label: "626 — RESICO" },
+  { value: "601", label: "601 - General de Ley Personas Morales" },
+  { value: "605", label: "605 - Sueldos y Salarios" },
+  { value: "606", label: "606 - Arrendamiento" },
+  { value: "612", label: "612 - Personas Fisicas con Act. Empresariales" },
+  { value: "616", label: "616 - Sin obligaciones fiscales" },
+  { value: "621", label: "621 - Incorporacion Fiscal" },
+  { value: "625", label: "625 - Plataformas Tecnologicas" },
+  { value: "626", label: "626 - RESICO" },
 ] as const
 
 const USOS_CFDI = [
-  { value: "S01", label: "S01 — Sin efectos fiscales (Publico general)" },
-  { value: "G01", label: "G01 — Adquisicion de mercancias" },
-  { value: "G03", label: "G03 — Gastos en general" },
-  { value: "I04", label: "I04 — Equipo de computo y accesorios" },
-  { value: "I06", label: "I06 — Comunicaciones telefonicas" },
-  { value: "D01", label: "D01 — Honorarios medicos" },
-  { value: "CP01", label: "CP01 — Pagos" },
-  { value: "P01", label: "P01 — Por definir" },
+  { value: "S01", label: "S01 - Sin efectos fiscales (Publico general)" },
+  { value: "G01", label: "G01 - Adquisicion de mercancias" },
+  { value: "G03", label: "G03 - Gastos en general" },
+  { value: "I04", label: "I04 - Equipo de computo y accesorios" },
+  { value: "I06", label: "I06 - Comunicaciones telefonicas" },
+  { value: "D01", label: "D01 - Honorarios medicos" },
+  { value: "CP01", label: "CP01 - Pagos" },
+  { value: "P01", label: "P01 - Por definir" },
 ] as const
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -321,7 +321,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
               <div className="rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/70 to-slate-50/50 p-4 space-y-3">
                 <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600">
                   <Receipt className="h-3 w-3" />
-                  Datos Fiscales — CFDI 4.0
+                  Datos Fiscales - CFDI 4.0
                 </p>
 
                 {/* RFC / Razon Social */}

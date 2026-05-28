@@ -158,7 +158,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
 
   const diasRestantesLabel =
     taller.dias_restantes === null
-      ? "—"
+      ? "-"
       : taller.dias_restantes <= 0
         ? "Vencido"
         : `${taller.dias_restantes} dias`
@@ -196,7 +196,7 @@ export function ManagementPanel({ taller, isOpen, onClose, onUpdate }: Managemen
             ["Propietario", taller.nombre_propietario],
             ["Vencimiento", taller.fecha_vencimiento_plan
               ? new Date(taller.fecha_vencimiento_plan).toLocaleDateString("es-MX")
-              : "—"],
+              : "-"],
             ["Dias restantes", diasRestantesLabel],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between items-center px-4 py-2.5">

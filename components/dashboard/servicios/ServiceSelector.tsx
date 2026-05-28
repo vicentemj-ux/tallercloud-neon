@@ -85,7 +85,7 @@ export function ServiceSelector({ selected, onChange }: ServiceSelectorProps) {
         />
       </div>
 
-      {/* Dropdown — absolute, no portal needed because parent Card has no overflow-hidden */}
+      {/* Dropdown - absolute, no portal needed because parent Card has no overflow-hidden */}
       {open && (
         <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-xl max-h-64 overflow-auto">
           {loading ? (

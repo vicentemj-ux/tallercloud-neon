@@ -46,7 +46,7 @@ export interface TallerSettings {
   siguiente_folio?: number
   /** Nombre de impresora para tickets termicos */
   impresora_ticket?: string | null
-  /** Nombre de impresora para etiquetas 2×1" */
+  /** Nombre de impresora para etiquetas 2x1" */
   impresora_etiqueta?: string | null
   /** Nombre de impresora para documentos Carta/A4 */
   impresora_documento?: string | null
@@ -56,7 +56,7 @@ export interface TallerSettings {
   mensaje_despedida?: string
   /** Configuracion de impresion por tipo de documento (JSONB) */
   impresion_config?: Record<string, unknown> | null
-  /** Mostrar precio en etiquetas de inventario (50×25 mm) */
+  /** Mostrar precio en etiquetas de inventario (50x25 mm) */
   mostrar_precio_etiqueta?: boolean
   /** Redes sociales del taller */
   facebook?: string | null
@@ -187,7 +187,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
   planTipo: TallerPlanTipo
   /** MXN/mes (189 = CORE, 299 = PRO). Null si legado o sin dato. */
   precioPlanMensual: number | null
-  /** Zona horaria del taller — null si no configurada (usado para banner TZ en dashboard). */
+  /** Zona horaria del taller - null si no configurada (usado para banner TZ en dashboard). */
   zonaHoraria: string | null
 }> {
   unstable_noStore() // evita cache de request memoization; la suscripcion cambia en tiempo real
@@ -261,7 +261,7 @@ export async function getDashboardSubscriptionBannerContext(): Promise<{
     }
   }
 
-  // activo = suscripcion pagada — ignora logica de trial
+  // activo = suscripcion pagada - ignora logica de trial
   if (!tieneVencimiento) {
     return {
       showBanner: false,

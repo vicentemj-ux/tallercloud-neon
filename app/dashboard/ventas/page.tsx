@@ -55,7 +55,7 @@ import { getReparacionesListas, type RepairOrder } from "@/lib/actions/repairs-p
 import { guardarVentaEnEspera, getVentasEnEspera, type VentaEnEspera } from "@/lib/ventas-en-espera"
 import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Types â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 type CartItem = {
   id: string
@@ -89,7 +89,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   ])
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 function fmt(n: number) {
   return n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -120,66 +120,66 @@ function ProductThumb({ src, alt, productId, tallerId }: { src: string | null; a
   )
 }
 
-// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Main Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 function VentasPageContent() {
   const router = useRouter()
   const { startFetch, stopFetch } = useDataFetchPerf("ventas")
   const { caja, status, refresh, open: openCaja } = useCajaContext()
 
-  // â”€â”€ Products state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Products state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [productos, setProductos] = useState<ProductoDisponible[]>([])
   const [productosLoading, setProductosLoading] = useState(true)
   const [productosError, setProductosError] = useState<string | null>(null)
   const [searchProduct, setSearchProduct] = useState("")
 
-  // â”€â”€ Cart state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Cart state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [clienteNombre, setClienteNombre] = useState("")
   const [clienteId, setClienteId] = useState<string | null>(null)
   const [clienteTelefono, setClienteTelefono] = useState("")
   const [clienteKey, setClienteKey] = useState(0)
 
-  // â”€â”€ Special product modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Special product modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [showSpecial, setShowSpecial] = useState(false)
 
-  // â”€â”€ Payment state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Payment state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("efectivo")
   const [montoEfectivo, setMontoEfectivo] = useState("")
   const [montoTarjeta, setMontoTarjeta] = useState("")
   const [montoTransferencia, setMontoTransferencia] = useState("")
 
-  // â”€â”€ Sale flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Sale flow â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [showConfirm, setShowConfirm] = useState(false)
   const [saleLoading, setSaleLoading] = useState(false)
   const [ventaCreada, setVentaCreada] = useState<VentaCreada | null>(null)
   const [saleError, setSaleError] = useState("")
 
-  // â”€â”€ Discount state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Discount state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [descuentoAplicado, setDescuentoAplicado] = useState(0)
   const [showDescuento, setShowDescuento] = useState(false)
 
-  // â”€â”€ Ventas en espera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Ventas en espera â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [showVentaEnEsperaConfirm, setShowVentaEnEsperaConfirm] = useState(false)
   const [showVentasEnEspera, setShowVentasEnEspera] = useState(false)
   const [ventasEnEsperaCount, setVentasEnEsperaCount] = useState(0)
 
-  // â”€â”€ Tab navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Tab navigation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [activeTab, setActiveTab] = useState<"pos" | "historial">("pos")
   const [bottomTab, setBottomTab] = useState<"inventario" | "reparaciones" | "aprobaciones">("inventario")
 
-  // â”€â”€ User info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ User info â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [userName, setUserName] = useState<string>("Usuario")
 
-  // â”€â”€ Arqueo modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Arqueo modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [showArqueo, setShowArqueo] = useState(false)
 
-  // â”€â”€ Reparaciones listas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Reparaciones listas â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [reparacionesListas, setReparacionesListas] = useState<RepairOrder[]>([])
   const [reparacionesLoading, setReparacionesLoading] = useState(false)
   const [searchReparacion, setSearchReparacion] = useState("")
 
-  // â”€â”€ Taller settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Taller settings â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const [tallerSettings, setTallerSettings] = useState({
     nombre_taller: "Mi Taller",
     telefono: "",
@@ -222,7 +222,7 @@ function VentasPageContent() {
     })
   }, [])
 
-  // â”€â”€ Load user name on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Load user name on mount â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   useEffect(() => {
     const raw = document.cookie.split("tallerName=")[1]?.split(";")[0]
     if (raw) setUserName(decodeURIComponent(raw).split(" ")[0] || "Usuario")
@@ -242,7 +242,7 @@ function VentasPageContent() {
       .finally(() => setReparacionesLoading(false))
   }, [])
 
-  // â”€â”€ Load productos on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Load productos on mount â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const loadProductos = useCallback(async () => {
     setProductosLoading(true)
     setProductosError(null)
@@ -265,12 +265,12 @@ function VentasPageContent() {
     loadProductos()
   }, [loadProductos])
 
-  // â”€â”€ Count ventas en espera on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Count ventas en espera on mount â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   useEffect(() => {
     setVentasEnEsperaCount(getVentasEnEspera().length)
   }, [])
 
-  // â”€â”€ Derived values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Derived values â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const subtotal = useMemo(
     () => Math.round(cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0) * 100) / 100,
     [cartItems]
@@ -312,7 +312,7 @@ function VentasPageContent() {
     )
   }, [reparacionesListas, searchReparacion])
 
-  // â”€â”€ Payment totals for mixto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Payment totals for mixto â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const mixtoTotal = useMemo(() => {
     if (metodoPago !== "mixto") return 0
     const e = parseFloat(montoEfectivo.replace(",", ".")) || 0
@@ -321,12 +321,12 @@ function VentasPageContent() {
     return e + t + tr
   }, [metodoPago, montoEfectivo, montoTarjeta, montoTransferencia])
 
-  // â”€â”€ Cart actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Cart actions â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function addProducto(p: ProductoDisponible) {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.productoId === p.id)
       if (existing) {
-        // Devices with IMEI are unique â€” never more than 1
+        // Devices with IMEI are unique â€" never more than 1
         if (p.es_equipo && p.imei_serie) return prev
         if (existing.cantidad >= p.stock_actual) return prev
         return prev.map((i) =>
@@ -398,7 +398,7 @@ function VentasPageContent() {
     setDescuentoAplicado(0)
   }
 
-  // â”€â”€ Ventas en espera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Ventas en espera â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function handleEnEspera() {
     if (cartItems.length === 0) return
     const venta: VentaEnEspera = {
@@ -434,7 +434,7 @@ function VentasPageContent() {
     setVentasEnEsperaCount(getVentasEnEspera().length)
   }
 
-  // â”€â”€ Payment method selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Payment method selection â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function selectMetodo(m: MetodoPago) {
     setMetodoPago(m)
     setMontoEfectivo("")
@@ -443,11 +443,11 @@ function VentasPageContent() {
     setSaleError("")
   }
 
-  // â”€â”€ Validate & open confirm modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Validate & open confirm modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function handleFinalizarVenta() {
     setSaleError("")
     if (cartItems.length === 0) {
-      setSaleError("El carrito estÃ¡ vacÃ­o")
+      setSaleError("El carrito esta vacio")
       return
     }
     if (metodoPago === "efectivo") {
@@ -461,7 +461,7 @@ function VentasPageContent() {
       const diff = Math.abs(mixtoTotal - total)
       if (diff > 0.01) {
         setSaleError(
-          `La suma de mÃ©todos ($${fmt(mixtoTotal)}) no coincide con el total ($${fmt(total)})`
+          `La suma de metodos ($${fmt(mixtoTotal)}) no coincide con el total ($${fmt(total)})`
         )
         return
       }
@@ -469,7 +469,7 @@ function VentasPageContent() {
     setShowConfirm(true)
   }
 
-  // â”€â”€ Confirm sale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Confirm sale â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   async function handleConfirmSale() {
     setSaleLoading(true)
     setSaleError("")
@@ -546,7 +546,7 @@ function VentasPageContent() {
     clearCart()
   }
 
-  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€ Render â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
   const terminosVenta = (tallerSettings as any).impresion_config?.venta?.terminos ?? tallerSettings.terminos_garantia ?? ""
 
@@ -570,7 +570,7 @@ function VentasPageContent() {
                 Historial de <span className="text-blue-600">Cortes</span>
               </h1>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-                AuditorÃ­a centralizada y conciliaciÃ³n bancaria
+                Auditoria centralizada y conciliacion bancaria
               </p>
             </div>
 
@@ -768,7 +768,7 @@ function VentasPageContent() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     aria-label="Buscar productos"
-                    placeholder="Buscar por nombre, SKU o categorÃ­a..."
+                    placeholder="Buscar por nombre, SKU o categoria..."
                     value={searchProduct}
                     onChange={(e) => setSearchProduct(e.target.value)}
                     className="pl-10"
@@ -779,7 +779,7 @@ function VentasPageContent() {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase gap-2 whitespace-nowrap"
                 >
                   <Plus className="h-4 w-4" />
-                  Producto / Servicio RÃ¡pido
+                  Producto / Servicio Rapido
                 </Button>
                 <button
                   type="button"
@@ -827,8 +827,8 @@ function VentasPageContent() {
                         </p>
                         <p className="text-xs text-muted-foreground/70 mt-1">
                           {searchProduct
-                            ? "Intenta con otro tÃ©rmino"
-                            : "Agrega productos en el mÃ³dulo Inventario"}
+                            ? "Intenta con otro termino"
+                            : "Agrega productos en el modulo Inventario"}
                         </p>
                       </div>
                     </div>
@@ -921,7 +921,7 @@ function VentasPageContent() {
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase gap-2 whitespace-nowrap rounded-2xl h-11 px-5"
               >
                 <Plus className="h-4 w-4" />
-                Producto / servicio rÃ¡pido
+                Producto / servicio rapido
               </Button>
               <button
                 type="button"
@@ -961,7 +961,7 @@ function VentasPageContent() {
                     {searchReparacion ? "Sin resultados" : "Sin reparaciones listas"}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
-                    {searchReparacion ? "Intenta con otro tÃ©rmino" : "No hay equipos pendientes de entrega"}
+                    {searchReparacion ? "Intenta con otro termino" : "No hay equipos pendientes de entrega"}
                   </p>
                 </div>
               </div>
@@ -1005,7 +1005,7 @@ function VentasPageContent() {
                     Aprobaciones de Caja
                   </h2>
                   <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 mt-0.5">
-                    Doble firma: verifica movimientos de efectivo solicitados por tÃ©cnicos.
+                    Doble firma: verifica movimientos de efectivo solicitados por tecnicos.
                   </p>
                 </div>
               </div>
@@ -1052,7 +1052,7 @@ function VentasPageContent() {
                 </div>
                 <p className="text-sm font-black italic uppercase tracking-wide text-slate-800">Â¡Caja conciliada!</p>
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                  No hay solicitudes pendientes de aprobaciÃ³n en este momento.
+                  No hay solicitudes pendientes de aprobacion en este momento.
                 </p>
               </div>
             </div>
@@ -1065,14 +1065,14 @@ function VentasPageContent() {
               <div>
                 <p className="text-[9px] font-black uppercase tracking-[0.25em] text-blue-600">Protocolo de doble firma</p>
                 <p className="text-[11px] font-bold text-slate-600 mt-1.5 leading-relaxed">
-                  Como responsable de caja, tÃº validas la entrada y salida real de dinero. Hasta que no apruebes estas solicitudes, los montos <span className="text-slate-900">no afectarÃ¡n</span> tu balance de cierre ni el saldo del ticket.
+                  Como responsable de caja, tu validas la entrada y salida real de dinero. Hasta que no apruebes estas solicitudes, los montos <span className="text-slate-900">no afectaran</span> tu balance de cierre ni el saldo del ticket.
                 </p>
               </div>
             </div>
           </div>)}
         </div>
 
-        {/* RIGHT COLUMN â€” CART (always visible, aligned with tabs) */}
+        {/* RIGHT COLUMN â€" CART (always visible, aligned with tabs) */}
         <div id="cart-panel" className="w-full lg:max-w-[380px]">
           <CartPanel
       cartItems={cartItems}
@@ -1122,7 +1122,7 @@ function VentasPageContent() {
         </div>
       )}
 
-      {/* â”€â”€ Modals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* â"€â"€ Modals â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
 
       {showArqueo && caja && (
         <ArqueoModal
@@ -1190,7 +1190,7 @@ function VentasPageContent() {
       />
       </div>
 
-      {/* â”€â”€ Mobile sticky cart bar â€” hidden on lg (two-panel layout visible) â”€â”€ */}
+      {/* â"€â"€ Mobile sticky cart bar â€" hidden on lg (two-panel layout visible) â"€â"€ */}
       {activeTab !== "historial" && cartItems.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] lg:hidden">
           <div className="flex min-w-0 items-center gap-2.5">

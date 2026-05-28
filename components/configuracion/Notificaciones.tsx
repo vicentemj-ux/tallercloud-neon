@@ -58,7 +58,7 @@ export function Notificaciones({ settings, setSettings, loginEmail }: Notificaci
           <div className="mt-6 bg-slate-50 border border-slate-200 rounded-lg p-4">
             <p className="text-sm text-slate-700">
               Los reportes se enviaran automaticamente al correo:{" "}
-              <span className="font-medium text-slate-900">{loginEmail || "—"}</span>
+              <span className="font-medium text-slate-900">{loginEmail || "-"}</span>
             </p>
             {!loginEmail && (
               <p className="text-xs text-slate-500 mt-1">

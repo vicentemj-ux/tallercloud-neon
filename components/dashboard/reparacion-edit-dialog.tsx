@@ -45,7 +45,7 @@ interface ReparacionEditDialogProps {
  * Reutilizable desde la lista de reparaciones o la ficha por ID.
  *
  * Seguridad del equipo (PIN, contrasena, patron) se edita en el colapsable «Seguridad»;
- * el **patron de desbloqueo 3×3** se abre al elegir «Patron» en Seguridad del equipo — mismo `ModalPatronSeguridad` que en el alta en modal.
+ * el **patron de desbloqueo 3x3** se abre al elegir «Patron» en Seguridad del equipo - mismo `ModalPatronSeguridad` que en el alta en modal.
  */
 export function ReparacionEditDialog({
   open,
@@ -230,7 +230,7 @@ export function ReparacionEditDialog({
                 <span className="min-w-0 text-lg font-black italic leading-tight tracking-tight text-white sm:text-2xl sm:leading-tight">
                   {editingRepairId ? "MODIFICAR TICKET" : "NUEVO TICKET"}
                 </span>
-                {/* Reingreso removed from here — use "Reactivar como Reingreso" on the ticket detail page */}
+                {/* Reingreso removed from here - use "Reactivar como Reingreso" on the ticket detail page */}
               </div>
               <Button
                 type="button"

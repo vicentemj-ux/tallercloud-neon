@@ -179,7 +179,7 @@ export const ArqueoModal = memo(function ArqueoModal({
             </div>
           ) : (
             <>
-              {/* Card azul — Total vendido */}
+              {/* Card azul - Total vendido */}
               <div className="rounded-3xl bg-blue-600 p-5 text-white shadow-lg shadow-blue-600/20">
                 <div className="flex items-start justify-between">
                   <div>

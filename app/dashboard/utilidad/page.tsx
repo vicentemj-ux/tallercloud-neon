@@ -45,7 +45,7 @@ export default function UtilidadPage() {
     fetchData(firstOfMonthIso(), todayIso())
   }, [fetchData])
 
-  const dash = (v: string) => loading ? "—" : v
+  const dash = (v: string) => loading ? "-" : v
   const utilidadNeta = data?.utilidadNeta ?? 0
   const esDeficit    = utilidadNeta < 0
 
@@ -104,7 +104,7 @@ export default function UtilidadPage() {
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase tracking-wider rounded-xl px-6"
             >
-              {loading ? "Cargando…" : "Actualizar"}
+              {loading ? "Cargando..." : "Actualizar"}
             </Button>
             <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-slate-600 shadow-sm">
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -120,7 +120,7 @@ export default function UtilidadPage() {
           </div>
         )}
 
-        {/* Main Utilidad Card — como la competencia */}
+        {/* Main Utilidad Card - como la competencia */}
         <div className="rounded-[2rem] bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-8 text-white shadow-xl">
           <div className="grid gap-8 lg:grid-cols-[1fr_2fr]">
             {/* Left: Rendimiento Neto Total */}
@@ -129,7 +129,7 @@ export default function UtilidadPage() {
                 Rendimiento Neto Total
               </div>
               <div className={`text-7xl font-black tracking-tight ${esDeficit ? "text-white" : "text-white"}`}>
-                {loading ? "—" : fmtPesos(utilidadNeta, true)}
+                {loading ? "-" : fmtPesos(utilidadNeta, true)}
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 {!loading && (
@@ -183,7 +183,7 @@ export default function UtilidadPage() {
           </div>
         </div>
 
-        {/* Detail Cards — 2 columnas como la competencia */}
+        {/* Detail Cards - 2 columnas como la competencia */}
         <div className="grid gap-6 lg:grid-cols-2">
 
           {/* Relacion Ingresos */}
@@ -225,7 +225,7 @@ export default function UtilidadPage() {
                           <line x1="3" y1="10" x2="21" y2="10" />
                         </svg>
                         {item.fecha}
-                        <span className="text-slate-300">•</span>
+                        <span className="text-slate-300">*</span>
                         <span className="uppercase">{item.tipo === "venta" ? "Venta POS" : "Reparacion"}</span>
                       </p>
                     </div>

@@ -45,13 +45,13 @@ function fmtPeso(n: number) {
 }
 
 const RAZONES_CAMBIO = [
-  { value: "revision_adicional", label: "Revision adicional – se detectaron mas fallas" },
-  { value: "cambio_refaccion", label: "Cambio de refaccion – precio de piezas vario" },
-  { value: "ajuste_diagnostico", label: "Ajuste por diagnostico – correccion de estimacion inicial" },
+  { value: "revision_adicional", label: "Revision adicional - se detectaron mas fallas" },
+  { value: "cambio_refaccion", label: "Cambio de refaccion - precio de piezas vario" },
+  { value: "ajuste_diagnostico", label: "Ajuste por diagnostico - correccion de estimacion inicial" },
   { value: "descuento_aplicado", label: "Descuento aplicado" },
   { value: "servicio_adicional", label: "Servicio adicional solicitado por el cliente" },
   { value: "presupuesto_aproximado", label: "Presupuesto inicial era aproximado" },
-  { value: "garantia_sin_costo", label: "Garantia del servicio – sin costo" },
+  { value: "garantia_sin_costo", label: "Garantia del servicio - sin costo" },
   { value: "diagnostico_gratuito", label: "Diagnostico gratuito" },
   { value: "otro", label: "Otro" },
 ]
@@ -248,7 +248,7 @@ export function PresupuestoEditModal({
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Guardando…
+                  Guardando...
                 </>
               ) : (
                 "Guardar presupuesto"

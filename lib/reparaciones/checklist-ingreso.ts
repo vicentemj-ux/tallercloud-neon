@@ -1,5 +1,5 @@
 /**
- * Checklist de ingreso — almacenado en `reparaciones.checklist_ingreso` (JSONB).
+ * Checklist de ingreso - almacenado en `reparaciones.checklist_ingreso` (JSONB).
  */
 export type EncendidoRecepcion = "ok" | "intermitente" | "no"
 
@@ -7,7 +7,7 @@ export function encendidoRecepcionLabel(e: EncendidoRecepcion | null): string {
   if (e === "ok") return "Enciende y entra a sistema"
   if (e === "intermitente") return "Enciende con dificultad"
   if (e === "no") return "No enciende"
-  return "—"
+  return "-"
 }
 
 export interface ChecklistIngreso {
@@ -17,7 +17,7 @@ export interface ChecklistIngreso {
   observacionesEsteticas: string
 }
 
-/** Health check por tipo de equipo — 10 puntos de diagnostico funcional por categoria. */
+/** Health check por tipo de equipo - 10 puntos de diagnostico funcional por categoria. */
 export const CHECKLIST_FUNCIONAL_ITEMS: Record<
   string,
   readonly { key: string; label: string }[]

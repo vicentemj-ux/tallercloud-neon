@@ -23,7 +23,7 @@ export interface CartelExhibicionTemplateProps {
 }
 
 /**
- * Cartel tipo postal 4" × 6" (vertical) para exhibicion en mostrador.
+ * Cartel tipo postal 4" x 6" (vertical) para exhibicion en mostrador.
  * Solo estilos inline: colores literales HEX / RGBA (sin Tailwind, sin lab/oklch) para captura con html2canvas/html-to-image.
  */
 const CartelExhibicionTemplate = forwardRef<HTMLDivElement, CartelExhibicionTemplateProps>(

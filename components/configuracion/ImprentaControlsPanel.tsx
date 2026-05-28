@@ -54,7 +54,7 @@ export function ImprentaControlsPanel({
           <p className="text-xs leading-relaxed text-slate-600">
             Significa que debes configurar en Windows/Linux/Mac (Propiedades de
             impresora) que el tamano del papel sea identico al que tienes fisicamente
-            (ej. 50mm × 25mm), para que el sistema imprima justo en el centro de la
+            (ej. 50mm x 25mm), para que el sistema imprima justo en el centro de la
             etiqueta.
           </p>
         </div>
@@ -86,7 +86,7 @@ export function ImprentaControlsPanel({
   // ── Panel de controles para documentos 1-3 ──────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Formato de papel — dos botones grandes */}
+      {/* Formato de papel - dos botones grandes */}
       <div className="space-y-2">
         <Label className="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
           Formato de papel

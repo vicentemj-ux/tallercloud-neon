@@ -117,7 +117,7 @@ export const ModalPatronSeguridad = memo(function ModalPatronSeguridad({
 
   const seqNums = selected.map((i) => i + 1)
   const valid = seqNums.length >= MIN_PATTERN
-  const sequenceText = seqNums.length ? seqNums.join(" ➔ ") : "—"
+  const sequenceText = seqNums.length ? seqNums.join(" ➔ ") : "-"
 
   const lines = selected.map((dot, i) => {
     if (i === 0) return null

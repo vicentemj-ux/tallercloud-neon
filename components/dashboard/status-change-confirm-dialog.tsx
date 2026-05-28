@@ -65,7 +65,7 @@ export function StatusChangeConfirmDialog({
             id="nota-tecnica-status"
             value={notaTecnica}
             onChange={(e) => onNotaTecnicaChange(e.target.value)}
-            placeholder="Detalle interno o motivo visible en plantillas segun el estado…"
+            placeholder="Detalle interno o motivo visible en plantillas segun el estado..."
             rows={4}
             disabled={isPending}
             className="mt-2 min-h-[96px] max-h-40 w-full resize-none rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#2563eb]"
@@ -93,7 +93,7 @@ export function StatusChangeConfirmDialog({
               {pendingKind === "historial" ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando…
+                  Guardando...
                 </>
               ) : (
                 "Solo actualizar historial"
@@ -103,7 +103,7 @@ export function StatusChangeConfirmDialog({
               {pendingKind === "whatsapp" ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando…
+                  Guardando...
                 </>
               ) : (
                 "Actualizar y notificar WhatsApp"

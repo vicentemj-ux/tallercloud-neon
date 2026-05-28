@@ -2,13 +2,13 @@ import { z } from "zod"
 
 /**
  * Mensaje explicito por campo (Zod issue) para depuracion en servidor y UI.
- * Ej.: Error: 'checklistIngreso' — ...
+ * Ej.: Error: 'checklistIngreso' - ...
  */
 export function formatCreateRepairValidationError(err: z.ZodError): string {
   return err.issues
     .map((issue) => {
       const field = issue.path.length ? issue.path.map(String).join(".") : "entrada"
-      return `Error: '${field}' — ${issue.message}`
+      return `Error: '${field}' - ${issue.message}`
     })
     .join(" | ")
 }

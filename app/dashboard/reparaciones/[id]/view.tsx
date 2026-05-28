@@ -82,7 +82,7 @@ export default function ReparacionDetailPage() {
       console.error("[reparacion-detail] load:", error)
       toast({
         title: "No se pudo cargar el detalle completo",
-        description: "Mostrando informaciÃ³n parcial. Intenta recargar.",
+        description: "Mostrando informacion parcial. Intenta recargar.",
         variant: "destructive",
       })
     } finally {
@@ -134,7 +134,7 @@ export default function ReparacionDetailPage() {
       }
       toast({
         title: "Reingreso activado y registrado en historial",
-        description: `Folio ${repair.folio} reactiva por garantÃ­a.`,
+        description: `Folio ${repair.folio} reactiva por garantia.`,
       })
       setReingresoOpen(false)
       setReingresoMotivo("")

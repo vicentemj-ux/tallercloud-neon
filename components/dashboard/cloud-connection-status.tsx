@@ -72,7 +72,7 @@ export function CloudConnectionStatus({ className }: { className?: string }) {
       ? `${online ? "Conexion a internet" : "Sin conexion"} · ${pendingCount} ticket${pendingCount === 1 ? "" : "s"} pendiente${pendingCount === 1 ? "" : "s"} de sincronizar`
       : online
         ? "Conexion a internet"
-        : "Sin conexion — los tickets nuevos se pueden guardar en cola"
+        : "Sin conexion - los tickets nuevos se pueden guardar en cola"
 
   const perfColor =
     perf === null

@@ -2,7 +2,7 @@
 
 import { useTallerNegocioNombre } from "@/lib/hooks/use-taller-negocio-nombre"
 
-/** Bloque compacto “perfil”: inicial + nombre del taller (barra superior). */
+/** Bloque compacto "perfil": inicial + nombre del taller (barra superior). */
 export function DashboardHeaderProfile() {
   const tallerName = useTallerNegocioNombre()
   const initial = tallerName.charAt(0).toUpperCase() || "T"

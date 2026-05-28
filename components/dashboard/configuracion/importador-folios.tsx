@@ -179,8 +179,8 @@ export function ImportadorFolios() {
               <TableBody>
                 {previewData.map((row, i) => (
                   <TableRow key={i}>
-                    <TableCell className="text-xs font-medium">{row[mapping.folio] || '—'}</TableCell>
-                    <TableCell className="text-xs">{row[mapping.cliente_nombre] || '—'}</TableCell>
+                    <TableCell className="text-xs font-medium">{row[mapping.folio] || '-'}</TableCell>
+                    <TableCell className="text-xs">{row[mapping.cliente_nombre] || '-'}</TableCell>
                     <TableCell className="text-xs font-bold text-blue-600">${row[mapping.costo_total] || '0'}</TableCell>
                   </TableRow>
                 ))}

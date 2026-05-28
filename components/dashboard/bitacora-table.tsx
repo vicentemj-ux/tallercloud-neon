@@ -454,7 +454,7 @@ export function BitacoraTable({ repairs, onRepairUpdated, onRepairDeleted, onEdi
                               <TooltipContent>WhatsApp</TooltipContent>
                             </Tooltip>
 
-                            {/* Imprimir — menu unificado (Ticket / Carta / Garantia / Etiqueta) */}
+                            {/* Imprimir - menu unificado (Ticket / Carta / Garantia / Etiqueta) */}
                             <div onClick={(e) => e.stopPropagation()} className="inline-flex">
                               <PrintMenuDropdown repair={repair} trigger="icon" />
                             </div>

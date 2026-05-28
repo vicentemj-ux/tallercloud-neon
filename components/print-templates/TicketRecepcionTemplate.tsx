@@ -40,7 +40,7 @@ interface TicketRecepcionTemplateProps {
   logoUrl?: string
   showHealthCheckFuncional?: boolean
   mensajeDespedida?: string
-  /** Fase 2 — visibilidad controlada desde Imprenta */
+  /** Fase 2 - visibilidad controlada desde Imprenta */
   mostrarLogo?: boolean
   mostrarTecnico?: boolean
   mostrarPrecios?: boolean
@@ -163,7 +163,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
         id="ticket"
         className="receipt-ticket"
         style={{
-          // ── Area segura 72mm — globals.css lo sobreescribe en @media print con !important ──
+          // ── Area segura 72mm - globals.css lo sobreescribe en @media print con !important ──
           width: "72mm",
           maxWidth: "72mm",
           margin: "0",
@@ -175,7 +175,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           fontSize: "11px",
           lineHeight: "1.25",
           overflow: "hidden",
-          // Nitidez extrema — matar suavizado del browser
+          // Nitidez extrema - matar suavizado del browser
           WebkitFontSmoothing: "none",
           MozOsxFontSmoothing: "grayscale",
           textRendering: "optimizeSpeed",
@@ -221,13 +221,13 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
         <Divider />
 
         {/* ── CLIENTE ── */}
-        <Row label="Cliente"  value={data.customerName || "—"} />
+        <Row label="Cliente"  value={data.customerName || "-"} />
         {data.customerPhone && <Row label="Tel" value={data.customerPhone} valSz="10px" />}
 
         <Divider />
 
         {/* ── EQUIPO ── */}
-        <Row label="Equipo" value={`${data.tipo_equipo ? data.tipo_equipo + " " : ""}${data.deviceBrand} ${data.deviceModel}`.trim() || "—"} />
+        <Row label="Equipo" value={`${data.tipo_equipo ? data.tipo_equipo + " " : ""}${data.deviceBrand} ${data.deviceModel}`.trim() || "-"} />
         {data.imei  && <Row label="IMEI"  value={data.imei}  valSz="10px" />}
         {data.color && <Row label="Color" value={data.color} valSz="10px" />}
 
@@ -254,7 +254,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
               valSz="10px"
             />
 
-            {/* Health Check PRO — solo si el taller lo tiene activo */}
+            {/* Health Check PRO - solo si el taller lo tiene activo */}
             {showHealthCheckFuncional && (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 6px", marginTop: "2px" }}>
                 {itemsForDeviceType(data.tipo_equipo || "Otro").map(({ key, label }) => {
@@ -307,7 +307,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
             {servicios.map((s, i) => (
               <MoneyRow
                 key={i}
-                label={`${s.nombre}${s.cantidad > 1 ? ` ×${s.cantidad}` : ""}`}
+                label={`${s.nombre}${s.cantidad > 1 ? ` x${s.cantidad}` : ""}`}
                 value={fmtMXN(s.precio * s.cantidad)}
                 labelW={700}
                 valSz="10px"
@@ -343,7 +343,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
               Terminos y condiciones:
             </div>
             <p style={{ ...w700, fontSize: "10px", lineHeight: "1.3", margin: 0, wordBreak: "break-word" }}>
-              {terminosArr.join(" • ")}
+              {terminosArr.join(" * ")}
             </p>
             <Divider />
           </>
@@ -388,7 +388,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── CIERRE — limite fisico inferior del documento ── */}
+        {/* ── CIERRE - limite fisico inferior del documento ── */}
         <div style={{ textAlign: "center", ...w900, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>
           {mensajeDespedida || "¡ Gracias por su preferencia !"}
         </div>

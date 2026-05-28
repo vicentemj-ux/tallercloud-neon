@@ -465,7 +465,7 @@ export async function requestEmailVerification(email: string) {
     .single()
 
   if (error || !user || user.email_verified) {
-    // Generic message — don't reveal whether the email exists or is already verified
+    // Generic message - don't reveal whether the email exists or is already verified
     return { success: true, error: null }
   }
 

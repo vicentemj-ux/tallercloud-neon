@@ -69,7 +69,7 @@ const TicketGarantiaTemplate = forwardRef<HTMLDivElement, TicketGarantiaTemplate
             <div style={{ fontSize: "7pt", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "5px" }}>Datos del Servicio</div>
             <InfoRow label="Folio" value={repair.folio} />
             <InfoRow label="Entrega" value={fmtDate(repair.fecha_entrega ?? repair.fecha_creacion)} />
-            <InfoRow label="Tecnico" value={repair.tecnico ?? "—"} />
+            <InfoRow label="Tecnico" value={repair.tecnico ?? "-"} />
             <InfoRow label="Servicio" value={repair.falla_reportada} />
           </div>
           <div style={{ background: "#f8fafc", borderRadius: "10px", padding: "10px 12px", border: "1px solid #e2e8f0" }}>

@@ -36,7 +36,7 @@ type GarantiaRow = {
 function truncateLegal(s: string, max = 280) {
   const t = s.trim()
   if (t.length <= max) return t
-  return `${t.slice(0, max - 1)}…`
+  return `${t.slice(0, max - 1)}...`
 }
 
 function fmtMx(n: number) {
@@ -83,7 +83,7 @@ export default function GarantiaDigitalPage() {
   const printRef = useRef<HTMLDivElement>(null)
 
   const fechaEntregaFmt = useMemo(() => {
-    if (!data?.fecha_entrega) return "—"
+    if (!data?.fecha_entrega) return "-"
     return new Date(data.fecha_entrega).toLocaleDateString("es-MX", {
       weekday: "long",
       day: "numeric",
@@ -102,7 +102,7 @@ export default function GarantiaDigitalPage() {
   }, [data])
 
   const fechaVencimientoFmt = useMemo(() => {
-    if (!fechaVencimientoDate) return "—"
+    if (!fechaVencimientoDate) return "-"
     return fechaVencimientoDate.toLocaleDateString("es-MX", {
       day: "numeric",
       month: "long",
@@ -122,14 +122,14 @@ export default function GarantiaDigitalPage() {
   const solucionRealizada = useMemo(() => {
     if (!data) return ""
     const f = data.falla?.trim()
-    if (f) return `${f} — Trabajo completado y entrega verificada.`
+    if (f) return `${f} - Trabajo completado y entrega verificada.`
     return "Reparacion completada segun estandares del taller. Equipo entregado en condiciones de uso."
   }, [data])
 
   const equipoLabel = useMemo(() => {
-    if (!data) return "—"
+    if (!data) return "-"
     const s = `${data.marca ?? ""} ${data.modelo ?? ""}`.trim()
-    return s || "—"
+    return s || "-"
   }, [data])
 
   const handlePrint = useReactToPrint({
@@ -211,7 +211,7 @@ export default function GarantiaDigitalPage() {
               type="tel"
               inputMode="numeric"
               autoComplete="off"
-              placeholder="• • • •"
+              placeholder="* * * *"
               value={last4}
               onChange={handleInputChange}
               className="mt-3 h-14 text-center text-2xl font-semibold tracking-[0.35em] text-slate-900"
@@ -230,7 +230,7 @@ export default function GarantiaDigitalPage() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Verificando…
+                  Verificando...
                 </>
               ) : (
                 "Ver mi comprobante"
@@ -331,16 +331,16 @@ export default function GarantiaDigitalPage() {
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between gap-3 border-b border-slate-100 pb-3">
                 <dt className="text-slate-500">Marca</dt>
-                <dd className="font-medium text-slate-900">{data.marca?.trim() || "—"}</dd>
+                <dd className="font-medium text-slate-900">{data.marca?.trim() || "-"}</dd>
               </div>
               <div className="flex justify-between gap-3 border-b border-slate-100 pb-3">
                 <dt className="text-slate-500">Modelo</dt>
-                <dd className="max-w-[65%] text-right font-medium text-slate-900">{data.modelo?.trim() || "—"}</dd>
+                <dd className="max-w-[65%] text-right font-medium text-slate-900">{data.modelo?.trim() || "-"}</dd>
               </div>
               <div className="flex justify-between gap-3">
                 <dt className="text-slate-500">IMEI / Serie</dt>
                 <dd className="max-w-[60%] break-all text-right font-mono text-xs text-slate-900">
-                  {(data.numero_serie ?? "").trim() || "—"}
+                  {(data.numero_serie ?? "").trim() || "-"}
                 </dd>
               </div>
             </dl>

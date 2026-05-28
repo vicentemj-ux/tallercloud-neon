@@ -47,35 +47,35 @@ export function formatCorteOwnerWhatsAppMessage(nombreTaller: string, corte: Cor
   const n = corte.numero_corte
 
   const lines = [
-    `📊 *Corte de caja — ${nombreTaller.trim() || "Mi taller"}*`,
+    `📊 *Corte de caja - ${nombreTaller.trim() || "Mi taller"}*`,
     "",
-    `🧾 Corte ${n > 0 ? `#${String(n).padStart(3, "0")}` : "—"}`,
+    `🧾 Corte ${n > 0 ? `#${String(n).padStart(3, "0")}` : "-"}`,
     `📅 Apertura: ${fmtDateTime(corte.fecha_apertura)}`,
     `🔒 Cierre: ${fmtDateTime(corte.fecha_cierre)}`,
     "",
     "📦 *Ventas PDV*",
-    `• Tickets / ventas registradas: ${corte.total_ventas}`,
+    `* Tickets / ventas registradas: ${corte.total_ventas}`,
     "",
     "💵 *Totales por forma de pago*",
-    `• Efectivo (ventas): $${fmtMoney(corte.total_efectivo)}`,
-    `• Tarjeta: $${fmtMoney(corte.total_tarjeta)}`,
-    `• Transferencia: $${fmtMoney(corte.total_transferencia)}`,
+    `* Efectivo (ventas): $${fmtMoney(corte.total_efectivo)}`,
+    `* Tarjeta: $${fmtMoney(corte.total_tarjeta)}`,
+    `* Transferencia: $${fmtMoney(corte.total_transferencia)}`,
     "",
     "🔧 *Reparaciones (movimientos en caja)*",
-    `• Cobros reparaciones: $${fmtMoney(corte.total_abonos)}`,
+    `* Cobros reparaciones: $${fmtMoney(corte.total_abonos)}`,
     "",
     "📉 *Gastos (periodo del corte)*",
-    `• Total gastos: $${fmtMoney(corte.total_gastos)}`,
+    `* Total gastos: $${fmtMoney(corte.total_gastos)}`,
     "",
     "✅ *Cuadre de efectivo*",
-    `• Fondo inicial: $${fmtMoney(corte.monto_inicial)}`,
-    `• Efectivo esperado (fondo + ventas en efectivo): $${fmtMoney(efectivoEsperado)}`,
+    `* Fondo inicial: $${fmtMoney(corte.monto_inicial)}`,
+    `* Efectivo esperado (fondo + ventas en efectivo): $${fmtMoney(efectivoEsperado)}`,
     tieneContadoFisico
-      ? `• Efectivo contado (fisico en caja): $${fmtMoney(efectivoReal)}`
-      : `• Total sistema (referencia): $${fmtMoney(efectivoReal)}`,
-    `• Diferencia (real vs esperado): ${diferencia >= 0 ? "+" : ""}$${fmtMoney(diferencia)}`,
+      ? `* Efectivo contado (fisico en caja): $${fmtMoney(efectivoReal)}`
+      : `* Total sistema (referencia): $${fmtMoney(efectivoReal)}`,
+    `* Diferencia (real vs esperado): ${diferencia >= 0 ? "+" : ""}$${fmtMoney(diferencia)}`,
     "",
-    "_TallerCloud — Reporte de cierre_",
+    "_TallerCloud - Reporte de cierre_",
   ]
 
   return lines.join("\n")

@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react"
 import { buildWhatsAppOpenChatUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 
 export const metadata = {
-  title: "Terminos de Servicio — TallerCloud",
+  title: "Terminos de Servicio - TallerCloud",
   description: "Condiciones de uso de la plataforma TallerCloud para talleres de reparacion.",
 }
 

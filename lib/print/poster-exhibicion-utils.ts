@@ -32,16 +32,16 @@ function extractLabeledSpecs(descripcion: string): { cpu?: string; ram?: string;
   }
   const blob = descripcion.replace(/\s+/g, " ")
   if (!out.cpu) {
-    const inline = blob.match(/(?:procesador|cpu)\s*[:：]\s*([^;•|]+)/i)
+    const inline = blob.match(/(?:procesador|cpu)\s*[:：]\s*([^;*|]+)/i)
     if (inline?.[1]) out.cpu = inline[1].trim()
   }
   if (!out.ram) {
-    const inline = blob.match(/(?:ram|memoria)\s*[:：]\s*([^;•|]+)/i)
+    const inline = blob.match(/(?:ram|memoria)\s*[:：]\s*([^;*|]+)/i)
     if (inline?.[1]) out.ram = inline[1].trim()
   }
   if (!out.storage) {
     const inline = blob.match(
-      /(?:almacenamiento|disco|ssd|storage|interna)\s*[:：]\s*([^;•|]+)/i
+      /(?:almacenamiento|disco|ssd|storage|interna)\s*[:：]\s*([^;*|]+)/i
     )
     if (inline?.[1]) out.storage = inline[1].trim()
   }
@@ -140,7 +140,7 @@ export function inferPosterTechSpecs(producto: ProductoRow): PosterTechLine {
       }
     }
   }
-  if (!ram) ram = "—"
+  if (!ram) ram = "-"
 
   let ssd = labeled.storage?.trim()
   if (!ssd && cap && !ramUsedCap) {

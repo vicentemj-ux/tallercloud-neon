@@ -141,7 +141,7 @@ export async function sendAdminOTPEmail(email: string, code: string) {
     const { data, error } = await resend.emails.send({
       from: "TallerCloud <noreply@tallercloud.net>",
       to: email,
-      subject: `${code} — Codigo de verificacion de administrador`,
+      subject: `${code} - Codigo de verificacion de administrador`,
       html: `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -163,7 +163,7 @@ export async function sendAdminOTPEmail(email: string, code: string) {
 <body>
 <div class="wrap">
   <div class="card">
-    <div class="logo">TallerCloud — Admin</div>
+    <div class="logo">TallerCloud - Admin</div>
     <h1>Verificacion de identidad</h1>
     <p>Se solicito acceso al panel de administracion. Ingresa este codigo de 6 digitos para continuar.</p>
     <div class="code-box">

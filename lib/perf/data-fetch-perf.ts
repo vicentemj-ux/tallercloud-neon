@@ -1,6 +1,6 @@
 /**
  * Lightweight in-memory perf store for data-fetch latency.
- * Never persisted — lives only for the current browser session.
+ * Never persisted - lives only for the current browser session.
  *
  * Modules call recordDataFetch() after their Supabase response arrives.
  * CloudConnectionStatus listens to DATA_PERF_EVENT to update the UI.
@@ -17,7 +17,7 @@ export interface DataPerfDetail {
   module: string
 }
 
-// Session-scoped history (capped at 50 entries — no leak risk).
+// Session-scoped history (capped at 50 entries - no leak risk).
 const _history: number[] = []
 
 export function recordDataFetch(ms: number, module: string): void {

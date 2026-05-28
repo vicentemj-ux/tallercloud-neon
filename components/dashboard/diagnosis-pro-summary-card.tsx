@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import type { EncendidoRecepcion } from "@/lib/reparaciones/checklist-ingreso"
 
 export interface DiagnosisProSummaryCardProps {
-  /** Revision rapida (encendido) desde `checklist_ingreso` — mismo criterio que el modal de ingreso. */
+  /** Revision rapida (encendido) desde `checklist_ingreso` - mismo criterio que el modal de ingreso. */
   encendido?: EncendidoRecepcion | null
   onOpenDetails: () => void
   className?: string

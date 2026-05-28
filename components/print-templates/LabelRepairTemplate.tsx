@@ -9,7 +9,7 @@ export interface LabelRepairTemplateData {
   customerPhone: string
   reportedFault: string
   estimatedPrice?: string
-  /** "PIN: 1234" | "PATRON: 1-4-7" | "PASS: abc" — null si sin bloqueo */
+  /** "PIN: 1234" | "PATRON: 1-4-7" | "PASS: abc" - null si sin bloqueo */
   accessCode?: string | null
   extras?: string | null
   /** Nombre del taller (branding en la etiqueta) */
@@ -18,7 +18,7 @@ export interface LabelRepairTemplateData {
 
 interface LabelRepairTemplateProps {
   data: LabelRepairTemplateData
-  /** Fase 3 — visibilidad controlada desde Imprenta */
+  /** Fase 3 - visibilidad controlada desde Imprenta */
   mostrarPrecios?: boolean
 }
 
@@ -48,7 +48,7 @@ function fmtMoney(value?: string | null): string {
 }
 
 /**
- * Etiqueta de reparacion — formato UNICO: 2×1" (50.8mm × 25.4mm).
+ * Etiqueta de reparacion - formato UNICO: 2x1" (50.8mm x 25.4mm).
  * @page CSS: size: 50.8mm 25.4mm; margin: 0;
  *
  * Layout de 5 lineas optimizado:
@@ -149,7 +149,7 @@ const LabelRepairTemplate = forwardRef<HTMLDivElement, LabelRepairTemplateProps>
               maxWidth: hasAccess ? "58%" : "100%",
             }}
           >
-            {data.deviceName || "—"}
+            {data.deviceName || "-"}
           </span>
           {hasAccess && (
             <span

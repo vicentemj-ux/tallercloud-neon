@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 type BannerMode = "hidden" | "offline" | "syncing"
 
 /**
- * Barra superior cuando no hay red; al volver online muestra “Sincronizando…” unos segundos.
+ * Barra superior cuando no hay red; al volver online muestra "Sincronizando..." unos segundos.
  */
 export function OfflineBanner() {
   const [mode, setMode] = useState<BannerMode>(() =>
@@ -62,7 +62,7 @@ export function OfflineBanner() {
       ) : (
         <>
           <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-          <span>Sincronizando… reconectando con la nube.</span>
+          <span>Sincronizando... reconectando con la nube.</span>
         </>
       )}
     </div>

@@ -52,7 +52,7 @@ export function useWebcamPolling(config: WebcamPollingConfig | null) {
         }),
       })
 
-      setLastEvent(`webcam_snapshot — ${new Date(dateTime).toLocaleTimeString("es-MX")}`)
+      setLastEvent(`webcam_snapshot - ${new Date(dateTime).toLocaleTimeString("es-MX")}`)
     } catch (e) {
       console.error("[useWebcamPolling] send failed", e)
     }

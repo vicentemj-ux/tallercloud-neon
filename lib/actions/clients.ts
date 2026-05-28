@@ -17,7 +17,7 @@ export interface Client {
   notas?: string | null
   created_at?: string
   ordenes_count?: number
-  // Datos fiscales (opcionales — CFDI 4.0)
+  // Datos fiscales (opcionales - CFDI 4.0)
   rfc?: string | null
   razon_social?: string | null
   codigo_postal_fiscal?: string | null
@@ -55,7 +55,7 @@ export async function getAllClients(): Promise<{ clients: Client[]; error: strin
   const supabase = await createClient()
   const tallerId = await getCurrentTallerId()
 
-  // PERF: clientes + conteo de reparaciones en paralelo — antes era waterfall (fetch clientes → esperar → fetch counts)
+  // PERF: clientes + conteo de reparaciones en paralelo - antes era waterfall (fetch clientes → esperar → fetch counts)
   const [clientRes, repRes] = await Promise.all([
     supabase
       .from("clientes")
@@ -94,7 +94,7 @@ export async function searchClients(
   const cleanedPhone = query.replace(/\D/g, "")
   const lowerQuery = query.toLowerCase()
 
-  // PERF: clientes filtrados + conteo paralelo — antes era waterfall
+  // PERF: clientes filtrados + conteo paralelo - antes era waterfall
   const [clientRes, repRes] = await Promise.all([
     supabase
       .from("clientes")

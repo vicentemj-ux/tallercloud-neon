@@ -161,9 +161,9 @@ export interface CreateRepairInput {
   securityValue?: string
   /** Notas internas del taller (no visibles para el cliente en tracking) */
   notasInternas?: string
-  /** Checklist de ingreso (recepcion) — JSON en BD */
+  /** Checklist de ingreso (recepcion) - JSON en BD */
   checklistIngreso?: ChecklistIngreso | null
-  /** Health check PRO — JSON en `checklist_pro` (alias camelCase) */
+  /** Health check PRO - JSON en `checklist_pro` (alias camelCase) */
   checklistPro?: ChecklistProData | null
   /** Salida Zod / API (snake_case) */
   checklist_pro?: unknown | null
@@ -582,7 +582,7 @@ export async function updateRepairFotos(repairId: string, fotos: string[]) {
 /**
  * Genera signed URLs para las fotos de evidencia de una reparacion publica.
  * Re-valida los ultimos 4 digitos del telefono antes de emitir las URLs.
- * Las URLs expiran en 2 horas — seguras para compartir en tracking publico.
+ * Las URLs expiran en 2 horas - seguras para compartir en tracking publico.
  */
 /**
  * Devuelve el nombre publico del taller asociado a una reparacion.
@@ -791,7 +791,7 @@ function num(v: unknown): number {
 /**
  * Mapea la fila de `get_dashboard_stats` al shape del Dashboard.
  * La RPC actual devuelve: `en_proceso_count`, `listos_count`, `ingresos_brutos_mes`, `urgentes_count`.
- * Se mantienen fallbacks a los nombres legacy (`en_proceso`, `ventas_pdv` + `cobros_rep`, …).
+ * Se mantienen fallbacks a los nombres legacy (`en_proceso`, `ventas_pdv` + `cobros_rep`, ...).
  */
 function mapDashboardStatsRow(row: Record<string, unknown>): DashboardStats {
   const enProceso = num(
@@ -848,7 +848,7 @@ export interface BitacoraRepair {
   updatedAtRaw?: string | null
   tecnico?: string
   falla?: string | null
-  /** Seguridad v2 — viaja en la lista para que la etiqueta siempre tenga el dato */
+  /** Seguridad v2 - viaja en la lista para que la etiqueta siempre tenga el dato */
   securityType?: string | null
   securityValue?: string | null
   pinContrasena?: string | null
@@ -906,7 +906,7 @@ function mapReparacionRecordToRepairDetail(
   return {
     id: rec.id as string,
     folio: rec.folio as string,
-    clienteName: clienteName ?? "—",
+    clienteName: clienteName ?? "-",
     clientePhone,
     deviceBrand: (rec.marca as string) || "N/A",
     deviceModel: (rec.modelo as string) || "N/A",
@@ -1030,9 +1030,9 @@ async function enrichHistorialReparacionRows(
 export async function getRepairsByTallerId(
   page = 0,
   pageSize = 50,
-  /** Busqueda por folio (ilike) — empujada a SQL para no depender de datos en memoria */
+  /** Busqueda por folio (ilike) - empujada a SQL para no depender de datos en memoria */
   search?: string,
-  /** Filtro por estatus exacto ("Recibido", "En Reparacion", "Listo", "Entregado") — empujado a SQL */
+  /** Filtro por estatus exacto ("Recibido", "En Reparacion", "Listo", "Entregado") - empujado a SQL */
   estatusFilter?: string
 ): Promise<{ data: BitacoraRepair[]; error: string | null; total: number }> {
   const supabase = await createClient()
@@ -1057,7 +1057,7 @@ export async function getRepairsByTallerId(
     .order("created_at", { ascending: false })
     .range(from, to)
 
-  // PERF: filtros empujados a SQL — reducen datos transferidos y trabajo de la BD
+  // PERF: filtros empujados a SQL - reducen datos transferidos y trabajo de la BD
   if (search?.trim()) {
     const term = search.trim()
     query = query.or(
@@ -1488,7 +1488,7 @@ export async function actualizarPresupuestoReparacion(
 
   // 3. Registrar en bitacora usando logRepairChange (patron probado)
   const razon = descripcion?.trim() || "Presupuesto actualizado"
-  const nota = `${razon} — $${presupuestoAnterior.toLocaleString("es-MX")} → $${nuevoPresupuesto.toLocaleString("es-MX")}`
+  const nota = `${razon} - $${presupuestoAnterior.toLocaleString("es-MX")} → $${nuevoPresupuesto.toLocaleString("es-MX")}`
   try {
     const logRes = await logRepairChange(
       repairId,
@@ -1872,7 +1872,7 @@ export async function registrarAbono(input: {
   })
 
   if (rpcError) {
-    console.error("[registrarAbono] RPC error — codigo:", rpcError.code, "— mensaje:", rpcError.message, "— detalle:", rpcError.details)
+    console.error("[registrarAbono] RPC error - codigo:", rpcError.code, "- mensaje:", rpcError.message, "- detalle:", rpcError.details)
     // Distinguish between "function not found" (migration not applied) and other DB errors
     const esFuncionNoExiste = rpcError.code === "PGRST202" || rpcError.message?.includes("Could not find the function")
     if (esFuncionNoExiste) {
@@ -1896,9 +1896,9 @@ export async function registrarAbono(input: {
   }
 
   // Defensive: if the RPC said ok=true but didn't return a movimiento id,
-  // something unexpected happened — surface it rather than silently succeeding.
+  // something unexpected happened - surface it rather than silently succeeding.
   if (!rpc.movimiento_id) {
-    console.error("[registrarAbono] RPC ok=true but movimiento_id is missing — possible INSERT failure", rpc)
+    console.error("[registrarAbono] RPC ok=true but movimiento_id is missing - possible INSERT failure", rpc)
     return { success: false, error: "El abono no quedo registrado en caja. Intenta de nuevo." }
   }
 
@@ -1907,7 +1907,7 @@ export async function registrarAbono(input: {
   const saldoPendiente = Math.max(0, presupuesto - nuevoAnticipo)
   const movimientoCajaId = rpc.movimiento_id
 
-  // 4. Audit log (best-effort — non-critical, does not affect financial data)
+  // 4. Audit log (best-effort - non-critical, does not affect financial data)
   try {
     await logRepairChange(
       input.repairId,
@@ -1927,7 +1927,7 @@ export async function registrarAbono(input: {
  * Reactivates a delivered repair as a warranty/reingreso return.
  * Changes estatus to "Reingreso" and inserts an audit entry.
  * The existing anticipo (total paid) is preserved; a new precio_estimado
- * can then be set to reflect additional work — restante recalculates automatically.
+ * can then be set to reflect additional work - restante recalculates automatically.
  */
 export async function reactivarReingreso(input: {
   repairId: string
@@ -1942,7 +1942,7 @@ export async function reactivarReingreso(input: {
     const supabase = await createClient()
     const tallerId = await getCurrentTallerId()
 
-    // Fetch repair — must belong to this taller and be in "Entregado" state
+    // Fetch repair - must belong to this taller and be in "Entregado" state
     const { data: row, error: fetchErr } = await supabase
       .from("reparaciones")
       .select("id, estatus, folio")
@@ -1978,7 +1978,7 @@ export async function reactivarReingreso(input: {
       console.error("[reactivarReingreso] update error:", updateErr)
       const hint =
         updateErr.code === "23514"
-          ? " Restriccion CHECK en estatus — valida que «Reingreso» este permitido en la columna."
+          ? " Restriccion CHECK en estatus - valida que «Reingreso» este permitido en la columna."
           : ""
       return {
         success: false,
@@ -2131,7 +2131,7 @@ export async function confirmarEntregaConLiquidacion(input: {
       return { success: false, error: liq.error ?? "Error al liquidar la reparacion." }
     }
   } else {
-    // Fully paid — just mark as Entregado, no new cash movement needed
+    // Fully paid - just mark as Entregado, no new cash movement needed
     const { error: rpcErr } = await supabase.rpc("finalizar_entrega_reparacion", {
       p_repair_id: input.repairId,
       p_taller_id: tallerId,
@@ -2242,7 +2242,7 @@ export async function entregarSinReparacionConAjuste(input: {
         taller_id: tallerId,
         caja_id: cajaId,
         tipo: "reembolso",
-        descripcion: `Reembolso anticipo — Folio ${String(rec.folio ?? "")}`,
+        descripcion: `Reembolso anticipo - Folio ${String(rec.folio ?? "")}`,
         monto: -Math.abs(montoEf),
         metodo_pago: "efectivo",
         fecha: new Date().toISOString(),
@@ -2263,7 +2263,7 @@ export async function entregarSinReparacionConAjuste(input: {
         taller_id: tallerId,
         caja_id: cajaId ?? undefined,
         tipo: "reembolso",
-        descripcion: `Reembolso anticipo (transferencia) — Folio ${String(rec.folio ?? "")}`,
+        descripcion: `Reembolso anticipo (transferencia) - Folio ${String(rec.folio ?? "")}`,
         monto: -Math.abs(montoTr),
         metodo_pago: "transferencia",
         fecha: new Date().toISOString(),
@@ -2325,7 +2325,7 @@ export async function entregarSinReparacionConAjuste(input: {
       cambio: 0,
       items: [
         {
-          descripcion: `Revision / sin reparacion — ${folio}`,
+          descripcion: `Revision / sin reparacion - ${folio}`,
           cantidad: 1,
           precio_unitario: saldo,
           costo_unitario: 0,
@@ -2347,7 +2347,7 @@ export async function entregarSinReparacionConAjuste(input: {
       p_taller_id: tallerId,
       p_nuevo_anticipo: nuevoAnticipo,
       p_estado_anterior: String(r2.estatus ?? "Recibido"),
-      p_nota_tecnica: `${notaSin2} — ${notaEntregaLiquidada(actor, null)}`,
+      p_nota_tecnica: `${notaSin2} - ${notaEntregaLiquidada(actor, null)}`,
       p_actor_nombre: actor,
     })
     if (rpcErr) {
@@ -2363,7 +2363,7 @@ export async function entregarSinReparacionConAjuste(input: {
       p_taller_id: tallerId,
       p_nuevo_anticipo: anticipo2,
       p_estado_anterior: String(r2.estatus ?? "Recibido"),
-      p_nota_tecnica: `${notaSin2} — ${notaEntregaLiquidada(actor, null)}`,
+      p_nota_tecnica: `${notaSin2} - ${notaEntregaLiquidada(actor, null)}`,
       p_actor_nombre: actor,
     })
     if (rpcErr) {
@@ -2455,7 +2455,7 @@ export async function updateRepairFull(
   const keptPhotos = input.keptPhotos ?? []
   const finalPhotos = [...keptPhotos, ...newlyUploadedUrls]
 
-  // Remove photos from storage that were deleted — paralelo con Promise.allSettled
+  // Remove photos from storage that were deleted - paralelo con Promise.allSettled
   if (input.removedPhotos && input.removedPhotos.length > 0) {
     const marker = `/object/public/${BUCKETS.REPAIR_PHOTOS}/`
     const pathsToRemove = input.removedPhotos
@@ -2515,7 +2515,7 @@ export async function updateRepairFull(
   await logRepairChange(
     input.repairId,
     "edicion",
-    `Ticket modificado — ${input.deviceBrand} ${input.deviceModel}`,
+    `Ticket modificado - ${input.deviceBrand} ${input.deviceModel}`,
   )
 
   return { success: true }
@@ -2662,7 +2662,7 @@ export async function getRepairByFolio(
   const r = rep as Record<string, unknown>
   const clientes = r.clientes as { nombre?: string; telefono?: string } | null
 
-  // Gastos internos del ticket — columnas reales: concepto, monto
+  // Gastos internos del ticket - columnas reales: concepto, monto
   const { data: gastosRaw } = await supabase
     .from("reparacion_gastos")
     .select("concepto, monto")
@@ -2713,7 +2713,7 @@ export async function getRepairByFolio(
   }
 }
 
-// ─── Label data for /print-label/[id] — repair-label and service-label kinds ──
+// ─── Label data for /print-label/[id] - repair-label and service-label kinds ──
 
 export interface RepairLabelFetchData {
   id: string
@@ -2820,7 +2820,7 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
     const tallerId = await getCurrentTallerId()
     if (!tallerId) return { success: false, error: "Sin sesion activa." }
 
-    // 1. Fetch current repair — validate ownership and guard terminal states
+    // 1. Fetch current repair - validate ownership and guard terminal states
     const { data: repair, error: repairErr } = await supabase
       .from("reparaciones")
       .select("id, estatus, folio")
@@ -2858,7 +2858,7 @@ export async function cancelarReparacion(repairId: string): Promise<{ success: b
       const { error: reversalErr } = await supabase.from("movimientos_caja").insert(reversals)
       if (reversalErr) {
         console.error("[cancelarReparacion] reversals insert:", reversalErr)
-        // Non-fatal: log and continue — status change is the source of truth
+        // Non-fatal: log and continue - status change is the source of truth
       }
     }
 

@@ -9,7 +9,7 @@ export default function DashboardPrintLabelRedirectPage() {
   }, [])
   return (
     <div className="flex min-h-[40vh] items-center justify-center bg-slate-50 text-sm text-slate-500">
-      Abriendo ventana de impresion…
+      Abriendo ventana de impresion...
     </div>
   )
 }

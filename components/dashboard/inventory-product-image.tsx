@@ -22,7 +22,7 @@ export type InventoryProductImageProps = {
 
 /**
  * Miniatura de producto: resuelve URL con `getInventoryPublicUrl` (sin duplicar prefijo si ya es URL absoluta).
- * Si no hay path o falla la carga, muestra icono de “sin foto”.
+ * Si no hay path o falla la carga, muestra icono de "sin foto".
  */
 export function InventoryProductImage({
   stored,

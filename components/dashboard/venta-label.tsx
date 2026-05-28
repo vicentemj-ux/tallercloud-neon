@@ -21,7 +21,7 @@ function fmt(n: number) {
 }
 
 const VentaLabel = forwardRef<HTMLDivElement, VentaLabelProps>(({ data }, ref) => {
-  const folio = data.folio ?? data.id ?? "—"
+  const folio = data.folio ?? data.id ?? "-"
   const cliente = (data.clienteNombre ?? null) || "VENTA GENERAL"
   const items = data.items ?? []
   const total = data.total ?? 0

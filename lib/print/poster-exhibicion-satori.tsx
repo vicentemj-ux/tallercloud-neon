@@ -5,7 +5,7 @@ import {
   inferPosterTechSpecs,
 } from "@/lib/print/poster-exhibicion-utils"
 
-/** Colores HEX/RGBA — compatibles con Satori (sin oklch/lab). */
+/** Colores HEX/RGBA - compatibles con Satori (sin oklch/lab). */
 const POSTER_ACCENT_BLUE = "#185FA5"
 const POSTER_ACCENT_TEAL = "#0d9488"
 const SLATE_900 = "#0f172a"
@@ -24,9 +24,9 @@ const RED_200 = "#fecaca"
 const RED_600 = "#dc2626"
 const WHITE = "#ffffff"
 
-/** 1:1 — Feed Facebook / Instagram (px). */
+/** 1:1 - Feed Facebook / Instagram (px). */
 export const POSTER_SQUARE_PX = 1080
-/** 9:16 — Estados WhatsApp / Stories (px). */
+/** 9:16 - Estados WhatsApp / Stories (px). */
 export const POSTER_VERTICAL_WIDTH = 1080
 export const POSTER_VERTICAL_HEIGHT = 1920
 
@@ -85,7 +85,7 @@ function sc(n: number): number {
 }
 
 /**
- * Plantilla 1:1 (1080×1080). Solo Flexbox — sin Grid (requisito Satori).
+ * Plantilla 1:1 (1080x1080). Solo Flexbox - sin Grid (requisito Satori).
  */
 export function PosterExhibicionSatoriTemplate(props: PosterExhibicionSatoriProps) {
   const format = props.format ?? "square"
@@ -441,7 +441,7 @@ function PosterExhibicionSatoriTemplateSquare({
 }
 
 /**
- * Plantilla 9:16 (1080×1920) — estados / stories. Logo y nombre del taller dinamicos.
+ * Plantilla 9:16 (1080x1920) - estados / stories. Logo y nombre del taller dinamicos.
  */
 function PosterExhibicionSatoriTemplateVertical({
   producto,
@@ -713,7 +713,7 @@ function SpecRow({
   accent: string
   chipBg: string
   chip: string
-  /** Escala sobre tamanos base (diseno 1200px); sin funciones — Satori no soporta bien props funcion. */
+  /** Escala sobre tamanos base (diseno 1200px); sin funciones - Satori no soporta bien props funcion. */
   scale: number
 }) {
   const sz = (n: number) => Math.round(n * scale)

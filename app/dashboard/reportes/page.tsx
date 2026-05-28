@@ -202,7 +202,7 @@ export default function ReportesPage() {
             <div className="relative flex-1 max-w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
               <Input
-                placeholder="Buscar falla o tecnico…"
+                placeholder="Buscar falla o tecnico..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8 h-9 text-xs border-slate-200 bg-white rounded-lg"
@@ -473,7 +473,7 @@ export default function ReportesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-xs font-semibold text-slate-700 capitalize">{m.metodo}</span>
-                                <span className="text-xs text-slate-400">{fmtPesos(m.total)} · {m.count}×</span>
+                                <span className="text-xs text-slate-400">{fmtPesos(m.total)} · {m.count}x</span>
                               </div>
                               <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                 <div className="h-full rounded-full transition-all duration-500"
@@ -530,7 +530,7 @@ export default function ReportesPage() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1">
                                   <p className="text-xs font-semibold text-slate-700 truncate">{f.falla}</p>
-                                  <span className="text-xs text-slate-400 ml-2 shrink-0">{f.count}×</span>
+                                  <span className="text-xs text-slate-400 ml-2 shrink-0">{f.count}x</span>
                                 </div>
                                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                   <div className="h-full bg-orange-400 rounded-full transition-all duration-500"

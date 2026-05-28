@@ -22,8 +22,8 @@ function fmtRange(dateFrom: string, dateTo: string) {
   const a = new Date(`${dateFrom}T12:00:00`)
   const b = new Date(`${dateTo}T12:00:00`)
   const opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" }
-  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return `${dateFrom} — ${dateTo}`
-  return `${a.toLocaleDateString("es-MX", opts)} — ${b.toLocaleDateString("es-MX", opts)}`
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return `${dateFrom} - ${dateTo}`
+  return `${a.toLocaleDateString("es-MX", opts)} - ${b.toLocaleDateString("es-MX", opts)}`
 }
 
 function fmtMoney(n: number) {

@@ -136,7 +136,7 @@ export function TicketCobroReparacionTemplate({
           {servicios.map((s, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "6px", marginBottom: "1px" }}>
               <span style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700 }}>
-                {s.nombre}{s.cantidad > 1 ? ` ×${s.cantidad}` : ""}
+                {s.nombre}{s.cantidad > 1 ? ` x${s.cantidad}` : ""}
               </span>
               <span style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700 }}>
                 ${fmt(s.precio * s.cantidad)}

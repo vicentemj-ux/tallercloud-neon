@@ -317,7 +317,7 @@ export function ModalEntregaReparacion({
                 value={nota}
                 onChange={(e) => setNota(e.target.value)}
                 rows={2}
-                placeholder="Motivo de la no reparacion…"
+                placeholder="Motivo de la no reparacion..."
                 className="resize-none rounded-lg border-slate-200 text-sm"
               />
             </div>
@@ -331,7 +331,7 @@ export function ModalEntregaReparacion({
               {savingSinRep ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Procesando…
+                  Procesando...
                 </>
               ) : hayDevolucion ? (
                 "Confirmar entrega y reembolso"
@@ -417,7 +417,7 @@ export function ModalEntregaReparacion({
               value={nota}
               onChange={(e) => setNota(e.target.value)}
               rows={3}
-              placeholder="Observaciones internas…"
+              placeholder="Observaciones internas..."
               className="resize-none rounded-xl border-slate-200"
             />
           </div>
@@ -431,7 +431,7 @@ export function ModalEntregaReparacion({
             {saving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Procesando…
+                Procesando...
               </>
             ) : tieneSaldo ? (
               "Confirmar entrega y cobro"

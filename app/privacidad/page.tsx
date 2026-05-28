@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react"
 import { buildWhatsAppOpenChatUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 
 export const metadata = {
-  title: "Politica de Privacidad — TallerCloud",
+  title: "Politica de Privacidad - TallerCloud",
   description: "Como TallerCloud recopila, usa y protege los datos de sus usuarios.",
 }
 

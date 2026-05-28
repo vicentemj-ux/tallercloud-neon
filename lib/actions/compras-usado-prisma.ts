@@ -42,9 +42,9 @@ export interface CompraUsadoInput {
 }
 
 function extractTagValue(notas: string | null, tag: string): string {
-  if (!notas) return "—"
+  if (!notas) return "-"
   const match = notas.match(new RegExp(`${tag}:\\s*([^|]+)`))
-  return match?.[1]?.trim() || "—"
+  return match?.[1]?.trim() || "-"
 }
 
 export async function getComprasUsadas(): Promise<{ data: CompraUsadaRow[]; error: string | null }> {
@@ -75,7 +75,7 @@ export async function getComprasUsadas(): Promise<{ data: CompraUsadaRow[]; erro
           color: r.color == null ? null : String(r.color),
           costo_compra: Number(r.costo_compra ?? 0),
           monto: Number(r.costo_compra ?? 0),
-          vendedor: r.proveedor_nombre == null ? "—" : String(r.proveedor_nombre),
+          vendedor: r.proveedor_nombre == null ? "-" : String(r.proveedor_nombre),
           documento: extractTagValue(notas, "Documento"),
           imei: r.imei_serie == null ? null : String(r.imei_serie),
           fecha: String(r.fecha_compra ?? ""),

@@ -129,7 +129,7 @@ export async function getProductos(
 
 /**
  * KPIs de inventario (todos los productos del taller, no solo la pagina actual):
- * - valorEnRiesgo: Σ (costo × stock) donde stock ≤ minimo (costo = costo de adquisicion en BD).
+ * - valorEnRiesgo: Σ (costo x stock) donde stock ≤ minimo (costo = costo de adquisicion en BD).
  * - rotacionDiasPromedio: promedio en dias entre alta del producto y fecha de venta (ultimas 20 lineas PDV con producto).
  */
 export async function getInventoryOperationalKpis(): Promise<{
@@ -397,15 +397,15 @@ export async function uploadProductImage(
       const hint =
         (error.message || "").toLowerCase().includes("bucket") ||
         (error.message || "").toLowerCase().includes("not found")
-          ? "Bucket not found o nombre incorrecto — crea/valida el bucket de inventario en Supabase."
+          ? "Bucket not found o nombre incorrecto - crea/valida el bucket de inventario en Supabase."
           : (error.message || "").toLowerCase().includes("payload") ||
               (error.message || "").toLowerCase().includes("too large") ||
               storageErr.statusCode === "413"
-            ? "Payload too large — reduce tamano en el cliente o sube el limite del bucket."
+            ? "Payload too large - reduce tamano en el cliente o sube el limite del bucket."
             : (error.message || "").toLowerCase().includes("row-level security") ||
                 (error.message || "").toLowerCase().includes("policy") ||
                 (error.message || "").toLowerCase().includes("denied")
-              ? "RLS / politicas de Storage — revisa las politicas del bucket de inventario."
+              ? "RLS / politicas de Storage - revisa las politicas del bucket de inventario."
               : null
 
       let serialized = ""
@@ -474,7 +474,7 @@ export async function bulkImportProductos(
 
     if (!tallerId) {
       const msg = "No se pudo obtener el taller (taller_id). Inicia sesion de nuevo."
-      console.error("ERROR_SUPABASE: taller_id faltante —", msg)
+      console.error("ERROR_SUPABASE: taller_id faltante -", msg)
       return { success: false, insertedCount: 0, skippedCount: rows.length, totalCostoCarga: 0, errors: [msg] }
     }
 
@@ -521,7 +521,7 @@ export async function bulkImportProductos(
 
     if (!datos.length) {
       const msg = "No hay filas validas para importar."
-      console.error("ERROR_SUPABASE: bulk import sin filas validas —", msg)
+      console.error("ERROR_SUPABASE: bulk import sin filas validas -", msg)
       return { success: false, insertedCount: 0, skippedCount: rows.length, totalCostoCarga: 0, errors: [...errors, msg] }
     }
 
@@ -543,7 +543,7 @@ export async function bulkImportProductos(
 
     const datosFiltrados = datos.filter((d, i) => {
       if (d.codigo_barras && codigosExistentes.has(d.codigo_barras as string)) {
-        errors.push(`Fila ${i + 1}: codigo de barras "${d.codigo_barras}" ya existe — omitido.`)
+        errors.push(`Fila ${i + 1}: codigo de barras "${d.codigo_barras}" ya existe - omitido.`)
         return false
       }
       return true
@@ -589,7 +589,7 @@ export async function deleteProducto(id: string): Promise<{ success: boolean; er
 
     if (!tallerId) {
       const msg = "No se pudo obtener el taller (taller_id). Inicia sesion de nuevo."
-      console.error("ERROR_SUPABASE: taller_id faltante —", msg)
+      console.error("ERROR_SUPABASE: taller_id faltante -", msg)
       return { success: false, error: msg }
     }
 

@@ -21,7 +21,7 @@ import {
   Projector,
 } from "lucide-react"
 
-// â”€â”€â”€ Tipos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Tipos â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface TrackingTicket {
   id: string
@@ -37,19 +37,19 @@ interface TrackingTicket {
   updated_at: string
 }
 
-// â”€â”€â”€ Constantes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Constantes â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const TIMELINE_STEPS = [
   { key: "RECEIVED",   label: "RECIBIDO",      description: "Equipo registrado exitosamente." },
-  { key: "DIAGNOSING", label: "DIAGNÃ“STICO",   description: "Revisando el equipo en detalle." },
-  { key: "IN_REPAIR",  label: "EN REPARACIÃ“N", description: "Trabajando en la reparaciÃ³n." },
-  { key: "READY",      label: "LISTO",          description: "Tu equipo estÃ¡ listo para recogerse." },
+  { key: "DIAGNOSING", label: "DIAGNOSTICO",   description: "Revisando el equipo en detalle." },
+  { key: "IN_REPAIR",  label: "EN REPARACION", description: "Trabajando en la reparacion." },
+  { key: "READY",      label: "LISTO",          description: "Tu equipo esta listo para recogerse." },
   { key: "DELIVERED",  label: "ENTREGADO",      description: "Equipo entregado al cliente." },
 ]
 
 const STEP_ICONS = [Package, Search, Wrench, CheckCircle, Truck]
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 function normalizeStatus(raw: string | null | undefined): string {
   if (!raw) return "RECEIVED"
@@ -67,7 +67,7 @@ function getDeviceIcon(tipo: string | null | undefined) {
   const t = (tipo || "").toLowerCase()
   if (t.includes("laptop") || t.includes("notebook") || t.includes("mac")) return Laptop
   if (t.includes("videojuego") || t.includes("consola") || t.includes("playstation") || t.includes("xbox") || t.includes("nintendo")) return Gamepad2
-  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil") || t.includes("mÃ³vil")) return Smartphone
+  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil") || t.includes("movil")) return Smartphone
   if (t.includes("tablet") || t.includes("ipad")) return Smartphone
   if (t.includes("impresora") || t.includes("printer")) return Printer
   if (t.includes("reloj") || t.includes("watch") || t.includes("smartwatch")) return Watch
@@ -76,7 +76,7 @@ function getDeviceIcon(tipo: string | null | undefined) {
   return Package
 }
 
-// â”€â”€â”€ Componente â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Componente â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export default function PublicTrackingPage() {
   const params  = useParams()
@@ -143,7 +143,7 @@ export default function PublicTrackingPage() {
   const model        = ticket.modelo || ""
   const serie        = ticket.numero_serie || ""
   const status       = normalizeStatus(ticket.estatus)
-  const falla        = ticket.falla || "Sin descripciÃ³n"
+  const falla        = ticket.falla || "Sin descripcion"
   const presupuesto  = ticket.precio_estimado ?? null
   const DeviceIcon   = getDeviceIcon(ticket.tipo_equipo)
 
@@ -153,7 +153,7 @@ export default function PublicTrackingPage() {
     <>
       <div className="min-h-screen bg-black text-white flex flex-col">
 
-        {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* â"€â"€ Header â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
         <header className="px-4 pt-8 pb-4">
           <div className="max-w-4xl mx-auto flex items-start justify-between gap-4">
             <div>
@@ -184,11 +184,11 @@ export default function PublicTrackingPage() {
           </div>
         </header>
 
-        {/* â”€â”€ Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* â"€â"€ Content â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
         <main className="flex-1 px-4 pb-12">
           <div className="max-w-4xl mx-auto space-y-6">
 
-            {/* â”€â”€ Device card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* â"€â"€ Device card â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-900/60 border border-slate-800 rounded-3xl px-6 py-5 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-600/15 border border-blue-600/30 flex items-center justify-center">
                 <DeviceIcon className="w-7 h-7 text-blue-400" />
@@ -208,7 +208,7 @@ export default function PublicTrackingPage() {
               </div>
             </div>
 
-            {/* â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* â"€â"€ Timeline â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl px-6 py-6">
               <p className="text-xs text-blue-400 uppercase tracking-[0.25em] font-semibold mb-5">
                 HISTORIAL DE PROGRESO
@@ -232,7 +232,7 @@ export default function PublicTrackingPage() {
                         />
                       )}
 
-                      {/* Ãcono con ping en activo */}
+                      {/* Icono con ping en activo */}
                       <div className="relative flex-shrink-0 w-10 h-10">
                         {isActive && (
                           <span className="absolute inset-0 rounded-full bg-blue-500/30 animate-ping" />
@@ -279,7 +279,7 @@ export default function PublicTrackingPage() {
                           )}
                           {isPending && (
                             <span className="text-[10px] text-slate-700 uppercase tracking-wider">
-                              PrÃ³ximamente
+                              Proximamente
                             </span>
                           )}
                         </div>
@@ -293,10 +293,10 @@ export default function PublicTrackingPage() {
               </div>
             </div>
 
-            {/* â”€â”€ Evidencia fotogrÃ¡fica â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* â"€â"€ Evidencia fotografica â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl px-6 py-5 space-y-3">
               <p className="text-xs text-blue-400 uppercase tracking-[0.25em] font-semibold">
-                EVIDENCIA DE RECEPCIÃ“N
+                EVIDENCIA DE RECEPCION
               </p>
               {photoUrls.length > 0 ? (
                 <>
@@ -310,11 +310,11 @@ export default function PublicTrackingPage() {
                   />
                 </>
               ) : (
-                <p className="text-sm text-slate-600 italic">Sin evidencia fotogrÃ¡fica.</p>
+                <p className="text-sm text-slate-600 italic">Sin evidencia fotografica.</p>
               )}
             </div>
 
-            {/* â”€â”€ Falla + Presupuesto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* â"€â"€ Falla + Presupuesto â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */}
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-[0.25em] font-semibold mb-1.5">

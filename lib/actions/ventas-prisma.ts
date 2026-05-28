@@ -437,7 +437,7 @@ export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: s
 export async function requireCajaAbierta(): Promise<{ caja: CajaRow; error: null } | { caja: null; error: string }> {
   const { caja, error } = await getCajaAbierta()
   if (error) return { caja: null, error: `Error al verificar caja: ${error}` }
-  if (!caja) return { caja: null, error: "No hay una caja abierta. Abre la caja antes de realizar esta operaciÃ³n." }
+  if (!caja) return { caja: null, error: "No hay una caja abierta. Abre la caja antes de realizar esta operacion." }
   return { caja, error: null }
 }
 
@@ -628,7 +628,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
       try {
         await prisma.$queryRawUnsafe("SELECT batch_decrement_stock($1::jsonb)", JSON.stringify(stockItems.map((i) => ({ producto_id: i.producto_id, taller_id: tallerId, cantidad: i.cantidad }))))
       } catch {
-        console.error("[ventas-prisma] batch_decrement_stock fallback — RPC not available")
+        console.error("[ventas-prisma] batch_decrement_stock fallback - RPC not available")
       }
     }
 
@@ -648,7 +648,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
           tallerId,
         )
       } catch {
-        console.error("[ventas-prisma] update caja totals fallback — caja table may be missing")
+        console.error("[ventas-prisma] update caja totals fallback - caja table may be missing")
       }
 
       try {
@@ -663,7 +663,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
           input.metodo_pago,
         )
       } catch {
-        console.error("[ventas-prisma] insert movimiento_caja fallback — table may be missing")
+        console.error("[ventas-prisma] insert movimiento_caja fallback - table may be missing")
       }
     }
 
@@ -816,7 +816,7 @@ export async function getAbonoById(movimientoId: string): Promise<{ data: AbonoP
     if (!mov) return { data: null, error: "Movimiento no encontrado." }
     const repRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT folio, cliente_nombre, cliente_telefono, marca, modelo, tipo_equipo, precio_estimado, anticipo FROM reparaciones WHERE id=$1 AND taller_id=$2 LIMIT 1", String(mov.referencia_id ?? ""), tallerId)
     const rep = repRows[0]
-    if (!rep) return { data: null, error: "ReparaciÃ³n no encontrada." }
+    if (!rep) return { data: null, error: "Reparacion no encontrada." }
 
     const presupuesto = toNum(rep.precio_estimado)
     const totalAbonado = toNum(rep.anticipo)
@@ -948,7 +948,7 @@ export async function getCobroReparacionParaTicket(movimientoId: string): Promis
     const m = rows[0]
     if (!m) return { data: null, error: "Movimiento no encontrado." }
     const tipo = String(m.tipo ?? "")
-    if (tipo !== "anticipo_reparacion" && tipo !== "liquidacion_reparacion") return { data: null, error: "Este movimiento no es un cobro de reparaciÃ³n." }
+    if (tipo !== "anticipo_reparacion" && tipo !== "liquidacion_reparacion") return { data: null, error: "Este movimiento no es un cobro de reparacion." }
     let folio = "-"
     let cliente = "-"
     const rid = m.referencia_id == null ? null : String(m.referencia_id)
@@ -963,7 +963,7 @@ export async function getCobroReparacionParaTicket(movimientoId: string): Promis
       data: {
         folio,
         cliente,
-        conceptos: tipo === "liquidacion_reparacion" ? "LiquidaciÃ³n" : "Anticipo",
+        conceptos: tipo === "liquidacion_reparacion" ? "Liquidacion" : "Anticipo",
         monto: toNum(m.monto),
         metodo_pago: String(m.metodo_pago ?? "efectivo"),
         fechaIso: String(m.fecha ?? ""),
@@ -1001,7 +1001,7 @@ export async function cancelarVentaMostrador(ventaId: string) {
 }
 
 export async function reenviarCorteEmail(_cajaId?: string): Promise<{ success: boolean; sentTo?: string; error?: string }> {
-  return { success: false, error: "FunciÃ³n PRO temporalmente desactivada" }
+  return { success: false, error: "Funcion PRO temporalmente desactivada" }
 }
 
 

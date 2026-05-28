@@ -158,7 +158,7 @@ export function OpenCajaModal({ defaultFondo = "500", onSuccess }: OpenCajaModal
         return
       }
       if (result.status === "already_open") {
-        // otra pestana/conexion ya abrio la caja — cerrar modal y refrescar
+        // otra pestana/conexion ya abrio la caja - cerrar modal y refrescar
         setShowOpenModal(false)
         window.dispatchEvent(new CustomEvent("caja:abierta"))
         onSuccess?.()

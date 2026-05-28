@@ -1,6 +1,6 @@
 /**
- * lib/storage.ts — Constantes y utilidades puras de Supabase Storage.
- * Sin "use server" — importable desde cualquier contexto (cliente, servidor, actions).
+ * lib/storage.ts - Constantes y utilidades puras de Supabase Storage.
+ * Sin "use server" - importable desde cualquier contexto (cliente, servidor, actions).
  *
  * Para signed URLs (requieren service_role), usa lib/storage-server.ts.
  */
@@ -17,7 +17,7 @@ export const INVENTORY_PRODUCT_IMAGES_BUCKET: string =
 
 export const BUCKETS = {
   REPAIR_PHOTOS: "repair-photos", // privado → signed URLs
-  /** @alias INVENTORY_PRODUCT_IMAGES_BUCKET — fotos en `productos.imagen_url` */
+  /** @alias INVENTORY_PRODUCT_IMAGES_BUCKET - fotos en `productos.imagen_url` */
   INVENTORY: INVENTORY_PRODUCT_IMAGES_BUCKET,
   CATALOG: "catalogo", // publico → getPublicUrl
   TALLER: "taller", // publico → getPublicUrl (logos)
@@ -48,7 +48,7 @@ export function extractStoragePath(urlOrPath: string, bucket: string): string {
 
 /**
  * Construye la URL publica de un archivo en un bucket PUBLICO.
- * Puro — no hace ninguna llamada de red ni usa claves privadas.
+ * Puro - no hace ninguna llamada de red ni usa claves privadas.
  * Para buckets privados usa getSignedUrl() de lib/storage-server.ts.
  */
 export function getPublicUrl(bucket: string, path: string): string {
@@ -68,7 +68,7 @@ export function getInventoryCanonicalImageUrl(tallerId: string, productId: strin
 /**
  * URL lista para `<img>` / `next/image` a partir de lo guardado en `productos.imagen_url`.
  * - Si ya es una URL absoluta (http/https), se devuelve tal cual (no se concatena dos veces).
- * - Si es un path relativo del bucket (ej. `{taller_id}/producto-….jpg`), se antepone el prefijo publico de Supabase.
+ * - Si es un path relativo del bucket (ej. `{taller_id}/producto-....jpg`), se antepone el prefijo publico de Supabase.
  *
  * Recomendacion: guardar en BD solo el path relativo (ver `normalizeInventoryImagePathForDb`).
  */

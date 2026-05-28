@@ -44,7 +44,7 @@ const features = [
     icon: Printer,
     title: "Ticket e impresion termica",
     description:
-      "Compatible con impresoras termicas de 58mm y 80mm. Tambien imprime etiquetas 2×1 pulgadas.",
+      "Compatible con impresoras termicas de 58mm y 80mm. Tambien imprime etiquetas 2x1 pulgadas.",
   },
   {
     icon: Monitor,

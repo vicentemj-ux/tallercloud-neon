@@ -4,9 +4,9 @@
  */
 
 export function formatCurrency(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return "—"
+  if (value === null || value === undefined) return "-"
   const num = typeof value === "number" ? value : parseFloat(String(value).replace(/[$,\s]/g, ""))
-  if (Number.isNaN(num)) return "—"
+  if (Number.isNaN(num)) return "-"
   return new Intl.NumberFormat("es-MX", {
     style: "currency",
     currency: "MXN",
@@ -26,9 +26,9 @@ export const formatMoneyMx = formatCurrency
 
 /** Formato para posters / exhibicion (sin simbolo $, solo numero con comas). */
 export function formatPosterMoney(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return "—"
+  if (value === null || value === undefined) return "-"
   const num = typeof value === "number" ? value : parseFloat(String(value).replace(/[$,\s]/g, ""))
-  if (Number.isNaN(num)) return "—"
+  if (Number.isNaN(num)) return "-"
   return new Intl.NumberFormat("es-MX", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -37,9 +37,9 @@ export function formatPosterMoney(value: number | string | null | undefined): st
 
 /** Formato compacto: sin decimales si el valor es entero (ej. $150), con decimales si los tiene (ej. $150.50). */
 export function formatMoneyCompact(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return "—"
+  if (value === null || value === undefined) return "-"
   const num = typeof value === "number" ? value : parseFloat(String(value).replace(/[$,\s]/g, ""))
-  if (Number.isNaN(num)) return "—"
+  if (Number.isNaN(num)) return "-"
   const hasDecimals = num % 1 !== 0
   return new Intl.NumberFormat("es-MX", {
     style: "currency",

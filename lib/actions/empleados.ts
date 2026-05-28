@@ -102,7 +102,7 @@ export async function getEquipoPageData(): Promise<{
     email: m.email as string,
     activo: Boolean(m.activo),
     rolId: m.rol_id as string,
-    rolNombre: rolMap.get(m.rol_id as string) ?? "—",
+    rolNombre: rolMap.get(m.rol_id as string) ?? "-",
   }))
 
   const roles = (rolesResult.data ?? []).map((r) => ({
@@ -119,7 +119,7 @@ export async function getEquipoPageData(): Promise<{
       owner: null,
       miembros: [],
       roles: [],
-      error: "Mi Equipo no estÃ¡ disponible temporalmente. Verifica la configuraciÃ³n del servidor.",
+      error: "Mi Equipo no esta disponible temporalmente. Verifica la configuracion del servidor.",
     }
   }
 }
@@ -265,7 +265,7 @@ export async function createMiembro(
     console.error("[createMiembro] fatal:", error)
     return {
       success: false,
-      error: "No se pudo crear el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+      error: "No se pudo crear el miembro. Verifica configuracion del servidor y vuelve a intentar.",
     }
   }
 }
@@ -355,7 +355,7 @@ export async function updateMiembro(
     console.error("[updateMiembro] fatal:", error)
     return {
       success: false,
-      error: "No se pudo actualizar el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+      error: "No se pudo actualizar el miembro. Verifica configuracion del servidor y vuelve a intentar.",
     }
   }
 }
@@ -413,7 +413,7 @@ export async function deleteMiembro(
     console.error("[deleteMiembro] fatal:", error)
     return {
       success: false,
-      error: "No se pudo eliminar el miembro. Verifica configuraciÃ³n del servidor y vuelve a intentar.",
+      error: "No se pudo eliminar el miembro. Verifica configuracion del servidor y vuelve a intentar.",
     }
   }
 }

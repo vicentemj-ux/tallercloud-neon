@@ -66,7 +66,7 @@ const UUID_RE =
 /**
  * Crea un token de firma para una reparacion (plan PRO).
  * URL publica: /firma-digital/[id] (id = token en la ruta dinamica)
- * @param preferredToken — UUID opcional (p. ej. ya mostrado en el QR antes de guardar el ticket).
+ * @param preferredToken - UUID opcional (p. ej. ya mostrado en el QR antes de guardar el ticket).
  */
 export async function createFirmaDigitalToken(
   repairId: string,

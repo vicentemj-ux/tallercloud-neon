@@ -12,7 +12,7 @@ export interface InventoryStandardLabelProps {
 }
 
 /**
- * Etiqueta de inventario estandar 50×25 mm: nombre, codigo de barras, SKU/codigo y precio.
+ * Etiqueta de inventario estandar 50x25 mm: nombre, codigo de barras, SKU/codigo y precio.
  * Usa jsbarcode directamente para evitar depender de react-barcode.
  */
 const InventoryStandardLabel = forwardRef<HTMLDivElement, InventoryStandardLabelProps>(

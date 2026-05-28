@@ -17,11 +17,11 @@ export interface SecurityInputV2Props {
   onChange: (next: SecurityValue) => void
   className?: string
   /**
-   * `inline`: lienzo 3×3 dentro del bloque de seguridad (p. ej. formulario pagina completa).
+   * `inline`: lienzo 3x3 dentro del bloque de seguridad (p. ej. formulario pagina completa).
    * `external`: el editor abre en un modal; se invoca al elegir la pestana «Patron» (y al volver a pulsarla).
    */
   patternPlacement?: "inline" | "external"
-  /** Solo con `patternPlacement="external"`: abre el modal del lienzo 3×3. */
+  /** Solo con `patternPlacement="external"`: abre el modal del lienzo 3x3. */
   onRequestPatternEditor?: () => void
 }
 
@@ -255,7 +255,7 @@ const PatternCanvasInner = memo(function PatternCanvasInner({
         <p className="mt-2 break-words font-mono text-base font-semibold leading-relaxed text-slate-900">
           {patternSummary(seqNums)}
         </p>
-        <p className="mt-2 text-[11px] text-slate-500">Secuencia de puntos 1–9</p>
+        <p className="mt-2 text-[11px] text-slate-500">Secuencia de puntos 1-9</p>
       </div>
     </div>
   )

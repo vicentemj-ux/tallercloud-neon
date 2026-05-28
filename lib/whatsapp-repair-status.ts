@@ -7,7 +7,7 @@ import { normalizePhoneForWhatsApp, buildWhatsAppUrl } from "@/lib/whatsapp-util
 import { formatMoneyMx } from "@/lib/utils/currency"
 import { getPublicAppBaseUrl } from "@/lib/app-public"
 
-function safeStr(v: unknown, fallback = "—"): string {
+function safeStr(v: unknown, fallback = "-"): string {
   if (v == null) return fallback
   const s = String(v).trim()
   return s.length ? s : fallback
@@ -36,7 +36,7 @@ export function buildRepairStatusWhatsAppUrl(params: {
     const nombreTaller = safeStr(params.nombreTaller, "Mi Taller")
     const cliente = safeStr(params.cliente, "cliente")
     const equipo = safeStr(params.equipo, "equipo")
-    const folio = safeStr(params.folio, "—")
+    const folio = safeStr(params.folio, "-")
     const repairId = safeStr(params.repairId, "")
     const n = (params.estadoNuevo ?? "").trim()
     let body = ""
@@ -44,7 +44,7 @@ export function buildRepairStatusWhatsAppUrl(params: {
     if (n === "Listo") {
       body = `${nombreTaller}\nHola ${cliente}, tu equipo ${equipo} (Folio #${folio}) esta LISTO.\n\n✅ Resultado: Exitoso\n💰 Total: ${formatMoneyMx(params.total)}\n📉 Restante: ${formatMoneyMx(params.restante)}\n\n_Organizado con TallerCloud.net_`
     } else if (n === "Sin Reparacion") {
-      const motivo = params.notaTecnica?.trim() || "—"
+      const motivo = params.notaTecnica?.trim() || "-"
       body = `${nombreTaller}\nHola ${cliente}, lamentamos informar que tu equipo ${equipo} (#${folio}) se marco como No Reparable.\n\n📝 Motivo: ${motivo}\n💵 Costo revision: ${formatMoneyMx(params.costoRevision)}\n\n_Organizado con TallerCloud.net_`
     } else {
       const base =

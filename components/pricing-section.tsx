@@ -21,7 +21,7 @@ const includedCore = [
   "Control de inventario con IMEI/Serie",
   "Historial completo de clientes",
   "Impresion termica 58mm y 80mm",
-  "Etiquetas termicas 2×1\"",
+  "Etiquetas termicas 2x1\"",
   "Tu equipo en la app (MVP: hasta 5 miembros)",
   "Actualizaciones gratuitas",
   "Soporte por WhatsApp",

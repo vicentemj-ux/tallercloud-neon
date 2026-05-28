@@ -38,7 +38,7 @@ export interface TicketVentaTemplateProps {
   tamanoPapel?: string
   terminosGarantia?: string
   mensajeDespedida?: string
-  /** Fase 2 — visibilidad controlada desde Imprenta */
+  /** Fase 2 - visibilidad controlada desde Imprenta */
   mostrarLogo?: boolean
   mostrarPrecios?: boolean
   mostrarRedesSociales?: boolean
@@ -149,7 +149,7 @@ export function TicketVentaTemplate({
         {venta.items.map((item, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "6px", alignItems: "flex-start" }}>
             <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 700, textAlign: "left", flex: 1, minWidth: 0, lineHeight: 1.2 }}>
-              <span style={{ fontWeight: 900 }}>{item.cantidad}×</span> {(item.categoria ? item.categoria + " " : "") + item.descripcion}
+              <span style={{ fontWeight: 900 }}>{item.cantidad}x</span> {(item.categoria ? item.categoria + " " : "") + item.descripcion}
             </span>
             {mostrarPrecios && (
               <span style={{ ...SHARP, fontFamily: FONT, fontSize: "11px", fontWeight: 900, textAlign: "right", whiteSpace: "nowrap", flexShrink: 0 }}>

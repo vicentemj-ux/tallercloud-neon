@@ -2,7 +2,7 @@
  * lib/camera/hikvision.ts
  *
  * Helpers para interactuar con camaras Hikvision via ISAPI y RTSP.
- * Puros — sin side effects. Usables desde cliente y servidor.
+ * Puros - sin side effects. Usables desde cliente y servidor.
  */
 
 export interface HikvisionConfig {

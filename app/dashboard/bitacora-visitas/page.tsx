@@ -154,7 +154,7 @@ export default function BitacoraVisitasPage() {
               onChange={(e) => setDesde(e.target.value)}
               className="h-9 w-40 rounded-xl border-slate-200 bg-white text-xs font-semibold px-3"
             />
-            <span className="text-xs text-slate-400">—</span>
+            <span className="text-xs text-slate-400">-</span>
             <Input
               type="date"
               value={hasta}
@@ -299,7 +299,7 @@ export default function BitacoraVisitasPage() {
                           </td>
                           <td className="px-5 py-3">
                             <div className="text-xs font-bold text-slate-600">
-                              {v.atendido_por || "—"}
+                              {v.atendido_por || "-"}
                             </div>
                           </td>
                           <td className="px-5 py-3">

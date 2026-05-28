@@ -107,7 +107,7 @@ export const SuccessModal = memo(function SuccessModal({
     const itemLines = (venta.items ?? [])
       .map(
         (i) =>
-          `  • ${i.descripcion} x${i.cantidad} — $${(i.precio_unitario * i.cantidad).toLocaleString("es-MX")}`,
+          `  * ${i.descripcion} x${i.cantidad} - $${(i.precio_unitario * i.cantidad).toLocaleString("es-MX")}`,
       )
       .join("\n")
     const msg = [
@@ -165,7 +165,7 @@ export const SuccessModal = memo(function SuccessModal({
         }
       }}
     >
-      {/* Area de impresion aislada — react-to-print la copia a un iframe propio */}
+      {/* Area de impresion aislada - react-to-print la copia a un iframe propio */}
       <div
         ref={printRef}
         className="print-ticket-offscreen-layer"

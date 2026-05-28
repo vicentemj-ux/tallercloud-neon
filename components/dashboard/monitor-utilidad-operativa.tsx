@@ -47,7 +47,7 @@ interface GastoCategoria {
 
 const CATEGORIAS: GastoCategoria[] = [
   { value: "mano_obra", label: "Mano de Obra", icon: <Wrench className="h-3.5 w-3.5" /> },
-  { value: "refaccion", label: "RefacciÃ³n", icon: <Package className="h-3.5 w-3.5" /> },
+  { value: "refaccion", label: "Refaccion", icon: <Package className="h-3.5 w-3.5" /> },
   { value: "maquila", label: "Maquila/Externo", icon: <Cog className="h-3.5 w-3.5" /> },
   { value: "insumo", label: "Insumos", icon: <Hexagon className="h-3.5 w-3.5" /> },
   { value: "otro", label: "Otros", icon: <DollarSign className="h-3.5 w-3.5" /> },
@@ -89,7 +89,7 @@ export function MonitorUtilidadOperativa({
   const handleAddGasto = useCallback(async () => {
     const montoNum = parseFloat(monto)
     if (!concepto.trim() || isNaN(montoNum) || montoNum <= 0) {
-      setAddError("Ingresa un concepto y monto vÃ¡lido.")
+      setAddError("Ingresa un concepto y monto valido.")
       return
     }
 
@@ -122,7 +122,7 @@ export function MonitorUtilidadOperativa({
             return [...filtered, result.data!] as GastoWithCreator[]
           })
           toast({
-            title: "âœ… Gasto registrado exitosamente",
+            title: "âœ... Gasto registrado exitosamente",
             description: `${categoriaLabel(categoria)} - $${montoNum.toLocaleString("es-MX")} | Revisado en caja`,
           })
           // Reset form
@@ -157,8 +157,8 @@ export function MonitorUtilidadOperativa({
           void loadGastos()
         } else {
           toast({
-            title: "âœ… Gasto eliminado y caja revertida",
-            description: `Se eliminÃ³: ${gastoToDelete.concepto}`,
+            title: "âœ... Gasto eliminado y caja revertida",
+            description: `Se elimino: ${gastoToDelete.concepto}`,
           })
         }
       } catch {
@@ -223,9 +223,9 @@ export function MonitorUtilidadOperativa({
                     ${presupuesto.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                {/* InversiÃ³n */}
+                {/* Inversion */}
                 <div className="text-center">
-                  <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 mb-1">InversiÃ³n</p>
+                  <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Inversion</p>
                   <p className="text-lg font-bold text-red-500 tabular-nums">
                     -${totalGastos.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                   </p>
@@ -270,7 +270,7 @@ export function MonitorUtilidadOperativa({
               </div>
               {isLowMargin && !isNegative && (
                 <p className="mt-1.5 text-[9px] text-center text-amber-600 font-medium">
-                  âš ï¸ La utilidad estÃ¡ por debajo del 20%
+                  âš ï¸ La utilidad esta por debajo del 20%
                 </p>
               )}
             </div>
@@ -282,10 +282,10 @@ export function MonitorUtilidadOperativa({
                 Registrar Gasto
               </p>
               
-              {/* Row 1: CategorÃ­a + Concepto */}
+              {/* Row 1: Categoria + Concepto */}
               <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-3 flex flex-col gap-1">
-                  <Label className="text-[10px] text-slate-500">CategorÃ­a</Label>
+                  <Label className="text-[10px] text-slate-500">Categoria</Label>
                   <Select value={categoria} onValueChange={(v) => setCategoria(v as GastoTipo)}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
@@ -313,7 +313,7 @@ export function MonitorUtilidadOperativa({
                 </div>
               </div>
 
-              {/* Row 2: Monto + BotÃ³n */}
+              {/* Row 2: Monto + Boton */}
               <div className="grid grid-cols-12 gap-2 items-end">
                 <div className="col-span-4 flex flex-col gap-1">
                   <Label className="text-[10px] text-slate-500">Monto ($)</Label>
@@ -361,7 +361,7 @@ export function MonitorUtilidadOperativa({
                   {gastos.map((g) => (
                     <li key={g.id} className="px-3 py-2.5 hover:bg-slate-50 transition-colors">
                       <div className="flex items-start gap-2">
-                        {/* Badge de categorÃ­a */}
+                        {/* Badge de categoria */}
                         <span className={cn(
                           "shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase mt-0.5",
                           g.tipo === "mano_obra" ? "bg-purple-100 text-purple-700" :
@@ -393,7 +393,7 @@ export function MonitorUtilidadOperativa({
                           -${g.monto.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                         </span>
 
-                        {/* BotÃ³n eliminar con confirmaciÃ³n */}
+                        {/* Boton eliminar con confirmacion */}
                         <button
                           type="button"
                           onClick={() => handleDeleteClick(g.id, g.concepto, g.monto)}
@@ -411,7 +411,7 @@ export function MonitorUtilidadOperativa({
             ) : (
               <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/30 py-6 text-center">
                 <p className="text-xs text-slate-400">Sin gastos registrados</p>
-                <p className="text-[10px] text-slate-400 mt-1">Los costos aparecerÃ¡n aquÃ­ conforme se registren</p>
+                <p className="text-[10px] text-slate-400 mt-1">Los costos apareceran aqui conforme se registren</p>
               </div>
             )}
 
@@ -419,7 +419,7 @@ export function MonitorUtilidadOperativa({
             <div className="flex items-start gap-2 rounded-lg bg-slate-50 border border-slate-200 px-3 py-2">
               <Lock className="h-3.5 w-3.5 shrink-0 text-slate-400 mt-0.5" />
               <p className="text-[9px] leading-relaxed text-slate-500">
-                Esta informaciÃ³n es de uso interno del taller. No se incluye en el ticket del cliente ni en la vista de seguimiento.
+                Esta informacion es de uso interno del taller. No se incluye en el ticket del cliente ni en la vista de seguimiento.
               </p>
             </div>
           </div>
@@ -439,7 +439,7 @@ export function MonitorUtilidadOperativa({
                 Monto: <span className="font-semibold text-red-600">-${gastoToDelete?.monto.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
               </p>
               <p className="text-xs text-slate-400 italic">
-                Esta acciÃ³n se revertirÃ¡ automÃ¡ticamente en el Corte de Caja.
+                Esta accion se revertira automaticamente en el Corte de Caja.
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>

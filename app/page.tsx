@@ -84,7 +84,7 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Dashboard preview — clean mockup */}
+            {/* Dashboard preview - clean mockup */}
             <div className="mt-4 w-full max-w-4xl">
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-primary/10">
                 {/* Browser bar */}

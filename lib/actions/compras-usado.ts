@@ -109,7 +109,7 @@ export async function registrarCompraUsado(input: CompraUsadoInput): Promise<{
     caja_id:      cajaId,
     tipo:         "compra_equipo_usado",
     referencia_id: folio,
-    descripcion:  `Compra equipo usado — ${input.marca} ${input.modelo} (Vendedor: ${input.vendedor})`,
+    descripcion:  `Compra equipo usado - ${input.marca} ${input.modelo} (Vendedor: ${input.vendedor})`,
     monto:        -montoAbs,
     metodo_pago:  "efectivo",
     fecha:        nowIso,

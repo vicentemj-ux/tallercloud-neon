@@ -56,9 +56,9 @@ function fmt(n: number) {
 }
 
 function fmtDate(iso: string | null | undefined) {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
-  if (isNaN(d.getTime())) return "—"
+  if (isNaN(d.getTime())) return "-"
   return d.toLocaleDateString("es-MX", {
     day: "2-digit",
     month: "short",
@@ -67,9 +67,9 @@ function fmtDate(iso: string | null | undefined) {
 }
 
 function fmtTime(iso: string | null | undefined) {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
-  if (isNaN(d.getTime())) return "—"
+  if (isNaN(d.getTime())) return "-"
   return d.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
@@ -77,7 +77,7 @@ function fmtTime(iso: string | null | undefined) {
 }
 
 function fmtCorte(n: number | null) {
-  if (n === null) return "—"
+  if (n === null) return "-"
   return `#${String(n).padStart(3, "0")}`
 }
 
@@ -142,7 +142,7 @@ export function TicketCorteTemplate({
         </div>
         <div className="flex justify-between items-center w-full">
           <span className="text-black">Cierre</span>
-          <span className="font-semibold text-black">{fechaCierre ? fmtTime(fechaCierre) : "—"}</span>
+          <span className="font-semibold text-black">{fechaCierre ? fmtTime(fechaCierre) : "-"}</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span className="text-black">Tipo Cierre</span>

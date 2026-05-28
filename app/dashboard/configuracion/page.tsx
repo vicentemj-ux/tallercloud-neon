@@ -109,7 +109,7 @@ function validateSettings(s: TallerSettings): FieldErrors {
   return errors
 }
 
-// ─── FieldWrap — FUERA del componente principal para no perder el foco ─────
+// ─── FieldWrap - FUERA del componente principal para no perder el foco ─────
 
 function FieldWrap({
   field, label, errors, children,

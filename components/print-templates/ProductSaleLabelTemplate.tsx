@@ -21,7 +21,7 @@ export interface ProductSaleLabelTemplateData {
 
 interface Props {
   data: ProductSaleLabelTemplateData
-  /** Fase 3 — visibilidad controlada desde Imprenta */
+  /** Fase 3 - visibilidad controlada desde Imprenta */
   mostrarPrecios?: boolean
 }
 
@@ -30,7 +30,7 @@ function fmt(n: number) {
 }
 
 /**
- * Etiqueta de equipo en venta — formato UNICO: 2×1" horizontal (50mm × 25mm landscape).
+ * Etiqueta de equipo en venta - formato UNICO: 2x1" horizontal (50mm x 25mm landscape).
  * Etiqueta PRE-CORTADA: width y height son fijos e inamovibles.
  * @page CSS: size: 50mm 25mm; margin: 0;
  */
@@ -50,7 +50,7 @@ const ProductSaleLabelTemplate = forwardRef<HTMLDivElement, Props>(({ data, most
       ref={ref}
       className="product-sale-label-template"
       style={{
-        // ── CAMISA DE FUERZA — etiqueta pre-cortada 2×1" ──────────────────
+        // ── CAMISA DE FUERZA - etiqueta pre-cortada 2x1" ──────────────────
         width: "50mm",
         height: "25mm",
         overflow: "hidden",
@@ -121,7 +121,7 @@ const ProductSaleLabelTemplate = forwardRef<HTMLDivElement, Props>(({ data, most
           marginBottom: "1px",
         }}
       >
-        {data.deviceName || "—"}
+        {data.deviceName || "-"}
       </div>
 
       {/* ── FILA 3: Specs comprimidas en 1 linea ── */}
@@ -158,7 +158,7 @@ const ProductSaleLabelTemplate = forwardRef<HTMLDivElement, Props>(({ data, most
       {/* ── DIVISOR ── */}
       <div style={{ borderTop: "1.5px solid black", marginBottom: "1px" }} />
 
-      {/* ── FILA 5: Precio — protagonista ── */}
+      {/* ── FILA 5: Precio - protagonista ── */}
       {mostrarPrecios && (
         <div
           style={{

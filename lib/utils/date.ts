@@ -4,7 +4,7 @@
  */
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleDateString("es-MX", {
@@ -15,7 +15,7 @@ export function formatDate(iso: string | null | undefined): string {
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleDateString("es-MX", {
@@ -28,7 +28,7 @@ export function formatDateTime(iso: string | null | undefined): string {
 }
 
 export function formatShortDate(iso: string | null | undefined): string {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleDateString("es-MX", {
@@ -40,7 +40,7 @@ export function formatShortDate(iso: string | null | undefined): string {
 
 /** Formato para folios: "14 abr 2026 · 10:30". */
 export function formatFolioFecha(iso: string | null | undefined): string {
-  if (!iso) return "—"
+  if (!iso) return "-"
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   const fecha = d.toLocaleDateString("es-MX", { day: "numeric", month: "short" })

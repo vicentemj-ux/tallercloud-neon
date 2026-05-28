@@ -1,8 +1,8 @@
 "use server"
 
 /**
- * lib/storage-server.ts — Server Actions para Supabase Storage privado.
- * Requiere service_role key — solo ejecutar server-side.
+ * lib/storage-server.ts - Server Actions para Supabase Storage privado.
+ * Requiere service_role key - solo ejecutar server-side.
  * Para URLs publicas usa getPublicUrl() de lib/storage.ts.
  */
 

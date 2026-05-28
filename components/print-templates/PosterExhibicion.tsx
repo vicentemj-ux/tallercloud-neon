@@ -17,7 +17,7 @@ import {
   buildWhatsAppApiSendUrl,
 } from "@/lib/print/poster-exhibicion-utils"
 
-/** Colores solo HEX/RGB — impresion y captura (sin oklch/lab). Paleta neutra para cualquier taller. */
+/** Colores solo HEX/RGB - impresion y captura (sin oklch/lab). Paleta neutra para cualquier taller. */
 const POSTER_ACCENT_BLUE = "#185FA5"
 const POSTER_ACCENT_TEAL = "#0d9488"
 const SLATE_900 = "#0f172a"

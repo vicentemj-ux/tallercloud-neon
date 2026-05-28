@@ -11,7 +11,7 @@ export async function triggerVictoryLaunch(): Promise<void> {
     /* canvas-confetti opcional si falla la carga */
   }
   try {
-    // public/sounds/shutter.mp3 — anade el archivo para el clic de obturador
+    // public/sounds/shutter.mp3 - anade el archivo para el clic de obturador
     const audio = new Audio("/sounds/shutter.mp3")
     await audio.play()
   } catch {

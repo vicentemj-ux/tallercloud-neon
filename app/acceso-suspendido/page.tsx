@@ -85,7 +85,7 @@ function AccesoSuspendidoContent() {
             ) : (
               <LogOut className="h-4 w-4" />
             )}
-            {loggingOut ? "Cerrando sesion…" : "Cerrar sesion / Cambiar cuenta"}
+            {loggingOut ? "Cerrando sesion..." : "Cerrar sesion / Cambiar cuenta"}
           </button>
         </div>
 
