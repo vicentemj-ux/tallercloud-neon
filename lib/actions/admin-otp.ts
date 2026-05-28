@@ -58,16 +58,28 @@ export async function sendAdminOTP(): Promise<{
     const tallerId = await requireAdmin()
     const prisma = getPrismaClient()
 
-    const userRows = await prisma.$queryRawUnsafe<Array<{ email: string }>>(
-      "SELECT email FROM taller_users WHERE id = $1 LIMIT 1",
-      tallerId,
-    )
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS admin_otp_codes (
+        id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+        admin_id text NOT NULL,
+        code text NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        expires_at timestamptz NOT NULL,
+        attempts integer DEFAULT 0,
+        CONSTRAINT admin_otp_code_format CHECK (code ~ '^[0-9]{8}$')
+      );
+    `)
 
-    if (!userRows[0]?.email) {
+    const adminUser = await prisma.user.findUnique({
+      where: { id: tallerId },
+      select: { email: true },
+    })
+
+    if (!adminUser?.email) {
       return { success: false, error: "No se pudo obtener el correo del administrador. Verifica tu perfil." }
     }
 
-    const adminEmail = userRows[0].email
+    const adminEmail = adminUser.email
     const windowStart = new Date(Date.now() - OTP_WINDOW_MINUTES * 60 * 1000).toISOString()
 
     const countRows = await prisma.$queryRawUnsafe<Array<{ count: number }>>(
