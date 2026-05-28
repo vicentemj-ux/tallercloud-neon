@@ -314,9 +314,12 @@ async function ensureAllPosTablesExist() {
       categoria text,
       procesador text,
       ram text,
-      almacenamiento text
+      almacenamiento text,
+      created_at timestamptz NOT NULL DEFAULT now()
     );
   `)
+
+  await prisma.$executeRawUnsafe(`ALTER TABLE detalle_ventas ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now()`);
 
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS movimientos_caja (
@@ -328,9 +331,14 @@ async function ensureAllPosTablesExist() {
       descripcion text,
       monto numeric(12,2) NOT NULL DEFAULT 0,
       metodo_pago text,
-      fecha timestamptz NOT NULL DEFAULT now()
+      fecha timestamptz NOT NULL DEFAULT now(),
+      folio text,
+      vendedor_nombre text
     );
   `)
+
+  await prisma.$executeRawUnsafe(`ALTER TABLE movimientos_caja ADD COLUMN IF NOT EXISTS folio text`);
+  await prisma.$executeRawUnsafe(`ALTER TABLE movimientos_caja ADD COLUMN IF NOT EXISTS vendedor_nombre text`);
 
   await prisma.$executeRawUnsafe(`
     CREATE OR REPLACE FUNCTION get_next_venta_folio(p_taller_id text)

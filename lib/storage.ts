@@ -81,12 +81,17 @@ export function getInventoryPublicUrl(stored: string | null | undefined): string
     return s
   }
 
-  const r2Base = typeof process !== "undefined" ? process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "") : null
+  const r2Base = (
+    process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL ||
+    process.env.R2_PUBLIC_BASE_URL ||
+    ""
+  ).replace(/\/$/, "")
+
   if (r2Base && s.startsWith("inventario/")) {
     return `${r2Base}/${s}`
   }
 
-  const supabaseUrl = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_URL : null
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   if (!supabaseUrl) return null
 
   return getPublicUrl(INVENTORY_PRODUCT_IMAGES_BUCKET, s)
