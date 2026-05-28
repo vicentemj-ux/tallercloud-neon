@@ -6,6 +6,7 @@ import { getPrismaClient } from "@/lib/prisma"
 import {
   ensureChecklistIngreso,
   parseChecklistIngreso,
+  checklistIngresoToJson,
   type ChecklistIngreso,
 } from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
@@ -369,6 +370,9 @@ export async function createRepair(input: CreateRepairInput) {
               pinContrasena: input.pinContrasena ?? null,
               patronDesbloqueo: input.patronDesbloqueo ?? null,
               notasInternas: input.notasInternas?.trim() || null,
+              checklistIngreso: input.checklistIngreso != null
+                ? checklistIngresoToJson(input.checklistIngreso) as any
+                : null,
             },
             select: { id: true, folio: true },
           })
@@ -579,6 +583,10 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
     let checklistPro: ChecklistProData | null = null
     let creadoPorNombre: string | null = null
 
+    if (rep.checklistIngreso != null) {
+      checklistIngreso = parseChecklistIngreso(rep.checklistIngreso)
+    }
+
     try {
       const extraRows = await prisma.$queryRawUnsafe<Array<{
         checklist_ingreso: unknown
@@ -594,7 +602,9 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
       )
       const extra = extraRows[0]
       if (extra) {
-        checklistIngreso = parseChecklistIngreso(extra.checklist_ingreso)
+        if (!checklistIngreso) {
+          checklistIngreso = parseChecklistIngreso(extra.checklist_ingreso)
+        }
         checklistPro = (extra.checklist_pro as ChecklistProData | null) ?? null
         creadoPorNombre = extra.creado_por_nombre ?? null
       }
@@ -816,6 +826,7 @@ export async function updateRepairFull(input: {
   removedPhotos?: string[]
   keptPhotos?: string[]
   notasInternas?: string
+  checklistIngreso?: ChecklistIngreso | null
 }) {
   try {
     const prisma = getPrismaClient()
@@ -857,6 +868,9 @@ export async function updateRepairFull(input: {
           pinContrasena: input.pinContrasena ?? null,
           patronDesbloqueo: input.patronDesbloqueo ?? null,
           notasInternas: input.notasInternas?.trim() || null,
+          checklistIngreso: input.checklistIngreso !== undefined
+            ? (input.checklistIngreso != null ? checklistIngresoToJson(input.checklistIngreso) as any : null)
+            : undefined,
         },
       })
     })
