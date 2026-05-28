@@ -58,6 +58,38 @@ async function ensureAuditTablesExist() {
       created_at timestamptz NOT NULL DEFAULT now()
     );
   `)
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS caja (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      monto_inicial numeric(12,2) NOT NULL DEFAULT 0,
+      monto_cierre numeric(12,2),
+      fecha_apertura timestamptz NOT NULL DEFAULT now(),
+      fecha_cierre timestamptz,
+      estado text NOT NULL DEFAULT 'abierta',
+      total_efectivo numeric(12,2) NOT NULL DEFAULT 0,
+      total_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
+      total_transferencia numeric(12,2) NOT NULL DEFAULT 0,
+      total_ventas integer NOT NULL DEFAULT 0,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      nota_cierre text,
+      numero_corte integer
+    );
+  `)
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS movimientos_caja (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      caja_id text,
+      tipo text NOT NULL,
+      referencia_id text,
+      descripcion text,
+      monto numeric(12,2) NOT NULL DEFAULT 0,
+      metodo_pago text,
+      fecha timestamptz NOT NULL DEFAULT now(),
+      vendedor_nombre text
+    );
+  `)
   _auditTablesReady = true
 }
 
@@ -583,17 +615,14 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
     let checklistPro: ChecklistProData | null = null
     let creadoPorNombre: string | null = null
 
-    if (rep.checklistIngreso != null) {
-      checklistIngreso = parseChecklistIngreso(rep.checklistIngreso)
-    }
+    checklistIngreso = parseChecklistIngreso(rep.checklistIngreso)
 
     try {
       const extraRows = await prisma.$queryRawUnsafe<Array<{
-        checklist_ingreso: unknown
         checklist_pro: unknown
         creado_por_nombre: string | null
       }>>(
-        `SELECT checklist_ingreso, checklist_pro, creado_por_nombre
+        `SELECT checklist_pro, creado_por_nombre
          FROM reparaciones
          WHERE id = $1 AND taller_id = $2
          LIMIT 1`,
@@ -602,9 +631,6 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
       )
       const extra = extraRows[0]
       if (extra) {
-        if (!checklistIngreso) {
-          checklistIngreso = parseChecklistIngreso(extra.checklist_ingreso)
-        }
         checklistPro = (extra.checklist_pro as ChecklistProData | null) ?? null
         creadoPorNombre = extra.creado_por_nombre ?? null
       }
@@ -1021,6 +1047,67 @@ export async function deleteRepair(repairId: string): Promise<{ success: boolean
   }
 }
 
+export async function getRepairByFolio(folio: string): Promise<{ data: RepairDetail | null; error: string | null }> {
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const rep = await prisma.reparacion.findFirst({
+      where: { folio, tenantId },
+      include: { cliente: true },
+    })
+    if (!rep) return { data: null, error: "Reparacion no encontrada." }
+
+    const estimated = rep.costoEstimado == null ? null : Number(rep.costoEstimado)
+    const anticipo = rep.anticipo == null ? 0 : Number(rep.anticipo)
+
+    const archivos = await prisma.archivo.findMany({
+      where: {
+        tenantId,
+        reparacionId: rep.id,
+        visibility: "TRACKING_VERIFIED",
+        tipo: "REPAIR_INTAKE_PHOTO",
+      },
+      orderBy: { createdAt: "asc" },
+      select: { publicUrl: true, storageKey: true, key: true },
+    })
+    const fotos = archivos
+      .map((a: ArchivoRow) => getArchivoDisplayUrl(a))
+      .filter((u: string | null | undefined): u is string => Boolean(u))
+
+    const checklistIngreso = parseChecklistIngreso(rep.checklistIngreso)
+
+    const detail: RepairDetail = {
+      ...toBitacoraRepair({ ...rep, cliente: { nombre: rep.cliente.nombre, telefono: rep.cliente.telefono } }),
+      status: asStatus(rep.estado),
+      securityType:
+        rep.securityType === "none" || rep.securityType === "pin" || rep.securityType === "password" || rep.securityType === "pattern"
+          ? rep.securityType
+          : null,
+      securityValue: rep.securityValue ?? null,
+      createdAtRaw: rep.createdAt.toISOString(),
+      clienteEmail: rep.cliente.email ?? null,
+      imei: rep.numeroSerie ?? null,
+      color: rep.color ?? null,
+      tipo_equipo: rep.tipoEquipo ?? null,
+      pinContrasena: rep.pinContrasena ?? null,
+      patronDesbloqueo: rep.patronDesbloqueo ?? null,
+      fotos,
+      fotosSignedUrls: fotos,
+      falla: rep.falla ?? null,
+      costoTotal: estimated,
+      restante: estimated == null ? null : Math.max(0, estimated - anticipo),
+      notasInternas: rep.notasInternas ?? null,
+      checklistIngreso: ensureChecklistIngreso(rep.tipoEquipo ?? "Otro", checklistIngreso),
+      checklistPro: null,
+      creadoPorNombre: null,
+    }
+    return { data: detail, error: null }
+  } catch (e) {
+    console.error("getRepairByFolio prisma:", e)
+    return { data: null, error: "No se pudo cargar la reparacion." }
+  }
+}
+
 function roundMoney(n: number): number {
   return Math.round(n * 100) / 100
 }
@@ -1033,20 +1120,17 @@ export async function actualizarPresupuestoReparacion(
   try {
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
-    const recRows = await prisma.$queryRawUnsafe<Array<{ precio_estimado: number | null }>>(
-      "SELECT precio_estimado FROM reparaciones WHERE id = $1 AND taller_id = $2 LIMIT 1",
-      repairId,
-      tallerId,
-    )
-    if (!recRows[0]) return { success: false, error: "No se encontro la reparacion." }
+    const rep = await prisma.reparacion.findFirst({
+      where: { id: repairId, tenantId: tallerId },
+      select: { costoEstimado: true },
+    })
+    if (!rep) return { success: false, error: "No se encontro la reparacion." }
 
-    const prev = Number(recRows[0].precio_estimado ?? 0)
-    await prisma.$executeRawUnsafe(
-      "UPDATE reparaciones SET precio_estimado = $1, updated_at = now() WHERE id = $2 AND taller_id = $3",
-      nuevoPresupuesto,
-      repairId,
-      tallerId,
-    )
+    const prev = Number(rep.costoEstimado ?? 0)
+    await prisma.reparacion.update({
+      where: { id: repairId },
+      data: { costoEstimado: nuevoPresupuesto },
+    })
 
     const nota = `${descripcion?.trim() || "Presupuesto actualizado"} - $${prev.toLocaleString("es-MX")} -> $${nuevoPresupuesto.toLocaleString("es-MX")}`
     await prisma.$executeRawUnsafe(
@@ -1086,12 +1170,12 @@ export async function registrarAbono(input: {
     const tallerId = await getTenantIdOrThrow()
     const actor = await getCurrentActorDisplayName()
 
-    const repRows = await prisma.$queryRawUnsafe<Array<{ anticipo: number | null; precio_estimado: number | null; folio: string | null; estatus: string | null }>>(
-      "SELECT anticipo, precio_estimado, folio, estatus FROM reparaciones WHERE id = $1 AND taller_id = $2 LIMIT 1",
-      input.repairId,
-      tallerId,
-    )
-    const rep = repRows[0]
+    await ensureAuditTablesExist()
+
+    const rep = await prisma.reparacion.findFirst({
+      where: { id: input.repairId, tenantId: tallerId },
+      select: { anticipo: true, costoEstimado: true, folio: true, estado: true },
+    })
     if (!rep) return { success: false, error: "No se encontro la reparacion." }
 
     const cajaRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
@@ -1102,17 +1186,15 @@ export async function registrarAbono(input: {
     if (!cajaId) return { success: false, error: "No hay caja abierta. Abre caja en Punto de venta para registrar el cobro." }
 
     const current = Number(rep.anticipo ?? 0)
-    const presupuesto = Number(rep.precio_estimado ?? 0)
+    const presupuesto = Number(rep.costoEstimado ?? 0)
     const nuevo = roundMoney(current + input.monto)
     const saldo = roundMoney(Math.max(0, presupuesto - nuevo))
     const liquidado = saldo <= 0.01 && presupuesto > 0
 
-    await prisma.$executeRawUnsafe(
-      "UPDATE reparaciones SET anticipo = $1, updated_at = now() WHERE id = $2 AND taller_id = $3",
-      nuevo,
-      input.repairId,
-      tallerId,
-    )
+    await prisma.reparacion.update({
+      where: { id: input.repairId },
+      data: { anticipo: nuevo },
+    })
 
     const movRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
       `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha, vendedor_nombre)
@@ -1176,11 +1258,10 @@ export async function confirmarEntregaConLiquidacion(input: {
     })
     const estadoAnterior = existing?.estado || "Listo"
 
-    await prisma.$executeRawUnsafe(
-      "UPDATE reparaciones SET estatus = 'Entregado', updated_at = now() WHERE id = $1 AND taller_id = $2",
-      input.repairId,
-      tallerId,
-    )
+    await prisma.reparacion.update({
+      where: { id: input.repairId },
+      data: { estado: "Entregado" },
+    })
 
     const nota = input.notaTecnica?.trim() || "Liquidacion y entrega"
 
@@ -1239,12 +1320,10 @@ export async function entregarSinReparacionConAjuste(input: {
     const estadoAnterior = existing?.estado || "Recibido"
     const precioAnterior = existing?.costoEstimado != null ? Number(existing.costoEstimado) : 0
 
-    await prisma.$executeRawUnsafe(
-      "UPDATE reparaciones SET precio_estimado = $1, estatus = 'Entregado', updated_at = now() WHERE id = $2 AND taller_id = $3",
-      input.costoRevision,
-      input.repairId,
-      tallerId,
-    )
+    await prisma.reparacion.update({
+      where: { id: input.repairId },
+      data: { costoEstimado: input.costoRevision, estado: "Entregado" },
+    })
 
     const nota = input.notaTecnica?.trim() || "Entrega sin reparacion"
 
