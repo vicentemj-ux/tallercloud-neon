@@ -99,8 +99,9 @@ function ProductThumb({ src, alt, productId, tallerId }: { src: string | null; a
   const [broken, setBroken] = useState(false)
   const canonical =
     tallerId && productId ? getInventoryCanonicalImageUrl(tallerId, productId) : null
-  const effectiveSrc =
-    src && src.toLowerCase().endsWith(".webp") ? src : canonical ?? src
+  const s = src ? src.toLowerCase() : ""
+  const hasImageExt = s.endsWith(".webp") || s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png")
+  const effectiveSrc = hasImageExt ? src : canonical ?? src
 
   if (!effectiveSrc || broken) {
     return (

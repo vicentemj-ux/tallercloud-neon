@@ -37,10 +37,9 @@ export function InventoryProductImage({
   const canonical =
     tallerId && productId ? getInventoryCanonicalImageUrl(tallerId, productId) : null
 
-  const resolved =
-    stored && String(stored).trim().toLowerCase().endsWith(".webp")
-      ? getInventoryPublicUrl(stored)
-      : canonical ?? null
+  const s = stored ? String(stored).trim().toLowerCase() : ""
+  const hasImageExt = s.endsWith(".webp") || s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png")
+  const resolved = hasImageExt ? getInventoryPublicUrl(stored) : canonical ?? null
   const [broken, setBroken] = useState(false)
 
   if (!resolved || broken) {
@@ -82,10 +81,9 @@ type InventoryProductImagePreviewProps = {
 export function InventoryProductImagePreview({ stored, productId, tallerId, alt, className }: InventoryProductImagePreviewProps) {
   const canonical =
     tallerId && productId ? getInventoryCanonicalImageUrl(tallerId, productId) : null
-  const resolved =
-    stored && String(stored).trim().toLowerCase().endsWith(".webp")
-      ? getInventoryPublicUrl(stored)
-      : canonical ?? null
+  const s = stored ? String(stored).trim().toLowerCase() : ""
+  const hasImageExt = s.endsWith(".webp") || s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png")
+  const resolved = hasImageExt ? getInventoryPublicUrl(stored) : canonical ?? null
   const [broken, setBroken] = useState(false)
 
   if (!resolved || broken) {

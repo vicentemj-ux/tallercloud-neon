@@ -235,7 +235,8 @@ export function NuevoProductoModalWrapper({
         r.onerror = rej
         r.readAsDataURL(compressedFile)
       })
-      const res = await uploadProductImage(base64, productId)
+      const mimeType = compressedFile.type || "image/webp"
+      const res = await uploadProductImage(base64, productId, mimeType)
       if (!res.success) {
         const short = res.error && res.error.length > 120 ? "Revisa la conexion o el bucket de fotos en Supabase." : res.error
         setImageUploadError("Error al subir. " + (short || "Intenta de nuevo."))

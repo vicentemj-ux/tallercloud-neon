@@ -259,6 +259,7 @@ export async function createProducto(
 export async function uploadProductImage(
   base64Image: string,
   productId: string,
+  mimeType?: string,
 ): Promise<UploadProductImageResult> {
   try {
     if (!base64Image?.trim()) return { success: false, error: "No hay imagen" }
@@ -267,10 +268,16 @@ export async function uploadProductImage(
     if (!base64) return { success: false, error: "Formato de imagen no valido" }
 
     const buffer = Buffer.from(base64, "base64")
-    const fileName = sanitizeFileName(`${productId}.webp`)
+    const effectiveMime = mimeType || "image/webp"
+    const ext = effectiveMime.includes("jpeg") || effectiveMime.includes("jpg")
+      ? "jpg"
+      : effectiveMime.includes("png")
+        ? "png"
+        : "webp"
+    const fileName = sanitizeFileName(`${productId}.${ext}`)
     const key = `inventario/${tenantId}/${fileName}`
 
-    await uploadFileToR2({ key, body: buffer, contentType: "image/webp" })
+    await uploadFileToR2({ key, body: buffer, contentType: effectiveMime })
     return { success: true, path: key }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error al subir imagen", errorDebug: e }
