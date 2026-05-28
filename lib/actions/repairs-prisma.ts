@@ -455,15 +455,28 @@ export async function createRepair(input: CreateRepairInput) {
       }
     }
 
+    const actorNombre = await getCurrentActorDisplayName()
+
     try {
       await ensureAuditTablesExist()
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
+         VALUES ($1,$2,$3,NULL,$4,$5,$6,now())`,
+        result.id,
+        tenantId,
+        tenantId,
+        "Recibido",
+        `EQUIPO RECIBIDO — ${input.tipo_equipo?.trim() || "Equipo"} ${input.deviceBrand.trim()} ${input.deviceModel.trim()} — Recibido por ${actorNombre}`,
+        actorNombre,
+      )
+
       await prisma.$executeRawUnsafe(
         `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
          VALUES ($1,$2,'creacion',$3,NULL,NULL,$4,now())`,
         tenantId,
         result.id,
-        `Orden creada (folio ${result.folio})`,
-        await getCurrentActorDisplayName(),
+        `EQUIPO RECIBIDO — ${input.tipo_equipo?.trim() || "Equipo"} ${input.deviceBrand.trim()} ${input.deviceModel.trim()} — Folio ${result.folio}`,
+        actorNombre,
       )
     } catch (historyErr) {
       console.warn("createRepair prisma history seed:", historyErr)

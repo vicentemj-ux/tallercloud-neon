@@ -511,13 +511,14 @@ async function createRepairInner(input: CreateRepairInput) {
   /** Primer evento de auditoria (misma migracion que retira el trigger basal). */
   if (repairId) {
     const actorNombre = await getCurrentActorDisplayName()
+    const equipoContexto = [data.tipo_equipo?.trim(), data.deviceBrand?.trim(), data.deviceModel?.trim()].filter(Boolean).join(" ") || "Equipo"
     const { error: histErr } = await supabase.from("historial_reparacion").insert({
       reparacion_id: repairId,
       taller_id: tallerId,
       usuario_id: tallerId,
       estado_anterior: null,
       estado_nuevo: "Recibido",
-      nota_tecnica: `Equipo Recibido - Orden Generada por ${actorNombre}`,
+      nota_tecnica: `EQUIPO RECIBIDO — ${equipoContexto} — Recibido por ${actorNombre}`,
       actor_nombre: actorNombre,
     })
     if (histErr) {

@@ -111,10 +111,16 @@ export interface RepairDetailViewProps {
 
 const PROCESS_OPTIONS = [
   { value: "Recibido", label: "RECIBIDO" },
-  { value: "Diagnostico", label: "DIAGNÃ“STICO" },
-  { value: "En Reparacion", label: "EN REPARACIÃ“N" },
+  { value: "Diagnostico", label: "DIAGNÓSTICO" },
+  { value: "En Reparacion", label: "EN REPARACIÓN" },
   { value: "Listo", label: "LISTO" },
 ]
+const PROCESS_LABEL_MAP: Record<string, string> = {
+  Recibido: "RECIBIDO",
+  Diagnostico: "DIAGNÓSTICO",
+  "En Reparacion": "EN REPARACIÓN",
+  Listo: "LISTO",
+}
 
 export function RepairDetailView({
   repair,
@@ -570,7 +576,7 @@ export function RepairDetailView({
           usuario: detail.creadoPorNombre,
           anterior: null,
           nuevo: estado || "Recibido",
-          nota: "Equipo Recibido - Orden Generada",
+          nota: `EQUIPO RECIBIDO${detail.creadoPorNombre ? ` — Recibido por ${detail.creadoPorNombre}` : ""}`,
         },
       ]
     }
