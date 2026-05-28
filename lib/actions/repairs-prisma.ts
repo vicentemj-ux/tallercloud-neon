@@ -26,6 +26,40 @@ type ArchivoRow = { publicUrl: string | null; storageKey: string | null; key: st
 type TechnicianRow = { id: string; nombre: string | null }
 type LegacyRepairsModule = typeof import("@/lib/actions/repairs")
 
+let _auditTablesReady = false
+
+async function ensureAuditTablesExist() {
+  if (_auditTablesReady) return
+  const prisma = getPrismaClient()
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS historial_reparacion (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      reparacion_id text NOT NULL,
+      taller_id text NOT NULL,
+      usuario_id text,
+      estado_anterior text,
+      estado_nuevo text NOT NULL,
+      nota_tecnica text,
+      actor_nombre text,
+      fecha timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS cambios_reparaciones (
+      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
+      taller_id text NOT NULL,
+      reparacion_id text NOT NULL,
+      tipo_cambio text NOT NULL,
+      descripcion text,
+      valor_anterior text,
+      valor_nuevo text,
+      usuario text,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `)
+  _auditTablesReady = true
+}
+
 let legacyRepairsModulePromise: Promise<LegacyRepairsModule> | null = null
 
 async function getLegacyRepairsModule(): Promise<LegacyRepairsModule> {
@@ -422,6 +456,7 @@ export async function createRepair(input: CreateRepairInput) {
     }
 
     try {
+      await ensureAuditTablesExist()
       await prisma.$executeRawUnsafe(
         `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
          VALUES ($1,$2,'creacion',$3,NULL,NULL,$4,now())`,
@@ -834,21 +869,31 @@ export async function applyRepairStatusChange(input: {
     await prisma.reparacion.update({ where: { id: input.repairId }, data: { estado: input.estadoNuevo } })
 
     const nota = input.notaTecnica?.trim() || null
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
-      input.repairId, tenantId, tenantId, input.estadoAnterior || null, input.estadoNuevo, nota, actorNombre,
-    )
 
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-       VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
-      tenantId, input.repairId,
-      `Estado: ${input.estadoAnterior || '?'} → ${input.estadoNuevo}`,
-      input.estadoAnterior || null,
-      input.estadoNuevo,
-      actorNombre,
-    )
+    try {
+      await ensureAuditTablesExist()
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
+        input.repairId, tenantId, tenantId, input.estadoAnterior || null, input.estadoNuevo, nota, actorNombre,
+      )
+    } catch (he) {
+      console.error("[repairs-prisma] historial_reparacion insert:", he)
+    }
+
+    try {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
+         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
+        tenantId, input.repairId,
+        `Estado: ${input.estadoAnterior || '?'} -> ${input.estadoNuevo}`,
+        input.estadoAnterior || null,
+        input.estadoNuevo,
+        actorNombre,
+      )
+    } catch (ce) {
+      console.error("[repairs-prisma] cambios_reparaciones insert:", ce)
+    }
 
     return { success: true }
   } catch (e) {
