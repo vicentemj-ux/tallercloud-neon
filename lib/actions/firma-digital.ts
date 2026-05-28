@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { randomUUID } from "crypto"
 import { createAdminClient } from "@/lib/supabase/admin"

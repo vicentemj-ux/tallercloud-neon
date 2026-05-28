@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import type { VentaCreada } from "@/lib/actions/ventas-prisma"
 

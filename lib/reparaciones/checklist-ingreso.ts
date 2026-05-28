@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Checklist de ingreso — almacenado en `reparaciones.checklist_ingreso` (JSONB).
  */
 export type EncendidoRecepcion = "ok" | "intermitente" | "no"

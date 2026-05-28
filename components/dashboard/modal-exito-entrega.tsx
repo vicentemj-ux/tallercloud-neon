@@ -1,10 +1,10 @@
-﻿"use client"
+"use client"
 
 import { useMemo } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { MessageCircle, Printer } from "lucide-react"
-import type { RepairDetail } from "@/lib/actions/repairs-prisma"
+import type { RepairDetail } from "@/lib/actions/repairs"
 import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 import { toast } from "@/hooks/use-toast"
 
@@ -68,4 +68,3 @@ export function ModalExitoEntrega({
     </Dialog>
   )
 }
-

@@ -1,4 +1,4 @@
-﻿import dynamic from "next/dynamic"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, DatabaseBackup } from "lucide-react"
 import Link from "next/link"

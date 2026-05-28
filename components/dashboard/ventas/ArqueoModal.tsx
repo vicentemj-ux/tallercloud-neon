@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { memo, useEffect, useMemo, useState } from "react"
 import { Calculator, Clock, X, Loader2 } from "lucide-react"

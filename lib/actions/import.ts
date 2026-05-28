@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { revalidatePath } from "next/cache"

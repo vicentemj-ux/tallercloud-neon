@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Optimizacion de imagenes para subida (solo ejecutar en el navegador: usa Canvas).
  * - Maximo 1280px en el lado mayor
  * - Salida WebP calidad ~0.8, con reduccion hasta cumplir ≤ 400KB

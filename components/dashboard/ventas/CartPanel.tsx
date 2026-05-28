@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { memo } from "react"
 import { ShoppingBag, Banknote, CreditCard, Landmark, Plus, Minus, X, Check, AlertCircle, Tag } from "lucide-react"
@@ -326,7 +326,7 @@ export const CartPanel = memo(function CartPanel({
                 : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
             }`}
           >
-            PAGO uNICO
+            PAGO UNICO
           </button>
           <button
             type="button"

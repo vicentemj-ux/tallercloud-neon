@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { X, CheckCircle2, Loader2 } from "lucide-react"
@@ -89,7 +89,7 @@ export function EncuestaVisitaModal({
             <X className="h-4 w-4" />
           </button>
           <div className="absolute bottom-3 left-3 rounded-full bg-blue-600 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-            CLIENTE EN RECEPCIoN
+            CLIENTE EN RECEPCION
           </div>
         </div>
 

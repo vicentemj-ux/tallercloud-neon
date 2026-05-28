@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import type { HistorialVentaRow, HistorialVentasTotales } from "@/lib/actions/historial-ventas"
 import { getPublicAppHostname } from "@/lib/app-public"

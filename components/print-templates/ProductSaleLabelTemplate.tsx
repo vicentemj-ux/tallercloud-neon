@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { forwardRef } from "react"
 
@@ -30,7 +30,7 @@ function fmt(n: number) {
 }
 
 /**
- * Etiqueta de equipo en venta — formato uNICO: 2×1" horizontal (50mm × 25mm landscape).
+ * Etiqueta de equipo en venta — formato UNICO: 2×1" horizontal (50mm × 25mm landscape).
  * Etiqueta PRE-CORTADA: width y height son fijos e inamovibles.
  * @page CSS: size: 50mm 25mm; margin: 0;
  */

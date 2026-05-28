@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState } from "react"
 import { Wallet, CheckCircle2, Loader2 } from "lucide-react"
@@ -73,7 +73,7 @@ export function AnularVentaModal({ open, ventaId, folio, onClose, onAnulada }: A
 
             {/* Title */}
             <h3 className="mb-3 text-center text-lg font-black uppercase italic tracking-wide text-slate-900">
-              ¿DE DoNDE SALE EL DINERO?
+              ¿DE DONDE SALE EL DINERO?
             </h3>
 
             {/* Subtitle */}

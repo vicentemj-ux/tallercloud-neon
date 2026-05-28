@@ -58,10 +58,10 @@ export function Perfil({
 
   return (
     <div className="space-y-8">
-      {/* Seccion: Informacion de la cuenta */}
+      {/* SecciÃ³n: InformaciÃ³n de la cuenta */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Informacion de la cuenta</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">InformaciÃ³n de la cuenta</h3>
           <p className="text-sm text-slate-600">
             Detalles de tu cuenta de propietario en TallerCloud.
           </p>
@@ -75,18 +75,18 @@ export function Perfil({
               className="h-10 mt-1 bg-slate-50 border-slate-200"
             />
             <p className="text-xs text-slate-500 mt-1">
-              El email no puede modificarse desde aqui por seguridad.
+              El email no puede modificarse desde aquÃ­ por seguridad.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Seccion: Redes Sociales */}
+      {/* SecciÃ³n: Redes Sociales */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <h3 className="text-lg font-semibold text-slate-900 mb-2">Redes sociales del taller</h3>
           <p className="text-sm text-slate-600">
-            Estos datos aparecen en los tickets cuando activas la opcion "Redes Sociales" en Imprenta.
+            Estos datos aparecen en los tickets cuando activas la opciÃ³n "Redes Sociales" en Imprenta.
           </p>
         </div>
         <div className="lg:col-span-2 space-y-5">
@@ -135,11 +135,11 @@ export function Perfil({
               <Input
                 value={social.whatsapp}
                 onChange={(e) => setSocial((s) => ({ ...s, whatsapp: e.target.value }))}
-                placeholder="Numero (ej. 6681234567)"
+                placeholder="NÃºmero (ej. 6681234567)"
                 className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
               <p className="text-[10px] text-slate-500">
-                Formato: 6681234567 (se usara en links de WA Business)
+                Formato: 6681234567 (se usarÃ¡ en links de WA Business)
               </p>
             </div>
           </div>
@@ -157,17 +157,17 @@ export function Perfil({
         </div>
       </div>
 
-      {/* Seccion: Seguridad */}
+      {/* SecciÃ³n: Seguridad */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <h3 className="text-lg font-semibold text-slate-900 mb-2">Seguridad</h3>
           <p className="text-sm text-slate-600">
-            Actualiza tu contrasena para mantener segura tu cuenta.
+            Actualiza tu contraseÃ±a para mantener segura tu cuenta.
           </p>
         </div>
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <Label className="text-sm font-medium text-slate-700">Contrasena actual</Label>
+            <Label className="text-sm font-medium text-slate-700">ContraseÃ±a actual</Label>
             <Input
               type="password"
               value={currentPassword}
@@ -176,7 +176,7 @@ export function Perfil({
             />
           </div>
           <div>
-            <Label className="text-sm font-medium text-slate-700">Nueva contrasena</Label>
+            <Label className="text-sm font-medium text-slate-700">Nueva contraseÃ±a</Label>
             <Input
               type="password"
               value={newPassword}
@@ -184,7 +184,7 @@ export function Perfil({
               className="h-10 mt-1 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
             />
             <p className="text-xs text-slate-500 mt-1">
-              Minimo 8 caracteres. Combina letras, numeros y simbolos.
+              MÃ­nimo 8 caracteres. Combina letras, nÃºmeros y sÃ­mbolos.
             </p>
           </div>
           <Button
@@ -193,7 +193,7 @@ export function Perfil({
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-sm"
           >
             {passwordLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Actualizar contrasena
+            Actualizar contraseÃ±a
           </Button>
           {passwordMsg && (
             <div className={`text-sm p-3 rounded-lg border ${

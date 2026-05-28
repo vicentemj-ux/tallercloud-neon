@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
@@ -120,7 +120,7 @@ export async function getComprasStats(): Promise<ComprasStats> {
   }
 }
 
-// ─── ordenes ──────────────────────────────────────────────────────────────────
+// ─── Ordenes ──────────────────────────────────────────────────────────────────
 
 export async function getOrdenes(opts?: {
   search?: string

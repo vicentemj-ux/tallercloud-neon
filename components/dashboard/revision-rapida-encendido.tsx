@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { cn } from "@/lib/utils"
 import type { ChecklistIngreso, EncendidoRecepcion } from "@/lib/reparaciones/checklist-ingreso"
@@ -137,4 +137,3 @@ export function RevisionRapidaEncendido({ value, onChange, variant = "default" }
     </div>
   )
 }
-

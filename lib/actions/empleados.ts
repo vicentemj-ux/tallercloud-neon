@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"

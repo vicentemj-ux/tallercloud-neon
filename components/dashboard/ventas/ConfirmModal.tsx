@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { memo } from "react"
 import { HelpCircle, X, Info, Loader2 } from "lucide-react"

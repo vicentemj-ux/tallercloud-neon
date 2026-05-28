@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 /** Todas las consultas usan la tabla `productos` (inventario); no hay tabla `inventario` en este proyecto. */
 

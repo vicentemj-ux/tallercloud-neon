@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { Copy, RefreshCw, Check } from 'lucide-react';
@@ -71,7 +71,7 @@ Haz tu pedido hoy mismo.
     id: 'urgent',
     name: 'Publicacion Urgente',
     template: (p: Product) => `
-⏰ ¡ATENCIoN! ⏰
+⏰ ¡ATENCION! ⏰
 
 Tenemos disponible: ${p.name}
 

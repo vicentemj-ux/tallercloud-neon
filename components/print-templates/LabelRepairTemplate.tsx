@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { forwardRef } from "react"
 
@@ -48,7 +48,7 @@ function fmtMoney(value?: string | null): string {
 }
 
 /**
- * Etiqueta de reparacion — formato uNICO: 2×1" (50.8mm × 25.4mm).
+ * Etiqueta de reparacion — formato UNICO: 2×1" (50.8mm × 25.4mm).
  * @page CSS: size: 50.8mm 25.4mm; margin: 0;
  *
  * Layout de 5 lineas optimizado:

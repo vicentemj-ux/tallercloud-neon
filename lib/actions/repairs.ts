@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar repairs-prisma.ts / dashboard-prisma.ts / tracking-prisma.ts).
 // Pendiente migracion completa de modulos legacy/PRO.
@@ -38,7 +38,7 @@ const createClient = async () => (await createCurrentTenantClient()).supabase
 
 /**
  * Verifica si el usuario actual es el propietario del taller (no un tecnico/empleado).
- * util para restringir mutaciones criticas (presupuesto, estado, etc.).
+ * Util para restringir mutaciones criticas (presupuesto, estado, etc.).
  */
 async function isCurrentUserOwner(tallerId: string): Promise<boolean> {
   try {
@@ -856,7 +856,7 @@ export interface BitacoraRepair {
 
 /** Full repair detail for the detail modal (includes pin, pattern, photos, deposit) */
 export interface RepairDetail extends Omit<BitacoraRepair, "status"> {
-  /** Estado guardado en el ticket; undefined cuando no hay estado en BD (no auto-seleccionar DIAGNoSTICO) */
+  /** Estado guardado en el ticket; undefined cuando no hay estado en BD (no auto-seleccionar DIAGNOSTICO) */
   status?: BitacoraRepair["status"]
   pinContrasena?: string | null
   patronDesbloqueo?: string | null

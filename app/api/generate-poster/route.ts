@@ -1,4 +1,4 @@
-﻿import { readFile } from "fs/promises"
+import { readFile } from "fs/promises"
 import path from "path"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"

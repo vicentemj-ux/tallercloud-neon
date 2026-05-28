@@ -1,4 +1,4 @@
-﻿export type InventarioCategoriaValue =
+export type InventarioCategoriaValue =
   | "EQUIPOS"
   | "REFACCIONES"
   | "ACCESORIOS"

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tipos para fuentes pasadas a Satori (la carga real vive en `app/api/generate-poster/route.ts`
  * para usar URL publica + fallback a `public/fonts/` sin depender de node_modules).
  */

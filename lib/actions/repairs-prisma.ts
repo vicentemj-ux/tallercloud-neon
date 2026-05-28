@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { getCurrentTenant } from "@/lib/auth"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
@@ -191,7 +191,7 @@ function toBitacoraRepair(r: {
     id: r.id,
     folio: r.folio,
     clienteName: r.cliente?.nombre ?? "Sin nombre",
-    clientePhone: r.cliente?.telefono ?? "",
+    clientePhone: onlyDigits(r.cliente?.telefono),
     deviceBrand: r.equipoMarca ?? "N/A",
     deviceModel: r.equipoModelo ?? "N/A",
     tipo_equipo: r.tipoEquipo,

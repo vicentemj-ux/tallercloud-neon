@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { cn } from "@/lib/utils"
 
@@ -83,7 +83,7 @@ function fmtCorte(n: number | null) {
 
 const TIPO_LABELS: Record<string, string> = {
   anticipo_reparacion: "ANTICIPO",
-  liquidacion_reparacion: "LIQUIDACIoN",
+  liquidacion_reparacion: "LIQUIDACION",
   gasto: "GASTO",
 }
 

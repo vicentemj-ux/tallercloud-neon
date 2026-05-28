@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -56,7 +56,7 @@ export function TrackingValidation({ onValidate, isLoading, error }: TrackingVal
 
           {/* Title */}
           <h2 className="text-center text-2xl font-bold text-white mb-2">
-            VERIFICACIoN DE SEGURIDAD
+            VERIFICACION DE SEGURIDAD
           </h2>
 
           {/* Visual instructions */}
@@ -77,7 +77,7 @@ export function TrackingValidation({ onValidate, isLoading, error }: TrackingVal
               id="tracking-phone-last4"
               type="tel"
               inputMode="numeric"
-              placeholder="ultimos 4 digitos de tu celular"
+              placeholder="Ultimos 4 digitos de tu celular"
               value={last4}
               onChange={handleInputChange}
               maxLength={4}

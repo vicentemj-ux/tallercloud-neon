@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import dynamic from "next/dynamic"
 import { forwardRef, useMemo } from "react"
@@ -163,7 +163,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
         id="ticket"
         className="receipt-ticket"
         style={{
-          // ── area segura 72mm — globals.css lo sobreescribe en @media print con !important ──
+          // ── Area segura 72mm — globals.css lo sobreescribe en @media print con !important ──
           width: "72mm",
           maxWidth: "72mm",
           margin: "0",
@@ -241,7 +241,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           {faultText || "Sin descripcion inicial"}
         </div>
 
-        {/* ── REVISIoN RaPIDA (siempre que exista checklistIngreso) ── */}
+        {/* ── REVISION RAPIDA (siempre que exista checklistIngreso) ── */}
         {data.checklistIngreso && (
           <>
             <Divider />
@@ -275,7 +275,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── OBSERVACIONES ESTeTICAS (solo si tiene contenido) ── */}
+        {/* ── OBSERVACIONES ESTETICAS (solo si tiene contenido) ── */}
         {obsEsteticas && (
           <>
             <Divider />
@@ -290,7 +290,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
 
         <Divider />
 
-        {/* ── TeCNICO ── */}
+        {/* ── TECNICO ── */}
         {mostrarTecnico && tecnicoNombre && (
           <>
             <Row label="Tecnico" value={tecnicoNombre} valSz="10px" />
@@ -336,7 +336,7 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── TeRMINOS ── */}
+        {/* ── TERMINOS ── */}
         {terminosArr.length > 0 && (
           <>
             <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>

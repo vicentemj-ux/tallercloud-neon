@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Utilidades compartidas de impresion (tamano de papel, px de vista previa).
  * No usar `"use server"` aqui: no son Server Actions.
  *

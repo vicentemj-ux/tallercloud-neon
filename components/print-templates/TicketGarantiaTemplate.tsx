@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { forwardRef } from "react"
 import type { RepairPrintData } from "@/lib/actions/repairs"
@@ -61,7 +61,7 @@ const TicketGarantiaTemplate = forwardRef<HTMLDivElement, TicketGarantiaTemplate
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "7mm" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: "999px", padding: "5px 16px", fontSize: "9.5pt", fontWeight: 700, color: "#1d4ed8", letterSpacing: "0.02em" }}>
             <span style={{ fontSize: "11pt" }}>✓</span>
-            VaLIDA HASTA: {fmtDate(fechaVencimiento)}
+            VALIDA HASTA: {fmtDate(fechaVencimiento)}
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm", marginBottom: "6mm" }}>

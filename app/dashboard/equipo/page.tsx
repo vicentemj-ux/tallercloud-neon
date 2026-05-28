@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -130,7 +130,7 @@ export default function EquipoPage() {
         key: "owner",
         nombre: owner.nombre,
         email: owner.email,
-        rol: "SuPER ADMIN",
+        rol: "SUPER ADMIN",
         estado: "ACTIVO",
         owner: true,
         initial: (owner.nombre?.trim()?.charAt(0) || "P").toUpperCase(),
@@ -363,7 +363,7 @@ export default function EquipoPage() {
                         </Badge>
                         {member.owner && (
                           <Badge className="border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-50">
-                            DUEnO
+                            DUENO
                           </Badge>
                         )}
                       </div>

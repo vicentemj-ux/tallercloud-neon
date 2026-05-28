@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
@@ -21,7 +21,7 @@ import {
 import { buildFirmaDigitalQrUrl } from "@/lib/reparaciones/firma-digital-url"
 import type { RepairWelcomeWhatsAppPayload } from "@/lib/whatsapp-repair-welcome"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
-import { registrarAbono } from "@/lib/actions/repairs-prisma"
+import { registrarAbono } from "@/lib/actions/repairs"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
@@ -39,7 +39,7 @@ function FirmaQrBlock({ token, size = 128 }: { token: string; size?: number }) {
     if (!url?.trim()) {
       return (
         <p className="text-center text-xs font-medium text-red-600" role="alert">
-          No se pudo generar el cÃ³digo de firma
+          No se pudo generar el codigo de firma
         </p>
       )
     }
@@ -47,7 +47,7 @@ function FirmaQrBlock({ token, size = 128 }: { token: string; size?: number }) {
   } catch {
     return (
       <p className="text-center text-xs font-medium text-red-600" role="alert">
-        No se pudo generar el cÃ³digo de firma
+        No se pudo generar el codigo de firma
       </p>
     )
   }
@@ -57,7 +57,7 @@ type VictoryLaunchSuccessDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   payload: VictoryLaunchPayload | null
-  /** Usa `repairId` + `folio` del payload reciÃ©n creado vÃ­a localStorage + ventana de impresiÃ³n */
+  /** Usa `repairId` + `folio` del payload recien creado via localStorage + ventana de impresion */
   onPrintTicket: () => void
   onPrintLabel: () => void
   onSendWhatsApp: () => void
@@ -85,7 +85,7 @@ export function VictoryLaunchSuccessDialog({
 
   const handleRegistrarAbono = async () => {
     if (!payload?.repairId || !abonoMonto || parseFloat(abonoMonto) <= 0) {
-      setAbonoError("Ingresa un monto vÃ¡lido")
+      setAbonoError("Ingresa un monto valido")
       return
     }
 
@@ -102,8 +102,8 @@ export function VictoryLaunchSuccessDialog({
       if (result.success) {
         setAbonoExitoso(true)
         toast({
-          title: "âœ… Abono registrado",
-          description: `Se registrÃ³ un abono de $${parseFloat(abonoMonto).toLocaleString("es-MX")} en caja`,
+          title: "✅ Abono registrado",
+          description: `Se registro un abono de $${parseFloat(abonoMonto).toLocaleString("es-MX")} en caja`,
           variant: "default",
         })
       } else {
@@ -138,7 +138,7 @@ export function VictoryLaunchSuccessDialog({
       >
         {payload ? (
           <div className="rounded-[1.35rem] px-5 pb-6 pt-6 sm:px-6">
-            {/* Header con icono y tÃ­tulo */}
+            {/* Header con icono y titulo */}
             <div className="mb-5 text-center">
               <motion.div
                 initial={{ scale: 0, rotate: -20 }}
@@ -149,7 +149,7 @@ export function VictoryLaunchSuccessDialog({
                 <CheckCircle2 className="h-9 w-9 text-emerald-500" strokeWidth={2.25} aria-hidden />
               </motion.div>
               <h2 className="text-base font-extrabold uppercase tracking-wide text-slate-900 sm:text-lg">
-                Â¡ORDEN REGISTRADA CON Ã‰XITO!
+                ¡ORDEN REGISTRADA CON EXITO!
               </h2>
             </div>
 
@@ -164,13 +164,13 @@ export function VictoryLaunchSuccessDialog({
               <p className="sr-only">Ticket {payload.repairId}.</p>
             </div>
 
-            {/* SecciÃ³n de GestiÃ³n de Anticipo */}
+            {/* Seccion de Gestion de Anticipo */}
             {!abonoExitoso ? (
               <div className="mb-4 rounded-xl border border-amber-200/80 bg-amber-50/50 px-4 py-3">
                 <div className="mb-1 flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-amber-600" aria-hidden />
                   <p className="text-xs font-bold uppercase tracking-wide text-amber-800">
-                    ðŸ’³ GestiÃ³n de Anticipo
+                    💳 Gestion de Anticipo
                   </p>
                 </div>
                 <p className="mb-2.5 text-[9px] leading-relaxed text-slate-400">
@@ -198,7 +198,7 @@ export function VictoryLaunchSuccessDialog({
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label htmlFor="abono-metodo" className="text-[10px] text-slate-600">
-                      MÃ©todo de pago
+                      Metodo de pago
                     </Label>
                     <Select
                       value={abonoMetodo}
@@ -209,7 +209,7 @@ export function VictoryLaunchSuccessDialog({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="efectivo">Efectivo</SelectItem>
-                        <SelectItem value="tarjeta">Tarjeta DÃ©bito/CrÃ©dito</SelectItem>
+                        <SelectItem value="tarjeta">Tarjeta Debito/Credito</SelectItem>
                         <SelectItem value="transferencia">Transferencia Bancaria</SelectItem>
                       </SelectContent>
                     </Select>
@@ -245,7 +245,7 @@ export function VictoryLaunchSuccessDialog({
               </div>
             )}
 
-            {/* Botones de acciÃ³n */}
+            {/* Botones de accion */}
             <div className="mb-5">
               <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 Siguiente paso
@@ -278,7 +278,7 @@ export function VictoryLaunchSuccessDialog({
                   disabled={payload.customerPhone.replace(/\D/g, "").length < 6}
                   title={
                     payload.customerPhone.replace(/\D/g, "").length < 6
-                      ? "Se requiere un telÃ©fono vÃ¡lido"
+                      ? "Se requiere un telefono valido"
                       : undefined
                   }
                 >
@@ -304,4 +304,3 @@ export function VictoryLaunchSuccessDialog({
     </Dialog>
   )
 }
-

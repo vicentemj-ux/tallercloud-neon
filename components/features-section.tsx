@@ -1,4 +1,4 @@
-﻿import {
+import {
   ClipboardList,
   MessageCircle,
   ShoppingCart,

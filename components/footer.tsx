@@ -1,4 +1,4 @@
-﻿import Link from "next/link"
+import Link from "next/link"
 import { buildWhatsAppSendUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
 
 export function Footer() {

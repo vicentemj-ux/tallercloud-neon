@@ -1,4 +1,4 @@
-﻿/**
+/**
  * lib/utils/visitas.ts
  *
  * Utilidades puras para visitas (no dependen de servidor).

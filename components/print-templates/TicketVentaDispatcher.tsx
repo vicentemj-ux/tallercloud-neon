@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { TicketVentaTemplate, type TicketVentaTemplateProps } from "./TicketVentaTemplate"
 import { TicketVentaEquipoTemplate } from "./TicketVentaEquipoTemplate"

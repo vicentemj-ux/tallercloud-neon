@@ -1,4 +1,4 @@
-﻿import { decodePattern, MIN_PATTERN } from "@/lib/reparaciones/pattern"
+import { decodePattern, MIN_PATTERN } from "@/lib/reparaciones/pattern"
 
 export type SecurityTab = "none" | "pin" | "password" | "pattern"
 

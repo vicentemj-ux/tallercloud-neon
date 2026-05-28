@@ -1,4 +1,4 @@
-﻿import { Header } from "@/components/header"
+import { Header } from "@/components/header"
 import { FeaturesSection } from "@/components/features-section"
 import { PricingSection } from "@/components/pricing-section"
 import { Footer } from "@/components/footer"
@@ -144,7 +144,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PARA QUIeN ES ────────────────────────────────────────────────── */}
+        {/* ── PARA QUIEN ES ────────────────────────────────────────────────── */}
         <section className="py-16 sm:py-24 border-t border-border">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-12 flex flex-col items-center gap-3 text-center">
@@ -189,7 +189,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CARACTERiSTICAS ──────────────────────────────────────────────── */}
+        {/* ── CARACTERISTICAS ──────────────────────────────────────────────── */}
         <FeaturesSection />
 
         {/* ── PRECIOS ──────────────────────────────────────────────────────── */}
@@ -255,7 +255,7 @@ export default function Home() {
 
       <Footer />
 
-      {/* ── BOToN FLOTANTE WHATSAPP ─────────────────────────────────────── */}
+      {/* ── BOTON FLOTANTE WHATSAPP ─────────────────────────────────────── */}
       <a
         href={WHATSAPP_URL}
         target="_blank"

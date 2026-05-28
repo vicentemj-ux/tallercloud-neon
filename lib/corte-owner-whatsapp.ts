@@ -1,4 +1,4 @@
-﻿import type { CortePrintData } from "@/lib/actions/ventas-prisma"
+import type { CortePrintData } from "@/lib/actions/ventas-prisma"
 import { buildWhatsAppUrl, normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 
 function fmtMoney(n: number) {

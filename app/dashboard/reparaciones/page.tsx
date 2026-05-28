@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -267,7 +267,7 @@ function ReparacionesContent() {
                   </span>
                 </div>
                 <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
-                  GESTIoN DE oRDENES Y SERVICIOS TeCNICOS
+                  GESTION DE ORDENES Y SERVICIOS TECNICOS
                 </p>
                 <p className="mt-1 text-sm tracking-tight text-slate-500">
                   Flujo operativo en tiempo real para recepcion, diagnostico y entrega.

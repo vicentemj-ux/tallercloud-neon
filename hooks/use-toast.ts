@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shim de compatibilidad: mapea la API legacy de Radix Toast a Sonner.
  *
  * Todos los componentes que usen:

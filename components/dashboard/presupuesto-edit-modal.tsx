@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect } from "react"
 import {
@@ -20,10 +20,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { DollarSign, Loader2, CheckCircle2, Pencil } from "lucide-react"
-import { actualizarPresupuestoReparacion } from "@/lib/actions/repairs-prisma"
+import { actualizarPresupuestoReparacion } from "@/lib/actions/repairs"
 import { toast } from "@/hooks/use-toast"
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface PresupuestoEditModalProps {
   isOpen: boolean
@@ -33,7 +33,7 @@ export interface PresupuestoEditModalProps {
   onSuccess: (nuevoPresupuesto: number) => void
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmtPeso(n: number) {
   return n.toLocaleString("es-MX", {
@@ -45,18 +45,18 @@ function fmtPeso(n: number) {
 }
 
 const RAZONES_CAMBIO = [
-  { value: "revision_adicional", label: "RevisiÃ³n adicional â€“ se detectaron mÃ¡s fallas" },
-  { value: "cambio_refaccion", label: "Cambio de refacciÃ³n â€“ precio de piezas variÃ³" },
-  { value: "ajuste_diagnostico", label: "Ajuste por diagnÃ³stico â€“ correcciÃ³n de estimaciÃ³n inicial" },
+  { value: "revision_adicional", label: "Revision adicional – se detectaron mas fallas" },
+  { value: "cambio_refaccion", label: "Cambio de refaccion – precio de piezas vario" },
+  { value: "ajuste_diagnostico", label: "Ajuste por diagnostico – correccion de estimacion inicial" },
   { value: "descuento_aplicado", label: "Descuento aplicado" },
   { value: "servicio_adicional", label: "Servicio adicional solicitado por el cliente" },
   { value: "presupuesto_aproximado", label: "Presupuesto inicial era aproximado" },
-  { value: "garantia_sin_costo", label: "GarantÃ­a del servicio â€“ sin costo" },
-  { value: "diagnostico_gratuito", label: "DiagnÃ³stico gratuito" },
+  { value: "garantia_sin_costo", label: "Garantia del servicio – sin costo" },
+  { value: "diagnostico_gratuito", label: "Diagnostico gratuito" },
   { value: "otro", label: "Otro" },
 ]
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function PresupuestoEditModal({
   isOpen,
@@ -128,7 +128,7 @@ export function PresupuestoEditModal({
     onClose()
   }
 
-  // â”€â”€ Success view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Success view ───────────────────────────────────────────────────────────
 
   if (showSuccess) {
     return (
@@ -151,7 +151,7 @@ export function PresupuestoEditModal({
     )
   }
 
-  // â”€â”€ Form view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Form view ──────────────────────────────────────────────────────────────
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
@@ -192,17 +192,17 @@ export function PresupuestoEditModal({
                 autoFocus
               />
             </div>
-            <p className="text-[11px] text-slate-400">Puedes dejar 0 para diagnÃ³stico gratuito.</p>
+            <p className="text-[11px] text-slate-400">Puedes dejar 0 para diagnostico gratuito.</p>
           </div>
 
-          {/* RazÃ³n del cambio */}
+          {/* Razon del cambio */}
           <div className="space-y-1.5">
             <Label htmlFor="razon-cambio" className="text-sm font-semibold text-slate-700">
-              RazÃ³n del cambio <span className="text-red-500">*</span>
+              Razon del cambio <span className="text-red-500">*</span>
             </Label>
             <Select value={razon} onValueChange={setRazon}>
               <SelectTrigger id="razon-cambio" className="w-full">
-                <SelectValue placeholder="Selecciona una razÃ³n" />
+                <SelectValue placeholder="Selecciona una razon" />
               </SelectTrigger>
               <SelectContent>
                 {RAZONES_CAMBIO.map((r) => (
@@ -214,14 +214,14 @@ export function PresupuestoEditModal({
             </Select>
           </div>
 
-          {/* DescripciÃ³n / motivo adicional */}
+          {/* Descripcion / motivo adicional */}
           <div className="space-y-1.5">
             <Label htmlFor="descripcion-cambio" className="text-sm font-semibold text-slate-700">
-              DescripciÃ³n adicional <span className="font-normal text-slate-400">(opcional)</span>
+              Descripcion adicional <span className="font-normal text-slate-400">(opcional)</span>
             </Label>
             <Textarea
               id="descripcion-cambio"
-              placeholder="Ej. Se requiere cambio de pantalla + baterÃ­a, se ajusta precio..."
+              placeholder="Ej. Se requiere cambio de pantalla + bateria, se ajusta precio..."
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               rows={3}
@@ -248,7 +248,7 @@ export function PresupuestoEditModal({
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Guardandoâ€¦
+                  Guardando…
                 </>
               ) : (
                 "Guardar presupuesto"
@@ -260,4 +260,3 @@ export function PresupuestoEditModal({
     </Dialog>
   )
 }
-

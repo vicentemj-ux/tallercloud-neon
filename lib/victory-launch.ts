@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Confeti + sonido al registrar un ticket con exito.
  * Sonido: coloca un MP3 corto en `public/sounds/shutter.mp3` (obturador).
  */

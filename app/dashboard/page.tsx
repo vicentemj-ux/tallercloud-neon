@@ -1,4 +1,4 @@
-﻿import { OrdersTable } from "@/components/dashboard/orders-table"
+import { OrdersTable } from "@/components/dashboard/orders-table"
 import { NewRepairButton } from "@/components/dashboard/new-repair-button"
 import { getDashboardMvpData } from "@/lib/actions/dashboard-prisma"
 import { getDashboardSubscriptionBannerContext } from "@/lib/actions/settings-prisma"

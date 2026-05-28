@@ -1,4 +1,4 @@
-﻿/**
+/**
  * lib/camera/hikvision.ts
  *
  * Helpers para interactuar con camaras Hikvision via ISAPI y RTSP.

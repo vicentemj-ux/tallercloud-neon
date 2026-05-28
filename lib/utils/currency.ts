@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Utilidades de formato monetario centralizadas.
  * Fuente unica de verdad para todo el formato de pesos mexicanos en TallerCloud.
  */

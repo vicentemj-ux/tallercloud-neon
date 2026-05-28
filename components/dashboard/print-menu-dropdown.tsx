@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import {
@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Printer, Loader2 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import type { BitacoraRepair, RepairDetail } from "@/lib/actions/repairs-prisma"
+import type { BitacoraRepair, RepairDetail } from "@/lib/actions/repairs"
 
 interface PrintMenuDropdownProps {
   repair: BitacoraRepair
@@ -55,10 +55,9 @@ export function PrintMenuDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem onClick={showPro} className="cursor-pointer">
-          Impresion directa (PRO) Â· Proximamente
+          Impresion directa (PRO) · Proximamente
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
-

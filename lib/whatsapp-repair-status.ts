@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Construye la URL de WhatsApp (api.whatsapp.com) para notificar cambio de estado de reparacion.
  * Solo cliente (sin dependencias de servidor).
  */

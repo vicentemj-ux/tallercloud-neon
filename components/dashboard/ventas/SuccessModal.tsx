@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { memo, useEffect, useRef, useState, type CSSProperties } from "react"
 import { useReactToPrint } from "react-to-print"
@@ -165,7 +165,7 @@ export const SuccessModal = memo(function SuccessModal({
         }
       }}
     >
-      {/* area de impresion aislada — react-to-print la copia a un iframe propio */}
+      {/* Area de impresion aislada — react-to-print la copia a un iframe propio */}
       <div
         ref={printRef}
         className="print-ticket-offscreen-layer"

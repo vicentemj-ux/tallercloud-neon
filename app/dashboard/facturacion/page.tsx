@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
@@ -196,7 +196,7 @@ function FacturacionContent() {
                   <CalendarCheck2 className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" aria-hidden />
                 </div>
                 <h1 className="text-2xl font-black italic leading-none tracking-tight text-slate-900 sm:text-3xl lg:text-[2rem]">
-                  MI SUSCRIPCIoN
+                  MI SUSCRIPCION
                 </h1>
               </div>
 

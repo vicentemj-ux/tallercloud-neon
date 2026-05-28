@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useCallback, useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -34,18 +34,18 @@ function parseChecklistFromForm(formData: FormData): ChecklistIngreso | undefine
 interface ReparacionEditDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Solo ediciÃ³n de ticket existente */
+  /** Solo edicion de ticket existente */
   editingRepairId: string | null
-  /** Tras guardar ediciÃ³n correctamente */
+  /** Tras guardar edicion correctamente */
   onEditSuccess?: (repairId: string) => void
 }
 
 /**
- * Modal de ediciÃ³n de ticket (`NuevaReparacionForm` en modo ediciÃ³n).
+ * Modal de edicion de ticket (`NuevaReparacionForm` en modo edicion).
  * Reutilizable desde la lista de reparaciones o la ficha por ID.
  *
- * Seguridad del equipo (PIN, contraseÃ±a, patrÃ³n) se edita en el colapsable Â«SeguridadÂ»;
- * el **patrÃ³n de desbloqueo 3Ã—3** se abre al elegir Â«PatrÃ³nÂ» en Seguridad del equipo â€” mismo `ModalPatronSeguridad` que en el alta en modal.
+ * Seguridad del equipo (PIN, contrasena, patron) se edita en el colapsable «Seguridad»;
+ * el **patron de desbloqueo 3×3** se abre al elegir «Patron» en Seguridad del equipo — mismo `ModalPatronSeguridad` que en el alta en modal.
  */
 export function ReparacionEditDialog({
   open,
@@ -163,8 +163,8 @@ export function ReparacionEditDialog({
       deviceSerial: imei,
       reportedFault: problemDesc,
       estimatedPrice,
-      // El anticipo ya no se registra en caja desde la creaciÃ³n del ticket
-      // El usuario puede registrar abonos despuÃ©s desde el mÃ³dulo de caja
+      // El anticipo ya no se registra en caja desde la creacion del ticket
+      // El usuario puede registrar abonos despues desde el modulo de caja
       clienteId: clienteId || undefined,
       technician: technician && technician !== "Sin asignar" ? technician : undefined,
       securityType,
@@ -178,7 +178,7 @@ export function ReparacionEditDialog({
     if (!result.success || !result.repairId || !result.folio) {
       throw new Error(
         result.error?.trim() ||
-          "El servidor no devolviÃ³ folio ni id. Revisa la consola de Vercel, migraciones de Supabase y columnas de `reparaciones`.",
+          "El servidor no devolvio folio ni id. Revisa la consola de Vercel, migraciones de Supabase y columnas de `reparaciones`.",
       )
     }
 
@@ -230,7 +230,7 @@ export function ReparacionEditDialog({
                 <span className="min-w-0 text-lg font-black italic leading-tight tracking-tight text-white sm:text-2xl sm:leading-tight">
                   {editingRepairId ? "MODIFICAR TICKET" : "NUEVO TICKET"}
                 </span>
-                {/* Reingreso removed from here â€” use "Reactivar como Reingreso" on the ticket detail page */}
+                {/* Reingreso removed from here — use "Reactivar como Reingreso" on the ticket detail page */}
               </div>
               <Button
                 type="button"
@@ -271,9 +271,9 @@ export function ReparacionEditDialog({
           className="z-[116] border-slate-200 sm:max-w-md"
         >
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-900">Â¿Descartar cambios?</AlertDialogTitle>
+            <AlertDialogTitle className="text-slate-900">¿Descartar cambios?</AlertDialogTitle>
             <AlertDialogDescription className="text-slate-600">
-              Los datos no guardados se perderÃ¡n.
+              Los datos no guardados se perderan.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -291,5 +291,3 @@ export function ReparacionEditDialog({
     </>
   )
 }
-
-

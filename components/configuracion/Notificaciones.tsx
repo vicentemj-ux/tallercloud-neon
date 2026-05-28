@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { Switch } from "@/components/ui/switch"
 import type { TallerSettings } from "@/lib/actions/settings-prisma"

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useRef } from "react"
 import { createRepair } from "@/lib/actions/repairs-prisma"
@@ -28,13 +28,13 @@ export function OfflineSyncListener() {
           if (res.success && res.folio) {
             await removeRepairQueueItem(it.id)
             toast({
-              title: `SincronizaciÃ³n completa: ${res.folio} guardado en la nube`,
+              title: `Sincronizacion completa: ${res.folio} guardado en la nube`,
             })
           } else {
             toast({
               variant: "destructive",
               title: "No se pudo sincronizar un ticket en cola",
-              description: res.error?.trim() || "Revisa conexiÃ³n e intenta de nuevo.",
+              description: res.error?.trim() || "Revisa conexion e intenta de nuevo.",
             })
             break
           }
@@ -44,7 +44,7 @@ export function OfflineSyncListener() {
         toast({
           variant: "destructive",
           title: "Error al sincronizar",
-          description: e instanceof Error ? e.message : "Intenta mÃ¡s tarde.",
+          description: e instanceof Error ? e.message : "Intenta mas tarde.",
         })
       } finally {
         processing.current = false
@@ -61,5 +61,3 @@ export function OfflineSyncListener() {
 
   return null
 }
-
-

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -178,7 +178,7 @@ export default function ReportesPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-        {/* ── HEADER TaCTICO ── */}
+        {/* ── HEADER TACTICO ── */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           {/* Izquierda: Branding */}
@@ -326,7 +326,7 @@ export default function ReportesPage() {
             </div>
           )}
 
-        {/* ── GRaFICO 6 MESES ── */}
+        {/* ── GRAFICO 6 MESES ── */}
         {loading ? <SkeletonChart /> : (
           <Card className="gap-0 py-0 border-slate-200 bg-white">
             <CardContent className="p-6">

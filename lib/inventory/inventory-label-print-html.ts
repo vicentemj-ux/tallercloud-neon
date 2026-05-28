@@ -1,4 +1,4 @@
-﻿import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos"
 import {
   getProductoCapacidad,
   getProductoModelo,

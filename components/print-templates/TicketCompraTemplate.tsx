@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { forwardRef } from "react"
 
@@ -111,7 +111,7 @@ const TicketCompraTemplate = forwardRef<HTMLDivElement, TicketCompraTemplateProp
           )}
         </div>
 
-        {/* ── TiTULO ── */}
+        {/* ── TITULO ── */}
         <div style={{ textAlign: "center", marginBottom: "6mm", borderBottom: `2px solid ${BLACK}`, paddingBottom: "3mm" }}>
           <div style={{ ...SHARP, fontWeight: 900, fontSize: "16px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             Comprobante de Adquisicion
@@ -159,7 +159,7 @@ const TicketCompraTemplate = forwardRef<HTMLDivElement, TicketCompraTemplateProp
           </div>
         )}
 
-        {/* ── DECLARACIoN JURADA ── */}
+        {/* ── DECLARACION JURADA ── */}
         <div style={{ marginBottom: "8mm", border: `1.5px solid ${BLACK}`, padding: "4mm", background: "#fafafa" }}>
           <div style={{ ...SHARP, fontWeight: 900, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2mm", textAlign: "center" }}>
             Declaracion bajo protesta de decir verdad

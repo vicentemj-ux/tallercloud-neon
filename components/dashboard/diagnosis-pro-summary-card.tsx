@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { ClipboardList } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import type { EncendidoRecepcion } from "@/lib/reparaciones/checklist-ingreso"
 
 export interface DiagnosisProSummaryCardProps {
-  /** Revision rapida (encendido) desde checklist_ingreso. */
+  /** Revision rapida (encendido) desde `checklist_ingreso` — mismo criterio que el modal de ingreso. */
   encendido?: EncendidoRecepcion | null
   onOpenDetails: () => void
   className?: string
@@ -25,8 +25,8 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
   if (encendido === "ok") {
     return (
       <div className="flex items-center gap-2.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-2.5 py-2 shadow-sm ring-1 ring-emerald-200/80">
-        <span className="text-lg leading-none font-bold" aria-hidden>
-          OK
+        <span className="text-lg leading-none" aria-hidden>
+          ✅
         </span>
         <div className="min-w-0 text-left">
           <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-800">Revision rapida</p>
@@ -40,8 +40,8 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
   if (encendido === "intermitente") {
     return (
       <div className="flex items-center gap-2.5 rounded-lg border-2 border-amber-400 bg-amber-50 px-2.5 py-2 shadow-sm ring-1 ring-amber-200/80">
-        <span className="text-lg leading-none font-bold" aria-hidden>
-          !
+        <span className="text-lg leading-none" aria-hidden>
+          ⚡
         </span>
         <div className="min-w-0 text-left">
           <p className="text-[9px] font-bold uppercase tracking-wide text-amber-900">Revision rapida</p>
@@ -54,8 +54,8 @@ function RevisionRapidaResumen({ encendido }: { encendido: EncendidoRecepcion | 
 
   return (
     <div className="flex items-center gap-2.5 rounded-lg border-2 border-rose-400 bg-rose-50 px-2.5 py-2 shadow-sm ring-1 ring-rose-200/80">
-      <span className="text-lg leading-none font-bold" aria-hidden>
-        X
+      <span className="text-lg leading-none" aria-hidden>
+        ❌
       </span>
       <div className="min-w-0 text-left">
         <p className="text-[9px] font-bold uppercase tracking-wide text-rose-900">Revision rapida</p>

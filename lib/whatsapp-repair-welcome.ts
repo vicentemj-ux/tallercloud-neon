@@ -1,4 +1,4 @@
-﻿import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
+import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
 import { getPublicAppBaseUrl } from "@/lib/app-public"
 
 export type RepairWelcomeWhatsAppPayload = {

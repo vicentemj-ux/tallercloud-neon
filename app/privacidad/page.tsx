@@ -1,4 +1,4 @@
-﻿import Link from "next/link"
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ArrowLeft } from "lucide-react"
@@ -35,7 +35,7 @@ export default function PrivacidadPage() {
               Politica de Privacidad
             </h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              ultima actualizacion: marzo de 2026
+              Ultima actualizacion: marzo de 2026
             </p>
           </div>
 

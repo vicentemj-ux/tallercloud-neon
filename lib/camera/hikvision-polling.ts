@@ -1,4 +1,4 @@
-﻿/**
+/**
  * lib/camera/hikvision-polling.ts
  *
  * Servicio de polling para camaras Hikvision sin panel web.
@@ -135,7 +135,7 @@ function parseEventsFromText(xmlText: string): HikvisionEventDetected[] {
 }
 
 /**
- * Modo BaSICO: Captura un snapshot periodicamente y lo devuelve como evento.
+ * Modo BASICO: Captura un snapshot periodicamente y lo devuelve como evento.
  * Como la camara no tiene eventos IVS configurados (sin panel web),
  * usamos snapshots como mecanismo de "deteccion".
  *

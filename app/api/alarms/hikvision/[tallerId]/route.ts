@@ -7,15 +7,15 @@ export const dynamic = "force-dynamic"
 const LOG = "[api/alarms/hikvision]"
 
 /**
- * Webhook receptor para eventos de cámara Hikvision (IVS / Line Crossing / Intrusion).
+ * Webhook receptor para eventos de camara Hikvision (IVS / Line Crossing / Intrusion).
  *
  * URL: /api/alarms/hikvision/{tallerId}
  *
- * La cámara envía un POST con XML cuando detecta una persona.
- * Inmediatamente capturamos snapshot vía ISAPI y creamos registro en bitacora_visitas.
+ * La camara envia un POST con XML cuando detecta una persona.
+ * Inmediatamente capturamos snapshot via ISAPI y creamos registro en bitacora_visitas.
  *
- * NOTA: Usamos path-based tallerId en vez de buscar por IP porque la cámara
- * envía su IP local (192.168.x.x) que no es única entre negocios distintos.
+ * NOTA: Usamos path-based tallerId en vez de buscar por IP porque la camara
+ * envia su IP local (192.168.x.x) que no es unica entre negocios distintos.
  */
 
 interface HikvisionEvent {
@@ -159,7 +159,7 @@ export async function POST(
       return NextResponse.json({ success: true, ignored: true, reason: "event_state_inactive" })
     }
 
-    // Obtener configuración de cámara para este taller
+    // Obtener configuracion de camara para este taller
     const { config: hikvision } = await getCameraConfig(tallerId)
     if (!hikvision) {
       console.warn(LOG, "Camera not configured for taller", { tallerId })

@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { getCurrentTenant } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"

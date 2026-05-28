@@ -1,109 +1,164 @@
-﻿"use client"
+"use client"
 
-import { useEffect, useState, useMemo, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { TicketCompraTemplate, type TicketCompraData } from "@/components/print-templates/TicketCompraTemplate"
+import { useEffect, useRef, useState } from "react"
+import { useParams } from "next/navigation"
+import { TicketSalidaGarantia, warrantyDaysFromTerminos } from "@/components/dashboard/ticket-salida-garantia"
+import { getRepairByFolio, getRepairChangeHistory } from "@/lib/actions/repairs"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
+import {
+  isTauriAvailable,
+  printTicketDirecto,
+  printTicketRasterDirecto,
+  buildTicketDataFromEntrega,
+} from "@/lib/tauri/desktop-bridge"
+import { toast } from "@/hooks/use-toast"
 
 interface BusinessSettings {
   name: string
   phone: string
-  address: string
   logoUrl: string | null
-  declaracionJurat: string
+  direccion?: string
+  terminosGarantia: string
   mensajeDespedida: string
-  mostrarLogo: boolean
 }
 
-function parseQueryData(sp: URLSearchParams): TicketCompraData | null {
-  const folio = sp.get("folio")
-  const vendedor = sp.get("vendedor")
-  const documento = sp.get("documento")
-  const marca = sp.get("marca")
-  const modelo = sp.get("modelo")
-  const serial = sp.get("serial")
-  const imei = sp.get("imei")
-  const monto = sp.get("monto")
-
-  if (!folio || !vendedor || !marca || !modelo || !monto) return null
-
-  return {
-    folio,
-    fecha: sp.get("fecha") || new Date().toLocaleString("es-MX"),
-    vendedor,
-    documento: documento || "—",
-    marca,
-    modelo,
-    serial: serial || "—",
-    imei: imei || "—",
-    monto: Number(monto) || 0,
-    condicion: sp.get("condicion") || "—",
-    color: sp.get("color") || "—",
-    capacidad: sp.get("capacidad") || "—",
-    observaciones: sp.get("observaciones") || undefined,
-  }
-}
-
-function PrintCompraContent() {
-  const searchParams = useSearchParams()
+export default function PrintEntregaDynamicPage() {
+  const { id } = useParams<{ id: string }>()
+  const [repair, setRepair] = useState<Awaited<ReturnType<typeof getRepairByFolio>>["data"]>(null)
   const [business, setBusiness] = useState<BusinessSettings | null>(null)
+  const [solucion, setSolucion] = useState<string>("")
   const [loadError, setLoadError] = useState<string | null>(null)
+  const ticketRef = useRef<HTMLDivElement>(null)
   usePrintWindowClose()
 
-  const data = useMemo(() => {
-    if (!searchParams) return null
-    return parseQueryData(searchParams)
-  }, [searchParams])
-
   useEffect(() => {
+    if (!id) return
+
     const load = async () => {
       try {
-        const { settings } = await getTallerSettings()
-        if (!settings) {
-          setLoadError("No se pudo cargar la configuracion del taller.")
+        const [repResult, settingsResult, historyResult] = await Promise.all([
+          getRepairByFolio(decodeURIComponent(id)),
+          getTallerSettings(),
+          getRepairChangeHistory(decodeURIComponent(id)),
+        ])
+
+        if (repResult.error || !repResult.data) {
+          setLoadError(repResult.error ?? "Reparación no encontrada.")
           return
         }
 
-        const cfg = settings.impresion_config as Record<string, unknown> | null
-        const compraCfg = (cfg?.compra || {}) as Record<string, unknown>
+        const rep = repResult.data
+        const cfg = settingsResult.settings
+
+        const impConfig = cfg?.impresion_config as any
+        const terminosRep = impConfig?.reparacion?.terminos ?? cfg?.terminos_garantia ?? ""
+
+        setRepair(rep)
+
+        // Buscar solución en historial: nota técnica del cambio a "Entregado"
+        const entregaEntry = historyResult.changes?.find(
+          (c) => c.tipo_cambio === "estado" && c.descripcion?.includes("Entregado")
+        )
+        setSolucion(
+          entregaEntry?.descripcion?.replace(/^.*Entregado\s*—?\s*/i, "").trim() ||
+          "Reparación completada según estándares del taller. Equipo entregado en condiciones de uso."
+        )
 
         setBusiness({
-          name: settings.nombre_taller || "Mi Taller",
-          phone: settings.telefono || "",
-          address: settings.direccion || "",
-          logoUrl: settings.logo_url ?? null,
-          declaracionJurat: String(compraCfg.declaracionJurat || ""),
-          mensajeDespedida: settings.mensaje_despedida || "¡Gracias por su preferencia!",
-          mostrarLogo: Boolean(compraCfg.mostrarLogo ?? true),
+          name: cfg?.nombre_taller || "Mi Taller",
+          phone: cfg?.telefono || "",
+          logoUrl: cfg?.logo_url ?? null,
+          direccion: cfg?.direccion || undefined,
+          terminosGarantia: terminosRep,
+          mensajeDespedida: cfg?.mensaje_despedida || "",
         })
       } catch (err) {
-        console.error("[print-compra] error:", err)
-        setLoadError("Error al cargar la configuracion.")
+        console.error("[print-entrega/[id]] error:", err)
+        setLoadError("Error al cargar el comprobante. Cierra esta ventana e intenta de nuevo.")
       }
     }
+
     void load()
-  }, [])
+  }, [id])
 
-  // Disparar impresion
+  // Disparar impresión cuando todo esté listo
   useEffect(() => {
-    if (!data || !business) return
+    if (!repair || !business) return
 
-    document.body.classList.add("print-ticket-mode")
+    const runPrint = async () => {
+      // Desktop direct print (Tauri) — raster de alta calidad
+      if (await isTauriAvailable()) {
+        try {
+          const { settings } = await getTallerSettings()
+          const printerName = settings?.impresora_ticket?.trim()
+          if (!printerName) {
+            toast({
+              title: "Impresora no configurada",
+              description: "Ve a Configuracion > Hardware y selecciona la impresora de tickets.",
+              variant: "destructive",
+            })
+            return
+          }
+          await new Promise<void>((resolve) => setTimeout(resolve, 300))
+          if (ticketRef.current) {
+            await printTicketRasterDirecto(printerName, ticketRef.current)
+          } else {
+            const diasGarantia = warrantyDaysFromTerminos(business.terminosGarantia)
+            const fechaEntregaRaw = repair.fecha_entrega ?? new Date().toISOString()
+            const fechaVencimiento = new Date(new Date(fechaEntregaRaw).getTime() + diasGarantia * 86_400_000)
+              .toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" })
+            const costoTotalLocal = repair.costo_total ?? repair.precio_estimado ?? 0
+            const anticiposPreviosLocal = repair.anticipo ?? 0
+            const pagoFinalLocal = repair.restante ?? Math.max(0, costoTotalLocal - anticiposPreviosLocal)
+            const ticketData = buildTicketDataFromEntrega(
+              {
+                folio: repair.folio,
+                clienteNombre: repair.cliente_nombre,
+                tipo_equipo: repair.tipo_equipo ?? undefined,
+                deviceBrand: repair.dispositivo_marca,
+                deviceModel: repair.dispositivo_modelo,
+                solucionRealizada: solucion,
+                costoTotal: costoTotalLocal,
+                anticiposPrevios: anticiposPreviosLocal,
+                pagoFinal: pagoFinalLocal,
+                fechaVencimientoGarantia: fechaVencimiento,
+                terminosGarantia: business.terminosGarantia || undefined,
+                direccion: business.direccion || undefined,
+                imei: repair.imei_serie || undefined,
+                color: repair.color || undefined,
+              },
+              business.name,
+              business.phone,
+              business.mensajeDespedida || undefined
+            )
+            await printTicketDirecto(printerName, ticketData)
+          }
+          toast({ title: "Ticket enviado a impresora" })
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "Error al imprimir"
+          toast({ title: "Error de impresion", description: msg, variant: "destructive" })
+        }
+        return
+      }
 
-    const style = document.createElement("style")
-    style.id = "print-compra-page-style"
-    style.textContent = `@page { size: A4 portrait; margin: 8mm; } @media print { body { margin: 0 !important; padding: 0 !important; } }`
-    document.head.appendChild(style)
+      // Fallback web
+      document.body.classList.add("print-ticket-mode")
+      const style = document.createElement("style")
+      style.id = "print-entrega-page-style"
+      style.textContent = `@page { size: 80mm auto; margin: 0; } @media print { body { margin: 0 !important; padding: 0 !important; } }`
+      document.head.appendChild(style)
+      document.documentElement.style.setProperty("--ticket-width", "80mm")
+      window.setTimeout(() => window.print(), 500)
+    }
 
-    const timer = window.setTimeout(() => window.print(), 600)
+    runPrint()
 
     return () => {
-      window.clearTimeout(timer)
       document.body.classList.remove("print-ticket-mode")
-      document.getElementById("print-compra-page-style")?.remove()
+      document.getElementById("print-entrega-page-style")?.remove()
     }
-  }, [data, business])
+  }, [repair, business])
 
   if (loadError) {
     return (
@@ -113,7 +168,7 @@ function PrintCompraContent() {
     )
   }
 
-  if (!data || !business) {
+  if (!repair || !business) {
     return (
       <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", color: "#555", fontSize: "13px" }}>
         Cargando comprobante…
@@ -121,30 +176,39 @@ function PrintCompraContent() {
     )
   }
 
+  const fechaEntrega = repair.fecha_entrega ?? new Date().toISOString()
+  const diasGarantia = warrantyDaysFromTerminos(business.terminosGarantia)
+  const fechaVencimiento = new Date(new Date(fechaEntrega).getTime() + diasGarantia * 86_400_000)
+    .toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" })
+
+  const costoTotal = repair.costo_total ?? repair.precio_estimado ?? 0
+  const anticiposPrevios = repair.anticipo ?? 0
+  const pagoFinal = repair.restante ?? Math.max(0, costoTotal - anticiposPrevios)
+
   return (
-    <div className="print-ticket-only flex items-start justify-center bg-white p-4">
-      <TicketCompraTemplate
-        data={data}
-        businessName={business.name}
-        businessPhone={business.phone}
-        businessAddress={business.address}
+    <div ref={ticketRef} className="print-ticket-only flex items-center justify-center bg-white p-4">
+      <TicketSalidaGarantia
+        nombreTaller={business.name}
         logoUrl={business.logoUrl}
-        declaracionJurat={business.declaracionJurat || undefined}
-        mensajeDespedida={business.mensajeDespedida}
-        mostrarLogo={business.mostrarLogo}
+        direccion={business.direccion}
+        telefono={business.phone}
+        folio={repair.folio}
+        fechaEntrega={new Date(fechaEntrega).toLocaleDateString("es-MX", {
+          year: "numeric", month: "long", day: "numeric",
+        })}
+        clienteNombre={repair.cliente_nombre}
+        tipo_equipo={repair.tipo_equipo ?? undefined}
+        deviceBrand={repair.dispositivo_marca}
+        deviceModel={repair.dispositivo_modelo}
+        solucionRealizada={solucion}
+        costoTotal={costoTotal}
+        anticiposPrevios={anticiposPrevios}
+        pagoFinal={pagoFinal}
+        fechaVencimientoGarantia={fechaVencimiento}
+        terminosGarantiaCortos={business.terminosGarantia}
+        mensajeDespedida={business.mensajeDespedida || undefined}
+        repairId={repair.id}
       />
     </div>
-  )
-}
-
-export default function PrintCompraPage() {
-  return (
-    <Suspense fallback={
-      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", color: "#555", fontSize: "13px" }}>
-        Cargando comprobante…
-      </div>
-    }>
-      <PrintCompraContent />
-    </Suspense>
   )
 }

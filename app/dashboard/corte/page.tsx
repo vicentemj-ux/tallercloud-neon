@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -108,7 +108,7 @@ export default function CortePage() {
               CIERRE DE CAJA DIARIO
             </h1>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">
-              RECONCILIACIoN DE EFECTIVO · {caja.numero_corte ? `CORTE #${String(caja.numero_corte).padStart(3, "0")}` : "CAJA"}
+              RECONCILIACION DE EFECTIVO · {caja.numero_corte ? `CORTE #${String(caja.numero_corte).padStart(3, "0")}` : "CAJA"}
             </p>
           </div>
           <div className="shrink-0">
@@ -183,7 +183,7 @@ export default function CortePage() {
 
             <div>
               <Label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                EFECTIVO FiSICO EN CAJA
+                EFECTIVO FISICO EN CAJA
               </Label>
               <div className="relative mt-2">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">
@@ -216,7 +216,7 @@ export default function CortePage() {
 
             <div>
               <Label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                OBSERVACIONES DE AUDITORiA
+                OBSERVACIONES DE AUDITORIA
               </Label>
               <textarea
                 value={observaciones}

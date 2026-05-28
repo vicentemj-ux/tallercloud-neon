@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { OnboardingForm } from "./onboarding-form"
 import { getCurrentUser } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"

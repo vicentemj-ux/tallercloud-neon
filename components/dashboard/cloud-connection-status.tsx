@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
@@ -85,9 +85,9 @@ export function CloudConnectionStatus({ className }: { className?: string }) {
 
   const perfTooltip =
     avgMs !== null
-      ? `ultimo: ${perf?.ms}ms · Promedio sesion: ${avgMs}ms`
+      ? `Ultimo: ${perf?.ms}ms · Promedio sesion: ${avgMs}ms`
       : perf
-        ? `ultimo: ${perf.ms}ms`
+        ? `Ultimo: ${perf.ms}ms`
         : undefined
 
   return (

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
@@ -191,9 +191,9 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── DIAGNoSTICO INICIAL ── */}
+      {/* ── DIAGNOSTICO INICIAL ── */}
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "1px" }}>
-        DIAGNoSTICO INICIAL
+        DIAGNOSTICO INICIAL
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700, lineHeight: 1.2, wordBreak: "break-word" }}>
         {solucionRealizada}
@@ -228,7 +228,7 @@ export function TicketSalidaGarantia({
 
       <Divider thick />
 
-      {/* ── GARANTiA (recuadro destacado) ── */}
+      {/* ── GARANTIA (recuadro destacado) ── */}
       <div
         style={{
           border: `1.5px solid ${BLACK}`,
@@ -237,7 +237,7 @@ export function TicketSalidaGarantia({
         }}
       >
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "center", marginBottom: "2px" }}>
-          GARANTiA
+          GARANTIA
         </div>
         <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 700, textAlign: "center" }}>
           Valida hasta: <span style={{ fontWeight: 900 }}>{fechaVencimientoGarantia}</span>
@@ -249,9 +249,9 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── TeRMINOS ── */}
+      {/* ── TERMINOS ── */}
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>
-        TeRMINOS
+        TERMINOS
       </div>
       <div style={{ ...SHARP, fontFamily: FONT, fontSize: "9px", fontWeight: 700, lineHeight: 1.25, wordBreak: "break-word" }}>
         {terminosGarantiaCortos.split(" • ").map((t, i) => (
@@ -261,7 +261,7 @@ export function TicketSalidaGarantia({
 
       <Divider />
 
-      {/* ── QR GARANTiA DIGITAL ── */}
+      {/* ── QR GARANTIA DIGITAL ── */}
       {repairId && qrUrl && (
         <div style={{ textAlign: "center", margin: "4px 0" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "2px" }}>

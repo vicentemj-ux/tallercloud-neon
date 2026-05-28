@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState, useTransition, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
@@ -412,7 +412,7 @@ function ConfiguracionContent() {
 
         {/* Tab Content */}
         <div className="space-y-8">
-          {/* ════ PESTAnA TALLER ══════════════════════════════════════════════ */}
+          {/* ════ PESTANA TALLER ══════════════════════════════════════════════ */}
           {activeTab === "taller" && (
             <Empresa
               settings={settings}
@@ -431,7 +431,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAnA MI CUENTA ═══════════════════════════════════════════ */}
+          {/* ════ PESTANA MI CUENTA ═══════════════════════════════════════════ */}
           {activeTab === "cuenta" && (
             <Perfil
               loginEmail={loginEmail}
@@ -446,7 +446,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAnA REPORTES Y ALERTAS ═══════════════════════════════════ */}
+          {/* ════ PESTANA REPORTES Y ALERTAS ═══════════════════════════════════ */}
           {activeTab === "alertas" && (
             <Notificaciones
               settings={settings}
@@ -455,7 +455,7 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAnA FLUJO PRO ═══════════════════════════════════════════ */}
+          {/* ════ PESTANA FLUJO PRO ═══════════════════════════════════════════ */}
           {activeTab === "flujo-pro" && (
             <FlujoPro
               loadingFluJoPro={loadingFluJoPro}
@@ -466,12 +466,12 @@ function ConfiguracionContent() {
             />
           )}
 
-          {/* ════ PESTAnA IMPRENTA ════════════════════════════════════════════ */}
+          {/* ════ PESTANA IMPRENTA ════════════════════════════════════════════ */}
           {activeTab === "imprenta" && (
             <Imprenta settings={settings} />
           )}
 
-          {/* ════ PESTAnA HARDWARE ════════════════════════════════════════════ */}
+          {/* ════ PESTANA HARDWARE ════════════════════════════════════════════ */}
           {activeTab === "hardware" && (
             <Hardware
               settings={settings}

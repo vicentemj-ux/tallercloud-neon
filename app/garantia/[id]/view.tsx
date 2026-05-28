@@ -55,11 +55,11 @@ function onlyDigits(phone: string) {
 function soporteWhatsAppUrl(tallerPhone: string, tallerNombre: string, folio: string) {
   const digits = normalizePhoneForWhatsApp(tallerPhone)
   if (!digits) return null
-  const msg = `Hola ${tallerNombre}, tengo una duda sobre mi garantía del folio ${folio}.`
+  const msg = `Hola ${tallerNombre}, tengo una duda sobre mi garantia del folio ${folio}.`
   return `https://api.whatsapp.com/send?phone=${digits}&text=${encodeURIComponent(msg)}`
 }
 
-/** Impresión: contenedor fuera de pantalla pero con ancho real para react-to-print */
+/** Impresion: contenedor fuera de pantalla pero con ancho real para react-to-print */
 function PrintOffscreen({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -123,7 +123,7 @@ export default function GarantiaDigitalPage() {
     if (!data) return ""
     const f = data.falla?.trim()
     if (f) return `${f} — Trabajo completado y entrega verificada.`
-    return "Reparación completada según estándares del taller. Equipo entregado en condiciones de uso."
+    return "Reparacion completada segun estandares del taller. Equipo entregado en condiciones de uso."
   }, [data])
 
   const equipoLabel = useMemo(() => {
@@ -155,7 +155,7 @@ export default function GarantiaDigitalPage() {
       if (rpcError) throw rpcError
       if (!row) {
         setError(
-          "No se encontró el comprobante. Verifica el enlace o los últimos 4 dígitos del teléfono registrado.",
+          "No se encontro el comprobante. Verifica el enlace o los ultimos 4 digitos del telefono registrado.",
         )
         setData(null)
         return
@@ -163,7 +163,7 @@ export default function GarantiaDigitalPage() {
       setData(row as GarantiaRow)
     } catch (err) {
       console.error(err)
-      setError("No se pudo cargar la garantía. Intenta de nuevo más tarde.")
+      setError("No se pudo cargar la garantia. Intenta de nuevo mas tarde.")
       setData(null)
     } finally {
       setLoading(false)
@@ -178,7 +178,7 @@ export default function GarantiaDigitalPage() {
   if (!ticketId) {
     return (
       <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center px-4 pb-[env(safe-area-inset-bottom)]">
-        <p className="text-slate-600 text-center">Enlace no válido.</p>
+        <p className="text-slate-600 text-center">Enlace no valido.</p>
       </div>
     )
   }
@@ -192,9 +192,9 @@ export default function GarantiaDigitalPage() {
               <ShieldCheck className="h-9 w-9 text-blue-600" aria-hidden />
             </div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">TallerCloud</p>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">Garantía digital</h1>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">Garantia digital</h1>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Tu comprobante de salida y garantía. Ingresa los últimos 4 dígitos del celular que registraste en
+              Tu comprobante de salida y garantia. Ingresa los ultimos 4 digitos del celular que registraste en
               el taller.
             </p>
           </div>
@@ -204,7 +204,7 @@ export default function GarantiaDigitalPage() {
             className="mt-8 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_8px_30px_rgb(15,23,42,0.06)]"
           >
             <label htmlFor="garantia-last4" className="block text-sm font-medium text-slate-700">
-              Últimos 4 dígitos del teléfono
+              Ultimos 4 digitos del telefono
             </label>
             <Input
               id="garantia-last4"
@@ -239,7 +239,7 @@ export default function GarantiaDigitalPage() {
           </form>
 
           <p className="mt-8 text-center text-xs text-slate-500">
-            Tus datos están protegidos. Solo tú puedes ver este comprobante con tu teléfono.
+            Tus datos estan protegidos. Solo tu puedes ver este comprobante con tu telefono.
           </p>
         </div>
       </div>
@@ -254,7 +254,7 @@ export default function GarantiaDigitalPage() {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-slate-50 via-white to-slate-50 pb-10">
-      {/* Impresión térmica (fuera de vista; react-to-print) */}
+      {/* Impresion termica (fuera de vista; react-to-print) */}
       <PrintOffscreen>
         <div ref={printRef}>
           <TicketSalidaGarantia
@@ -283,7 +283,7 @@ export default function GarantiaDigitalPage() {
         <header className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)]">
           <div className="flex flex-col items-center gap-4">
             {data.logo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del taller (Supabase / externa)
+              // eslint-disable-next-line @next/next/no-img-element -- URL dinamica del taller (Supabase / externa)
               <img
                 src={data.logo_url}
                 alt=""
@@ -302,7 +302,7 @@ export default function GarantiaDigitalPage() {
                   : "bg-red-50 text-red-800 ring-red-200/80",
               )}
             >
-              {garantiaActiva ? "GARANTÍA ACTIVA" : "GARANTÍA VENCIDA"}
+              {garantiaActiva ? "GARANTIA ACTIVA" : "GARANTIA VENCIDA"}
             </div>
           </div>
           {!data.logo_url ? null : (
@@ -347,7 +347,7 @@ export default function GarantiaDigitalPage() {
           </section>
 
           <section className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-[0_8px_30px_rgb(15,23,42,0.05)]">
-            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-blue-600">Solución realizada</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-blue-600">Solucion realizada</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-700">{solucionRealizada}</p>
           </section>
 
@@ -377,7 +377,7 @@ export default function GarantiaDigitalPage() {
                 : "border-slate-200 bg-slate-50",
             )}
           >
-            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-slate-600">Vencimiento de garantía</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-slate-600">Vencimiento de garantia</h2>
             <p className="mt-3 text-center text-lg font-bold tabular-nums text-slate-900">{fechaVencimientoFmt}</p>
             <p className="mt-2 text-center text-xs leading-relaxed text-slate-600">
               {truncateLegal(data.terminos_garantia, 320)}
@@ -425,7 +425,7 @@ export default function GarantiaDigitalPage() {
 
         <footer className="mt-8 border-t border-slate-200/80 pt-6 text-center">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">TallerCloud</p>
-          <p className="mt-1 text-xs text-slate-500">Comprobante digital · no reemplaza el ticket físico si aplica</p>
+          <p className="mt-1 text-xs text-slate-500">Comprobante digital · no reemplaza el ticket fisico si aplica</p>
         </footer>
       </div>
     </div>

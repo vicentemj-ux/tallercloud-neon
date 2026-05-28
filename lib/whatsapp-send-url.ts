@@ -1,4 +1,4 @@
-﻿/**
+/**
  * URL oficial de envio WhatsApp (`https://api.whatsapp.com/send`).
  * No usar wa.me: mejor compatibilidad en apps y escritorio.
  *

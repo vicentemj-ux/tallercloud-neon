@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Etiquetas neutras / dinamicas segun categoria (sin amarrar a marcas comerciales).
  */
 export function getInventoryFieldLabels(categoria: string) {

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 /**
  * 3x3 unlock pattern grid. Parses a string like "1-4-7-8-9" or "1,4,7,8,9"

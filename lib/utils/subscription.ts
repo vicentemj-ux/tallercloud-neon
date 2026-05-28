@@ -1,4 +1,4 @@
-﻿export const MS_PER_DAY = 1000 * 60 * 60 * 24
+export const MS_PER_DAY = 1000 * 60 * 60 * 24
 
 /**
  * Dias restantes hasta `fechaVencimiento`, comparando en UTC a nivel de dia.
@@ -6,7 +6,7 @@
  * - Devuelve `null` para ausencia de fecha
  * - Devuelve siempre >= 0
  *
- * Semantica: `fecha_vencimiento_plan` es el uLTIMO DiA VaLIDO (no el primer dia invalido).
+ * Semantica: `fecha_vencimiento_plan` es el ULTIMO DIA VALIDO (no el primer dia invalido).
  * El admin guarda el timestamp del momento de creacion + N dias (incluye componente de hora).
  * El proxy bloquea cuando `timestamp < Date.now()` (compara hora exacta).
  * Esta funcion usa "fin del dia almacenado UTC" como target para alinear con el proxy:

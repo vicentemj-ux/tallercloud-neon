@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -32,23 +32,23 @@ import {
   Monitor,
   Projector,
 } from "lucide-react"
-import type { RepairOrder } from "@/lib/actions/repairs-prisma"
+import type { RepairOrder } from "@/lib/actions/repairs"
 
-// â”€â”€â”€ Re-export Order as alias for RepairOrder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Re-export Order as alias for RepairOrder ──────────────────────────────
 export type Order = RepairOrder
 
-// â”€â”€â”€ Status config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Status config ─────────────────────────────────────────────────────────
 
 const statusConfig: Record<string, { className: string; icon: React.ReactNode }> = {
   RECIBIDO: {
     className: "bg-blue-50 text-blue-700 border-blue-200",
     icon: <Clock className="h-3 w-3" />,
   },
-  "DIAGNÃ“STICO": {
+  "DIAGNOSTICO": {
     className: "bg-indigo-50 text-indigo-700 border-indigo-200",
     icon: <AlertCircle className="h-3 w-3" />,
   },
-  "EN REPARACIÃ“N": {
+  "EN REPARACION": {
     className: "bg-amber-50 text-amber-700 border-amber-200",
     icon: <Wrench className="h-3 w-3" />,
   },
@@ -75,12 +75,12 @@ const defaultStatusConfig: { className: string; icon: React.ReactNode } = {
   icon: <Circle className="h-3 w-3" />,
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function maskPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "")
-  if (digits.length < 7) return phone
-  return `${digits.slice(0, 3)}â€¢â€¢â€¢${digits.slice(-4)}`
+  if (digits.length < 7) return digits
+  return `${digits.slice(0, 3)}***${digits.slice(-4)}`
 }
 
 function getDeviceIcon(tipo_equipo: string) {
@@ -91,7 +91,7 @@ function getDeviceIcon(tipo_equipo: string) {
     return <Gamepad2 className="h-4 w-4 text-slate-400 shrink-0" />
   if (t.includes("tablet") || t.includes("ipad"))
     return <Tablet className="h-4 w-4 text-slate-400 shrink-0" />
-  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil") || t.includes("mÃ³vil"))
+  if (t.includes("celular") || t.includes("smartphone") || t.includes("iphone") || t.includes("android") || t.includes("movil") || t.includes("movil"))
     return <Smartphone className="h-4 w-4 text-slate-400 shrink-0" />
   if (t.includes("impresora") || t.includes("printer"))
     return <Printer className="h-4 w-4 text-slate-400 shrink-0" />
@@ -104,7 +104,7 @@ function getDeviceIcon(tipo_equipo: string) {
   return <Wrench className="h-4 w-4 text-slate-400 shrink-0" />
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ─────────────────────────────────────────────────────────────
 
 interface OrdersTableProps {
   orders: Order[]
@@ -119,9 +119,9 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         <Inbox className="h-7 w-7 text-slate-400" />
       </div>
       <div className="flex max-w-sm flex-col gap-2">
-        <p className="text-sm font-medium text-slate-700">Sin Ã³rdenes todavÃ­a</p>
+        <p className="text-sm font-medium text-slate-700">Sin ordenes todavia</p>
         <p className="text-sm leading-relaxed text-slate-500">
-          Las reparaciones que registres aparecerÃ¡n aquÃ­.
+          Las reparaciones que registres apareceran aqui.
         </p>
       </div>
     </div>
@@ -152,7 +152,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             emptyState
           ) : (
             <>
-              {/* â”€â”€ Desktop table â”€â”€ */}
+              {/* ── Desktop table ── */}
               <div className="hidden max-w-full overflow-x-auto px-4 pb-6 pt-2 md:block sm:px-6 lg:px-8 custom-scrollbar">
                 <Table className="min-w-[800px]" aria-label="Actividad reciente de reparaciones">
                   <TableHeader className="bg-slate-50/90">
@@ -240,7 +240,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 </Table>
               </div>
 
-              {/* â”€â”€ Mobile cards â”€â”€ */}
+              {/* ── Mobile cards ── */}
               <div className="divide-y divide-slate-100 md:hidden">
                 {orders.map((order, index) => {
                   const currentConfig = statusConfig?.[order.status as string] ?? defaultStatusConfig
@@ -297,4 +297,3 @@ export function OrdersTable({ orders }: OrdersTableProps) {
     </>
   )
 }
-

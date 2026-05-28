@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Utilidades de formato de fecha centralizadas.
  * Fuente unica de verdad para todo el formateo de fechas en TallerCloud.
  */

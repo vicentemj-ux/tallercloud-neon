@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Diagnostico PRO (health check) persistido en `reparaciones.checklist_pro`.
  * Cada item es ternario: pass / fail / na (sin probar, por defecto).
  */

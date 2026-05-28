@@ -1,4 +1,4 @@
-﻿/** Patron 3×3 en formato `1-4-7` (compatible con almacenamiento en BD). */
+/** Patron 3×3 en formato `1-4-7` (compatible con almacenamiento en BD). */
 
 export const MIN_PATTERN = 4
 

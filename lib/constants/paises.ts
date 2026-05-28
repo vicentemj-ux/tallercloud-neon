@@ -1,4 +1,4 @@
-﻿export interface PaisInfo {
+export interface PaisInfo {
   nombre: string
   codigoTelefono: string
 }

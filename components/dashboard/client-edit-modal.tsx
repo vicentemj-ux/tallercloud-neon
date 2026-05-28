@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -182,7 +182,7 @@ export function ClientEditModal({ client, isOpen, onClose, onSave }: ClientEditM
                 EDITAR CLIENTE
               </span>
 
-              {/* Toggle BaSICO / FACTURACIoN */}
+              {/* Toggle BASICO / FACTURACION */}
               <div className="flex shrink-0 gap-0.5 rounded-xl border border-white/10 bg-white/10 p-0.5">
                 <Button
                   type="button"

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * lib/storage.ts — Constantes y utilidades puras de Supabase Storage.
  * Sin "use server" — importable desde cualquier contexto (cliente, servidor, actions).
  *
@@ -47,7 +47,7 @@ export function extractStoragePath(urlOrPath: string, bucket: string): string {
 }
 
 /**
- * Construye la URL publica de un archivo en un bucket PuBLICO.
+ * Construye la URL publica de un archivo en un bucket PUBLICO.
  * Puro — no hace ninguna llamada de red ni usa claves privadas.
  * Para buckets privados usa getSignedUrl() de lib/storage-server.ts.
  */
@@ -76,12 +76,19 @@ export function getInventoryPublicUrl(stored: string | null | undefined): string
   if (stored == null) return null
   const s = String(stored).trim()
   if (s === "") return null
+
   if (s.startsWith("http://") || s.startsWith("https://")) {
-    // Si viene hardcodeada/legacy en BD (ej. bucket inventario), la reescribimos al bucket oficial.
-    const normalizedPath = normalizeInventoryImagePathForDb(s)
-    if (normalizedPath) return getPublicUrl(INVENTORY_PRODUCT_IMAGES_BUCKET, normalizedPath)
     return s
   }
+
+  const r2Base = typeof process !== "undefined" ? process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "") : null
+  if (r2Base && s.startsWith("inventario/")) {
+    return `${r2Base}/${s}`
+  }
+
+  const supabaseUrl = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_URL : null
+  if (!supabaseUrl) return null
+
   return getPublicUrl(INVENTORY_PRODUCT_IMAGES_BUCKET, s)
 }
 

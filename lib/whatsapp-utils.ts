@@ -1,4 +1,4 @@
-﻿import { getCodigoTelefono } from "@/lib/constants/paises"
+import { getCodigoTelefono } from "@/lib/constants/paises"
 
 export function normalizePhoneForWhatsApp(
   raw: string | null | undefined,

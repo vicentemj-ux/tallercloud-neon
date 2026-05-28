@@ -1,4 +1,4 @@
-﻿export const PRO_FEATURES_TEMP_DISABLED = true
+export const PRO_FEATURES_TEMP_DISABLED = true
 
 export const PRO_DISABLED_ROUTES = [
   "/dashboard/bitacora-visitas",

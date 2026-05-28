@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Datos de demostracion para la vista previa en tiempo real del modulo IMPRENTA.
  * Cada tipo de documento tiene un mock realista para renderizar su template.
  */

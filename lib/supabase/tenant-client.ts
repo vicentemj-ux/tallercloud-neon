@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 
 import { SignJWT } from "jose"
 import { createClient } from "@supabase/supabase-js"

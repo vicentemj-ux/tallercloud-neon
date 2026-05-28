@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { Printer, CreditCard, DollarSign, ShoppingBag, Store, TrendingUp, Trash2, Loader2 } from "lucide-react"
@@ -268,7 +268,7 @@ export function HistorialVentaRowCard({
     <>
       {variant === "card" ? cardContent : rowContent}
 
-      {/* Modal exito Venta (POS) — para ventas PDV */}
+      {/* Modal Exito Venta (POS) — para ventas PDV */}
       {ventaParaModal && (
         <SuccessModal
           open={!!ventaParaModal}

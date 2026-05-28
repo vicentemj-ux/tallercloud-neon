@@ -1,4 +1,4 @@
-﻿"use server"
+"use server"
 // LEGACY SUPABASE ACTIONS.
 // No importar desde rutas MVP (usar auth-prisma.ts).
 // Pendiente migracion completa de modulos legacy/PRO.

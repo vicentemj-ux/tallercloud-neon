@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState, useCallback } from "react"
 import { searchClientByPhone } from "@/lib/actions/repairs-prisma"
@@ -15,7 +15,7 @@ export type ClientAutocompletePayload = {
   correo: string
 }
 
-/** TelÃ©fono solo dÃ­gitos; correo string seguro. */
+/** Telefono solo digitos; correo string seguro. */
 function normalizeClientPayload(raw: ClientAutocompletePayload | null): ClientAutocompletePayload | null {
   if (!raw) return null
   const tel = raw.telefono.replace(/\D/g, "")
@@ -34,7 +34,7 @@ interface ClientAutocompleteProps {
   onClientFound: (client: ClientAutocompletePayload | null) => void
   /** Pre-populate fields when editing an existing repair */
   initialClient?: { id?: string; nombre: string; telefono: string; correo: string } | null
-  /** Modal nuevo ticket: inputs mÃ¡s bajos y menos espacio vertical */
+  /** Modal nuevo ticket: inputs mas bajos y menos espacio vertical */
   compact?: boolean
 }
 
@@ -99,7 +99,7 @@ export function ClientAutocomplete({
       const { client } = await searchClientByPhone(phoneNumber)
 
       if (client) {
-        // Client found - frecuente (id estable para cliente_id / validaciÃ³n)
+        // Client found - frecuente (id estable para cliente_id / validacion)
         setClientName(client.nombre)
         setClientId(client.id)
         setIsFrequent(true)
@@ -149,10 +149,10 @@ export function ClientAutocomplete({
 
   return (
     <div className={compact ? "space-y-2" : "space-y-4"}>
-      {/* TelÃ©fono del Cliente - Primary field */}
+      {/* Telefono del Cliente - Primary field */}
       <div className={compact ? "flex flex-col gap-1" : "flex flex-col gap-2"}>
         <Label htmlFor="customer-phone" className={labClass}>
-          TelÃ©fono del Cliente *
+          Telefono del Cliente *
         </Label>
         <div className="relative">
           <Input
@@ -218,5 +218,3 @@ export function ClientAutocomplete({
     </div>
   )
 }
-
-

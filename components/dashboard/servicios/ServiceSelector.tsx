@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Input } from "@/components/ui/input"
