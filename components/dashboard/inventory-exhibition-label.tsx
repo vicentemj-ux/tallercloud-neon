@@ -16,7 +16,7 @@ export interface InventoryExhibitionLabelProps {
 }
 
 /**
- * Etiqueta de exhibiciÃ³n 50Ã—25 mm (EQUIPO) â€” impresora tÃ©rmica.
+ * Etiqueta de exhibicion 50Ã—25 mm (EQUIPO) â€” impresora termica.
  * Layout flex-col de 3 filas; nombre con line-clamp-2 para nombres largos. Sin IMEI/serie.
  */
 const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionLabelProps>(
@@ -32,7 +32,7 @@ const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionL
         style={{ color: "#000000", background: "#ffffff", boxShadow: "none" }}
       >
         <div className="flex h-full w-full flex-col justify-between overflow-hidden p-1 text-black">
-          {/* Fila 1: taller | condiciÃ³n */}
+          {/* Fila 1: taller | condicion */}
           <div className="flex w-full flex-none items-start justify-between leading-none">
             <span className="text-[8px] font-bold uppercase leading-none text-black">
               {(tallerNombre || "Mi Taller").toUpperCase()}
@@ -42,7 +42,7 @@ const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionL
             </span>
           </div>
 
-          {/* Fila 2: nombre del producto (crÃ­tico) â€” mÃ¡x. 2 lÃ­neas */}
+          {/* Fila 2: nombre del producto (critico) â€” max. 2 lineas */}
           <div className="my-auto flex min-h-0 w-full flex-1 items-center">
             <p className="line-clamp-2 w-full text-xs font-black uppercase leading-[1.1] text-black">
               {nombreProducto}

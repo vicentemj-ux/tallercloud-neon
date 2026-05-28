@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
-import { normalizeInventoryImagePathForDb } from "@/lib/storage"
+import { normalizeInventoryImagePathForDb, getInventoryPublicUrl } from "@/lib/storage"
 import { sanitizeFileName, uploadFileToR2 } from "@/lib/r2"
 import type { Prisma } from "@prisma/client"
 
@@ -114,7 +114,7 @@ function mapToRow(p: {
     nombre: p.nombre,
     sku: p.sku,
     codigo_barras: p.codigoBarras,
-    imagen_url: p.imagenUrl,
+    imagen_url: getInventoryPublicUrl(p.imagenUrl),
     categoria: p.categoria,
     descripcion: p.descripcion,
     marca: p.marca,

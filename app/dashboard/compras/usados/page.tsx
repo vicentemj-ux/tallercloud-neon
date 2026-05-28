@@ -92,7 +92,7 @@ export default function ActivosAdquiridosPage() {
             onClick={() => router.push("/dashboard/compras/registrar-usado")}
             className="h-10 gap-2 rounded-full bg-blue-600 px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-blue-700 btn-glow"
           >
-            <Plus className="h-4 w-4" /> Nueva adquisiciÃ³n
+            <Plus className="h-4 w-4" /> Nueva adquisicion
           </Button>
         </header>
 
@@ -101,7 +101,7 @@ export default function ActivosAdquiridosPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-1">Capital de compra</p>
             <p className="text-2xl font-black text-slate-900 tabular-nums">{fmtMXN(stats.total)}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">{stats.count} unidades en inventario histÃ³rico</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">{stats.count} unidades en inventario historico</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1">Movimiento mensual</p>
@@ -125,11 +125,11 @@ export default function ActivosAdquiridosPage() {
         <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           {/* Header */}
           <div className="hidden lg:grid grid-cols-[1fr_1fr_1.5fr_140px_140px] gap-4 px-6 py-4 border-b border-slate-100">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">BitÃ¡cora / Temporalidad</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Bitacora / Temporalidad</span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Origen (vendedor)</span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Activo / Especificaciones</span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-right">Valor de compra</span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-right">JurisdicciÃ³n</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-right">Jurisdiccion</span>
           </div>
 
           {loading ? (
@@ -141,8 +141,8 @@ export default function ActivosAdquiridosPage() {
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
                 <Smartphone className="h-8 w-8 text-slate-300" />
               </div>
-              <p className="text-sm font-bold text-slate-600 uppercase tracking-wider">Archivo vacÃ­o en este momento</p>
-              <p className="text-xs text-slate-400">Registra tu primera adquisiciÃ³n de equipo usado.</p>
+              <p className="text-sm font-bold text-slate-600 uppercase tracking-wider">Archivo vacio en este momento</p>
+              <p className="text-xs text-slate-400">Registra tu primera adquisicion de equipo usado.</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-50">
@@ -151,7 +151,7 @@ export default function ActivosAdquiridosPage() {
                   key={row.id}
                   className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.5fr_140px_140px] gap-3 lg:gap-4 px-6 py-5 hover:bg-slate-50/60 transition-colors items-center"
                 >
-                  {/* BitÃ¡cora */}
+                  {/* Bitacora */}
                   <div>
                     <p className="font-mono text-sm font-bold text-slate-900">{row.folio}</p>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
@@ -195,10 +195,10 @@ export default function ActivosAdquiridosPage() {
                   <div className="text-right">
                     <p className="text-base font-black text-slate-900 tabular-nums">{fmtMXN(row.monto)}</p>
                   </div>
-                  {/* JurisdicciÃ³n */}
+                  {/* Jurisdiccion */}
                   <div className="text-right">
                     <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 border border-emerald-100">
-                      DeclaraciÃ³n jurada
+                      Declaracion jurada
                     </span>
                   </div>
                 </div>
@@ -220,16 +220,16 @@ export default function ActivosAdquiridosPage() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-2">
                   <p className="text-[11px] font-bold text-amber-700">
-                    01. Registro de declaraciÃ³n jurada instantÃ¡neo.
+                    01. Registro de declaracion jurada instantaneo.
                   </p>
                   <p className="text-[11px] font-bold text-amber-700">
-                    02. Reporte en formato carta o tÃ©rmico.
+                    02. Reporte en formato carta o termico.
                   </p>
                   <p className="text-[11px] font-bold text-amber-700">
-                    03. Exigencia de documentaciÃ³n fÃ­sica y huella.
+                    03. Exigencia de documentacion fisica y huella.
                   </p>
                   <p className="text-[11px] font-bold text-amber-700">
-                    04. ModificaciÃ³n de marco legal en ajustes.
+                    04. Modificacion de marco legal en ajustes.
                   </p>
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function ActivosAdquiridosPage() {
               variant="outline"
               className="h-10 rounded-full border-amber-300 px-5 text-xs font-bold uppercase tracking-wider text-amber-700 hover:bg-amber-100 self-start lg:self-auto"
             >
-              ConfiguraciÃ³n legal
+              Configuracion legal
             </Button>
           </div>
         </div>

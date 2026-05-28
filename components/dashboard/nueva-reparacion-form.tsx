@@ -149,9 +149,9 @@ interface NuevaReparacionFormProps {
   onSuccess?: (repairId: string) => void
   isModal?: boolean
   onSubmit?: (formData: FormData) => Promise<{ repairId?: string; folio?: string } | void>
-  /** Cuando hay un ID de reparaciÃ³n cargado (ediciÃ³n), se muestra el botÃ³n AGREGAR DETALLES y se puede pre-llenar el formulario. */
+  /** Cuando hay un ID de reparacion cargado (edicion), se muestra el boton AGREGAR DETALLES y se puede pre-llenar el formulario. */
   editingRepairId?: string | null
-  /** Solo modo modal: notifica si hay cambios respecto al Ãºltimo punto guardado (cierre con confirmaciÃ³n). */
+  /** Solo modo modal: notifica si hay cambios respecto al ultimo punto guardado (cierre con confirmacion). */
   onModalDirtyChange?: (dirty: boolean) => void
   /** Tipo de ticket (Orden normal / Reingreso) controlado por el shell del modal. */
   modalOrderType?: ModalOrderTypeProps | null
@@ -244,7 +244,7 @@ export function NuevaReparacionForm({
   const [existingPhotosDisplay, setExistingPhotosDisplay] = useState<string[]>([])
   const [removedPhotos, setRemovedPhotos] = useState<string[]>([])
   const photoInputRef = useRef<HTMLInputElement>(null)
-  /** Modal: envÃ­o silencioso para generar firma con ticket real en BD (misma ruta que ediciÃ³n). */
+  /** Modal: envio silencioso para generar firma con ticket real en BD (misma ruta que edicion). */
   const modalFormRef = useRef<HTMLFormElement>(null)
   const [photoUrls, setPhotoUrls] = useState<string[]>([])
 
@@ -263,7 +263,7 @@ export function NuevaReparacionForm({
     void getTallerSettings().then(({ settings }) => setShopSettings(settings))
   }, [])
 
-  /** Modal de Ã©xito tras crear orden (folio + impresiÃ³n / WhatsApp) */
+  /** Modal de exito tras crear orden (folio + impresion / WhatsApp) */
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [successPayload, setSuccessPayload] = useState<RepairSuccessPayload | null>(null)
 
@@ -526,7 +526,7 @@ export function NuevaReparacionForm({
       d === "Error desconocido"
     ) {
       d =
-        "Respuesta genÃ©rica del servidor. Revisa en Supabase que existan las columnas requeridas en `reparaciones`, que RLS permita el insert y mira los logs de la funciÃ³n `createRepair` en Vercel."
+        "Respuesta generica del servidor. Revisa en Supabase que existan las columnas requeridas en `reparaciones`, que RLS permita el insert y mira los logs de la funcion `createRepair` en Vercel."
     }
     setRegisterErrorDetail(d)
     setRegisterErrorOpen(true)
@@ -612,7 +612,7 @@ export function NuevaReparacionForm({
     if (isModal) {
       items.push({
         key: "revision",
-        label: "RevisiÃ³n rÃ¡pida",
+        label: "Revision rapida",
         done: checklistIngreso.encendido !== null,
       })
     }
@@ -633,7 +633,7 @@ export function NuevaReparacionForm({
     loadTechnicians()
   }, [editingRepairId])
 
-  // Al abrir en modo ediciÃ³n, cargar datos del ticket para pre-rellenar
+  // Al abrir en modo edicion, cargar datos del ticket para pre-rellenar
   useEffect(() => {
     if (!editingRepairId || !isModal) return
     const load = async () => {
@@ -804,8 +804,8 @@ export function NuevaReparacionForm({
       toast({ title: "Ticket enviado a impresora" })
     } else if (result.usedFallback) {
       toast({
-        title: "ImpresiÃ³n web en uso",
-        description: `${result.errorMessage || "Se usÃ³ impresiÃ³n web como respaldo."}`,
+        title: "Impresion web en uso",
+        description: `${result.errorMessage || "Se uso impresion web como respaldo."}`,
       })
     }
   }
@@ -819,8 +819,8 @@ export function NuevaReparacionForm({
 
     if (result.usedFallback) {
       toast({
-        title: "ImpresiÃ³n web en uso",
-        description: `${result.errorMessage || "Se usÃ³ impresiÃ³n web como respaldo."}`,
+        title: "Impresion web en uso",
+        description: `${result.errorMessage || "Se uso impresion web como respaldo."}`,
       })
     }
   }
@@ -859,7 +859,7 @@ export function NuevaReparacionForm({
     window.open("/print-label", "_blank", "noopener,noreferrer,width=520,height=300")
   }
 
-  /** Cierra el modal de Ã©xito, resetea el formulario y notifica al padre (lista / cierre modal) */
+  /** Cierra el modal de exito, resetea el formulario y notifica al padre (lista / cierre modal) */
   function handleCloseSuccessDialog() {
     const rid = successPayload?.repairId
     setShowSuccessDialog(false)
@@ -911,7 +911,7 @@ export function NuevaReparacionForm({
         !navigator.onLine
       ) {
         showRegisterError(
-          "Sin conexiÃ³n no se pueden guardar los cambios del ticket. Espera a recuperar la seÃ±al o revisa tu red.",
+          "Sin conexion no se pueden guardar los cambios del ticket. Espera a recuperar la senal o revisa tu red.",
         )
         setSaving(false)
         return
@@ -970,7 +970,7 @@ export function NuevaReparacionForm({
             repairId: out.repairId,
             customerName: nameCliente,
             customerPhone: telRaw.replace(/\D/g, ""),
-            countryCode: getCodigoTelefono(shopSettings?.pais ?? "MÃ©xico"),
+            countryCode: getCodigoTelefono(shopSettings?.pais ?? "Mexico"),
             deviceBrand: (formData.get("brand") as string) || "",
             deviceModel: (formData.get("model") as string) || "",
             tipo_equipo: tipo_equipo || undefined,
@@ -982,7 +982,7 @@ export function NuevaReparacionForm({
           await triggerVictoryLaunch()
           setShowSuccessDialog(true)
         } else if (!effectiveEdit && out && (!out.repairId || !out.folio)) {
-          showRegisterError("No se recibiÃ³ el folio de la orden. Intenta de nuevo.")
+          showRegisterError("No se recibio el folio de la orden. Intenta de nuevo.")
         }
       } else {
         setSubmitted(true)
@@ -994,7 +994,7 @@ export function NuevaReparacionForm({
       const errorMsg =
         raw.includes("An error occurred in the Server Components render") ||
         raw.includes("omitted in production")
-          ? "Error al guardar (el servidor no expuso el detalle en producciÃ³n). Revisa sesiÃ³n, columnas en BD o intenta sin fotos. En desarrollo verÃ¡s el error real en la consola."
+          ? "Error al guardar (el servidor no expuso el detalle en produccion). Revisa sesion, columnas en BD o intenta sin fotos. En desarrollo veras el error real en la consola."
           : raw.trim() || "Error al guardar el ticket"
       showRegisterError(errorMsg)
       setSaving(false)
@@ -1008,8 +1008,8 @@ export function NuevaReparacionForm({
       if (slot <= 0) {
         toast({
           variant: "destructive",
-          title: "LÃ­mite de fotos",
-          description: "Ya alcanzaste el mÃ¡ximo de 3 fotos por ticket.",
+          title: "Limite de fotos",
+          description: "Ya alcanzaste el maximo de 3 fotos por ticket.",
         })
         return
       }
@@ -1020,7 +1020,7 @@ export function NuevaReparacionForm({
       toast({
         variant: "destructive",
         title: "No se pudo guardar la foto",
-        description: "Intenta de nuevo o sube una imagen desde la galerÃ­a.",
+        description: "Intenta de nuevo o sube una imagen desde la galeria.",
       })
     } finally {
       setCompressingPhotos(false)
@@ -1036,7 +1036,7 @@ export function NuevaReparacionForm({
         <DialogHeader>
           <DialogTitle className="text-slate-900">Modo de Emergencia Activo</DialogTitle>
           <DialogDescription className="text-slate-600">
-            Guardando localmente. El ticket quedÃ³ en cola y se subirÃ¡ cuando vuelva la conexiÃ³n.
+            Guardando localmente. El ticket quedo en cola y se subira cuando vuelva la conexion.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -1112,7 +1112,7 @@ export function NuevaReparacionForm({
         <input type="hidden" name="customer-email" value={selectedClient?.correo || ""} />
         <input type="hidden" name="checklist-pro-json" value={JSON.stringify(checklistProHealth)} readOnly />
 
-        {/* â”€â”€ Cuerpo: scroll interno; el diÃ¡logo usa max-h sin hueco inferior extra â”€â”€ */}
+        {/* â”€â”€ Cuerpo: scroll interno; el dialogo usa max-h sin hueco inferior extra â”€â”€ */}
         <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 pb-0 pt-2 sm:px-3.5 sm:pt-2.5">
           <div className="w-full min-w-0 space-y-1.5">
           <div className="grid min-w-0 grid-cols-1 items-start gap-2 lg:grid-cols-1 xl:grid-cols-3 xl:gap-2">
@@ -1305,7 +1305,7 @@ export function NuevaReparacionForm({
 
             <div className="border-t border-slate-100 pt-2">
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                Seguridad (PIN / contraseÃ±a)
+                Seguridad (PIN / contrasena)
               </p>
               <SecurityInputV2
                 value={security}
@@ -1319,7 +1319,7 @@ export function NuevaReparacionForm({
           </Card>
             </div>
 
-            {/* â”€â”€ Columna 2: DiagnÃ³stico TÃ©cnico â”€â”€ */}
+            {/* â”€â”€ Columna 2: Diagnostico Tecnico â”€â”€ */}
             <div className="flex flex-col gap-1.5">
             <Card className="min-w-0 w-full overflow-hidden border border-slate-200 bg-white shadow-sm">
               <CardContent className="space-y-2 p-2.5 sm:p-3">
@@ -1336,7 +1336,7 @@ export function NuevaReparacionForm({
                   className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500"
                 >
                   <UserCog className="h-3.5 w-3.5 shrink-0 text-blue-600" aria-hidden />
-                  TÃ©cnico asignado
+                  Tecnico asignado
                 </Label>
                 <Select name="technician" value={selectedTechnician} onValueChange={setSelectedTechnician}>
                   <SelectTrigger
@@ -1384,7 +1384,7 @@ export function NuevaReparacionForm({
 
               <div className="space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/40 p-2.5">
                 <Label className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                  Observaciones estÃ©ticas
+                  Observaciones esteticas
                 </Label>
                 <Textarea
                   id="obs-est-modal"
@@ -1445,7 +1445,7 @@ export function NuevaReparacionForm({
                         Presupuesto pendiente
                       </label>
                       <p className="text-[10px] leading-snug text-slate-500">
-                        Precio a definir tras diagnÃ³stico. Deja en 0 el presupuesto.
+                        Precio a definir tras diagnostico. Deja en 0 el presupuesto.
                       </p>
                     </div>
                   </div>
@@ -1453,7 +1453,7 @@ export function NuevaReparacionForm({
                   {ingresoACotizar ? (
                     <div className="rounded-md bg-amber-50 px-2.5 py-1.5 text-[11px] font-medium text-amber-900 ring-1 ring-amber-100 flex items-center gap-1.5">
                       <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-                      Pendiente de cotizaciÃ³n â€” el precio se llenarÃ¡ despuÃ©s del diagnÃ³stico
+                      Pendiente de cotizacion â€” el precio se llenara despues del diagnostico
                     </div>
                   ) : null}
 
@@ -1483,7 +1483,7 @@ export function NuevaReparacionForm({
                     <div className="flex flex-col gap-1.5 rounded-lg bg-slate-50/70 p-2.5">
                       <div className="flex items-center justify-between">
                         <span className="text-[11px] font-medium text-slate-600">
-                          Servicios del catÃ¡logo
+                          Servicios del catalogo
                         </span>
                         <span className="text-xs font-semibold text-slate-800">
                           ${serviciosTotal.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -1626,7 +1626,7 @@ export function NuevaReparacionForm({
                             disabled={compressingPhotos}
                             onClick={() => photoInputRef.current?.click()}
                             className="flex aspect-square w-full min-w-0 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50/80 text-slate-500 transition-colors hover:border-blue-400 hover:bg-blue-50/80 disabled:opacity-50"
-                            aria-label="Subir foto desde galerÃ­a"
+                            aria-label="Subir foto desde galeria"
                           >
                             <ImagePlus className="h-7 w-7" aria-hidden />
                           </button>
@@ -1640,7 +1640,7 @@ export function NuevaReparacionForm({
                           onClick={() => setCameraOpen(true)}
                           className="mt-2 h-11 w-full border-slate-200 bg-white text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
                         >
-                          ðŸ“· Abrir CÃ¡mara
+                          ðŸ“· Abrir Camara
                         </Button>
                       )}
                       {compressingPhotos ? (
@@ -1652,7 +1652,7 @@ export function NuevaReparacionForm({
               </Card>
             </div>
           </div>
-          {/* NOTE: La secciÃ³n de costos se moviÃ³ al componente MonitorUtilidadOperativa en la pÃ¡gina de detalle */}
+          {/* NOTE: La seccion de costos se movio al componente MonitorUtilidadOperativa en la pagina de detalle */}
 
         </div>
         </div>
@@ -1699,7 +1699,7 @@ export function NuevaReparacionForm({
               className="max-w-xs border border-slate-200 bg-white text-slate-900 shadow-lg"
             >
               {criticalReadyModal ? (
-                <p className="text-xs text-slate-700">Todos los datos crÃ­ticos estÃ¡n completos.</p>
+                <p className="text-xs text-slate-700">Todos los datos criticos estan completos.</p>
               ) : (
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-slate-800">
@@ -1707,7 +1707,7 @@ export function NuevaReparacionForm({
                     {pendingCriticalLabels.length === 1 ? "elemento" : "elementos"}
                   </p>
                   <p className="text-[11px] text-slate-500">
-                    Requeridos: Cliente, Equipo, Marca, Falla y RevisiÃ³n rÃ¡pida.
+                    Requeridos: Cliente, Equipo, Marca, Falla y Revision rapida.
                   </p>
                   <ul className="list-disc space-y-0.5 pl-4 text-xs text-slate-600">
                     {pendingCriticalLabels.map((label) => (
@@ -1757,8 +1757,8 @@ export function NuevaReparacionForm({
         onSave={(encoded) => {
           handleSecurityChange({ type: "pattern", value: encoded })
           toast({
-            title: "PatrÃ³n guardado",
-            description: "La secuencia quedÃ³ registrada para este equipo.",
+            title: "Patron guardado",
+            description: "La secuencia quedo registrada para este equipo.",
           })
         }}
       />
@@ -1792,7 +1792,7 @@ export function NuevaReparacionForm({
         <CardHeader className="border-b border-border py-4">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-primary" />
-            <CardTitle className="text-base">InformaciÃ³n del Cliente</CardTitle>
+            <CardTitle className="text-base">Informacion del Cliente</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="grid gap-3 p-5">
@@ -1802,7 +1802,7 @@ export function NuevaReparacionForm({
               <Input 
                 value={selectedClient.telefono || ""} 
                 disabled 
-                placeholder="TelÃ©fono"
+                placeholder="Telefono"
                 className="text-xs"
               />
               <Input 
@@ -1850,7 +1850,7 @@ export function NuevaReparacionForm({
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="imei">IMEI / Serial</Label>
-            <Input id="imei" name="imei" placeholder="NÃºmero IMEI o Serial" />
+            <Input id="imei" name="imei" placeholder="Numero IMEI o Serial" />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="color">Color</Label>
@@ -1869,7 +1869,7 @@ export function NuevaReparacionForm({
         </CardHeader>
         <CardContent className="grid gap-4 p-5">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="problem-desc">DescripciÃ³n del problema</Label>
+            <Label htmlFor="problem-desc">Descripcion del problema</Label>
             <Textarea
               id="problem-desc"
               name="problem-desc"
@@ -1886,13 +1886,13 @@ export function NuevaReparacionForm({
         <CardHeader className="border-b border-border py-4">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-primary" />
-            <CardTitle className="text-base">TÃ©cnico Asignado</CardTitle>
+            <CardTitle className="text-base">Tecnico Asignado</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 p-5">
           <Select name="technician">
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona tÃ©cnico" />
+              <SelectValue placeholder="Selecciona tecnico" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Sin asignar">Sin asignar</SelectItem>
@@ -1910,7 +1910,7 @@ export function NuevaReparacionForm({
         <CardHeader className="border-b border-slate-100 py-4">
           <CardTitle className="text-base text-slate-900">Seguridad del equipo</CardTitle>
           <CardDescription className="text-xs text-slate-500">
-            PIN, contraseÃ±a o patrÃ³n para desbloqueo en taller
+            PIN, contrasena o patron para desbloqueo en taller
           </CardDescription>
         </CardHeader>
         <CardContent className="p-5">
@@ -1941,7 +1941,7 @@ export function NuevaReparacionForm({
             <span className="text-lg">ðŸ“·</span>
             <CardTitle className="text-base">Fotos del Equipo</CardTitle>
           </div>
-          <CardDescription>Opcional Â· mÃ¡x. 3 fotos (se optimizan automÃ¡ticamente)</CardDescription>
+          <CardDescription>Opcional Â· max. 3 fotos (se optimizan automaticamente)</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 p-5">
           <input 
@@ -1988,10 +1988,10 @@ export function NuevaReparacionForm({
             <div className="flex flex-col items-center gap-2 text-center">
               <div className="text-3xl" aria-hidden>ðŸ“¤</div>
               <p className="text-sm font-medium text-foreground">
-                {compressingPhotos ? "Optimizando fotosâ€¦" : "Toca aquÃ­ para subir fotos"}
+                {compressingPhotos ? "Optimizando fotosâ€¦" : "Toca aqui para subir fotos"}
               </p>
               <p className="text-xs text-muted-foreground">
-                Opcional Â· mÃ¡x. 3 fotos Â· se optimizan automÃ¡ticamente
+                Opcional Â· max. 3 fotos Â· se optimizan automaticamente
               </p>
             </div>
           </button>
@@ -2005,7 +2005,7 @@ export function NuevaReparacionForm({
             >
               <span className="inline-flex items-center gap-2">
                 <Camera className="h-4 w-4" />
-                + Tomar Foto con CÃ¡mara
+                + Tomar Foto con Camara
               </span>
             </button>
           )}

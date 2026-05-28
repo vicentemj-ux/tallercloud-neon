@@ -142,7 +142,7 @@ export function ProveedoresModal({ open, onClose }: { open: boolean; onClose: ()
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">TelÃ©fono</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Telefono</Label>
                   <Input
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}

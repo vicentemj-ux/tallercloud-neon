@@ -55,7 +55,7 @@ export type NuevoProductoModalProps = {
   tallerNombre: string
   /** @deprecated No se renderiza en el modal. Mantenido para compatibilidad con page.tsx. */
   footerSlot?: ReactNode
-  /** @deprecated La categorÃ­a EQUIPOS activa los flags automÃ¡ticamente. Mantenido para compatibilidad. */
+  /** @deprecated La categoria EQUIPOS activa los flags automaticamente. Mantenido para compatibilidad. */
   ensureEquiposCategoria?: () => Promise<void>
   nombre: string
   setNombre: (v: string) => void
@@ -194,8 +194,8 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                 </DialogTitle>
                 <DialogDescription className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
                   {editingProducto
-                    ? "Actualiza la informaciÃ³n de este producto en tu inventario."
-                    : "Alta precisa: datos estructurados y bÃºsqueda unificada."}
+                    ? "Actualiza la informacion de este producto en tu inventario."
+                    : "Alta precisa: datos estructurados y busqueda unificada."}
                 </DialogDescription>
               </div>
             </div>
@@ -208,11 +208,11 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
           {/* â”€â”€ Columna izquierda â”€â”€ */}
           <div className="flex flex-col gap-4 min-w-0 order-1">
 
-            {/* IdentificaciÃ³n */}
+            {/* Identificacion */}
             <section className="rounded-2xl border border-slate-100 bg-slate-50/40 p-5 space-y-4">
               <div className="flex items-center gap-2 text-slate-800">
                 <Fingerprint className="h-4 w-4 shrink-0 text-blue-500" />
-                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">IdentificaciÃ³n</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Identificacion</h3>
               </div>
               <div className="space-y-4">
 
@@ -227,7 +227,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   />
                 </div>
 
-                {/* SKU + CÃ³digo de barras */}
+                {/* SKU + Codigo de barras */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5 min-w-0">
                     <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">SKU</Label>
@@ -239,7 +239,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     />
                   </div>
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CÃ³digo de barras</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Codigo de barras</Label>
                     <div className="relative">
                       <Input
                         value={codigoBarras}
@@ -251,7 +251,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                         type="button"
                         onClick={generarCodigoBarrasInterno}
                         className="absolute inset-y-0 right-2 my-2 flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-600 hover:text-white transition-colors"
-                        title="Generar cÃ³digo interno EAN-13"
+                        title="Generar codigo interno EAN-13"
                       >
                         <Wand2 className="h-3.5 w-3.5" />
                       </button>
@@ -259,10 +259,10 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   </div>
                 </div>
 
-                {/* CategorÃ­a + CondiciÃ³n en la misma fila */}
+                {/* Categoria + Condicion en la misma fila */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CategorÃ­a</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Categoria</Label>
                     <Select
                       value={categoria}
                       onValueChange={(val) => {
@@ -302,7 +302,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     </Select>
                   </div>
                   <div className="space-y-1.5 min-w-0">
-                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">CondiciÃ³n</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Condicion</Label>
                     <Select
                       value={condicion || "__none__"}
                       onValueChange={(v) => setCondicion(v === "__none__" ? "" : v)}
@@ -321,9 +321,9 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   </div>
                 </div>
 
-                {/* DescripciÃ³n */}
+                {/* Descripcion */}
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">DescripciÃ³n</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">Descripcion</Label>
                   <Textarea
                     value={descripcion}
                     onChange={(e) => setDescripcion(e.target.value)}
@@ -334,9 +334,9 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
               </div>
             </section>
 
-            {/* ClasificaciÃ³n: Marca + Modelo */}
+            {/* Clasificacion: Marca + Modelo */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 space-y-4">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">ClasificaciÃ³n</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Clasificacion</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.marca}</Label>
@@ -393,7 +393,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
-                          IMEI o nÃºmero de serie <span className="text-red-500">*</span>
+                          IMEI o numero de serie <span className="text-red-500">*</span>
                         </Label>
                         <TooltipProvider>
                           <Tooltip>
@@ -403,8 +403,8 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                               </button>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[220px] text-xs">
-                              <p><strong>IMEI:</strong> 15 dÃ­gitos. Ajustes â†’ InformaciÃ³n o *#06#.</p>
-                              <p className="mt-1"><strong>Serie:</strong> alfanumÃ©rico del fabricante (mÃ­n. 8 caracteres).</p>
+                              <p><strong>IMEI:</strong> 15 digitos. Ajustes â†’ Informacion o *#06#.</p>
+                              <p className="mt-1"><strong>Serie:</strong> alfanumerico del fabricante (min. 8 caracteres).</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -424,14 +424,14 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                           aria-pressed={imeiType === "serie"}
                           className={`flex-1 rounded-lg py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${imeiType === "serie" ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
                         >
-                          NÃºmero de serie
+                          Numero de serie
                         </button>
                       </div>
                       <div className="relative">
                         <Input
                           value={imeiSerie}
                           onChange={(e) => { setImeiSerie(e.target.value); setImeiError(null) }}
-                          placeholder={imeiType === "imei" ? "15 dÃ­gitos numÃ©ricos" : "MÃ­n. 8 caracteres alfanumÃ©ricos"}
+                          placeholder={imeiType === "imei" ? "15 digitos numericos" : "Min. 8 caracteres alfanumericos"}
                           maxLength={imeiType === "imei" ? 15 : 30}
                           className={`bg-white rounded-xl min-h-[48px] font-mono pr-16 ${imeiError ? "border-red-300 focus-visible:ring-red-200" : "border-slate-200"}`}
                         />
@@ -455,19 +455,19 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                       ) : imeiSerie.length > 0 && imeiType === "imei" && /^\d{15}$/.test(imeiSerie) ? (
                         <p className="flex items-center gap-1 text-xs text-emerald-600">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-                          IMEI vÃ¡lido
+                          IMEI valido
                         </p>
                       ) : imeiSerie.length > 0 && imeiType === "serie" && imeiSerie.trim().length >= 8 ? (
                         <p className="flex items-center gap-1 text-xs text-emerald-600">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-                          NÃºmero de serie vÃ¡lido
+                          Numero de serie valido
                         </p>
                       ) : null}
                     </div>
                     {stockBloqueadoPorImei && (
                       <div className="flex items-center gap-2 rounded-xl bg-blue-50/60 border border-blue-100 px-3 py-2 text-xs text-blue-700">
                         <Fingerprint className="h-3.5 w-3.5 shrink-0" />
-                        Stock fijado en 1 â€” identificador Ãºnico por unidad.
+                        Stock fijado en 1 â€” identificador unico por unidad.
                       </div>
                     )}
                   </section>
@@ -531,7 +531,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                     ) : (
                       <>
                         <ImageIcon className="h-9 w-9 text-slate-300" strokeWidth={1.25} aria-hidden />
-                        <span className="text-xs text-slate-500 font-medium">AÃ±adir foto</span>
+                        <span className="text-xs text-slate-500 font-medium">Anadir foto</span>
                       </>
                     )}
                   </label>
@@ -588,7 +588,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-600">MÃ­nimo</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-600">Minimo</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -602,7 +602,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                         />
                       </TooltipTrigger>
                       {stockBloqueadoPorImei && (
-                        <TooltipContent className="text-xs">Unidad Ãºnica: mÃ­nimo fijo en 1.</TooltipContent>
+                        <TooltipContent className="text-xs">Unidad unica: minimo fijo en 1.</TooltipContent>
                       )}
                     </Tooltip>
                   </TooltipProvider>
@@ -610,11 +610,11 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
               </div>
             </section>
 
-            {/* UbicaciÃ³n en almacÃ©n */}
+            {/* Ubicacion en almacen */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 space-y-3">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0 text-blue-500" aria-hidden />
-                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">AlmacÃ©n</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Almacen</h3>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">{labels.ubicacion}</Label>
@@ -639,7 +639,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
           {esCategoriEquipos && (
             <p className="flex items-center gap-1.5 text-xs text-amber-700">
               <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-              Nota: La categorÃ­a EQUIPOS requiere obligatoriamente registrar IMEI/Serie.
+              Nota: La categoria EQUIPOS requiere obligatoriamente registrar IMEI/Serie.
             </p>
           )}
           <div className="flex justify-end gap-3 shrink-0">

@@ -38,8 +38,8 @@ function fmtTime(s: string | null) {
 }
 
 const ESTATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  borrador:     { label: "BORRADOR DE AUDITORÃA", className: "bg-slate-100 text-slate-600 border-slate-200" },
-  en_transito:  { label: "EN TRÃNSITO",           className: "bg-blue-50 text-blue-700 border-blue-200" },
+  borrador:     { label: "BORRADOR DE AUDITORIA", className: "bg-slate-100 text-slate-600 border-slate-200" },
+  en_transito:  { label: "EN TRANSITO",           className: "bg-blue-50 text-blue-700 border-blue-200" },
   pendiente:    { label: "ORDENADO",              className: "bg-blue-50 text-blue-600 border-blue-100" },
   recibida:     { label: "RECIBIDO",              className: "bg-emerald-50 text-emerald-600 border-emerald-100" },
   parcial:      { label: "PARCIAL",               className: "bg-amber-50 text-amber-600 border-amber-100" },
@@ -77,7 +77,7 @@ export default function ComprasPage() {
   const estatusOptions = [
     { value: "todos", label: "Todos" },
     { value: "borrador", label: "Borradores" },
-    { value: "en_transito", label: "En trÃ¡nsito" },
+    { value: "en_transito", label: "En transito" },
     { value: "pendiente", label: "Ordenados" },
     { value: "recibida", label: "Recibidos" },
     { value: "cancelada", label: "Cancelados" },
@@ -98,7 +98,7 @@ export default function ComprasPage() {
                 CADENA DE SUMINISTRO
               </h1>
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-                LogÃ­stica global y abastecimiento de activos
+                Logistica global y abastecimiento de activos
               </p>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function ComprasPage() {
               onClick={() => router.push("/dashboard/inventario")}
               className="h-9 gap-2 rounded-full border-emerald-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-emerald-700 hover:bg-emerald-50 shadow-sm"
             >
-              <Package className="h-3.5 w-3.5" /> Inventario crÃ­tico
+              <Package className="h-3.5 w-3.5" /> Inventario critico
             </Button>
             <Button
               variant="outline"
@@ -139,7 +139,7 @@ export default function ComprasPage() {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="BUSCAR EN EL ARCHIVO LOGÃSTICO (ORDEN #, PROVEEDOR...)"
+              placeholder="BUSCAR EN EL ARCHIVO LOGISTICO (ORDEN #, PROVEEDOR...)"
               className="h-12 rounded-full border-slate-200 bg-white pl-11 pr-4 text-sm font-medium uppercase tracking-wider text-slate-800 placeholder:text-slate-300 placeholder:font-normal shadow-sm"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
@@ -162,7 +162,7 @@ export default function ComprasPage() {
           </div>
         </div>
 
-        {/* â”€â”€ Tabla de Ã³rdenes â”€â”€ */}
+        {/* â”€â”€ Tabla de ordenes â”€â”€ */}
         <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           {/* Header de tabla */}
           <div className="hidden sm:grid grid-cols-[1.2fr_1.2fr_140px_1fr_140px_48px] gap-4 px-6 py-4 border-b border-slate-100">
@@ -193,7 +193,7 @@ export default function ComprasPage() {
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
                 <FileText className="h-8 w-8 text-slate-300" />
               </div>
-              <p className="text-sm font-bold text-slate-600 uppercase tracking-wider">Sin Ã³rdenes de compra</p>
+              <p className="text-sm font-bold text-slate-600 uppercase tracking-wider">Sin ordenes de compra</p>
               <p className="text-xs text-slate-400">Crea una nueva orden para abastecer tu inventario.</p>
             </div>
           ) : (
@@ -216,7 +216,7 @@ export default function ComprasPage() {
                         {orden.errores_recepcion && orden.errores_recepcion.length > 0 && (
                           <div className="flex items-center gap-1 text-[10px] text-red-500 mt-0.5">
                             <AlertTriangle className="h-3 w-3" />
-                            Requiere atenciÃ³n
+                            Requiere atencion
                           </div>
                         )}
                       </div>
@@ -244,7 +244,7 @@ export default function ComprasPage() {
                     <div className="text-right">
                       <p className="text-base font-black text-slate-900 tabular-nums">{fmtMXN(orden.total)}</p>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
-                        {orden.articulos_count ?? 0} artÃ­culos auditados
+                        {orden.articulos_count ?? 0} articulos auditados
                       </p>
                     </div>
 

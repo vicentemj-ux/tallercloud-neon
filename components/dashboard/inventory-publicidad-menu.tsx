@@ -40,7 +40,7 @@ export interface InventoryPublicidadMenuProps {
 }
 
 /**
- * Evita mismatch de hidrataciÃ³n: el menÃº completo solo se monta en el cliente.
+ * Evita mismatch de hidratacion: el menu completo solo se monta en el cliente.
  */
 export function InventoryPublicidadMenu(props: InventoryPublicidadMenuProps) {
   const [isMounted, setIsMounted] = useState(false)
@@ -116,7 +116,7 @@ function InventoryPublicidadMenuInner({
       toast({
         title: "Plan Pro requerido",
         description:
-          "La generaciÃ³n de imÃ¡genes para redes estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
+          "La generacion de imagenes para redes esta incluido en el Plan Pro. Actualiza en Configuracion del taller.",
         variant: "destructive",
       })
       return
@@ -195,7 +195,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "El Cartel de precio estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
+                    "El Cartel de precio esta incluido en el Plan Pro. Actualiza en Configuracion del taller.",
                   variant: "destructive",
                 })
                 return
@@ -253,7 +253,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "El poster de exhibiciÃ³n estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
+                    "El poster de exhibicion esta incluido en el Plan Pro. Actualiza en Configuracion del taller.",
                   variant: "destructive",
                 })
                 return
@@ -266,7 +266,7 @@ function InventoryPublicidadMenuInner({
             </span>
             <span className="flex flex-col gap-0.5">
               <span className="flex items-center gap-2">
-                <span className="font-medium">Imprimir poster de exhibiciÃ³n</span>
+                <span className="font-medium">Imprimir poster de exhibicion</span>
                 <Badge
                   variant="secondary"
                   className="h-4 rounded-full bg-purple-100 px-2 text-[9px] font-bold uppercase leading-none text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
@@ -286,7 +286,7 @@ function InventoryPublicidadMenuInner({
                 toast({
                   title: "Plan Pro requerido",
                   description:
-                    "Generar imagen para redes estÃ¡ incluido en el Plan Pro. Actualiza en ConfiguraciÃ³n del taller.",
+                    "Generar imagen para redes esta incluido en el Plan Pro. Actualiza en Configuracion del taller.",
                   variant: "destructive",
                 })
                 return
@@ -399,7 +399,7 @@ function InventoryPublicidadMenuInner({
           </DialogFooter>
           {!isUsuarioPro ? (
             <p className="text-center text-[11px] text-slate-500">
-              La generaciÃ³n de imÃ¡genes para redes requiere Plan Pro.
+              La generacion de imagenes para redes requiere Plan Pro.
             </p>
           ) : null}
         </DialogContent>

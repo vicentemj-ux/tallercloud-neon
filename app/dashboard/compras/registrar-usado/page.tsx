@@ -69,7 +69,7 @@ export default function RegistrarCompraUsadoPage() {
       return
     }
 
-    toast({ title: "Compra registrada", description: `Folio ${result.folio}. Se descontÃ³ de caja.` })
+    toast({ title: "Compra registrada", description: `Folio ${result.folio}. Se desconto de caja.` })
 
     const paramsObject: Record<string, string> = {
       folio: result.folio ?? "",
@@ -118,7 +118,7 @@ export default function RegistrarCompraUsadoPage() {
                   COMPRA DE EQUIPO
                 </h1>
                 <p className="text-sm text-slate-500">
-                  Registro de adquisiciÃ³n de equipos usados a clientes.
+                  Registro de adquisicion de equipos usados a clientes.
                 </p>
               </div>
             </div>
@@ -169,9 +169,9 @@ export default function RegistrarCompraUsadoPage() {
                 />
               </div>
 
-              {/* TelÃ©fono */}
+              {/* Telefono */}
               <div className="space-y-2">
-                <Label className={labelBase}>WhatsApp / TelÃ©fono</Label>
+                <Label className={labelBase}>WhatsApp / Telefono</Label>
                 <Input
                   value={form.telefono}
                   onChange={(e) => patch("telefono", e.target.value)}
@@ -182,7 +182,7 @@ export default function RegistrarCompraUsadoPage() {
 
               {/* Documento */}
               <div className="space-y-2">
-                <Label className={labelBase}>Documento de identidad (cÃ©dula/ID)</Label>
+                <Label className={labelBase}>Documento de identidad (cedula/ID)</Label>
                 <Input
                   value={form.documento}
                   onChange={(e) => patch("documento", e.target.value)}
@@ -266,7 +266,7 @@ export default function RegistrarCompraUsadoPage() {
               <div className="space-y-2">
                 <Label className={`${labelBase} text-blue-600 flex items-center gap-1`}>
                   <DollarSign className="h-3 w-3" />
-                  Precio de compra (se descontarÃ¡ de caja) *
+                  Precio de compra (se descontara de caja) *
                 </Label>
                 <div className="relative">
                   <span className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-400 font-black text-lg">
@@ -286,7 +286,7 @@ export default function RegistrarCompraUsadoPage() {
 
               {/* Observaciones */}
               <div className="space-y-2">
-                <Label className={labelBase}>Observaciones tÃ©cnicas</Label>
+                <Label className={labelBase}>Observaciones tecnicas</Label>
                 <Textarea
                   value={form.observaciones}
                   onChange={(e) => patch("observaciones", e.target.value)}
@@ -299,7 +299,7 @@ export default function RegistrarCompraUsadoPage() {
               <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 flex items-start gap-3">
                 <ShieldAlert className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700 leading-relaxed">
-                  El registro generarÃ¡ una declaraciÃ³n jurada de propiedad que el cliente deberÃ¡ firmar fÃ­sicamente.
+                  El registro generara una declaracion jurada de propiedad que el cliente debera firmar fisicamente.
                 </p>
               </div>
             </div>

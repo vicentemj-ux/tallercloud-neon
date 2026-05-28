@@ -210,7 +210,7 @@ export function AbonoModal({
   const handleSubmit = async () => {
     if (!repairId) return
     if (abonoTotal <= 0) {
-      toast({ title: "Monto invÃ¡lido", description: "Ingresa un monto mayor a $0.", variant: "destructive" })
+      toast({ title: "Monto invalido", description: "Ingresa un monto mayor a $0.", variant: "destructive" })
       return
     }
 
@@ -255,7 +255,7 @@ export function AbonoModal({
           repairId,
           estadoAnterior: prev,
           estadoNuevo: "Listo",
-          notaTecnica: "LiquidaciÃ³n de pago",
+          notaTecnica: "Liquidacion de pago",
         })
       }
     }
@@ -277,7 +277,7 @@ export function AbonoModal({
     if (!paymentInfo.movimientoCajaId) {
       toast({
         title: "Comprobante no disponible",
-        description: "No se encontrÃ³ el abono registrado para impresiÃ³n.",
+        description: "No se encontro el abono registrado para impresion.",
         variant: "destructive",
       })
       return
@@ -308,8 +308,8 @@ export function AbonoModal({
         toast({ title: "Comprobante enviado a impresora" })
       } else if (result.usedFallback) {
         toast({
-          title: "ImpresiÃ³n web en uso",
-          description: `${result.errorMessage || "Se usÃ³ impresiÃ³n web como respaldo."}`,
+          title: "Impresion web en uso",
+          description: `${result.errorMessage || "Se uso impresion web como respaldo."}`,
         })
       }
     } catch (e) {
@@ -354,7 +354,7 @@ export function AbonoModal({
                     step="0.01"
                     value={monto}
                     onChange={(e) => setMonto(e.target.value)}
-                    placeholder={`MÃ¡x. ${fmtPeso(saldoPendiente)}`}
+                    placeholder={`Max. ${fmtPeso(saldoPendiente)}`}
                     className="bg-white border-slate-200 min-h-[44px] text-lg font-bold"
                     autoFocus
                   />
@@ -362,7 +362,7 @@ export function AbonoModal({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    MÃ©todo de pago
+                    Metodo de pago
                   </Label>
                   <div className="grid grid-cols-3 gap-2">
                     <MetodoBtn value="efectivo" current={metodoPago} label="EFECTIVO" onChange={setMetodoPago} />
@@ -417,7 +417,7 @@ export function AbonoModal({
                     <span className="font-semibold text-amber-600">{fmtPeso(currentAnticipo)}</span>
                   </div>
                   <div className="flex justify-between border-t border-slate-200 pt-1.5">
-                    <span className="font-semibold">RestarÃ¡ pendiente</span>
+                    <span className="font-semibold">Restara pendiente</span>
                     <span className={`font-bold ${nuevoSaldo <= 0 ? "text-emerald-600" : "text-red-600"}`}>
                       {nuevoSaldo <= 0 ? "LIQUIDADO âœ“" : fmtPeso(nuevoSaldo)}
                     </span>
@@ -466,7 +466,7 @@ export function AbonoModal({
               onClick={() => handleListoChoice(true)}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              SÃ­, marcar como Listo
+              Si, marcar como Listo
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

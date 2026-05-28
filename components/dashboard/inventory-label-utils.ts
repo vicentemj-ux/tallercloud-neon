@@ -1,15 +1,15 @@
 ﻿import type { ProductoRow } from "@/lib/actions/productos-prisma"
 
 /**
- * Etiqueta de exhibiciÃ³n: categorÃ­a de equipo (telÃ©fonos, etc.).
- * En BD suele usarse "EQUIPOS"; se acepta tambiÃ©n "EQUIPO" por compatibilidad.
+ * Etiqueta de exhibicion: categoria de equipo (telefonos, etc.).
+ * En BD suele usarse "EQUIPOS"; se acepta tambien "EQUIPO" por compatibilidad.
  */
 export function isEquipoExhibitionCategory(producto: { categoria?: string | null }): boolean {
   const c = producto.categoria?.trim().toUpperCase() ?? ""
   return c === "EQUIPO" || c === "EQUIPOS"
 }
 
-/** Modelo comercial: nombre del artÃ­culo en inventario. */
+/** Modelo comercial: nombre del articulo en inventario. */
 export function getProductoModelo(producto: Pick<ProductoRow, "nombre">): string {
   return (producto.nombre ?? "").trim() || "â€”"
 }
@@ -21,7 +21,7 @@ export function getProductoCapacidad(producto: Pick<ProductoRow, "capacidad" | "
   return (producto.capacidad ?? "").trim()
 }
 
-/** LÃ­nea descripciÃ³n / estado: condiciÃ³n + descripciÃ³n (sin IMEI ni serie). */
+/** Linea descripcion / estado: condicion + descripcion (sin IMEI ni serie). */
 export function getProductoDescripcionEstado(
   producto: Pick<ProductoRow, "descripcion" | "condicion">
 ): string {
@@ -32,8 +32,8 @@ export function getProductoDescripcionEstado(
 const MAX_CARTEL_FEATURES = 10
 
 /**
- * Lista corta de viÃ±etas para el cartel de exhibiciÃ³n (4Ã—6).
- * Prioriza datos estructurados y parte la descripciÃ³n libre en lÃ­neas.
+ * Lista corta de vinetas para el cartel de exhibicion (4Ã—6).
+ * Prioriza datos estructurados y parte la descripcion libre en lineas.
  */
 export function buildCartelFeatures(producto: ProductoRow): string[] {
   const out: string[] = []
@@ -49,7 +49,7 @@ export function buildCartelFeatures(producto: ProductoRow): string[] {
     if (producto.ram?.trim()) out.push(`RAM: ${producto.ram.trim()}`)
     const cap = getProductoCapacidad(producto)
     if (cap) out.push(`Almacenamiento: ${cap}`)
-    if (producto.condicion?.trim()) out.push(`CondiciÃ³n: ${producto.condicion.trim()}`)
+    if (producto.condicion?.trim()) out.push(`Condicion: ${producto.condicion.trim()}`)
   }
   if (producto.sku?.trim()) {
     out.push(`SKU: ${producto.sku.trim()}`)
