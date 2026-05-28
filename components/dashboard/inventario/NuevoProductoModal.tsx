@@ -102,6 +102,7 @@ export type NuevoProductoModalProps = {
   almacenamiento: string
   setAlmacenamiento: (v: string) => void
   imagenUrl: string
+  localPreviewUrl?: string | null
   uploadingImage: boolean
   generarCodigoBarrasInterno: () => void
   handleImageFile: (file: File) => void
@@ -164,6 +165,7 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
     almacenamiento,
     setAlmacenamiento,
     imagenUrl,
+    localPreviewUrl,
     uploadingImage,
     generarCodigoBarrasInterno,
     handleImageFile,
@@ -486,10 +488,10 @@ export function NuevoProductoModal(props: NuevoProductoModalProps) {
                 <ImageIcon className="h-4 w-4 shrink-0 text-blue-500" aria-hidden />
                 <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">Foto</h3>
               </div>
-              {imagenUrl ? (
+              {(localPreviewUrl || imagenUrl) ? (
                 <div className="flex flex-col gap-2">
                   <InventoryProductImagePreview
-                    stored={imagenUrl}
+                    stored={localPreviewUrl || imagenUrl}
                     productId={(editingProducto?.id ?? draftProductId) || undefined}
                     tallerId={editingProducto?.taller_id || undefined}
                     alt="Vista previa del producto"

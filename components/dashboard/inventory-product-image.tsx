@@ -82,8 +82,9 @@ export function InventoryProductImagePreview({ stored, productId, tallerId, alt,
   const canonical =
     tallerId && productId ? getInventoryCanonicalImageUrl(tallerId, productId) : null
   const s = stored ? String(stored).trim().toLowerCase() : ""
+  const isBlob = s.startsWith("blob:")
   const hasImageExt = s.endsWith(".webp") || s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png")
-  const resolved = hasImageExt ? getInventoryPublicUrl(stored) : canonical ?? null
+  const resolved = isBlob ? stored : hasImageExt ? getInventoryPublicUrl(stored) : canonical ?? null
   const [broken, setBroken] = useState(false)
 
   if (!resolved || broken) {
@@ -108,6 +109,7 @@ export function InventoryProductImagePreview({ stored, productId, tallerId, alt,
         fill
         sizes="200px"
         className="object-cover"
+        unoptimized={isBlob}
         onError={() => setBroken(true)}
       />
     </div>

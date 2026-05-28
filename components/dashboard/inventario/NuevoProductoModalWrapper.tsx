@@ -44,6 +44,7 @@ export function NuevoProductoModalWrapper({
   const [registrarIdentificador, setRegistrarIdentificador] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageUploadError, setImageUploadError] = useState<string | null>(null)
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
 
   const resetForm = useCallback(() => {
     setEditingProducto(null)
@@ -73,7 +74,11 @@ export function NuevoProductoModalWrapper({
     setRegistrarIdentificador(false)
     setUploadingImage(false)
     setImageUploadError(null)
-  }, [])
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl)
+      setLocalPreviewUrl(null)
+    }
+  }, [localPreviewUrl])
 
   const handleOpenChange = useCallback((isOpen: boolean) => {
     if (!isOpen) {
@@ -229,6 +234,12 @@ export function NuevoProductoModalWrapper({
       }
       const { optimizeImageForUpload } = await import("@/lib/image-optimizer")
       const compressedFile = await optimizeImageForUpload(file)
+
+      const prevPreview = localPreviewUrl
+      const newPreview = URL.createObjectURL(compressedFile)
+      setLocalPreviewUrl(newPreview)
+      if (prevPreview) URL.revokeObjectURL(prevPreview)
+
       const base64 = await new Promise<string>((res, rej) => {
         const r = new FileReader()
         r.onload = () => res(String(r.result))
@@ -256,6 +267,10 @@ export function NuevoProductoModalWrapper({
   const removeImage = () => {
     setImagenUrl("")
     setImageUploadError(null)
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl)
+      setLocalPreviewUrl(null)
+    }
   }
 
   return (
@@ -312,6 +327,7 @@ export function NuevoProductoModalWrapper({
       almacenamiento={almacenamiento}
       setAlmacenamiento={setAlmacenamiento}
       imagenUrl={imagenUrl}
+      localPreviewUrl={localPreviewUrl}
       uploadingImage={uploadingImage}
       generarCodigoBarrasInterno={generarCodigoBarrasInterno}
       handleImageFile={handleImageFile}

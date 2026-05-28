@@ -77,6 +77,10 @@ export function getInventoryPublicUrl(stored: string | null | undefined): string
   const s = String(stored).trim()
   if (s === "") return null
 
+  if (s.startsWith("blob:")) {
+    return s
+  }
+
   if (s.startsWith("http://") || s.startsWith("https://")) {
     return s
   }
@@ -104,7 +108,18 @@ export function getInventoryPublicUrl(stored: string | null | undefined): string
 export function normalizeInventoryImagePathForDb(raw: string | null | undefined): string | null {
   const s = (raw ?? "").trim()
   if (!s) return null
+  if (s.startsWith("blob:")) return null
   if (s.startsWith("http://") || s.startsWith("https://")) {
+    const r2Base = (
+      process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL ||
+      process.env.R2_PUBLIC_BASE_URL ||
+      ""
+    ).replace(/\/$/, "")
+    if (r2Base && s.startsWith(r2Base)) {
+      const path = s.slice(r2Base.length).replace(/^\/+/, "")
+      if (path) return path
+    }
+
     const bucketsToTry = Array.from(
       new Set([INVENTORY_PRODUCT_IMAGES_BUCKET, "inventario", "productos"])
     )

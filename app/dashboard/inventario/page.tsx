@@ -128,6 +128,7 @@ function InventarioContent() {
   const [uploadingImage, setUploadingImage] = useState(false)
   /** Mensaje discreto bajo el area de foto (evita toasts destructivos en fallos de subida). */
   const [imageUploadError, setImageUploadError] = useState<string | null>(null)
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -280,10 +281,18 @@ function InventarioContent() {
       }
       setModalOpen(false)
       setEditingProducto(null)
+      if (localPreviewUrl) {
+        URL.revokeObjectURL(localPreviewUrl)
+        setLocalPreviewUrl(null)
+      }
     })()
   }
 
   const handleEdit = (producto: ProductoRow) => {
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl)
+      setLocalPreviewUrl(null)
+    }
     setEditingProducto(producto)
     setDraftProductId(producto.id)
     setNombre(producto.nombre || "")
@@ -510,6 +519,11 @@ function InventarioContent() {
       const { optimizeImageForUpload } = await import("@/lib/image-optimizer")
       const compressedFile = await optimizeImageForUpload(file)
 
+      const prevPreview = localPreviewUrl
+      const newPreview = URL.createObjectURL(compressedFile)
+      setLocalPreviewUrl(newPreview)
+      if (prevPreview) URL.revokeObjectURL(prevPreview)
+
       const base64 = await new Promise<string>((res, rej) => {
         const r = new FileReader()
         r.onload = () => res(String(r.result))
@@ -538,6 +552,10 @@ function InventarioContent() {
   const removeImage = () => {
     setImagenUrl("")
     setImageUploadError(null)
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl)
+      setLocalPreviewUrl(null)
+    }
   }
 
   const kpis = useMemo(() => {
@@ -1537,6 +1555,7 @@ function InventarioContent() {
         almacenamiento={almacenamiento}
         setAlmacenamiento={setAlmacenamiento}
         imagenUrl={imagenUrl}
+        localPreviewUrl={localPreviewUrl}
         uploadingImage={uploadingImage}
         generarCodigoBarrasInterno={generarCodigoBarrasInterno}
         ensureEquiposCategoria={ensureEquiposCategoria}
