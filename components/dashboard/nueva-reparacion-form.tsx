@@ -1163,15 +1163,15 @@ export function NuevaReparacionForm({
                     <SelectValue placeholder="Tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Celular">ðŸ“± Celular</SelectItem>
-                    <SelectItem value="Tablet">ðŸ“Ÿ Tablet</SelectItem>
-                    <SelectItem value="Laptop">ðŸ’» Laptop</SelectItem>
-                    <SelectItem value="Videojuego">ðŸŽ® Videojuego</SelectItem>
-                    <SelectItem value="Impresora">ðŸ–¨ï¸ Impresora</SelectItem>
-                    <SelectItem value="Reloj">âŒš Reloj</SelectItem>
-                    <SelectItem value="Computadora">ðŸ–¥ï¸ Computadora</SelectItem>
-                    <SelectItem value="Proyector">ðŸ“½ï¸ Proyector</SelectItem>
-                    <SelectItem value="Otro">ðŸ“¦ Otro</SelectItem>
+                    <SelectItem value="Celular">📱 Celular</SelectItem>
+                    <SelectItem value="Tablet">📟 Tablet</SelectItem>
+                    <SelectItem value="Laptop">💻 Laptop</SelectItem>
+                    <SelectItem value="Videojuego">🎮 Videojuego</SelectItem>
+                    <SelectItem value="Impresora">🖨️ Impresora</SelectItem>
+                    <SelectItem value="Reloj">⌚ Reloj</SelectItem>
+                    <SelectItem value="Computadora">🖥️ Computadora</SelectItem>
+                    <SelectItem value="Proyector">📽️ Proyector</SelectItem>
+                    <SelectItem value="Otro">📦 Otro</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -1287,15 +1287,15 @@ export function NuevaReparacionForm({
                     <SelectValue placeholder="Color" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Negro">âš« Negro</SelectItem>
-                    <SelectItem value="Blanco">âšª Blanco</SelectItem>
+                    <SelectItem value="Negro">⚫ Negro</SelectItem>
+                    <SelectItem value="Blanco">⚪ Blanco</SelectItem>
                     <SelectItem value="Gris">ðŸ”˜ Gris / Silver</SelectItem>
-                    <SelectItem value="Azul">ðŸ”µ Azul</SelectItem>
-                    <SelectItem value="Rojo">ðŸ”´ Rojo</SelectItem>
-                    <SelectItem value="Dorado">ðŸŸ¡ Dorado</SelectItem>
-                    <SelectItem value="Verde">ðŸŸ¢ Verde</SelectItem>
-                    <SelectItem value="Rosa">ðŸ©· Rosa</SelectItem>
-                    <SelectItem value="Otro">ðŸ“¦ Otro</SelectItem>
+                    <SelectItem value="Azul">🔵 Azul</SelectItem>
+                    <SelectItem value="Rojo">🔴 Rojo</SelectItem>
+                    <SelectItem value="Dorado">🟡 Dorado</SelectItem>
+                    <SelectItem value="Verde">🟢 Verde</SelectItem>
+                    <SelectItem value="Rosa">🩷 Rosa</SelectItem>
+                    <SelectItem value="Otro">📦 Otro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
