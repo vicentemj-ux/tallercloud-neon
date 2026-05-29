@@ -21,7 +21,7 @@ import {
 import { buildFirmaDigitalQrUrl } from "@/lib/reparaciones/firma-digital-url"
 import type { RepairWelcomeWhatsAppPayload } from "@/lib/whatsapp-repair-welcome"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
-import { registrarAbono } from "@/lib/actions/repairs"
+import { registrarAbono } from "@/lib/actions/repairs-prisma"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
