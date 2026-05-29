@@ -1289,7 +1289,7 @@ export function NuevaReparacionForm({
                   <SelectContent>
                     <SelectItem value="Negro">⚫ Negro</SelectItem>
                     <SelectItem value="Blanco">⚪ Blanco</SelectItem>
-                    <SelectItem value="Gris">ðŸ”˜ Gris / Silver</SelectItem>
+                    <SelectItem value="Gris">🩶 Plata</SelectItem>
                     <SelectItem value="Azul">🔵 Azul</SelectItem>
                     <SelectItem value="Rojo">🔴 Rojo</SelectItem>
                     <SelectItem value="Dorado">🟡 Dorado</SelectItem>

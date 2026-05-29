@@ -158,7 +158,7 @@ export function RepairDetailView({
   const [nombreTallerSetting, setNombreTallerSetting] = useState("Mi Taller")
   const [warrantyHint, setWarrantyHint] = useState("30 dias")
 
-  // Gastos del ticket â€” solo lectura (para mostrar utilidad estimada)
+  // Gastos del ticket — solo lectura (para mostrar utilidad estimada)
   const [gastos, setGastos] = useState<ReparacionGasto[]>([])
   const [servicios, setServicios] = useState<import("@/lib/actions/servicios-prisma").ReparacionServicio[]>([])
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
@@ -394,7 +394,7 @@ export function RepairDetailView({
   const confirmarNoExitosa = async (data: { razon: string; nota: string }) => {
     if (!repair) return
     const nuevoEstado = noExitosaTipo === "sin_reparar" ? "Sin Reparacion" : "Cancelado"
-    const notaCompleta = [data.razon, data.nota].filter(Boolean).join(" â€” ")
+    const notaCompleta = [data.razon, data.nota].filter(Boolean).join(" — ")
     try {
       const res = await applyRepairStatusChange({
         repairId: repair.id,
@@ -510,7 +510,7 @@ export function RepairDetailView({
   const badgeLabel = getRepairStatusDisplayLabel(estado)
   const registradoText = detail?.createdAtRaw
     ? new Date(detail.createdAtRaw).toLocaleDateString("es-MX", { day: "numeric", month: "numeric", year: "numeric" })
-    : detail?.createdAt ?? "â€”"
+    : detail?.createdAt ?? "—"
   const formatTimestamp = (iso: string) =>
     new Date(iso).toLocaleString("es-MX", {
       day: "2-digit",
@@ -598,7 +598,7 @@ export function RepairDetailView({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {/* Folio */}
             <span className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
-              {repair?.folio ?? detail?.folio ?? "â€”"}
+              {repair?.folio ?? detail?.folio ?? "—"}
             </span>
             {/* Estado */}
             <span className="inline-flex rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-bold uppercase text-blue-800">
@@ -630,7 +630,7 @@ export function RepairDetailView({
               <span>
                 {registradoText}
                 {detail?.creadoPorNombre ? (
-                  <span className="text-slate-500"> Â· {detail.creadoPorNombre}</span>
+                  <span className="text-slate-500"> · {detail.creadoPorNombre}</span>
                 ) : null}
               </span>
             </span>
@@ -735,7 +735,7 @@ export function RepairDetailView({
                     {new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(cancelSummary.total)}
                   </span>
                 ) : (
-                  <span className="block text-slate-500">Sin pagos registrados â€” no se generaran devoluciones.</span>
+                  <span className="block text-slate-500">Sin pagos registrados — no se generaran devoluciones.</span>
                 )}
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -922,7 +922,7 @@ export function RepairDetailView({
                               ${totalGastos.toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                             </p>
                             <p className="mt-2 text-xs text-sky-800/90">
-                              Mano de obra ${gastosManoObra.toFixed(2)} Â· Refacciones ${gastosRefaccion.toFixed(2)}
+                              Mano de obra ${gastosManoObra.toFixed(2)} · Refacciones ${gastosRefaccion.toFixed(2)}
                             </p>
                           </div>
                           <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4">
@@ -1112,8 +1112,8 @@ export function RepairDetailView({
                                     </p>
                                   )}
                                   <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
-                                    {formatTimestamp(item.fecha)} â€” {item.usuario}
-                                    {item.nota?.trim() ? ` â€” ${item.nota.trim()}` : ""}
+                                    {formatTimestamp(item.fecha)} — {item.usuario}
+                                    {item.nota?.trim() ? ` — ${item.nota.trim()}` : ""}
                                   </p>
                                 </div>
                               ) : (
@@ -1126,7 +1126,7 @@ export function RepairDetailView({
                                   ) : null}
                                   <p className="mt-1 text-sm italic text-gray-600">&ldquo;{item.descripcion}&rdquo;</p>
                                   <p className="mt-2 text-[11px] text-gray-500">
-                                    {formatTimestamp(item.fecha)} Â· {item.usuario}
+                                    {formatTimestamp(item.fecha)} · {item.usuario}
                                   </p>
                                 </div>
                               )}
@@ -1147,10 +1147,10 @@ export function RepairDetailView({
                     <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">Cliente</h3>
                   </div>
                   <p className="text-xl font-bold leading-tight text-gray-900 sm:text-2xl">
-                    {(detail?.clienteName ?? repair?.clienteName) || "â€”"}
+                    {(detail?.clienteName ?? repair?.clienteName) || "—"}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-800">
-                    {(detail?.clientePhone ?? repair?.clientePhone) || "â€”"}
+                    {(detail?.clientePhone ?? repair?.clientePhone) || "—"}
                   </p>
                   {detail?.clientePhone ? (
                     <button
@@ -1180,20 +1180,20 @@ export function RepairDetailView({
                   <div className="space-y-4">
                     <div>
                       <p className="text-2xl font-bold uppercase tracking-tight text-gray-900">
-                        {(detail?.tipo_equipo ?? repair?.tipo_equipo ?? "").trim() || "â€”"} Â· {(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim() || "â€”"}
+                        {(detail?.tipo_equipo ?? repair?.tipo_equipo ?? "").trim() || "—"} · {(detail?.deviceBrand ?? repair?.deviceBrand ?? "").trim() || "—"}
                       </p>
                       <p className="text-xl font-bold text-[#2563eb] sm:text-2xl">
-                        {(detail?.deviceModel ?? repair?.deviceModel ?? "").trim() || "â€”"}
+                        {(detail?.deviceModel ?? repair?.deviceModel ?? "").trim() || "—"}
                       </p>
                     </div>
                     <dl className="grid grid-cols-1 gap-3 text-sm">
                       <div>
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">IMEI / SN</dt>
-                        <dd className="mt-0.5 font-mono text-gray-900">{detail?.imei ?? "â€”"}</dd>
+                        <dd className="mt-0.5 font-mono text-gray-900">{detail?.imei ?? "—"}</dd>
                       </div>
                       <div>
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">Color</dt>
-                        <dd className="mt-0.5 text-gray-900">{detail?.color ?? "â€”"}</dd>
+                        <dd className="mt-0.5 text-gray-900">{detail?.color ?? "—"}</dd>
                       </div>
                       <div className="sm:col-span-2">
                         <dt className="text-[11px] font-semibold uppercase text-gray-500">Seguridad del equipo</dt>
@@ -1219,7 +1219,7 @@ export function RepairDetailView({
                             <div>
                               <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-500">PIN</p>
                               <p className="font-mono text-base font-semibold text-gray-900">
-                                {detail.securityValue ?? detail.pinContrasena ?? "â€”"}
+                                {detail.securityValue ?? detail.pinContrasena ?? "—"}
                               </p>
                             </div>
                           ) : detail.securityType === "password" ? (
@@ -1228,11 +1228,11 @@ export function RepairDetailView({
                                 Contrasena
                               </p>
                               <p className="font-mono text-base font-semibold text-gray-900 break-all">
-                                {detail.securityValue ?? detail.pinContrasena ?? "â€”"}
+                                {detail.securityValue ?? detail.pinContrasena ?? "—"}
                               </p>
                             </div>
                           ) : (
-                            <p className="text-sm text-gray-500">â€”</p>
+                            <p className="text-sm text-gray-500">—</p>
                           )}
                         </dd>
                       </div>
@@ -1385,7 +1385,7 @@ export function RepairDetailView({
           clientePhone={exitoEntregaSnapshot.detail?.clientePhone ?? repair.clientePhone}
           equipoLabel={
             `${exitoEntregaSnapshot.detail?.deviceBrand ?? repair.deviceBrand ?? ""} ${exitoEntregaSnapshot.detail?.deviceModel ?? repair.deviceModel ?? ""}`.trim() ||
-            "â€”"
+            "—"
           }
           anticiposPrevios={exitoEntregaSnapshot.anticiposPrevios}
           pagoFinal={exitoEntregaSnapshot.pagoFinal}
@@ -1418,7 +1418,7 @@ export function RepairDetailView({
         }
       }}
       estadoAnteriorLabel={getRepairStatusDisplayLabel(estado)}
-      estadoNuevoLabel={pendingEstado ? getRepairStatusDisplayLabel(pendingEstado) : "â€”"}
+      estadoNuevoLabel={pendingEstado ? getRepairStatusDisplayLabel(pendingEstado) : "—"}
       notaTecnica={statusNota}
       onNotaTecnicaChange={setStatusNota}
       onSoloHistorial={() => void confirmStatusChange("historial")}
