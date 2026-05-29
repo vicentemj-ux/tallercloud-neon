@@ -17,6 +17,17 @@ enum UserRole {
   STAFF
 }
 
+/**
+ * Rol de equipo para gestión de miembros (Mi Equipo).
+ * Reemplaza el catálogo global roles_taller de Supabase.
+ */
+enum TeamRole {
+  ADMINISTRADOR
+  TECNICO
+  RECEPCIONISTA
+  REPARADOR
+}
+
 enum ArchivoTipo {
   REPAIR_PHOTO
   REPAIR_INTAKE_PHOTO
@@ -69,6 +80,8 @@ model User {
   emailVerified Boolean @default(true)
   sessionVersion Int @default(1)
   role      UserRole @default(STAFF)
+  /** Rol de equipo para gestión de miembros (Mi Equipo). */
+  teamRole  TeamRole?
   activo    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
