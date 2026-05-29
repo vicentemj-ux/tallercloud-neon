@@ -27,70 +27,194 @@ type ArchivoRow = { publicUrl: string | null; storageKey: string | null; key: st
 type TechnicianRow = { id: string; nombre: string | null }
 type LegacyRepairsModule = typeof import("@/lib/actions/repairs")
 
-let _auditTablesReady = false
+// ─── Historial de Reparación: Tipos ───────────────────────────────────────────
 
-async function ensureAuditTablesExist() {
-  if (_auditTablesReady) return
-  const prisma = getPrismaClient()
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS historial_reparacion (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      reparacion_id text NOT NULL,
-      taller_id text NOT NULL,
-      usuario_id text,
-      estado_anterior text,
-      estado_nuevo text NOT NULL,
-      nota_tecnica text,
-      actor_nombre text,
-      fecha timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS cambios_reparaciones (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      reparacion_id text NOT NULL,
-      tipo_cambio text NOT NULL,
-      descripcion text,
-      valor_anterior text,
-      valor_nuevo text,
-      usuario text,
-      created_at timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS caja (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      monto_inicial numeric(12,2) NOT NULL DEFAULT 0,
-      monto_cierre numeric(12,2),
-      fecha_apertura timestamptz NOT NULL DEFAULT now(),
-      fecha_cierre timestamptz,
-      estado text NOT NULL DEFAULT 'abierta',
-      total_efectivo numeric(12,2) NOT NULL DEFAULT 0,
-      total_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
-      total_transferencia numeric(12,2) NOT NULL DEFAULT 0,
-      total_ventas integer NOT NULL DEFAULT 0,
-      created_at timestamptz NOT NULL DEFAULT now(),
-      nota_cierre text,
-      numero_corte integer
-    );
-  `)
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS movimientos_caja (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      caja_id text,
-      tipo text NOT NULL,
-      referencia_id text,
-      descripcion text,
-      monto numeric(12,2) NOT NULL DEFAULT 0,
-      metodo_pago text,
-      fecha timestamptz NOT NULL DEFAULT now(),
-      vendedor_nombre text
-    );
-  `)
-  _auditTablesReady = true
+export type HistorialTipo =
+  | "creacion"
+  | "estado"
+  | "abono"
+  | "presupuesto"
+  | "tecnico"
+  | "otro"
+
+export interface HistorialEntry {
+  id: string
+  tipo: HistorialTipo
+  descripcion: string
+  valorAnterior: string | null
+  valorNuevo: string | null
+  actorNombre: string | null
+  nota: string | null
+  createdAt: string
+}
+
+/**
+ * Compatibilidad con el UI legacy. Representa un cambio de estado auditado.
+ * Se deriva del modelo unificado HistorialReparacion filtrando tipo = "estado".
+ */
+export interface HistorialReparacionAuditRow {
+  id: string
+  estado_anterior: string | null
+  estado_nuevo: string
+  nota_tecnica: string | null
+  fecha: string
+  usuario_nombre: string
+}
+
+/**
+ * Compatibilidad con el UI legacy. Representa un cambio genérico (presupuesto, abono, etc).
+ * Se deriva del modelo unificado HistorialReparacion excluyendo tipo = "estado".
+ */
+export interface RepairChangeHistoryRow {
+  id: string
+  tipo_cambio: string
+  descripcion: string
+  created_at: string
+  valor_anterior: string | null
+  valor_nuevo: string | null
+  usuario: string | null
+}
+
+// ─── Helpers de Historial (defensivos: nunca tumban el flujo principal) ───────
+
+async function getTenantIdOrThrow() {
+  const tenant = await getCurrentTenant()
+  if (!tenant?.id) throw new Error("Sesion invalida")
+  return tenant.id
+}
+
+/**
+ * Registra una entrada en el historial de una reparación.
+ * Regla MVP: si falla, solo loggea — nunca rechaza la operación principal.
+ */
+async function logHistorial(input: {
+  reparacionId: string
+  tenantId: string
+  tipo: HistorialTipo
+  descripcion: string
+  valorAnterior?: string | null
+  valorNuevo?: string | null
+  nota?: string | null
+}) {
+  try {
+    const prisma = getPrismaClient()
+    const actorNombre = await getCurrentActorDisplayName()
+    await prisma.historialReparacion.create({
+      data: {
+        tenantId: input.tenantId,
+        reparacionId: input.reparacionId,
+        tipo: input.tipo,
+        descripcion: input.descripcion,
+        valorAnterior: input.valorAnterior ?? null,
+        valorNuevo: input.valorNuevo ?? null,
+        actorNombre,
+        nota: input.nota ?? null,
+      },
+    })
+  } catch (err) {
+    // Regla MVP: el historial es best-effort. No tumbar el flujo principal.
+    console.error("[repairs-prisma] logHistorial failed (non-fatal):", err)
+  }
+}
+
+// ─── Server Actions públicas de Historial ────────────────────────────────────
+
+/**
+ * Obtiene el historial de actividad de una reparación.
+ * Orden cronológico descendente (más reciente primero).
+ */
+export async function getHistorialReparacion(reparacionId: string): Promise<HistorialEntry[]> {
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const rows = await prisma.historialReparacion.findMany({
+      where: { reparacionId, tenantId },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    })
+    return rows.map((r) => ({
+      id: r.id,
+      tipo: r.tipo as HistorialTipo,
+      descripcion: r.descripcion,
+      valorAnterior: r.valorAnterior,
+      valorNuevo: r.valorNuevo,
+      actorNombre: r.actorNombre,
+      nota: r.nota,
+      createdAt: r.createdAt.toISOString(),
+    }))
+  } catch (err) {
+    console.error("[repairs-prisma] getHistorialReparacion:", err)
+    return []
+  }
+}
+
+/**
+ * Obtiene el historial junto con el detalle de la reparación (para la vista de folio).
+ * Devuelve la forma que el UI espera: `changes` + `historialAudit` derivados del
+ * modelo unificado HistorialReparacion.
+ */
+export async function getRepairDetailPageData(repairId: string): Promise<{
+  detail: RepairDetail | null
+  historial: HistorialEntry[]
+  changes: RepairChangeHistoryRow[]
+  historialAudit: HistorialReparacionAuditRow[]
+  gastos: ReparacionGasto[]
+  servicios: ReparacionServicio[]
+  error: string | null
+}> {
+  const { data: detail, error } = await getRepairDetail(repairId)
+  if (!detail || error) {
+    return { detail: null, historial: [], changes: [], historialAudit: [], gastos: [], servicios: [], error }
+  }
+
+  const [historial, gastosResult, serviciosResult] = await Promise.all([
+    getHistorialReparacion(repairId),
+    getGastosTicket(repairId),
+    getServiciosReparacion(repairId),
+  ])
+
+  const historialAudit: HistorialReparacionAuditRow[] = historial
+    .filter((h) => h.tipo === "estado")
+    .map((h) => ({
+      id: h.id,
+      estado_anterior: h.valorAnterior,
+      estado_nuevo: h.valorNuevo ?? "",
+      nota_tecnica: h.nota,
+      fecha: h.createdAt,
+      usuario_nombre: h.actorNombre ?? "Sistema",
+    }))
+
+  const changes: RepairChangeHistoryRow[] = historial
+    .filter((h) => h.tipo !== "estado")
+    .map((h) => ({
+      id: h.id,
+      tipo_cambio: h.tipo,
+      descripcion: h.descripcion,
+      created_at: h.createdAt,
+      valor_anterior: h.valorAnterior,
+      valor_nuevo: h.valorNuevo,
+      usuario: h.actorNombre,
+    }))
+
+  return {
+    detail,
+    historial,
+    changes,
+    historialAudit,
+    gastos: gastosResult.error ? [] : gastosResult.data,
+    servicios: serviciosResult.error ? [] : serviciosResult.data,
+    error: null,
+  }
+}
+
+/**
+ * No-op: las tablas legacy ya no se usan. El historial se escribe en
+ * HistorialReparacion vía Prisma. Se mantiene como stub para no romper
+ * llamadas existentes durante la transición.
+ */
+async function ensureAuditTablesExist(): Promise<void> {
+  // Las tablas legacy (historial_reparacion, cambios_reparaciones) ya no se necesitan.
+  // Todo el historial se escribe en el modelo Prisma HistorialReparacion.
 }
 
 let legacyRepairsModulePromise: Promise<LegacyRepairsModule> | null = null
@@ -186,33 +310,8 @@ export interface RepairDetail extends Omit<BitacoraRepair, "status" | "securityT
   checklistPro?: ChecklistProData | null
 }
 
-export interface HistorialReparacionAuditRow {
-  id: string
-  estado_anterior: string | null
-  estado_nuevo: string
-  nota_tecnica: string | null
-  fecha: string
-  usuario_nombre: string
-}
-
-export type RepairChangeHistoryRow = {
-  id: string
-  tipo_cambio: string
-  descripcion: string
-  created_at: string
-  valor_anterior?: string | null
-  valor_nuevo?: string | null
-  usuario?: string | null
-}
-
 function normalizePhone(phone: string) {
   return onlyDigits(phone)
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 function asStatus(value?: string | null): BitacoraRepair["status"] {
@@ -493,30 +592,14 @@ export async function createRepair(input: CreateRepairInput) {
 
     const actorNombre = await getCurrentActorDisplayName()
 
-    try {
-      await ensureAuditTablesExist()
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
-         VALUES ($1,$2,$3,NULL,$4,$5,$6,now())`,
-        result.id,
-        tenantId,
-        tenantId,
-        "Recibido",
-        `EQUIPO RECIBIDO — ${input.tipo_equipo?.trim() || "Equipo"} ${input.deviceBrand.trim()} ${input.deviceModel.trim()} — Recibido por ${actorNombre}`,
-        actorNombre,
-      )
-
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-         VALUES ($1,$2,'creacion',$3,NULL,NULL,$4,now())`,
-        tenantId,
-        result.id,
-        `EQUIPO RECIBIDO — ${input.tipo_equipo?.trim() || "Equipo"} ${input.deviceBrand.trim()} ${input.deviceModel.trim()} — Folio ${result.folio}`,
-        actorNombre,
-      )
-    } catch (historyErr) {
-      console.warn("createRepair prisma history seed:", historyErr)
-    }
+    await logHistorial({
+      reparacionId: result.id,
+      tenantId,
+      tipo: "creacion",
+      descripcion: `EQUIPO RECIBIDO — ${input.tipo_equipo?.trim() || "Equipo"} ${input.deviceBrand.trim()} ${input.deviceModel.trim()} — Folio ${result.folio}`,
+      valorNuevo: "Recibido",
+      nota: `Recibido por ${actorNombre}`,
+    })
 
     return {
       success: true,
@@ -667,100 +750,6 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
   } catch (e) {
     console.error("getRepairDetail prisma:", e)
     return { data: null, error: "No se pudo cargar el detalle." }
-  }
-}
-
-export async function getRepairDetailPageData(repairId: string): Promise<{
-  detail: RepairDetail | null
-  changes: RepairChangeHistoryRow[]
-  gastos: ReparacionGasto[]
-  historialAudit: HistorialReparacionAuditRow[]
-  servicios: ReparacionServicio[]
-  error: string | null
-}> {
-  const { data, error } = await getRepairDetail(repairId)
-  if (!data || error) {
-    return { detail: data, changes: [], gastos: [], historialAudit: [], servicios: [], error }
-  }
-
-  const prisma = getPrismaClient()
-  const tenantId = await getTenantIdOrThrow()
-
-  let changes: RepairChangeHistoryRow[] = []
-  let historialAudit: HistorialReparacionAuditRow[] = []
-
-  try {
-    const changeRows = await prisma.$queryRawUnsafe<Array<{
-      id: string
-      tipo_cambio: string
-      descripcion: string
-      created_at: Date | string
-      valor_anterior: string | null
-      valor_nuevo: string | null
-      usuario: string | null
-    }>>(
-      `SELECT id, tipo_cambio, descripcion, created_at, valor_anterior, valor_nuevo, usuario
-       FROM cambios_reparaciones
-       WHERE taller_id = $1 AND reparacion_id = $2
-       ORDER BY created_at DESC
-       LIMIT 200`,
-      tenantId,
-      repairId,
-    )
-
-    changes = changeRows.map((r) => ({
-      id: String(r.id),
-      tipo_cambio: String(r.tipo_cambio ?? ""),
-      descripcion: String(r.descripcion ?? ""),
-      created_at: new Date(r.created_at).toISOString(),
-      valor_anterior: r.valor_anterior,
-      valor_nuevo: r.valor_nuevo,
-      usuario: r.usuario ?? null,
-    }))
-  } catch (changesErr) {
-    console.warn("getRepairDetailPageData changes:", changesErr)
-  }
-
-  try {
-    const auditRows = await prisma.$queryRawUnsafe<Array<{
-      id: string
-      estado_anterior: string | null
-      estado_nuevo: string
-      nota_tecnica: string | null
-      fecha: Date | string
-      usuario_nombre: string | null
-    }>>(
-      `SELECT id, estado_anterior, estado_nuevo, nota_tecnica, fecha, usuario_nombre
-       FROM historial_reparacion
-       WHERE taller_id = $1 AND reparacion_id = $2
-       ORDER BY fecha DESC
-       LIMIT 200`,
-      tenantId,
-      repairId,
-    )
-
-    historialAudit = auditRows.map((r) => ({
-      id: String(r.id),
-      estado_anterior: r.estado_anterior,
-      estado_nuevo: String(r.estado_nuevo ?? ""),
-      nota_tecnica: r.nota_tecnica,
-      fecha: new Date(r.fecha).toISOString(),
-      usuario_nombre: (r.usuario_nombre ?? "").trim() || "Sistema",
-    }))
-  } catch (auditErr) {
-    console.warn("getRepairDetailPageData audit:", auditErr)
-  }
-
-  const gastosResult = await getGastosTicket(repairId)
-  const serviciosResult = await getServiciosReparacion(repairId)
-
-  return {
-    detail: data,
-    changes,
-    gastos: gastosResult.error ? [] : gastosResult.data,
-    historialAudit,
-    servicios: serviciosResult.error ? [] : serviciosResult.data,
-    error,
   }
 }
 
@@ -923,30 +912,15 @@ export async function applyRepairStatusChange(input: {
 
     const nota = input.notaTecnica?.trim() || null
 
-    try {
-      await ensureAuditTablesExist()
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
-        input.repairId, tenantId, tenantId, input.estadoAnterior || null, input.estadoNuevo, nota, actorNombre,
-      )
-    } catch (he) {
-      console.error("[repairs-prisma] historial_reparacion insert:", he)
-    }
-
-    try {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
-        tenantId, input.repairId,
-        `Estado: ${input.estadoAnterior || '?'} -> ${input.estadoNuevo}`,
-        input.estadoAnterior || null,
-        input.estadoNuevo,
-        actorNombre,
-      )
-    } catch (ce) {
-      console.error("[repairs-prisma] cambios_reparaciones insert:", ce)
-    }
+    await logHistorial({
+      reparacionId: input.repairId,
+      tenantId,
+      tipo: "estado",
+      descripcion: `Estado: ${input.estadoAnterior || '?'} -> ${input.estadoNuevo}`,
+      valorAnterior: input.estadoAnterior || null,
+      valorNuevo: input.estadoNuevo,
+      nota: nota,
+    })
 
     return { success: true }
   } catch (e) {
@@ -1116,7 +1090,7 @@ export async function actualizarPresupuestoReparacion(
   repairId: string,
   nuevoPresupuesto: number,
   descripcion?: string
-): Promise<{ success: boolean; nuevoPresupuesto?: number; error?: string; logError?: string }> {
+): Promise<{ success: boolean; nuevoPresupuesto?: number; error?: string }> {
   try {
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
@@ -1132,17 +1106,14 @@ export async function actualizarPresupuestoReparacion(
       data: { costoEstimado: nuevoPresupuesto },
     })
 
-    const nota = `${descripcion?.trim() || "Presupuesto actualizado"} - $${prev.toLocaleString("es-MX")} -> $${nuevoPresupuesto.toLocaleString("es-MX")}`
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-       VALUES ($1,$2,'presupuesto',$3,$4,$5,$6,now())`,
-      tallerId,
-      repairId,
-      nota,
-      String(prev),
-      String(nuevoPresupuesto),
-      await getCurrentActorDisplayName(),
-    )
+    await logHistorial({
+      reparacionId: repairId,
+      tenantId: tallerId,
+      tipo: "presupuesto",
+      descripcion: `${descripcion?.trim() || "Presupuesto actualizado"} - $${prev.toLocaleString("es-MX")} -> $${nuevoPresupuesto.toLocaleString("es-MX")}`,
+      valorAnterior: String(prev),
+      valorNuevo: String(nuevoPresupuesto),
+    })
 
     return { success: true, nuevoPresupuesto }
   } catch (e) {
@@ -1170,8 +1141,6 @@ export async function registrarAbono(input: {
     const tallerId = await getTenantIdOrThrow()
     const actor = await getCurrentActorDisplayName()
 
-    await ensureAuditTablesExist()
-
     const rep = await prisma.reparacion.findFirst({
       where: { id: input.repairId, tenantId: tallerId },
       select: { anticipo: true, costoEstimado: true, folio: true, estado: true },
@@ -1196,7 +1165,7 @@ export async function registrarAbono(input: {
       data: { anticipo: nuevo },
     })
 
-    const movRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
+    await prisma.$queryRawUnsafe<Array<{ id: string }>>(
       `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha, vendedor_nombre)
        VALUES ($1,$2,'anticipo_reparacion',$3,$4,$5,$6,now(),$7) RETURNING id`,
       tallerId,
@@ -1208,18 +1177,16 @@ export async function registrarAbono(input: {
       actor,
     )
 
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-       VALUES ($1,$2,'abono',$3,$4,$5,$6,now())`,
-      tallerId,
-      input.repairId,
-      `Abono registrado: +$${input.monto.toLocaleString("es-MX")} (${input.metodoPago})`,
-      String(current),
-      String(nuevo),
-      actor,
-    )
+    await logHistorial({
+      reparacionId: input.repairId,
+      tenantId: tallerId,
+      tipo: "abono",
+      descripcion: `Abono registrado: +$${input.monto.toLocaleString("es-MX")} (${input.metodoPago})`,
+      valorAnterior: String(current),
+      valorNuevo: String(nuevo),
+    })
 
-    return { success: true, nuevoAnticipo: nuevo, saldoPendiente: saldo, liquidado, movimientoCajaId: movRows[0]?.id ?? null }
+    return { success: true, nuevoAnticipo: nuevo, saldoPendiente: saldo, liquidado, movimientoCajaId: cajaRows[0]?.id ?? null }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error al registrar abono" }
   }
@@ -1250,7 +1217,6 @@ export async function confirmarEntregaConLiquidacion(input: {
 
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
-    const actorNombre = await getCurrentActorDisplayName()
 
     const existing = await prisma.reparacion.findFirst({
       where: { id: input.repairId, tenantId: tallerId },
@@ -1263,32 +1229,15 @@ export async function confirmarEntregaConLiquidacion(input: {
       data: { estado: "Entregado" },
     })
 
-    const nota = input.notaTecnica?.trim() || "Liquidacion y entrega"
-
-    try {
-      await ensureAuditTablesExist()
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
-        input.repairId, tallerId, tallerId, estadoAnterior, "Entregado", nota, actorNombre,
-      )
-    } catch (he) {
-      console.error("[repairs-prisma] confirmarEntrega historial_reparacion:", he)
-    }
-
-    try {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
-        tallerId, input.repairId,
-        `Estado: ${estadoAnterior} -> Entregado (liquidacion)`,
-        estadoAnterior,
-        "Entregado",
-        actorNombre,
-      )
-    } catch (ce) {
-      console.error("[repairs-prisma] confirmarEntrega cambios_reparaciones:", ce)
-    }
+    await logHistorial({
+      reparacionId: input.repairId,
+      tenantId: tallerId,
+      tipo: "estado",
+      descripcion: `Estado: ${estadoAnterior} -> Entregado (liquidacion)`,
+      valorAnterior: estadoAnterior,
+      valorNuevo: "Entregado",
+      nota: input.notaTecnica?.trim() || "Liquidacion y entrega",
+    })
 
     return { success: true }
   } catch (e) {
@@ -1311,7 +1260,6 @@ export async function entregarSinReparacionConAjuste(input: {
   try {
     const prisma = getPrismaClient()
     const tallerId = await getTenantIdOrThrow()
-    const actorNombre = await getCurrentActorDisplayName()
 
     const existing = await prisma.reparacion.findFirst({
       where: { id: input.repairId, tenantId: tallerId },
@@ -1325,47 +1273,25 @@ export async function entregarSinReparacionConAjuste(input: {
       data: { costoEstimado: input.costoRevision, estado: "Entregado" },
     })
 
-    const nota = input.notaTecnica?.trim() || "Entrega sin reparacion"
-
-    try {
-      await ensureAuditTablesExist()
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO historial_reparacion (reparacion_id, taller_id, usuario_id, estado_anterior, estado_nuevo, nota_tecnica, actor_nombre, fecha)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,now())`,
-        input.repairId, tallerId, tallerId, estadoAnterior, "Entregado", nota, actorNombre,
-      )
-    } catch (he) {
-      console.error("[repairs-prisma] entregarSinReparacion historial_reparacion:", he)
-    }
-
-    try {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-         VALUES ($1,$2,'estado',$3,$4,$5,$6,now())`,
-        tallerId, input.repairId,
-        `Estado: ${estadoAnterior} -> Entregado (sin reparacion)`,
-        estadoAnterior,
-        "Entregado",
-        actorNombre,
-      )
-    } catch (ce) {
-      console.error("[repairs-prisma] entregarSinReparacion cambios_reparaciones estado:", ce)
-    }
+    await logHistorial({
+      reparacionId: input.repairId,
+      tenantId: tallerId,
+      tipo: "estado",
+      descripcion: `Estado: ${estadoAnterior} -> Entregado (sin reparacion)`,
+      valorAnterior: estadoAnterior,
+      valorNuevo: "Entregado",
+      nota: input.notaTecnica?.trim() || "Entrega sin reparacion",
+    })
 
     if (precioAnterior !== input.costoRevision) {
-      try {
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO cambios_reparaciones (taller_id, reparacion_id, tipo_cambio, descripcion, valor_anterior, valor_nuevo, usuario, created_at)
-           VALUES ($1,$2,'presupuesto',$3,$4,$5,$6,now())`,
-          tallerId, input.repairId,
-          `Ajuste de presupuesto (sin reparacion): $${precioAnterior.toFixed(2)} -> $${input.costoRevision.toFixed(2)}`,
-          precioAnterior.toFixed(2),
-          input.costoRevision.toFixed(2),
-          actorNombre,
-        )
-      } catch (pe) {
-        console.error("[repairs-prisma] entregarSinReparacion cambios_reparaciones presupuesto:", pe)
-      }
+      await logHistorial({
+        reparacionId: input.repairId,
+        tenantId: tallerId,
+        tipo: "presupuesto",
+        descripcion: `Ajuste de presupuesto (sin reparacion): $${precioAnterior.toFixed(2)} -> $${input.costoRevision.toFixed(2)}`,
+        valorAnterior: precioAnterior.toFixed(2),
+        valorNuevo: input.costoRevision.toFixed(2),
+      })
     }
 
     return { success: true }

@@ -51,12 +51,13 @@ model Tenant {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  users         User[]
-  clientes      Cliente[]
-  reparaciones  Reparacion[]
-  archivos      Archivo[]
-  configuracion ConfiguracionTaller?
-  productos     Producto[]
+  users              User[]
+  clientes           Cliente[]
+  reparaciones       Reparacion[]
+  archivos           Archivo[]
+  configuracion      ConfiguracionTaller?
+  productos          Producto[]
+  historialReparaciones HistorialReparacion[]
 }
 
 model User {
@@ -173,10 +174,37 @@ model Reparacion {
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Restrict)
   archivos Archivo[]
+  historial HistorialReparacion[]
 
   @@unique([tenantId, folio])
   @@index([tenantId])
   @@index([clienteId])
+}
+
+/**
+ * Historial unificado de actividad por reparación.
+ * Reemplaza las tablas legacy historial_reparacion + cambios_reparaciones.
+ */
+model HistorialReparacion {
+  id              String   @id @default(cuid())
+  tenantId        String
+  reparacionId    String
+  /** "estado" | "abono" | "presupuesto" | "tecnico" | "creacion" | "otro" */
+  tipo            String
+  /** Descripción legible del cambio (ej: "Estado: Recibido -> Diagnostico") */
+  descripcion     String
+  valorAnterior   String?
+  valorNuevo      String?
+  actorNombre     String?
+  nota            String?
+  createdAt       DateTime @default(now())
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparacion Reparacion  @relation(fields: [reparacionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([reparacionId])
+  @@index([tenantId, reparacionId, createdAt])
 }
 
 model Archivo {
