@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import { AbonoReceipt, type AbonoReceiptData } from "@/components/dashboard/abono-receipt"
-import { getAbonoById } from "@/lib/actions/ventas"
+import { getAbonoById } from "@/lib/actions/ventas-prisma"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
 import {

@@ -222,221 +222,82 @@ export interface CobroReparacionTicketData {
   tipoMov: "anticipo" | "liquidacion"
 }
 
-function toNum(v: unknown): number {
-  return Number(v ?? 0)
-}
-
-function normCaja(row: Record<string, unknown>): CajaRow {
+function mapCaja(c: {
+  id: string
+  tenantId: string
+  montoInicial: { toNumber: () => number } | number
+  montoCierre: { toNumber: () => number } | number | null
+  fechaApertura: Date
+  fechaCierre: Date | null
+  estado: string
+  totalEfectivo: { toNumber: () => number } | number
+  totalTarjeta: { toNumber: () => number } | number
+  totalTransferencia: { toNumber: () => number } | number
+  totalVentas: number
+  notaCierre: string | null
+  numeroCorte: number | null
+}): CajaRow {
   return {
-    id: String(row.id),
-    taller_id: String(row.taller_id),
-    monto_inicial: toNum(row.monto_inicial),
-    monto_cierre: row.monto_cierre == null ? null : toNum(row.monto_cierre),
-    fecha_apertura: String(row.fecha_apertura),
-    fecha_cierre: row.fecha_cierre == null ? null : String(row.fecha_cierre),
-    estado: row.estado === "cerrada" ? "cerrada" : "abierta",
-    total_efectivo: toNum(row.total_efectivo),
-    total_tarjeta: toNum(row.total_tarjeta),
-    total_transferencia: toNum(row.total_transferencia),
-    total_ventas: toNum(row.total_ventas),
-    nota_cierre: row.nota_cierre == null ? null : String(row.nota_cierre),
-    numero_corte: row.numero_corte == null ? null : toNum(row.numero_corte),
+    id: c.id,
+    taller_id: c.tenantId,
+    monto_inicial: Number(c.montoInicial),
+    monto_cierre: c.montoCierre == null ? null : Number(c.montoCierre),
+    fecha_apertura: c.fechaApertura.toISOString(),
+    fecha_cierre: c.fechaCierre?.toISOString() ?? null,
+    estado: c.estado === "cerrada" ? "cerrada" : "abierta",
+    total_efectivo: Number(c.totalEfectivo),
+    total_tarjeta: Number(c.totalTarjeta),
+    total_transferencia: Number(c.totalTransferencia),
+    total_ventas: Number(c.totalVentas),
+    nota_cierre: c.notaCierre,
+    numero_corte: c.numeroCorte,
   }
 }
 
-let _allPosTablesReady = false
-
-async function ensureAllPosTablesExist() {
-  if (_allPosTablesReady) return
-  const prisma = getPrismaClient()
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS caja (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      monto_inicial numeric(12,2) NOT NULL DEFAULT 0,
-      monto_cierre numeric(12,2),
-      fecha_apertura timestamptz NOT NULL DEFAULT now(),
-      fecha_cierre timestamptz,
-      estado text NOT NULL DEFAULT 'abierta',
-      total_efectivo numeric(12,2) NOT NULL DEFAULT 0,
-      total_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
-      total_transferencia numeric(12,2) NOT NULL DEFAULT 0,
-      total_ventas numeric(12,2) NOT NULL DEFAULT 0,
-      nota_cierre text,
-      numero_corte integer
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`
-    CREATE UNIQUE INDEX IF NOT EXISTS uq_caja_abierta_tenant
-    ON caja (taller_id) WHERE estado = 'abierta';
-  `)
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS ventas (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      caja_id text,
-      folio text NOT NULL,
-      cliente_nombre text,
-      cliente_id text,
-      cliente_telefono text,
-      total numeric(12,2) NOT NULL DEFAULT 0,
-      descuento numeric(12,2) NOT NULL DEFAULT 0,
-      metodo_pago text NOT NULL DEFAULT 'efectivo',
-      monto_efectivo numeric(12,2) NOT NULL DEFAULT 0,
-      monto_tarjeta numeric(12,2) NOT NULL DEFAULT 0,
-      monto_transferencia numeric(12,2) NOT NULL DEFAULT 0,
-      cambio numeric(12,2) NOT NULL DEFAULT 0,
-      estado text NOT NULL DEFAULT 'activa',
-      vendedor_nombre text,
-      created_at timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS detalle_ventas (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      venta_id text NOT NULL,
-      producto_id text,
-      descripcion text NOT NULL,
-      cantidad integer NOT NULL DEFAULT 1,
-      precio_unitario numeric(12,2) NOT NULL,
-      costo_unitario numeric(12,2) NOT NULL DEFAULT 0,
-      subtotal numeric(12,2) NOT NULL DEFAULT 0,
-      es_especial boolean NOT NULL DEFAULT false,
-      imei_serie text,
-      color text,
-      condicion text,
-      marca text,
-      modelo text,
-      categoria text,
-      procesador text,
-      ram text,
-      almacenamiento text,
-      created_at timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`ALTER TABLE detalle_ventas ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now()`);
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS movimientos_caja (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      caja_id text,
-      tipo text NOT NULL,
-      referencia_id text,
-      descripcion text,
-      monto numeric(12,2) NOT NULL DEFAULT 0,
-      metodo_pago text,
-      fecha timestamptz NOT NULL DEFAULT now(),
-      folio text,
-      vendedor_nombre text
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`ALTER TABLE movimientos_caja ADD COLUMN IF NOT EXISTS folio text`);
-  await prisma.$executeRawUnsafe(`ALTER TABLE movimientos_caja ADD COLUMN IF NOT EXISTS vendedor_nombre text`);
-
-  await prisma.$executeRawUnsafe(`
-    CREATE OR REPLACE FUNCTION get_next_venta_folio(p_taller_id text)
-    RETURNS text
-    LANGUAGE plpgsql
-    AS $$
-    DECLARE
-      v_count integer;
-    BEGIN
-      SELECT COALESCE(COUNT(*), 0) + 1 INTO v_count
-      FROM ventas WHERE taller_id = p_taller_id;
-      RETURN 'VTA-' || LPAD(v_count::text, 6, '0');
-    END;
-    $$;
-  `)
-
-  await prisma.$executeRawUnsafe(`
-    CREATE OR REPLACE FUNCTION anular_venta_pdv(
-      p_venta_id text,
-      p_taller_id text,
-      p_caja_id text,
-      p_motivo text DEFAULT NULL
-    )
-    RETURNS TABLE(ok boolean, error text)
-    LANGUAGE plpgsql
-    AS $$
-    BEGIN
-      UPDATE ventas SET estado = 'anulado' WHERE id = p_venta_id AND taller_id = p_taller_id;
-      IF NOT FOUND THEN
-        RETURN QUERY SELECT false, 'Venta no encontrada o ya anulada.';
-        RETURN;
-      END IF;
-      RETURN QUERY SELECT true, NULL::text;
-    END;
-    $$;
-  `)
-
-  // ─── Repair audit tables ───────────────────────────────────────────────────
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS historial_reparacion (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      reparacion_id text NOT NULL,
-      taller_id text NOT NULL,
-      usuario_id text,
-      estado_anterior text,
-      estado_nuevo text NOT NULL,
-      nota_tecnica text,
-      actor_nombre text,
-      fecha timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS cambios_reparaciones (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      taller_id text NOT NULL,
-      reparacion_id text NOT NULL,
-      tipo_cambio text NOT NULL,
-      descripcion text,
-      valor_anterior text,
-      valor_nuevo text,
-      usuario text,
-      created_at timestamptz NOT NULL DEFAULT now()
-    );
-  `)
-
-  // ─── Admin OTP codes table ─────────────────────────────────────────────────
-
-  await prisma.$executeRawUnsafe(`
-    CREATE TABLE IF NOT EXISTS admin_otp_codes (
-      id text PRIMARY KEY DEFAULT md5(random()::text || clock_timestamp()::text),
-      admin_id text NOT NULL,
-      code text NOT NULL,
-      created_at timestamptz NOT NULL DEFAULT now(),
-      expires_at timestamptz NOT NULL,
-      attempts integer DEFAULT 0,
-      CONSTRAINT admin_otp_code_format CHECK (code ~ '^[0-9]{8}$')
-    );
-  `)
-
-  _allPosTablesReady = true
+function mapHistorialCajaItem(c: {
+  id: string
+  montoInicial: { toNumber: () => number } | number
+  montoCierre: { toNumber: () => number } | number | null
+  fechaApertura: Date
+  fechaCierre: Date | null
+  estado: string
+  totalEfectivo: { toNumber: () => number } | number
+  totalTarjeta: { toNumber: () => number } | number
+  totalTransferencia: { toNumber: () => number } | number
+  totalVentas: number
+  notaCierre: string | null
+  numeroCorte: number | null
+}): HistorialCajaItem {
+  const montoInicial = Number(c.montoInicial)
+  const totalEfectivo = Number(c.totalEfectivo)
+  return {
+    id: c.id,
+    numero_corte: c.numeroCorte,
+    fecha_apertura: c.fechaApertura.toISOString(),
+    fecha_cierre: c.fechaCierre?.toISOString() ?? null,
+    estado: c.estado === "cerrada" ? "cerrada" : "abierta",
+    monto_inicial: montoInicial,
+    monto_cierre: c.montoCierre == null ? null : Number(c.montoCierre),
+    nota_cierre: c.notaCierre,
+    total_efectivo: totalEfectivo,
+    total_tarjeta: Number(c.totalTarjeta),
+    total_transferencia: Number(c.totalTransferencia),
+    total_ventas: Number(c.totalVentas),
+    saldo_final: montoInicial + totalEfectivo,
+  }
 }
 
 export async function getCajaAbierta(): Promise<{ caja: CajaRow | null; error: string | null }> {
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-      tallerId,
-    )
-    return { caja: rows[0] ? normCaja(rows[0]) : null, error: null }
+    const caja = await prisma.caja.findFirst({
+      where: { tenantId: tallerId, estado: "abierta" },
+      orderBy: { fechaApertura: "desc" },
+    })
+    return { caja: caja ? mapCaja(caja) : null, error: null }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error al verificar caja"
-    if (message.includes("relation") && message.includes("does not exist")) {
-      return { caja: null, error: null }
-    }
     console.error("[ventas-prisma] getCajaAbierta:", message)
     return { caja: null, error: null }
   }
@@ -450,58 +311,37 @@ export async function requireCajaAbierta(): Promise<{ caja: CajaRow; error: null
 }
 
 export async function abrirCaja(montoInicial: number): Promise<AbrirCajaResult> {
-  let tallerId = ""
   try {
     const prisma = getPrismaClient()
-    tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
+    const tallerId = await getCurrentTallerId()
 
-    const countRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
-      "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1",
-      tallerId,
-    )
-    const numeroCorte = (countRows[0]?.total ?? 0) + 1
-
-    const inserted = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `INSERT INTO caja (taller_id, monto_inicial, estado, numero_corte)
-       VALUES ($1, $2, 'abierta', $3)
-       RETURNING *`,
-      tallerId,
-      montoInicial,
-      numeroCorte,
-    )
-
-    if (!inserted[0]) {
-      return { status: "error", caja: null, error: "No se pudo crear la caja." }
-    }
-
-    return {
-      status: "opened",
-      caja: normCaja(inserted[0]),
-      error: null,
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Error al abrir caja"
-
-    if (message.includes("uq_caja_abierta_tenant") || message.includes("duplicate key")) {
-      try {
-        const prisma = getPrismaClient()
-        const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-          "SELECT * FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-          tallerId || (await getCurrentTallerId()),
-        )
-        if (rows[0]) {
-          return {
-            status: "already_open",
-            caja: normCaja(rows[0]),
-            error: "Ya hay una caja abierta.",
-          }
-        }
-      } catch {
-        // fallback a error generico
+    const existingOpen = await prisma.caja.findFirst({
+      where: { tenantId: tallerId, estado: "abierta" },
+      orderBy: { fechaApertura: "desc" },
+    })
+    if (existingOpen) {
+      return {
+        status: "already_open",
+        caja: mapCaja(existingOpen),
+        error: "Ya hay una caja abierta.",
       }
     }
 
+    const count = await prisma.caja.count({ where: { tenantId: tallerId } })
+    const numeroCorte = count + 1
+
+    const caja = await prisma.caja.create({
+      data: {
+        tenantId: tallerId,
+        montoInicial,
+        estado: "abierta",
+        numeroCorte,
+      },
+    })
+
+    return { status: "opened", caja: mapCaja(caja), error: null }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error al abrir caja"
     console.error("[ventas-prisma] abrirCaja:", message)
     return { status: "error", caja: null, error: message }
   }
@@ -511,14 +351,10 @@ export async function cerrarCaja(cajaId: string, montoCierre: number): Promise<{
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await prisma.$executeRawUnsafe(
-      `UPDATE caja
-       SET estado='cerrada', monto_cierre=$1, fecha_cierre=now()
-       WHERE id=$2 AND taller_id=$3`,
-      montoCierre,
-      cajaId,
-      tallerId,
-    )
+    await prisma.caja.updateMany({
+      where: { id: cajaId, tenantId: tallerId, estado: "abierta" },
+      data: { estado: "cerrada", montoCierre, fechaCierre: new Date() },
+    })
     return { error: null }
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Error al cerrar caja" }
@@ -529,13 +365,11 @@ export async function getProductosDisponibles(): Promise<{ data: ProductoDisponi
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-
     const rows = await prisma.producto.findMany({
       where: { tenantId: tallerId, stockActual: { gt: 0 } },
       orderBy: { nombre: "asc" },
       take: 300,
     })
-
     return {
       data: rows.map((row) => ({
         id: row.id,
@@ -575,103 +409,92 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
     const actorNombre = await getCurrentActorDisplayName()
-    await ensureAllPosTablesExist()
 
-    const nextRows = await prisma.$queryRawUnsafe<Array<{ folio: string }>>(
-      "SELECT get_next_venta_folio($1) AS folio",
-      tallerId,
-    )
-    const folio = nextRows[0]?.folio
-    if (!folio) return { venta: null, error: "No se pudo generar folio" }
+    const ventaCount = await prisma.venta.count({ where: { tenantId: tallerId } })
+    const folio = `VTA-${String(ventaCount + 1).padStart(6, "0")}`
 
-    const insertedVenta = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `INSERT INTO ventas
-       (taller_id, caja_id, folio, cliente_nombre, cliente_id, cliente_telefono, total, descuento, metodo_pago, monto_efectivo, monto_tarjeta, monto_transferencia, cambio, vendedor_nombre)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
-       RETURNING id, created_at`,
-      tallerId,
-      input.caja_id ?? null,
-      folio,
-      input.cliente_nombre ?? null,
-      input.cliente_id ?? null,
-      input.cliente_telefono ?? null,
-      input.total,
-      input.descuento ?? 0,
-      input.metodo_pago,
-      input.monto_efectivo,
-      input.monto_tarjeta,
-      input.monto_transferencia,
-      input.cambio,
-      actorNombre,
-    )
-    const ventaId = String(insertedVenta[0].id)
-
-    for (const item of input.items) {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO detalle_ventas
-         (venta_id, producto_id, descripcion, cantidad, precio_unitario, costo_unitario, subtotal, es_especial, imei_serie, color, condicion, marca, modelo, categoria, procesador, ram, almacenamiento)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
-        ventaId,
-        item.producto_id ?? null,
-        item.descripcion,
-        item.cantidad,
-        item.precio_unitario,
-        item.costo_unitario,
-        item.precio_unitario * item.cantidad,
-        item.es_especial,
-        item.imei_serie ?? null,
-        item.color ?? null,
-        item.condicion ?? null,
-        item.marca ?? null,
-        item.modelo ?? null,
-        item.categoria ?? null,
-        item.procesador ?? null,
-        item.ram ?? null,
-        item.almacenamiento ?? null,
-      )
-    }
+    const ventaDb = await prisma.venta.create({
+      data: {
+        tenantId: tallerId,
+        cajaId: input.caja_id ?? null,
+        folio,
+        clienteNombre: input.cliente_nombre ?? null,
+        clienteId: input.cliente_id ?? null,
+        clienteTelefono: input.cliente_telefono ?? null,
+        total: input.total,
+        descuento: input.descuento ?? 0,
+        metodoPago: input.metodo_pago,
+        montoEfectivo: input.monto_efectivo,
+        montoTarjeta: input.monto_tarjeta,
+        montoTransferencia: input.monto_transferencia,
+        cambio: input.cambio,
+        vendedorNombre: actorNombre,
+      },
+    })
 
     const stockItems = input.items.filter((item) => item.producto_id && !item.es_especial)
-    if (stockItems.length > 0) {
-      try {
-        await prisma.$queryRawUnsafe("SELECT batch_decrement_stock($1::jsonb)", JSON.stringify(stockItems.map((i) => ({ producto_id: i.producto_id, taller_id: tallerId, cantidad: i.cantidad }))))
-      } catch {
-        console.error("[ventas-prisma] batch_decrement_stock fallback - RPC not available")
-      }
+
+    for (const item of input.items) {
+      await prisma.detalleVenta.create({
+        data: {
+          ventaId: ventaDb.id,
+          productoId: item.producto_id ?? null,
+          descripcion: item.descripcion,
+          cantidad: item.cantidad,
+          precioUnitario: item.precio_unitario,
+          costoUnitario: item.costo_unitario,
+          subtotal: item.precio_unitario * item.cantidad,
+          esEspecial: item.es_especial,
+          imeiSerie: item.imei_serie ?? null,
+          color: item.color ?? null,
+          condicion: item.condicion ?? null,
+          marca: item.marca ?? null,
+          modelo: item.modelo ?? null,
+          categoria: item.categoria ?? null,
+          procesador: item.procesador ?? null,
+          ram: item.ram ?? null,
+          almacenamiento: item.almacenamiento ?? null,
+        },
+      })
+    }
+
+    for (const item of stockItems) {
+      await prisma.producto.update({
+        where: { id: item.producto_id!, tenantId: tallerId },
+        data: { stockActual: { decrement: item.cantidad } },
+      })
     }
 
     if (input.caja_id) {
       try {
-        await prisma.$executeRawUnsafe(
-          `UPDATE caja
-           SET total_efectivo = total_efectivo + $1,
-               total_tarjeta = total_tarjeta + $2,
-               total_transferencia = total_transferencia + $3,
-               total_ventas = total_ventas + 1
-           WHERE id = $4 AND taller_id = $5`,
-          input.monto_efectivo - input.cambio,
-          input.monto_tarjeta,
-          input.monto_transferencia,
-          input.caja_id,
-          tallerId,
-        )
+        await prisma.caja.update({
+          where: { id: input.caja_id },
+          data: {
+            totalEfectivo: { increment: input.monto_efectivo - input.cambio },
+            totalTarjeta: { increment: input.monto_tarjeta },
+            totalTransferencia: { increment: input.monto_transferencia },
+            totalVentas: { increment: 1 },
+          },
+        })
       } catch {
-        console.error("[ventas-prisma] update caja totals fallback - caja table may be missing")
+        console.error("[ventas-prisma] caja update fallback")
       }
 
       try {
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha)
-           VALUES ($1,$2,'venta_pdv',$3,$4,$5,$6,now())`,
-          tallerId,
-          input.caja_id,
-          ventaId,
-          `Venta ${folio}${input.cliente_nombre ? ` - ${input.cliente_nombre}` : ""}`,
-          input.total,
-          input.metodo_pago,
-        )
+        await prisma.movimientoCaja.create({
+          data: {
+            tenantId: tallerId,
+            cajaId: input.caja_id,
+            tipo: "venta_pdv",
+            referenciaId: ventaDb.id,
+            descripcion: `Venta ${folio}${input.cliente_nombre ? ` - ${input.cliente_nombre}` : ""}`,
+            monto: input.total,
+            metodoPago: input.metodo_pago,
+            fecha: new Date(),
+          },
+        })
       } catch {
-        console.error("[ventas-prisma] insert movimiento_caja fallback - table may be missing")
+        console.error("[ventas-prisma] movimiento_caja fallback")
       }
     }
 
@@ -679,7 +502,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
 
     return {
       venta: {
-        id: ventaId,
+        id: ventaDb.id,
         folio,
         total: input.total,
         descuento: input.descuento ?? 0,
@@ -688,7 +511,7 @@ export async function crearVenta(input: CrearVentaInput): Promise<{ venta: Venta
         monto_tarjeta: input.monto_tarjeta,
         monto_transferencia: input.monto_transferencia,
         cambio: input.cambio,
-        created_at: String(insertedVenta[0].created_at),
+        created_at: ventaDb.createdAt.toISOString(),
         items: input.items,
         cliente_nombre: input.cliente_nombre,
         cliente_telefono: input.cliente_telefono,
@@ -705,44 +528,20 @@ export async function getHistorialCaja(page = 0, pageSize = 30): Promise<{ data:
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
     const from = page * pageSize
 
-    const data = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT * FROM caja
-       WHERE taller_id = $1 AND estado = 'cerrada'
-       ORDER BY fecha_apertura DESC
-       OFFSET $2 LIMIT $3`,
-      tallerId,
-      from,
-      pageSize,
-    )
-    const totalRows = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
-      "SELECT COUNT(*)::int AS total FROM caja WHERE taller_id = $1 AND estado = 'cerrada'",
-      tallerId,
-    )
-
-    const mapped: HistorialCajaItem[] = data.map((row) => {
-      const montoInicial = toNum(row.monto_inicial)
-      const saldoFinal = montoInicial + toNum(row.total_efectivo)
-      return {
-        id: String(row.id),
-        numero_corte: row.numero_corte == null ? null : toNum(row.numero_corte),
-        fecha_apertura: String(row.fecha_apertura),
-        fecha_cierre: row.fecha_cierre == null ? null : String(row.fecha_cierre),
-        estado: row.estado === "cerrada" ? "cerrada" : "abierta",
-        monto_inicial: montoInicial,
-        monto_cierre: row.monto_cierre == null ? null : toNum(row.monto_cierre),
-        nota_cierre: row.nota_cierre == null ? null : String(row.nota_cierre),
-        total_efectivo: toNum(row.total_efectivo),
-        total_tarjeta: toNum(row.total_tarjeta),
-        total_transferencia: toNum(row.total_transferencia),
-        total_ventas: toNum(row.total_ventas),
-        saldo_final: saldoFinal,
-      }
+    const rows = await prisma.caja.findMany({
+      where: { tenantId: tallerId, estado: "cerrada" },
+      orderBy: { fechaApertura: "desc" },
+      skip: from,
+      take: pageSize,
     })
 
-    return { data: mapped, error: null, total: totalRows[0]?.total ?? 0 }
+    const total = await prisma.caja.count({
+      where: { tenantId: tallerId, estado: "cerrada" },
+    })
+
+    return { data: rows.map(mapHistorialCajaItem), error: null, total }
   } catch (error) {
     return { data: [], error: error instanceof Error ? error.message : "Error historial caja", total: 0 }
   }
@@ -752,59 +551,62 @@ export async function getDetalleCaja(cajaId: string): Promise<{ data: DetalleCaj
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const cajas = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM caja WHERE id=$1 AND taller_id=$2 LIMIT 1", cajaId, tallerId)
-    const caja = cajas[0]
+
+    const caja = await prisma.caja.findFirst({
+      where: { id: cajaId, tenantId: tallerId },
+    })
     if (!caja) return { data: null, error: "Caja no encontrada" }
 
-    const ventas = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT id, folio, cliente_nombre, total, metodo_pago, monto_efectivo, monto_tarjeta, monto_transferencia, created_at
-       FROM ventas WHERE caja_id=$1 AND taller_id=$2 AND estado='activa' ORDER BY created_at ASC`,
-      cajaId,
-      tallerId,
-    )
-    const movimientos = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT id, tipo, descripcion, monto, metodo_pago, fecha
-       FROM movimientos_caja WHERE caja_id=$1 AND taller_id=$2 ORDER BY fecha ASC`,
-      cajaId,
-      tallerId,
-    )
+    const ventas = await prisma.venta.findMany({
+      where: { cajaId, tenantId: tallerId, estado: "activa" },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        folio: true,
+        clienteNombre: true,
+        total: true,
+        metodoPago: true,
+        montoEfectivo: true,
+        montoTarjeta: true,
+        montoTransferencia: true,
+        createdAt: true,
+      },
+    })
+
+    const movimientos = await prisma.movimientoCaja.findMany({
+      where: { cajaId, tenantId: tallerId },
+      orderBy: { fecha: "asc" },
+      select: {
+        id: true,
+        tipo: true,
+        descripcion: true,
+        monto: true,
+        metodoPago: true,
+        fecha: true,
+      },
+    })
 
     return {
       data: {
-        caja: {
-          id: String(caja.id),
-          numero_corte: caja.numero_corte == null ? null : toNum(caja.numero_corte),
-          fecha_apertura: String(caja.fecha_apertura),
-          fecha_cierre: caja.fecha_cierre == null ? null : String(caja.fecha_cierre),
-          estado: caja.estado === "cerrada" ? "cerrada" : "abierta",
-          monto_inicial: toNum(caja.monto_inicial),
-          monto_cierre: caja.monto_cierre == null ? null : toNum(caja.monto_cierre),
-          nota_cierre: caja.nota_cierre == null ? null : String(caja.nota_cierre),
-          total_efectivo: toNum(caja.total_efectivo),
-          total_tarjeta: toNum(caja.total_tarjeta),
-          total_transferencia: toNum(caja.total_transferencia),
-          total_ventas: toNum(caja.total_ventas),
-          saldo_final: toNum(caja.monto_inicial) + toNum(caja.total_efectivo),
-        },
+        caja: mapHistorialCajaItem(caja),
         ventas: ventas.map((v) => ({
-          id: String(v.id),
-          folio: String(v.folio ?? ""),
-          cliente_nombre: v.cliente_nombre == null ? null : String(v.cliente_nombre),
-          total: toNum(v.total),
-          metodo_pago: String(v.metodo_pago ?? ""),
-          monto_efectivo: toNum(v.monto_efectivo),
-          monto_tarjeta: toNum(v.monto_tarjeta),
-          monto_transferencia: toNum(v.monto_transferencia),
-          created_at: String(v.created_at),
+          id: v.id,
+          folio: v.folio,
+          cliente_nombre: v.clienteNombre,
+          total: Number(v.total),
+          metodo_pago: v.metodoPago,
+          monto_efectivo: Number(v.montoEfectivo),
+          monto_tarjeta: Number(v.montoTarjeta),
+          monto_transferencia: Number(v.montoTransferencia),
+          created_at: v.createdAt.toISOString(),
         })),
         movimientos: movimientos.map((m) => ({
-          id: String(m.id),
-          tipo: String(m.tipo ?? ""),
-          descripcion: m.descripcion == null ? null : String(m.descripcion),
-          monto: toNum(m.monto),
-          metodo_pago: m.metodo_pago == null ? null : String(m.metodo_pago),
-          fecha: String(m.fecha),
+          id: m.id,
+          tipo: m.tipo,
+          descripcion: m.descripcion,
+          monto: Number(m.monto),
+          metodo_pago: m.metodoPago,
+          fecha: m.fecha.toISOString(),
         })),
       },
       error: null,
@@ -818,29 +620,45 @@ export async function getAbonoById(movimientoId: string): Promise<{ data: AbonoP
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const movRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM movimientos_caja WHERE id=$1 AND taller_id=$2 LIMIT 1", movimientoId, tallerId)
-    const mov = movRows[0]
+
+    const mov = await prisma.movimientoCaja.findFirst({
+      where: { id: movimientoId, tenantId: tallerId },
+    })
     if (!mov) return { data: null, error: "Movimiento no encontrado." }
-    const repRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT r.folio, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, r.\"equipoMarca\" AS marca, r.\"equipoModelo\" AS modelo, r.\"tipoEquipo\" AS tipo_equipo, r.precio_estimado, r.anticipo FROM \"Reparacion\" r LEFT JOIN \"Cliente\" c ON r.\"clienteId\" = c.id WHERE r.id=$1 AND r.\"tenantId\"=$2 LIMIT 1", String(mov.referencia_id ?? ""), tallerId)
-    const rep = repRows[0]
+
+    const rep = await prisma.reparacion.findFirst({
+      where: { id: String(mov.referenciaId ?? ""), tenantId: tallerId },
+      select: {
+        folio: true,
+        cliente: { select: { nombre: true, telefono: true } },
+        tipoEquipo: true,
+        equipoMarca: true,
+        equipoModelo: true,
+        costoEstimado: true,
+        anticipo: true,
+      },
+    })
     if (!rep) return { data: null, error: "Reparacion no encontrada." }
 
-    const presupuesto = toNum(rep.precio_estimado)
-    const totalAbonado = toNum(rep.anticipo)
-    return { data: {
-      movimientoId: String(mov.id),
-      folio: String(rep.folio ?? ""),
-      clienteNombre: String(rep.cliente_nombre ?? ""),
-      clienteTelefono: String(rep.cliente_telefono ?? ""),
-      dispositivo: `${String(rep.tipo_equipo ?? "")} ${String(rep.marca ?? "")} ${String(rep.modelo ?? "")}`.trim(),
-      metodoPago: String(mov.metodo_pago ?? "efectivo"),
-      monto: toNum(mov.monto),
-      totalAbonado,
-      presupuesto,
-      saldoRestante: Math.max(0, presupuesto - totalAbonado),
-      fecha: String(mov.fecha),
-    }, error: null }
+    const presupuesto = Number(rep.costoEstimado ?? 0)
+    const totalAbonado = Number(rep.anticipo ?? 0)
+
+    return {
+      data: {
+        movimientoId: mov.id,
+        folio: rep.folio,
+        clienteNombre: rep.cliente?.nombre ?? "",
+        clienteTelefono: rep.cliente?.telefono ?? "",
+        dispositivo: `${rep.tipoEquipo ?? ""} ${rep.equipoMarca ?? ""} ${rep.equipoModelo ?? ""}`.trim(),
+        metodoPago: mov.metodoPago ?? "efectivo",
+        monto: Number(mov.monto),
+        totalAbonado,
+        presupuesto,
+        saldoRestante: Math.max(0, presupuesto - totalAbonado),
+        fecha: mov.fecha.toISOString(),
+      },
+      error: null,
+    }
   } catch (error) {
     return { data: null, error: error instanceof Error ? error.message : "Error al obtener abono" }
   }
@@ -903,42 +721,64 @@ export async function getVentaParaTicket(ventaId: string): Promise<{ venta: Vent
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const ventas = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM ventas WHERE id=$1 AND taller_id=$2 LIMIT 1", ventaId, tallerId)
-    const venta = ventas[0]
+
+    const venta = await prisma.venta.findFirst({
+      where: { id: ventaId, tenantId: tallerId },
+      include: {
+        detalles: {
+          select: {
+            productoId: true,
+            descripcion: true,
+            cantidad: true,
+            precioUnitario: true,
+            costoUnitario: true,
+            esEspecial: true,
+            imeiSerie: true,
+            color: true,
+            condicion: true,
+            marca: true,
+            modelo: true,
+            procesador: true,
+            ram: true,
+            almacenamiento: true,
+          },
+        },
+      },
+    })
+
     if (!venta) return { venta: null, error: "Venta no encontrada." }
-    if (String(venta.estado ?? "") === "anulado") return { venta: null, error: "Esta venta fue anulada." }
-    const detalles = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT producto_id, descripcion, cantidad, precio_unitario, costo_unitario, es_especial, imei_serie, color, condicion, marca, modelo, procesador, ram, almacenamiento FROM detalle_ventas WHERE venta_id=$1", ventaId)
+    if (venta.estado === "anulado") return { venta: null, error: "Esta venta fue anulada." }
+
     return {
       venta: {
-        id: String(venta.id),
-        folio: String(venta.folio ?? ""),
-        total: toNum(venta.total),
-        descuento: toNum(venta.descuento),
-        metodo_pago: String(venta.metodo_pago ?? "efectivo"),
-        monto_efectivo: toNum(venta.monto_efectivo),
-        monto_tarjeta: toNum(venta.monto_tarjeta),
-        monto_transferencia: toNum(venta.monto_transferencia),
-        cambio: toNum(venta.cambio),
-        created_at: String(venta.created_at),
-        items: detalles.map((d) => ({
-          producto_id: d.producto_id == null ? undefined : String(d.producto_id),
-          descripcion: String(d.descripcion ?? ""),
-          cantidad: toNum(d.cantidad),
-          precio_unitario: toNum(d.precio_unitario),
-          costo_unitario: toNum(d.costo_unitario),
-          es_especial: Boolean(d.es_especial),
-          imei_serie: d.imei_serie == null ? undefined : String(d.imei_serie),
-          color: d.color == null ? undefined : String(d.color),
-          condicion: d.condicion == null ? undefined : String(d.condicion),
-          marca: d.marca == null ? undefined : String(d.marca),
-          modelo: d.modelo == null ? undefined : String(d.modelo),
-          procesador: d.procesador == null ? undefined : String(d.procesador),
-          ram: d.ram == null ? undefined : String(d.ram),
-          almacenamiento: d.almacenamiento == null ? undefined : String(d.almacenamiento),
+        id: venta.id,
+        folio: venta.folio,
+        total: Number(venta.total),
+        descuento: Number(venta.descuento),
+        metodo_pago: venta.metodoPago,
+        monto_efectivo: Number(venta.montoEfectivo),
+        monto_tarjeta: Number(venta.montoTarjeta),
+        monto_transferencia: Number(venta.montoTransferencia),
+        cambio: Number(venta.cambio),
+        created_at: venta.createdAt.toISOString(),
+        items: venta.detalles.map((d) => ({
+          producto_id: d.productoId ?? undefined,
+          descripcion: d.descripcion,
+          cantidad: d.cantidad,
+          precio_unitario: Number(d.precioUnitario),
+          costo_unitario: Number(d.costoUnitario),
+          es_especial: d.esEspecial,
+          imei_serie: d.imeiSerie ?? undefined,
+          color: d.color ?? undefined,
+          condicion: d.condicion ?? undefined,
+          marca: d.marca ?? undefined,
+          modelo: d.modelo ?? undefined,
+          procesador: d.procesador ?? undefined,
+          ram: d.ram ?? undefined,
+          almacenamiento: d.almacenamiento ?? undefined,
         })),
-        cliente_nombre: venta.cliente_nombre == null ? undefined : String(venta.cliente_nombre),
-        cliente_telefono: venta.cliente_telefono == null ? undefined : String(venta.cliente_telefono),
+        cliente_nombre: venta.clienteNombre,
+        cliente_telefono: venta.clienteTelefono,
       },
       error: null,
     }
@@ -951,30 +791,42 @@ export async function getCobroReparacionParaTicket(movimientoId: string): Promis
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM movimientos_caja WHERE id=$1 AND taller_id=$2 LIMIT 1", movimientoId, tallerId)
-    const m = rows[0]
-    if (!m) return { data: null, error: "Movimiento no encontrado." }
-    const tipo = String(m.tipo ?? "")
-    if (tipo !== "anticipo_reparacion" && tipo !== "liquidacion_reparacion") return { data: null, error: "Este movimiento no es un cobro de reparacion." }
+
+    const mov = await prisma.movimientoCaja.findFirst({
+      where: { id: movimientoId, tenantId: tallerId },
+    })
+    if (!mov) return { data: null, error: "Movimiento no encontrado." }
+
+    const tipo = mov.tipo
+    if (tipo !== "anticipo_reparacion" && tipo !== "liquidacion_reparacion") {
+      return { data: null, error: "Este movimiento no es un cobro de reparacion." }
+    }
+
     let folio = "-"
     let cliente = "-"
-    const rid = m.referencia_id == null ? null : String(m.referencia_id)
+    const rid = mov.referenciaId
     if (rid) {
-      const reps = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT r.folio, c.nombre AS cliente_nombre FROM \"Reparacion\" r LEFT JOIN \"Cliente\" c ON r.\"clienteId\" = c.id WHERE r.id=$1 AND r.\"tenantId\"=$2 LIMIT 1", rid, tallerId)
-      if (reps[0]) {
-        folio = String(reps[0].folio ?? "-")
-        cliente = String(reps[0].cliente_nombre ?? "-")
+      const rep = await prisma.reparacion.findFirst({
+        where: { id: rid, tenantId: tallerId },
+        select: {
+          folio: true,
+          cliente: { select: { nombre: true } },
+        },
+      })
+      if (rep) {
+        folio = rep.folio
+        cliente = rep.cliente?.nombre ?? "-"
       }
     }
+
     return {
       data: {
         folio,
         cliente,
         conceptos: tipo === "liquidacion_reparacion" ? "Liquidacion" : "Anticipo",
-        monto: toNum(m.monto),
-        metodo_pago: String(m.metodo_pago ?? "efectivo"),
-        fechaIso: String(m.fecha ?? ""),
+        monto: Number(mov.monto),
+        metodo_pago: mov.metodoPago ?? "efectivo",
+        fechaIso: mov.fecha.toISOString(),
         tipoMov: tipo === "liquidacion_reparacion" ? "liquidacion" : "anticipo",
       },
       error: null,
@@ -988,16 +840,16 @@ export async function anularVenta(ventaId: string, motivo?: string | null): Prom
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    await ensureAllPosTablesExist()
-    const resp = await prisma.$queryRawUnsafe<Array<{ ok: boolean; error?: string }>>(
-      "SELECT * FROM anular_venta_pdv($1,$2,$3,$4)",
-      ventaId,
-      tallerId,
-      tallerId,
-      motivo ?? null,
-    )
-    const payload = resp[0]
-    if (!payload?.ok) return { success: false, error: payload?.error ?? "No se pudo anular la venta." }
+
+    const result = await prisma.venta.updateMany({
+      where: { id: ventaId, tenantId: tallerId, estado: "activa" },
+      data: { estado: "anulado" },
+    })
+
+    if (result.count === 0) {
+      return { success: false, error: "Venta no encontrada o ya anulada." }
+    }
+
     return { success: true, error: null }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Error al anular venta" }
@@ -1011,5 +863,3 @@ export async function cancelarVentaMostrador(ventaId: string) {
 export async function reenviarCorteEmail(_cajaId?: string): Promise<{ success: boolean; sentTo?: string; error?: string }> {
   return { success: false, error: "Funcion PRO temporalmente desactivada" }
 }
-
-

@@ -6,7 +6,7 @@ import { VentaLabel, type VentaLabelData } from "@/components/dashboard/venta-la
 import { LabelRepairTemplate, type LabelRepairTemplateData } from "@/components/print-templates/LabelRepairTemplate"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { getRepairLabelData } from "@/lib/actions/repairs"
-import { getVentaLabelData } from "@/lib/actions/ventas"
+import { getVentaLabelData } from "@/lib/actions/ventas-prisma"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
 import { isTauriAvailable, printLabelRasterDirecto } from "@/lib/tauri/desktop-bridge"
 import { toast } from "@/hooks/use-toast"
