@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, PackageCheck, RotateCcw } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { confirmarEntregaConLiquidacion, entregarSinReparacionConAjuste } from "@/lib/actions/repairs"
+import { confirmarEntregaConLiquidacion, entregarSinReparacionConAjuste } from "@/lib/actions/repairs-prisma"
 
 function fmt(n: number) {
   return n.toLocaleString("es-MX", {

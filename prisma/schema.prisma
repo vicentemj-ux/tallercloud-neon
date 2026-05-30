@@ -186,6 +186,8 @@ model Reparacion {
   patronDesbloqueo String?
   notasInternas String?
   checklistIngreso Json?
+  checklistPro  Json?      @map("checklist_pro")
+  creadoPorNombre String?  @map("creado_por_nombre")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

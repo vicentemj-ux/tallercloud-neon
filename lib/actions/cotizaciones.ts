@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
-import { createRepair } from "@/lib/actions/repairs"
+import { createRepair } from "@/lib/actions/repairs-prisma"
 import { getTallerSettings } from "@/lib/actions/settings"
 import { getTallerWhatsAppCountryCode, normalizePhoneForWhatsApp, buildWhatsAppUrl } from "@/lib/whatsapp-utils"
 

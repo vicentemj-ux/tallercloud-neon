@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { DollarSign, Loader2, CheckCircle2, Pencil } from "lucide-react"
-import { actualizarPresupuestoReparacion } from "@/lib/actions/repairs"
+import { actualizarPresupuestoReparacion } from "@/lib/actions/repairs-prisma"
 import { toast } from "@/hooks/use-toast"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -109,14 +109,6 @@ export function PresupuestoEditModal({
         variant: "destructive",
       })
       return
-    }
-
-    if (res.logError) {
-      toast({
-        title: "Advertencia",
-        description: res.logError,
-        variant: "default",
-      })
     }
 
     setShowSuccess(true)

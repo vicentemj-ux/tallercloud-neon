@@ -25,7 +25,6 @@ import { last4 as phoneLast4, onlyDigits } from "@/lib/phone"
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 type ArchivoRow = { publicUrl: string | null; storageKey: string | null; key: string | null }
 type TechnicianRow = { id: string; nombre: string | null }
-type LegacyRepairsModule = typeof import("@/lib/actions/repairs")
 
 // ─── Historial de Reparación: Tipos ───────────────────────────────────────────
 
@@ -215,23 +214,6 @@ export async function getRepairDetailPageData(repairId: string): Promise<{
 async function ensureAuditTablesExist(): Promise<void> {
   // Las tablas legacy (historial_reparacion, cambios_reparaciones) ya no se necesitan.
   // Todo el historial se escribe en el modelo Prisma HistorialReparacion.
-}
-
-let legacyRepairsModulePromise: Promise<LegacyRepairsModule> | null = null
-
-async function getLegacyRepairsModule(): Promise<LegacyRepairsModule> {
-  if (!legacyRepairsModulePromise) {
-    legacyRepairsModulePromise = import("@/lib/actions/repairs")
-  }
-  return legacyRepairsModulePromise
-}
-
-function getLegacyUnavailableResponse(error: unknown) {
-  console.error("[repairs-prisma] legacy bridge unavailable:", error)
-  return {
-    success: false as const,
-    error: "Funcion temporalmente no disponible en MVP.",
-  }
 }
 
 function getPrismaErrorCode(error: unknown): string | null {
@@ -701,21 +683,13 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
     checklistIngreso = parseChecklistIngreso(rep.checklistIngreso)
 
     try {
-      const extraRows = await prisma.$queryRawUnsafe<Array<{
-        checklist_pro: unknown
-        creado_por_nombre: string | null
-      }>>(
-        `SELECT checklist_pro, creado_por_nombre
-         FROM "Reparacion"
-         WHERE id = $1 AND "tenantId" = $2
-         LIMIT 1`,
-        repairId,
-        tenantId,
-      )
-      const extra = extraRows[0]
+      const extra = await prisma.reparacion.findFirst({
+        where: { id: repairId, tenantId },
+        select: { checklistPro: true, creadoPorNombre: true },
+      })
       if (extra) {
-        checklistPro = (extra.checklist_pro as ChecklistProData | null) ?? null
-        creadoPorNombre = extra.creado_por_nombre ?? null
+        checklistPro = extra.checklistPro as ChecklistProData | null
+        creadoPorNombre = extra.creadoPorNombre
       }
     } catch (extraErr) {
       console.warn("getRepairDetail prisma extras:", extraErr)
@@ -1147,11 +1121,12 @@ export async function registrarAbono(input: {
     })
     if (!rep) return { success: false, error: "No se encontro la reparacion." }
 
-    const cajaRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-      "SELECT id FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-      tallerId,
-    )
-    const cajaId = cajaRows[0]?.id
+    const cajaOpen = await prisma.caja.findFirst({
+      where: { tenantId: tallerId, estado: "abierta" },
+      orderBy: { fechaApertura: "desc" },
+      select: { id: true },
+    })
+    const cajaId = cajaOpen?.id
     if (!cajaId) return { success: false, error: "No hay caja abierta. Abre caja en Punto de venta para registrar el cobro." }
 
     const current = Number(rep.anticipo ?? 0)
@@ -1165,17 +1140,18 @@ export async function registrarAbono(input: {
       data: { anticipo: nuevo },
     })
 
-    await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-      `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha, vendedor_nombre)
-       VALUES ($1,$2,'anticipo_reparacion',$3,$4,$5,$6,now(),$7) RETURNING id`,
-      tallerId,
-      cajaId,
-      input.repairId,
-      `Abono reparacion #${rep.folio ?? ""}`,
-      input.monto,
-      input.metodoPago,
-      actor,
-    )
+    const movimiento = await prisma.movimientoCaja.create({
+      data: {
+        tenantId: tallerId,
+        cajaId,
+        tipo: "anticipo_reparacion",
+        referenciaId: input.repairId,
+        descripcion: `Abono reparacion #${rep.folio ?? ""}`,
+        monto: input.monto,
+        metodoPago: input.metodoPago,
+        vendedorNombre: actor,
+      },
+    })
 
     await logHistorial({
       reparacionId: input.repairId,
@@ -1186,7 +1162,7 @@ export async function registrarAbono(input: {
       valorNuevo: String(nuevo),
     })
 
-    return { success: true, nuevoAnticipo: nuevo, saldoPendiente: saldo, liquidado, movimientoCajaId: cajaRows[0]?.id ?? null }
+    return { success: true, nuevoAnticipo: nuevo, saldoPendiente: saldo, liquidado, movimientoCajaId: movimiento.id }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error al registrar abono" }
   }
@@ -1301,56 +1277,243 @@ export async function entregarSinReparacionConAjuste(input: {
 }
 
 export async function updateRepairChecklistPro(
-  ...args: Parameters<LegacyRepairsModule["updateRepairChecklistPro"]>
-) {
+  repairId: string,
+  data: ChecklistProData,
+): Promise<{ success: boolean; error?: string }> {
   try {
-    const legacyRepairs = await getLegacyRepairsModule()
-    return await legacyRepairs.updateRepairChecklistPro(...args)
-  } catch (error) {
-    return getLegacyUnavailableResponse(error)
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    await prisma.reparacion.update({
+      where: { id: repairId, tenantId },
+      data: { checklistPro: data as any },
+    })
+    await logHistorial({
+      reparacionId: repairId,
+      tenantId,
+      tipo: "otro",
+      descripcion: "Diagnostico PRO (health check) actualizado",
+    })
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Error al actualizar checklist Pro" }
   }
 }
+
 export async function updateRepairQuickNotes(
-  ...args: Parameters<LegacyRepairsModule["updateRepairQuickNotes"]>
-) {
+  repairId: string,
+  data: { observacionesEsteticas?: string; notasInternas?: string }
+): Promise<{ success: boolean; error?: string }> {
   try {
-    const legacyRepairs = await getLegacyRepairsModule()
-    return await legacyRepairs.updateRepairQuickNotes(...args)
-  } catch (error) {
-    return getLegacyUnavailableResponse(error)
-  }
-}
-export async function getCancelacionSummary(
-  ...args: Parameters<LegacyRepairsModule["getCancelacionSummary"]>
-) {
-  try {
-    const legacyRepairs = await getLegacyRepairsModule()
-    return await legacyRepairs.getCancelacionSummary(...args)
-  } catch (error) {
-    return {
-      total: 0,
-      movements: [],
-      error: getLegacyUnavailableResponse(error).error,
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const rep = await prisma.reparacion.findFirst({
+      where: { id: repairId, tenantId },
+      select: { checklistIngreso: true },
+    })
+    if (!rep) return { success: false, error: "No se encontro la reparacion." }
+
+    const updateData: Record<string, unknown> = {}
+    if (data.observacionesEsteticas !== undefined) {
+      const current = parseChecklistIngreso(rep.checklistIngreso) ?? {
+        encendido: null,
+        funcional: {},
+        observacionesEsteticas: "",
+      }
+      updateData.checklistIngreso = checklistIngresoToJson({
+        ...current,
+        observacionesEsteticas: data.observacionesEsteticas,
+      }) as any
     }
+    if (data.notasInternas !== undefined) {
+      updateData.notasInternas = data.notasInternas.trim() || null
+    }
+    if (Object.keys(updateData).length === 0) return { success: true }
+
+    await prisma.reparacion.update({
+      where: { id: repairId },
+      data: updateData as any,
+    })
+
+    const logMsg: string[] = []
+    if (data.observacionesEsteticas !== undefined) logMsg.push("observaciones esteticas")
+    if (data.notasInternas !== undefined) logMsg.push("notas internas")
+    await logHistorial({
+      reparacionId: repairId,
+      tenantId,
+      tipo: "otro",
+      descripcion: `${logMsg.join(" + ")} actualizadas`,
+    })
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Error al actualizar notas" }
   }
 }
-export async function cancelarReparacion(
-  ...args: Parameters<LegacyRepairsModule["cancelarReparacion"]>
-) {
+
+export async function getCancelacionSummary(repairId: string): Promise<{
+  total: number
+  movements: Array<{ id: string; tipo: string; monto: number; metodo_pago: string; caja_id: string | null }>
+  error?: string
+}> {
   try {
-    const legacyRepairs = await getLegacyRepairsModule()
-    return await legacyRepairs.cancelarReparacion(...args)
-  } catch (error) {
-    return getLegacyUnavailableResponse(error)
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const movements = await prisma.movimientoCaja.findMany({
+      where: { referenciaId: repairId, tenantId, tipo: { in: ["anticipo_reparacion", "liquidacion_reparacion"] } },
+      select: { id: true, tipo: true, monto: true, metodoPago: true, cajaId: true },
+    })
+    const total = movements.reduce((sum, m) => sum + Number(m.monto), 0)
+    return {
+      total,
+      movements: movements.map((m) => ({
+        id: m.id,
+        tipo: m.tipo,
+        monto: Number(m.monto),
+        metodo_pago: m.metodoPago ?? "efectivo",
+        caja_id: m.cajaId,
+      })),
+    }
+  } catch (e) {
+    console.error("[getCancelacionSummary]", e)
+    return { total: 0, movements: [], error: "Error inesperado" }
   }
 }
-export async function reactivarReingreso(
-  ...args: Parameters<LegacyRepairsModule["reactivarReingreso"]>
-) {
+
+export async function cancelarReparacion(repairId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const legacyRepairs = await getLegacyRepairsModule()
-    return await legacyRepairs.reactivarReingreso(...args)
-  } catch (error) {
-    return getLegacyUnavailableResponse(error)
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    if (!tenantId) return { success: false, error: "Sin sesion activa." }
+
+    const repair = await prisma.reparacion.findFirst({
+      where: { id: repairId, tenantId },
+      select: { id: true, estado: true, folio: true },
+    })
+    if (!repair) return { success: false, error: "Reparacion no encontrada." }
+
+    const TERMINAL = ["Cancelado", "Sin Reparacion", "Entregado"]
+    if (TERMINAL.includes(repair.estado)) {
+      return { success: false, error: `No se puede cancelar una reparacion en estado "${repair.estado}".` }
+    }
+
+    const { movements } = await getCancelacionSummary(repairId)
+
+    if (movements.length > 0) {
+      const cajaOpen = await prisma.caja.findFirst({
+        where: { tenantId, estado: "abierta" },
+        orderBy: { fechaApertura: "desc" },
+        select: { id: true },
+      })
+      if (!cajaOpen) return { success: false, error: "No hay caja abierta. Abre caja en Punto de venta para registrar devoluciones." }
+
+      await prisma.movimientoCaja.createMany({
+        data: movements.map((m) => ({
+          tenantId,
+          cajaId: cajaOpen.id,
+          tipo: "devolucion_cancelacion",
+          monto: -Math.abs(Number(m.monto)),
+          metodoPago: m.metodo_pago,
+          referenciaId: repairId,
+          descripcion: `Devolucion por cancelacion de reparacion #${repair.folio}`,
+        })),
+      })
+    }
+
+    const gastosData = await prisma.gastoReparacion.findMany({
+      where: { reparacionId: repairId, tenantId, tipo: "refaccion", productoId: { not: null } },
+      select: { productoId: true },
+    })
+
+    for (const g of gastosData) {
+      if (g.productoId) {
+        await prisma.producto.update({
+          where: { id: g.productoId },
+          data: { stockActual: { increment: 1 } },
+        }).catch((err) => console.warn("[cancelarReparacion] stock restore skip:", err))
+      }
+    }
+
+    const result = await applyRepairStatusChange({
+      repairId,
+      estadoAnterior: repair.estado,
+      estadoNuevo: "Cancelado",
+      notaTecnica: "Reparacion cancelada con devolucion automatica.",
+    })
+
+    return result
+  } catch (e) {
+    console.error("[cancelarReparacion] fatal:", e)
+    return { success: false, error: "Error inesperado al cancelar la reparacion." }
   }
+}
+
+export async function reactivarReingreso(input: {
+  repairId: string
+  motivo: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!input.repairId) return { success: false, error: "ID de reparacion requerido." }
+    const motivo = input.motivo.trim()
+    if (!motivo) return { success: false, error: "El motivo del reingreso es obligatorio." }
+    if (motivo.length > 500) return { success: false, error: "El motivo no puede superar 500 caracteres." }
+
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+
+    const repair = await prisma.reparacion.findFirst({
+      where: { id: input.repairId, tenantId },
+      select: { id: true, estado: true, folio: true },
+    })
+    if (!repair) return { success: false, error: "No se encontro la reparacion o no tienes acceso." }
+    if (repair.estado !== "Entregado") {
+      return { success: false, error: `Solo se pueden reactivar reparaciones con estatus "Entregado". Estado actual: ${repair.estado}.` }
+    }
+
+    await prisma.reparacion.update({
+      where: { id: input.repairId },
+      data: { estado: "Reingreso" },
+    })
+
+    await logHistorial({
+      reparacionId: input.repairId,
+      tenantId,
+      tipo: "estado",
+      descripcion: `Estado: Entregado -> Reingreso`,
+      valorAnterior: "Entregado",
+      valorNuevo: "Reingreso",
+      nota: `Motivo: ${motivo}`,
+    })
+
+    return { success: true }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { success: false, error: msg || "Error inesperado al reactivar el reingreso." }
+  }
+}
+
+// ─── Tipo compartido para templates de impresión ─────────────────────────────
+
+export interface RepairPrintData {
+  id: string
+  folio: string
+  estado: string
+  fecha_creacion: string
+  fecha_entrega?: string | null
+  cliente_nombre: string
+  cliente_telefono: string
+  tecnico?: string | null
+  dispositivo_marca: string
+  dispositivo_modelo: string
+  tipo_equipo?: string | null
+  imei_serie?: string | null
+  color?: string | null
+  falla_reportada: string
+  precio_estimado?: number | null
+  anticipo?: number | null
+  costo_total?: number | null
+  restante?: number | null
+  notas_internas?: string | null
+  pin_contrasena?: string | null
+  fotos?: string[]
+  checklist_ingreso?: ChecklistIngreso | null
+  gastos: Array<{ descripcion: string; costo: number }>
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { forwardRef } from "react"
-import type { RepairPrintData } from "@/lib/actions/repairs"
+import type { RepairPrintData } from "@/lib/actions/repairs-prisma"
 
 interface TicketGarantiaTemplateProps {
   repair: RepairPrintData

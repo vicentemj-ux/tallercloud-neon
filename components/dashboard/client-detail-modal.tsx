@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Phone, Mail, Plus, ExternalLink, Inbox, Copy, Receipt } from "lucide-react"
 import { WhatsAppButton } from "./whatsapp-button"
 import type { ClientDetail } from "@/lib/actions/clients-prisma"
-import type { BitacoraRepair } from "@/lib/actions/repairs"
+import type { BitacoraRepair } from "@/lib/actions/repairs-prisma"
 
 interface ClientDetailModalProps {
   client: ClientDetail | null

@@ -1,4 +1,4 @@
-import type { CreateRepairInput } from "@/lib/actions/repairs"
+import type { CreateRepairInput } from "@/lib/actions/repairs-prisma"
 import {
   STORE_REPAIR_QUEUE,
   idbDeleteById,
