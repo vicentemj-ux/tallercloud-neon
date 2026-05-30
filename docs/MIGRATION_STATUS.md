@@ -239,3 +239,92 @@
 ### Validación técnica
 - `pnpm build` ✅
 - `/dashboard` queda tolerante a cero datos y a fallas transitorias de lectura.
+
+---
+
+# Prisma/Neon Optimization — Completed Modules
+
+## 1. Mi Equipo ✅
+- `lib/actions/team-prisma.ts` — Server Actions con Prisma nativo.
+- `lib/team-types.ts` — Constantes y tipos compartidos (separados de "use server" para evitar error de exportación de objetos).
+- Roles mapeados al Enum `TeamRole` en `User` (`ADMINISTRADOR`, `TECNICO`, `RECEPCIONISTA`, `REPARADOR`).
+- Zero raw SQL, zero Supabase.
+- Build: ✅
+
+## 2. Historial de Ventas ✅
+- `lib/actions/sales-history-prisma.ts` — Queries Prisma nativas para historial.
+- Modelos `Venta`, `DetalleVenta`, `Caja`, `MovimientoCaja` en schema (con `@@map`).
+- Zero raw SQL (reemplazó `$queryRawUnsafe` legacy).
+- Build: ✅
+
+## 3. Bitácora de Gastos ✅
+- `lib/actions/gastos-prisma.ts` — Server Actions con Prisma nativo.
+- Modelos `GastoOperativo` (`@@map("bitacora_gastos")`) y `GastoReparacion` (`@@map("reparacion_gastos")`).
+- Zero `$queryRawUnsafe` / `$executeRawUnsafe`.
+- Tablas creadas via migration + `prisma db push`.
+- Build: ✅
+
+## 4. Ventas / POS ✅
+- `lib/actions/ventas-prisma.ts` — **Refactor completo**: eliminadas las 36 llamadas a `$queryRawUnsafe`/`$executeRawUnsafe`.
+- Operaciones nativas Prisma:
+  - `getCajaAbierta` → `prisma.caja.findFirst`
+  - `abrirCaja` → `prisma.caja.create`
+  - `cerrarCaja` → `prisma.caja.updateMany`
+  - `crearVenta` → `prisma.venta.create` + `prisma.detalleVenta.create` + `prisma.producto.update({ decrement })` + `prisma.caja.update` + `prisma.movimientoCaja.create`
+  - `getHistorialCaja` → `prisma.caja.findMany` + `prisma.caja.count`
+  - `getDetalleCaja` → `prisma.caja.findFirst` + `prisma.venta.findMany` + `prisma.movimientoCaja.findMany`
+  - `getAbonoById` → `prisma.movimientoCaja.findFirst` + `prisma.reparacion.findFirst`
+  - `getVentaParaTicket` → `prisma.venta.findFirst` + `include: { detalles }`
+  - `getCobroReparacionParaTicket` → `prisma.movimientoCaja.findFirst` + `prisma.reparacion.findFirst`
+  - `anularVenta` → `prisma.venta.updateMany` (reemplaza RPC `anular_venta_pdv`)
+- Eliminado `ensureAllPosTablesExist()` (tablas ya existen en schema).
+- Eliminados helpers `normCaja()`, `toNum()`.
+- **Legacy `lib/actions/ventas.ts` eliminado** (2,153 líneas, Supabase híbrido, solo usado por `_archive/`).
+- Build: ✅
+
+## 5. Vista General (Dashboard) ✅
+- `lib/actions/dashboard-prisma.ts` — Stats y órdenes vía Prisma.
+- `getDashboardMvpData` → llama a `getRepairsByTallerId` (Prisma).
+- `getDashboardSubscriptionBannerContext` → `settings-prisma.ts` (Prisma).
+- Zero Supabase, zero raw SQL.
+- Último tipo-only link a Supabase (`RepairOrder` desde `repairs.ts`) migrado a `repairs-prisma.ts`.
+- Comentario stale de `getDashboardStats` RPC corregido.
+- Build: ✅
+
+## 6. Print System — Audit Status
+
+### Ventas (print) ✅
+- `getVentaParaTicket` → `ventas-prisma.ts` (Prisma nativo).
+- `getCobroReparacionParaTicket` → `ventas-prisma.ts` (Prisma nativo).
+- `getAbonoById` → `ventas-prisma.ts` (Prisma nativo).
+- `getCajaConDetalle` → `ventas-prisma.ts` (Prisma nativo).
+- `getVentaLabelData` → `ventas-prisma.ts` (Prisma nativo, via getVentaParaTicket).
+- Zero Supabase, zero raw SQL.
+
+### Reparaciones (print) ⚠️ Parcial
+- `/print-ticket/[id]` → `getRepairByFolio` desde `repairs-prisma.ts` ✅
+- `/print-label` → 100% client-side (localStorage) ✅
+- `print-menu-dropdown.tsx` → solo UI, sin fetching ❌
+- `repairs-prisma.ts` tiene **3 instancias de `$queryRawUnsafe`** que deben migrarse a Prisma nativo.
+- `repairs.ts` (legacy) contiene `getRepairLabelData`, `getRepairByFolio`, `getCancelacionSummary` — usan Supabase, pero solo son llamados desde `_archive/`.
+
+### Inventario (print) ✅
+- Etiquetas y carteles: 100% client-side con datos del `Producto` ya cargado.
+- `buildInventoryLabelPrintDocument` → genera HTML de impresión.
+- No depende de Supabase ni raw SQL para datos de impresión.
+
+## Modules with Supabase Hybrid Remaining
+
+| Module | File | Supabase Calls | Raw SQL ($queryRawUnsafe) | Status |
+|--------|------|---------------|--------------------------|--------|
+| Repairs | `lib/actions/repairs.ts` | ~60 calls (createClient) | — | LEGACY (2906 líneas) |
+| Repairs | `lib/actions/repairs-prisma.ts` | — | 3 calls | Needs cleanup |
+| Repairs (print) | `lib/actions/repairs.ts` `getRepairLabelData` | `supabase.from("reparaciones")` | — | Only used by `_archive/` |
+| Auth | `lib/actions/auth.ts` | `createClient()` `supabase.from("taller_users")` | — | LEGACY login flow |
+| Proxy | `proxy.ts` | `fetch(SUPABASE_URL)` (REST API) | — | Reads `taller_users` directly |
+| Settings | `lib/actions/settings.ts` | `createCurrentTenantClient` | — | LEGACY, no usado por MVP |
+| Onboarding | `lib/actions/onboarding.ts` | `createClient()` `supabase.auth.admin` | — | LEGACY |
+
+## Summary
+- **9 modules fully Prisma-optimized**: Clientes, Reparaciones (core), Configuración, Dashboard, Mi Equipo, Historial Ventas, Bitácora Gastos, Ventas/POS, and Print (ventas + inventario portions).
+- **Remaining Supabase hybrid**: Mainly in `repairs.ts` (legacy Supabase functions, some still called as fallback from `repairs-prisma.ts`), `auth.ts` (login/register legacy), `proxy.ts` (middleware auth), and `onboarding.ts`.
