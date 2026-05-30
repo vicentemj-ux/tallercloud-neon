@@ -51,40 +51,34 @@ export async function getComprasUsadas(): Promise<{ data: CompraUsadaRow[]; erro
   try {
     const prisma = getPrismaClient()
     const tallerId = await getCurrentTallerId()
-    const rows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>(
-      `SELECT id, folio, equipo_tipo, marca, modelo, imei_serie, capacidad, condicion, color, costo_compra, proveedor_nombre, fecha_compra, notas, created_at
-       FROM compras_usadas
-       WHERE taller_id = $1
-       ORDER BY created_at DESC
-       LIMIT 300`,
-      tallerId,
-    )
+    const rows = await prisma.compraUsada.findMany({
+      where: { tenantId: tallerId },
+      orderBy: { createdAt: "desc" },
+      take: 300,
+    })
 
     return {
-      data: rows.map((r) => {
-        const notas = r.notas == null ? null : String(r.notas)
-        return {
-          id: String(r.id),
-          folio: String(r.folio ?? ""),
-          equipo_tipo: String(r.equipo_tipo ?? ""),
-          marca: String(r.marca ?? ""),
-          modelo: String(r.modelo ?? ""),
-          imei_serie: r.imei_serie == null ? null : String(r.imei_serie),
-          capacidad: r.capacidad == null ? null : String(r.capacidad),
-          condicion: r.condicion == null ? null : String(r.condicion),
-          color: r.color == null ? null : String(r.color),
-          costo_compra: Number(r.costo_compra ?? 0),
-          monto: Number(r.costo_compra ?? 0),
-          vendedor: r.proveedor_nombre == null ? "-" : String(r.proveedor_nombre),
-          documento: extractTagValue(notas, "Documento"),
-          imei: r.imei_serie == null ? null : String(r.imei_serie),
-          fecha: String(r.fecha_compra ?? ""),
-          proveedor_nombre: r.proveedor_nombre == null ? null : String(r.proveedor_nombre),
-          fecha_compra: String(r.fecha_compra ?? ""),
-          notas,
-          created_at: String(r.created_at),
-        }
-      }),
+      data: rows.map((r) => ({
+        id: r.id,
+        folio: r.folio,
+        equipo_tipo: "dispositivo",
+        marca: r.marca,
+        modelo: r.modelo,
+        imei_serie: r.imei ?? r.serial,
+        capacidad: r.capacidad,
+        condicion: r.condicion,
+        color: r.color,
+        costo_compra: Number(r.monto),
+        monto: Number(r.monto),
+        vendedor: r.vendedor,
+        documento: r.documento,
+        imei: r.imei,
+        fecha: r.fecha.toISOString(),
+        proveedor_nombre: r.vendedor,
+        fecha_compra: r.fecha.toISOString(),
+        notas: r.observaciones,
+        created_at: r.createdAt.toISOString(),
+      })),
       error: null,
     }
   } catch (error) {
@@ -98,55 +92,59 @@ export async function registrarCompraUsado(input: CompraUsadoInput): Promise<{ s
     const tallerId = await getCurrentTallerId()
     const actor = await getCurrentActorDisplayName()
 
-    const c = await prisma.$queryRawUnsafe<Array<{ total: number }>>(
-      "SELECT COUNT(*)::int AS total FROM compras_usadas WHERE taller_id = $1",
-      tallerId,
-    )
-    const folio = `CU-${String((c[0]?.total ?? 0) + 1).padStart(5, "0")}`
+    const count = await prisma.compraUsada.count({
+      where: { tenantId: tallerId },
+    })
+    const folio = `CU-${String(count + 1).padStart(5, "0")}`
 
-    const imeiSerie = input.imei?.trim() || input.serial?.trim() || null
+    const telefono = input.telefono?.trim() || null
+    const observaciones = input.observaciones?.trim() || null
     const notasBase = [
       input.documento?.trim() ? `Documento: ${input.documento.trim()}` : null,
       input.telefono?.trim() ? `Telefono: ${input.telefono.trim()}` : null,
-      input.observaciones?.trim() ? `Observaciones: ${input.observaciones.trim()}` : null,
+      observaciones ? `Observaciones: ${observaciones}` : null,
     ]
       .filter((line): line is string => Boolean(line))
       .join(" | ")
 
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO compras_usadas (taller_id, folio, equipo_tipo, marca, modelo, imei_serie, capacidad, condicion, color, costo_compra, proveedor_nombre, fecha_compra, notas)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
-      tallerId,
-      folio,
-      "dispositivo",
-      input.marca,
-      input.modelo,
-      imeiSerie,
-      input.capacidad ?? null,
-      input.condicion ?? null,
-      input.color ?? null,
-      Number(input.monto),
-      input.vendedor?.trim() ?? null,
-      new Date().toISOString().slice(0, 10),
-      notasBase || null,
-    )
-
-    const cajaRows = await prisma.$queryRawUnsafe<Array<{ id: string }>>(
-      "SELECT id FROM caja WHERE taller_id = $1 AND estado = 'abierta' ORDER BY fecha_apertura DESC LIMIT 1",
-      tallerId,
-    )
-    const cajaId = cajaRows[0]?.id
-    if (cajaId) {
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO movimientos_caja (taller_id, caja_id, tipo, referencia_id, descripcion, monto, metodo_pago, fecha, vendedor_nombre)
-         VALUES ($1,$2,'compra_usado',$3,$4,$5,'efectivo',now(),$6)`,
-        tallerId,
-        cajaId,
+    await prisma.compraUsada.create({
+      data: {
+        tenantId: tallerId,
         folio,
-        `Compra usado ${input.marca} ${input.modelo}`,
-        -Math.abs(Number(input.monto)),
-        actor,
-      )
+        vendedor: input.vendedor.trim(),
+        documento: input.documento.trim(),
+        telefono,
+        marca: input.marca,
+        modelo: input.modelo,
+        serial: input.serial?.trim() || null,
+        imei: input.imei?.trim() || null,
+        capacidad: input.capacidad || null,
+        condicion: input.condicion || null,
+        color: input.color || null,
+        monto: input.monto,
+        observaciones: notasBase || null,
+        actorNombre: actor,
+      },
+    })
+
+    const cajaAbierta = await prisma.caja.findFirst({
+      where: { tenantId: tallerId, estado: "abierta" },
+      orderBy: { fechaApertura: "desc" },
+    })
+
+    if (cajaAbierta) {
+      await prisma.movimientoCaja.create({
+        data: {
+          tenantId: tallerId,
+          cajaId: cajaAbierta.id,
+          tipo: "compra_usado",
+          referenciaId: folio,
+          descripcion: `Compra usado ${input.marca} ${input.modelo}`,
+          monto: -Math.abs(input.monto),
+          metodoPago: "efectivo",
+          vendedorNombre: actor,
+        },
+      })
     }
 
     return { success: true, folio }

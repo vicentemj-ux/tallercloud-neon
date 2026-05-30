@@ -84,11 +84,11 @@
 | `app/api/sse/visitas/route.ts` | 76 | — | 🔴 API route (SSE) |
 | `app/api/alarms/hikvision/[tallerId]/route.ts` | ~200 | — | 🔴 API route |
 
-### Chat Taller ⏳ (Fase 5)
+### Chat Taller ✅ (Fase 5 completada)
 
 | Archivo Legacy | Líneas | Reemplazado por | Estado |
 |----------------|--------|----------------|--------|
-| `lib/actions/chat.ts` | 157 | `chat-prisma.ts` | ⏳ Pendiente |
+| `lib/actions/chat.ts` | 157 | `chat-prisma.ts` | ✅ Listo para borrar |
 
 ### Compras ⏳ (Fase 6)
 
@@ -155,7 +155,7 @@ Se eliminan solo cuando ningún archivo activo los importe:
 | ✅ Fase 2 — Utilidad | `utilidad.ts` | ~172 |
 | ✅ Fase 3 — Reportes | `reportes.ts` | ~311 |
 | ✅ Fase 4 — Visitas | `bitacora-visitas.ts` + API routes | ~600 |
-| ⏳ Fase 5 — Chat | `chat.ts` | ~157 |
+| ✅ Fase 5 — Chat | `chat.ts` | ~157 |
 | ⏳ Fase 6 — Compras | `compras.ts`, `compras-usado.ts` | ~847 |
 | 🧹 Post-migración | Support files + supabase clients | ~1800 |
 | **TOTAL** | **~20 archivos** | **~7900 líneas** |
