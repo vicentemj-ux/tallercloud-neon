@@ -35,8 +35,8 @@ const securityHeaders = [
 const nextConfig = {
   /** Requerido para build desktop (Tauri). Genera .next/standalone/ */
   output: 'standalone',
-  /** Binarios nativos (napi-rs): no empaquetar con Turbopack. */
-  serverExternalPackages: ["@resvg/resvg-js"],
+  /** Binarios nativos (napi-rs) + pg (util/types no disponible en bundler): no empaquetar con Turbopack. */
+  serverExternalPackages: ["@resvg/resvg-js", "pg"],
   typescript: {
     // ignoreBuildErrors eliminado como parte de la auditoría de seguridad.
     // Todos los errores de TypeScript deben corregirse antes de deploy.

@@ -1,76 +1,16 @@
+"use server"
+
 import bcrypt from "bcryptjs"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
+import { TEAM_ROLES, type EquipoMiembroRow, type EquipoOwnerRow, type RolOption } from "@/lib/team-types"
 
-// ── Catálogo de Roles de Equipo (constantes, no tabla) ───────────────────────
-
-/**
- * Roles predefinidos del equipo. Reemplaza la tabla `roles_taller` de Supabase.
- * Se mantienen como constantes en código para evitar queries innecesarias en serverless.
- */
-export const TEAM_ROLES: Array<{
-  id: string
-  nombre: string
-  slug: string
-  categoria: "estandar" | "especial"
-  teamRole: "ADMINISTRADOR" | "TECNICO" | "RECEPCIONISTA" | "REPARADOR"
-}> = [
-  {
-    id: "administrador",
-    nombre: "Administrador",
-    slug: "administrador",
-    categoria: "estandar",
-    teamRole: "ADMINISTRADOR",
-  },
-  {
-    id: "tecnico_estandar",
-    nombre: "Tecnico Estandar",
-    slug: "tecnico_estandar",
-    categoria: "estandar",
-    teamRole: "TECNICO",
-  },
-  {
-    id: "vendedor_recepcion",
-    nombre: "Vendedor / Recepcion",
-    slug: "vendedor_recepcion",
-    categoria: "estandar",
-    teamRole: "RECEPCIONISTA",
-  },
-  {
-    id: "reparador",
-    nombre: "Reparador",
-    slug: "reparador",
-    categoria: "especial",
-    teamRole: "REPARADOR",
-  },
-]
+// Re-export for convenience
+export { TEAM_ROLES }
+export type { EquipoMiembroRow, EquipoOwnerRow, RolOption }
 
 const MVP_LIMIT = 5
 const MVP_LIMIT_MSG = `Has alcanzado el limite de ${MVP_LIMIT} usuarios para la fase MVP. Contacta a soporte para mas detalles.`
-
-// ─── Tipos de respuesta ───────────────────────────────────────────────────────
-
-export interface EquipoMiembroRow {
-  id: string
-  nombre: string
-  email: string
-  activo: boolean
-  rolId: string
-  rolNombre: string
-}
-
-export interface EquipoOwnerRow {
-  nombre: string
-  email: string
-  nombreTaller: string
-}
-
-export interface RolOption {
-  id: string
-  nombre: string
-  slug?: string
-  categoria?: "estandar" | "especial"
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -100,7 +40,6 @@ export async function getEquipoPageData(): Promise<{
   roles: RolOption[]
   error: string | null
 }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -184,7 +123,6 @@ export async function createMiembro(input: {
   password: string
   rolId: string
 }): Promise<{ success: boolean; error?: string }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -265,7 +203,6 @@ export async function updateMiembro(input: {
   rolId: string
   password?: string
 }): Promise<{ success: boolean; error?: string }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -331,7 +268,6 @@ export async function updateMiembro(input: {
  * No elimina el registro para mantener integridad referencial con reparaciones asignadas.
  */
 export async function deleteMiembro(miembroId: string): Promise<{ success: boolean; error?: string }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -369,7 +305,6 @@ export async function deleteMiembro(miembroId: string): Promise<{ success: boole
  * Suspender o reactivar un miembro (toggle activo).
  */
 export async function toggleMiembroActivo(miembroId: string): Promise<{ success: boolean; activo?: boolean; error?: string }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -420,7 +355,6 @@ export async function getAssignableStaff(): Promise<{
   staff: Array<{ id: string; nombre: string; role: string }>
   error: string | null
 }> {
-  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
