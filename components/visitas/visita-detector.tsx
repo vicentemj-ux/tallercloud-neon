@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import { getCamaraConfig } from "@/lib/actions/bitacora-visitas"
+import { getCamaraConfig } from "@/lib/actions/bitacora-visitas-prisma"
 import { useWebcamPolling } from "@/hooks/use-webcam-polling"
 import { useVisitasSSE } from "@/hooks/use-visitas-sse"
 import { VisitaToast } from "./visita-toast"
 import { EncuestaVisitaModal } from "./encuesta-visita-modal"
-import type { BitacoraVisita } from "@/lib/actions/bitacora-visitas"
+import type { BitacoraVisita } from "@/lib/actions/bitacora-visitas-prisma"
 
 function getTallerIdFromCookie(): string | null {
   if (typeof document === "undefined") return null

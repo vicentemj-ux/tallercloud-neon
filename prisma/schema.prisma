@@ -76,6 +76,7 @@ model Tenant {
   movimientosCaja    MovimientoCaja[]
   gastosOperativos   GastoOperativo[]
   gastosReparacion   GastoReparacion[]
+  visitas            Visita[]
 }
 
 model User {
@@ -288,6 +289,7 @@ model ConfiguracionTaller {
   facebook             String?
   instagram            String?
   tiktok               String?
+  camaraConfig         Json?    @map("camara_config")
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
@@ -508,6 +510,32 @@ model CatalogoServicio {
 
   @@map("catalogo_servicios")
   @@index([tenantId])
+}
+
+model Visita {
+  id                String    @id @default(cuid())
+  tenantId          String    @map("taller_id")
+  fechaLlegada      DateTime  @default(now()) @map("fecha_hora_entrada")
+  fechaSalida       DateTime? @map("fecha_hora_salida")
+  fotoEntradaUrl    String?   @map("foto_entrada_url")
+  fotoSalidaUrl     String?   @map("foto_salida_url")
+  camaraIp          String?   @map("camara_ip")
+  eventoTipo        String?   @default("manual") @map("evento_tipo")
+  motivo            String?   @map("motivo_visita")
+  motivoOtro        String?   @map("motivo_otro")
+  estado            String    @default("pendiente") @map("estado_atencion")
+  reparacionFolio   String?   @map("reparacion_folio")
+  ventaFolio        String?   @map("venta_folio")
+  atendidoPor       String?   @map("atendido_por")
+  notas             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("bitacora_visitas")
+  @@index([tenantId])
+  @@index([tenantId, fechaLlegada])
 }
 
 model ReparacionServicio {

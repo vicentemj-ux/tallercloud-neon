@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getVisitas, type BitacoraVisita } from "@/lib/actions/bitacora-visitas"
+import { getVisitas, type BitacoraVisita } from "@/lib/actions/bitacora-visitas-prisma"
 import { getMotivoLabel } from "@/lib/utils/visitas"
 
 function fmtDate(iso: string) {

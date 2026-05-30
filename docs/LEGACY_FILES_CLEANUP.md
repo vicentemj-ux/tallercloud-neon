@@ -69,11 +69,11 @@
 |----------------|--------|----------------|--------|
 | `lib/actions/utilidad.ts` | 172 | `utilidad-prisma.ts` | ✅ Listo para borrar |
 
-### Reportes ⏳ (Fase 3)
+### Reportes ✅ (Fase 3 completada)
 
 | Archivo Legacy | Líneas | Reemplazado por | Estado |
 |----------------|--------|----------------|--------|
-| `lib/actions/reportes.ts` | 311 | `reportes-prisma.ts` | ⏳ Pendiente |
+| `lib/actions/reportes.ts` | 311 | `reportes-prisma.ts` | ✅ Listo para borrar |
 
 ### Bitácora de Visitas ⏳ (Fase 4)
 
@@ -152,8 +152,8 @@ Se eliminan solo cuando ningún archivo activo los importe:
 | Fase | Archivos a eliminar | Líneas totales |
 |------|--------------------|---------------|
 | ✅ Core ya completados | `repairs.ts`, `gastos.ts`, `clients.ts`, `settings.ts`, `servicios.ts` | ~3989 |
-| 🔄 Fase 2 — Utilidad | `utilidad.ts` | ~172 |
-| ⏳ Fase 3 — Reportes | `reportes.ts` | ~311 |
+| ✅ Fase 2 — Utilidad | `utilidad.ts` | ~172 |
+| ✅ Fase 3 — Reportes | `reportes.ts` | ~311 |
 | ⏳ Fase 4 — Visitas | `bitacora-visitas.ts` + API routes | ~600 |
 | ⏳ Fase 5 — Chat | `chat.ts` | ~157 |
 | ⏳ Fase 6 — Compras | `compras.ts`, `compras-usado.ts` | ~847 |

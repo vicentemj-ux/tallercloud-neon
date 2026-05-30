@@ -2,7 +2,7 @@
 
 import { X, Camera } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { BitacoraVisita } from "@/lib/actions/bitacora-visitas"
+import type { BitacoraVisita } from "@/lib/actions/bitacora-visitas-prisma"
 
 interface VisitaToastProps {
   visita: BitacoraVisita

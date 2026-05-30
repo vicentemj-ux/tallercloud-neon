@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { X, CheckCircle2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { responderEncuestaVisita } from "@/lib/actions/bitacora-visitas"
+import { responderEncuestaVisita } from "@/lib/actions/bitacora-visitas-prisma"
 import type { MotivoVisita } from "@/lib/utils/visitas"
 import { toast } from "@/hooks/use-toast"
 
