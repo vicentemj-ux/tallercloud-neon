@@ -32,15 +32,17 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Pencil, Plus, Trash2, Users, X } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import type { RolOption } from "@/lib/actions/team-prisma"
 import {
   createMiembro,
   deleteMiembro,
   getEquipoPageData,
-  type EquipoMiembroRow,
-  type EquipoOwnerRow,
   updateMiembro,
 } from "@/lib/actions/team-prisma"
+import type {
+  RolOption,
+  EquipoMiembroRow,
+  EquipoOwnerRow,
+} from "@/lib/team-types"
 
 type MemberCard = {
   key: string

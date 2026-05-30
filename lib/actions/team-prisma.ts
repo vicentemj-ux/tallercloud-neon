@@ -5,9 +5,6 @@ import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
 import { TEAM_ROLES, type EquipoMiembroRow, type EquipoOwnerRow, type RolOption } from "@/lib/team-types"
 
-// Re-export types for convenience (objects must be imported from team-types.ts directly)
-export type { EquipoMiembroRow, EquipoOwnerRow, RolOption }
-
 const MVP_LIMIT = 5
 const MVP_LIMIT_MSG = `Has alcanzado el limite de ${MVP_LIMIT} usuarios para la fase MVP. Contacta a soporte para mas detalles.`
 
