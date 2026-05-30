@@ -90,12 +90,13 @@
 |----------------|--------|----------------|--------|
 | `lib/actions/chat.ts` | 157 | `chat-prisma.ts` | ✅ Listo para borrar |
 
-### Compras ⏳ (Fase 6)
+### Compras ✅ (Fase 6 completada)
 
 | Archivo Legacy | Líneas | Reemplazado por | Estado |
 |----------------|--------|----------------|--------|
-| `lib/actions/compras.ts` | 705 | `compras-prisma.ts` | ⏳ Pendiente |
-| `lib/actions/compras-usado.ts` | 142 | `compras-usado-prisma.ts` | ⏳ Pendiente |
+| `lib/actions/compras.ts` | 705 | `compras-prisma.ts` | ✅ Listo para borrar |
+| `lib/actions/compras-usado.ts` | 142 | `compras-usado-prisma.ts` | ✅ Listo para borrar |
+| *(compras-prisma.ts raw SQL)* | 521 | reescrito sin raw SQL | ✅ |
 
 ### Mercado ⏳ (Fase 7)
 
@@ -156,6 +157,6 @@ Se eliminan solo cuando ningún archivo activo los importe:
 | ✅ Fase 3 — Reportes | `reportes.ts` | ~311 |
 | ✅ Fase 4 — Visitas | `bitacora-visitas.ts` + API routes | ~600 |
 | ✅ Fase 5 — Chat | `chat.ts` | ~157 |
-| ⏳ Fase 6 — Compras | `compras.ts`, `compras-usado.ts` | ~847 |
+| ✅ Fase 6 — Compras | `compras.ts`, `compras-usado.ts` | ~847 |
 | 🧹 Post-migración | Support files + supabase clients | ~1800 |
 | **TOTAL** | **~20 archivos** | **~7900 líneas** |
