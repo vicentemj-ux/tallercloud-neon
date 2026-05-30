@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 import { forwardRef } from "react"
 const QRCodeSVG = dynamic(() => import("qrcode.react").then(m => m.QRCodeSVG), { ssr: false })
-import type { RepairPrintData } from "@/lib/actions/repairs"
+import type { RepairPrintData } from "@/lib/actions/repairs-prisma"
 
 interface TicketDocumentoTemplateProps {
   repair: RepairPrintData

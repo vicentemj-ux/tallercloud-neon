@@ -6,6 +6,7 @@ import { ReceiptTicket, type ReceiptData } from "@/components/dashboard/receipt-
 import { getRepairByFolio } from "@/lib/actions/repairs-prisma"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { getServiciosReparacion } from "@/lib/actions/servicios-prisma"
+import { getAjustesTallerFlujoPro } from "@/lib/actions/flujo-pro"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
 import { toast } from "@/hooks/use-toast"
 
@@ -36,9 +37,10 @@ export default function PrintTicketDynamicPage() {
 
     const load = async () => {
       try {
-        const [repResult, settingsResult] = await Promise.all([
+        const [repResult, settingsResult, flujoResult] = await Promise.all([
           getRepairByFolio(decodeURIComponent(id)),
           getTallerSettings(),
+          getAjustesTallerFlujoPro().catch(() => ({ ajustes: { health_check_required: false } })),
         ])
 
         const svcResult = repResult.data?.id
@@ -80,7 +82,9 @@ export default function PrintTicketDynamicPage() {
           }))
         )
 
-        setShowHealthCheckFuncional(rep.checklistIngreso != null)
+        setShowHealthCheckFuncional(
+          flujoResult.ajustes.health_check_required === true && rep.checklistIngreso != null
+        )
 
         setBusiness({
           name: cfg?.nombre_taller || "Mi Taller",
@@ -161,7 +165,7 @@ export default function PrintTicketDynamicPage() {
   }
 
   return (
-    <div ref={ticketRef} className="print-ticket-only flex items-center justify-center bg-white p-4">
+    <div ref={ticketRef} className="print-ticket-only flex items-center justify-center bg-white">
       <ReceiptTicket
         data={data}
         businessName={business.name}
