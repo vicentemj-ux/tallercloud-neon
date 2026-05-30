@@ -472,14 +472,7 @@ function ConfiguracionContent() {
           )}
 
           {/* ════ PESTANA HARDWARE ════════════════════════════════════════════ */}
-          {activeTab === "hardware" && (
-            <Hardware
-              settings={settings}
-              onSettingsUpdate={(patch) =>
-                setSettings((prev) => (prev ? { ...prev, ...patch } : prev))
-              }
-            />
-          )}
+          {activeTab === "hardware" && <Hardware />}
         </div>
       </div>
     </div>

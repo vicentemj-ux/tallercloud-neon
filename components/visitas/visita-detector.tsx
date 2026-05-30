@@ -57,6 +57,8 @@ export function VisitaDetector() {
         motivo_visita: null,
         motivo_otro: null,
         estado_atencion: "pendiente" as const,
+        cliente_nombre: null,
+        cliente_telefono: null,
         reparacion_folio: null,
         venta_folio: null,
         atendido_por: null,

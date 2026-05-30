@@ -1,18 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import { X, CheckCircle2, Loader2 } from "lucide-react"
+import {
+  X,
+  CheckCircle2,
+  Loader2,
+  Phone,
+  UserIcon,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { responderEncuestaVisita } from "@/lib/actions/bitacora-visitas-prisma"
 import type { MotivoVisita } from "@/lib/utils/visitas"
 import { toast } from "@/hooks/use-toast"
 
-const MOTIVOS: { value: MotivoVisita; label: string }[] = [
-  { value: "reparacion", label: "Reparacion / Diagnostico" },
+const QUICK_PURPOSES: { value: MotivoVisita; label: string }[] = [
   { value: "cotizacion", label: "Cotizacion" },
+  { value: "reparacion", label: "Seguimiento reparacion" },
+  { value: "personal", label: "Personal" },
+  { value: "venta", label: "Buscar equipo / accesorio" },
   { value: "compra", label: "Comprar producto" },
   { value: "recoger", label: "Recoger equipo" },
-  { value: "personal", label: "Personal del negocio" },
   { value: "otro", label: "Otro" },
 ]
 
@@ -34,6 +41,8 @@ export function EncuestaVisitaModal({
   const [motivo, setMotivo] = useState<MotivoVisita | null>(null)
   const [motivoOtro, setMotivoOtro] = useState("")
   const [notas, setNotas] = useState("")
+  const [clienteNombre, setClienteNombre] = useState("")
+  const [clienteTelefono, setClienteTelefono] = useState("")
   const [loading, setLoading] = useState(false)
 
   if (!open) return null
@@ -54,7 +63,9 @@ export function EncuestaVisitaModal({
       motivoVisita: motivo,
       motivoOtro: motivo === "otro" ? motivoOtro : undefined,
       notas: notas || undefined,
-      atendidoPor: "sistema", // Se puede mejorar con user real
+      atendidoPor: "sistema",
+      clienteNombre: clienteNombre.trim() || undefined,
+      clienteTelefono: clienteTelefono.trim() || undefined,
     })
     setLoading(false)
 
@@ -67,6 +78,8 @@ export function EncuestaVisitaModal({
     setMotivo(null)
     setMotivoOtro("")
     setNotas("")
+    setClienteNombre("")
+    setClienteTelefono("")
     onComplete()
   }
 
@@ -99,26 +112,20 @@ export function EncuestaVisitaModal({
             ¿Cual es el motivo de la visita?
           </h3>
 
-          <div className="space-y-1.5">
-            {MOTIVOS.map((m) => (
-              <label
+          <div className="grid grid-cols-2 gap-2">
+            {QUICK_PURPOSES.map((m) => (
+              <button
                 key={m.value}
-                className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-all ${
+                type="button"
+                onClick={() => setMotivo(m.value)}
+                className={`rounded-xl border px-3.5 py-3 text-xs font-bold transition-all ${
                   motivo === m.value
-                    ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                    : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                 }`}
               >
-                <input
-                  type="radio"
-                  name="motivo"
-                  value={m.value}
-                  checked={motivo === m.value}
-                  onChange={() => setMotivo(m.value)}
-                  className="h-4 w-4 text-blue-600 accent-blue-600"
-                />
-                <span className="text-xs font-bold text-slate-700">{m.label}</span>
-              </label>
+                {m.label}
+              </button>
             ))}
           </div>
 
@@ -131,6 +138,40 @@ export function EncuestaVisitaModal({
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
             />
           )}
+
+          {/* Cliente */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                Nombre del cliente
+              </label>
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={clienteNombre}
+                  onChange={(e) => setClienteNombre(e.target.value)}
+                  placeholder="Ej: Juan Perez"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                Telefono
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="tel"
+                  value={clienteTelefono}
+                  onChange={(e) => setClienteTelefono(e.target.value)}
+                  placeholder="Ej: 5512345678"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                />
+              </div>
+            </div>
+          </div>
 
           <textarea
             value={notas}

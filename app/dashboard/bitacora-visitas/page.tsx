@@ -1,23 +1,36 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   Camera,
   Calendar,
   Clock,
+  FileText,
   Loader2,
+  MoreHorizontal,
+  PlusCircle,
+  Phone,
   Search,
+  ShoppingBag,
   UserCheck,
+  UserIcon,
   UserX,
+  Wrench,
   X,
   XCircle,
   ZoomIn,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { getVisitas, type BitacoraVisita } from "@/lib/actions/bitacora-visitas-prisma"
-import { getMotivoLabel } from "@/lib/utils/visitas"
+import {
+  getVisitas,
+  registrarVisitaManual,
+  getCurrentTallerIdPublic,
+  type BitacoraVisita,
+} from "@/lib/actions/bitacora-visitas-prisma"
+import { getMotivoLabel, type MotivoVisita } from "@/lib/utils/visitas"
 
 function fmtDate(iso: string) {
   const d = new Date(iso)
@@ -52,6 +65,14 @@ function groupByDay(visitas: BitacoraVisita[]): Map<string, BitacoraVisita[]> {
   return map
 }
 
+const QUICK_PURPOSES: { value: MotivoVisita; label: string; icon: React.ReactNode }[] = [
+  { value: "cotizacion", label: "Cotizacion", icon: <FileText className="h-5 w-5" /> },
+  { value: "reparacion", label: "Seguimiento reparacion", icon: <Wrench className="h-5 w-5" /> },
+  { value: "personal", label: "Personal", icon: <UserIcon className="h-5 w-5" /> },
+  { value: "venta", label: "Buscar equipo / accesorio", icon: <ShoppingBag className="h-5 w-5" /> },
+  { value: "otro", label: "Otro", icon: <MoreHorizontal className="h-5 w-5" /> },
+]
+
 export default function BitacoraVisitasPage() {
   const router = useRouter()
   const [visitas, setVisitas] = useState<BitacoraVisita[]>([])
@@ -64,14 +85,14 @@ export default function BitacoraVisitasPage() {
   const [photoZoom, setPhotoZoom] = useState<string | null>(null)
 
   useEffect(() => {
-    const match = document.cookie.match(/tallerId=([^;]+)/)
-    const id = match ? decodeURIComponent(match[1]) : null
-    if (id) {
-      setTallerId(id)
-    } else {
-      setTallerIdError(true)
-      setLoading(false)
-    }
+    getCurrentTallerIdPublic().then((id) => {
+      if (id) {
+        setTallerId(id)
+      } else {
+        setTallerIdError(true)
+        setLoading(false)
+      }
+    })
     const hoy = toLocalDateStr(new Date())
     setDesde(hoy)
     setHasta(hoy)
@@ -137,6 +158,21 @@ export default function BitacoraVisitasPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              <RegistrarVisitaButton
+                tallerId={tallerId}
+                onRegistrada={() => {
+                  if (tallerId) {
+                    const estado = filter === "todos" ? undefined : filter
+                    void getVisitas({
+                      tallerId,
+                      estado,
+                      desde: desde ? `${desde}T00:00:00` : undefined,
+                      hasta: hasta ? `${hasta}T23:59:59` : undefined,
+                      limite: 500,
+                    }).then(({ data }) => setVisitas(data))
+                  }
+                }}
+              />
               <StatBadge label="Pendientes" value={stats.pendientes} color="red" />
               <StatBadge label="Atendidos" value={stats.atendidos} color="emerald" />
               <StatBadge label="Se fueron" value={stats.seFueron} color="slate" />
@@ -224,24 +260,14 @@ export default function BitacoraVisitasPage() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="border-b border-slate-100 bg-slate-50/30">
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Foto
-                        </th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Hora
-                        </th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Estado
-                        </th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Motivo
-                        </th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Atendido por
-                        </th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                          Vinculo
-                        </th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Foto</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Hora</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Estado</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Cliente</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Contacto</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Motivo</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Atendido por</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Vinculo</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -283,6 +309,26 @@ export default function BitacoraVisitasPage() {
                           </td>
                           <td className="px-5 py-3">
                             <EstadoBadge estado={v.estado_atencion} />
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="text-xs font-bold text-slate-700">
+                              {v.cliente_nombre || "-"}
+                            </div>
+                          </td>
+                          <td className="px-5 py-3">
+                            {v.cliente_telefono ? (
+                              <a
+                                href={`https://api.whatsapp.com/send?phone=${v.cliente_telefono}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                              >
+                                <Phone className="h-3 w-3" />
+                                {v.cliente_telefono}
+                              </a>
+                            ) : (
+                              <span className="text-xs text-slate-400">-</span>
+                            )}
                           </td>
                           <td className="px-5 py-3">
                             <div className="text-xs font-bold text-slate-700">
@@ -352,6 +398,219 @@ export default function BitacoraVisitasPage() {
   )
 }
 
+/* ─── Registrar Visita Button + Modal ─── */
+
+function RegistrarVisitaButton({
+  tallerId,
+  onRegistrada,
+}: {
+  tallerId: string | null
+  onRegistrada: () => void
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button
+        onClick={() => setOpen(true)}
+        disabled={!tallerId}
+        className="h-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-wider btn-glow"
+      >
+        <PlusCircle className="h-4 w-4" />
+        Registrar Visita
+      </Button>
+      {open && (
+        <RegistrarVisitaModal
+          onClose={() => setOpen(false)}
+          onRegistrada={() => {
+            setOpen(false)
+            onRegistrada()
+          }}
+        />
+      )}
+    </>
+  )
+}
+
+function RegistrarVisitaModal({
+  onClose,
+  onRegistrada,
+}: {
+  onClose: () => void
+  onRegistrada: () => void
+}) {
+  const [motivo, setMotivo] = useState<MotivoVisita | null>(null)
+  const [motivoOtro, setMotivoOtro] = useState("")
+  const [clienteNombre, setClienteNombre] = useState("")
+  const [clienteTelefono, setClienteTelefono] = useState("")
+  const [notas, setNotas] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  const handleSubmit = useCallback(async () => {
+    if (!motivo) {
+      toast.error("Selecciona un motivo de visita")
+      return
+    }
+    if (motivo === "otro" && !motivoOtro.trim()) {
+      toast.error("Especifica el motivo")
+      return
+    }
+
+    setSaving(true)
+    const { success, error, visita } = await registrarVisitaManual({
+      motivoVisita: motivo,
+      motivoOtro: motivo === "otro" ? motivoOtro : undefined,
+      notas: notas || undefined,
+      clienteNombre: clienteNombre.trim() || undefined,
+      clienteTelefono: clienteTelefono.trim() || undefined,
+    })
+    setSaving(false)
+
+    if (!success) {
+      toast.error(error || "Error al registrar visita")
+      return
+    }
+
+    toast(
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 rounded-xl bg-blue-100 flex items-center justify-center">
+          <Camera className="h-5 w-5 text-blue-600" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/90">Visita Registrada</p>
+          <p className="text-[11px] text-white/60 font-medium">
+            {getMotivoLabel(motivo)}
+            {clienteNombre ? ` - ${clienteNombre}` : ""}
+          </p>
+        </div>
+      </div>,
+      { duration: 4000 }
+    )
+
+    setMotivo(null)
+    setMotivoOtro("")
+    setClienteNombre("")
+    setClienteTelefono("")
+    setNotas("")
+    onRegistrada()
+  }, [motivo, motivoOtro, clienteNombre, clienteTelefono, notas, onRegistrada])
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+        {/* Header con placeholder */}
+        <div className="relative h-44 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2 text-white/80">
+            <Camera className="h-12 w-12" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Sin camara</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="absolute bottom-3 left-3 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+            NUEVA VISITA MANUAL
+          </div>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
+            Motivo de la visita
+          </h3>
+
+          {/* Quick-purpose buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            {QUICK_PURPOSES.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => setMotivo(p.value)}
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-3 text-xs font-bold transition-all ${
+                  motivo === p.value
+                    ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                }`}
+              >
+                <span className={motivo === p.value ? "text-blue-500" : "text-slate-400"}>{p.icon}</span>
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {motivo === "otro" && (
+            <input
+              type="text"
+              value={motivoOtro}
+              onChange={(e) => setMotivoOtro(e.target.value)}
+              placeholder="Especifica el motivo..."
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+            />
+          )}
+
+          {/* Cliente */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                Nombre del cliente
+              </label>
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={clienteNombre}
+                  onChange={(e) => setClienteNombre(e.target.value)}
+                  placeholder="Ej: Juan Perez"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                Telefono
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="tel"
+                  value={clienteTelefono}
+                  onChange={(e) => setClienteTelefono(e.target.value)}
+                  placeholder="Ej: 5512345678"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Notas */}
+          <textarea
+            value={notas}
+            onChange={(e) => setNotas(e.target.value)}
+            rows={2}
+            placeholder="Notas adicionales (opcional)..."
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+          />
+
+          <Button
+            onClick={() => void handleSubmit()}
+            disabled={saving}
+            className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-xs btn-glow"
+          >
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Registrar Visita"
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Estado Badge ─── */
+
 function EstadoBadge({ estado }: { estado: string }) {
   const map: Record<string, { text: string; icon: React.ReactNode; classes: string }> = {
     pendiente: {
@@ -387,6 +646,8 @@ function EstadoBadge({ estado }: { estado: string }) {
     </span>
   )
 }
+
+/* ─── Stat Badge ─── */
 
 function StatBadge({ label, value, color }: { label: string; value: number; color: "slate" | "red" | "emerald" }) {
   const colors = {

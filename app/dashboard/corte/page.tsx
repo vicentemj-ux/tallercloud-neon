@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getCajaConDetalle, cerrarCaja, getCajaAbierta } from "@/lib/actions/ventas-prisma"
+import { verificarVisitasPendientesCierre, getCurrentTallerIdPublic } from "@/lib/actions/bitacora-visitas-prisma"
 import type { CajaRow, CortePrintData } from "@/lib/actions/ventas-prisma"
 
 function fmt(n: number) {
@@ -30,9 +31,13 @@ export default function CortePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [fetching, setFetching] = useState(true)
+  const [tallerId, setTallerId] = useState<string | null>(null)
 
   useEffect(() => {
     async function init() {
+      const id = await getCurrentTallerIdPublic()
+      setTallerId(id)
+
       const { caja: c } = await getCajaAbierta()
       if (!c) {
         router.replace("/dashboard")
@@ -70,6 +75,16 @@ export default function CortePage() {
       setError("Ingresa el monto contado en caja para continuar")
       return
     }
+
+    // Bloquear si hay visitas pendientes desde la apertura de caja
+    if (tallerId) {
+      const { puedeCerrar, visitasPendientes } = await verificarVisitasPendientesCierre(tallerId, caja.fecha_apertura)
+      if (!puedeCerrar) {
+        setError(`No puedes cerrar caja: hay ${visitasPendientes} visita(s) pendiente(s) en la Bitacora de Visitas. Registra las atenciones antes de cerrar.`)
+        return
+      }
+    }
+
     setLoading(true)
     const { error: err } = await cerrarCaja(caja.id, val)
     setLoading(false)

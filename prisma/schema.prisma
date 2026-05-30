@@ -532,6 +532,8 @@ model Visita {
   ventaFolio        String?   @map("venta_folio")
   atendidoPor       String?   @map("atendido_por")
   notas             String?
+  clienteNombre     String?   @map("cliente_nombre")
+  clienteTelefono   String?   @map("cliente_telefono")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

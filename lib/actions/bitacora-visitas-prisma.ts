@@ -20,6 +20,8 @@ export interface BitacoraVisita {
   venta_folio: string | null
   atendido_por: string | null
   notas: string | null
+  cliente_nombre: string | null
+  cliente_telefono: string | null
   created_at: string
   updated_at: string
 }
@@ -28,6 +30,7 @@ export type MotivoVisita =
   | "reparacion"
   | "cotizacion"
   | "compra"
+  | "venta"
   | "recoger"
   | "personal"
   | "otro"
@@ -48,6 +51,8 @@ function mapVisita(v: {
   ventaFolio: string | null
   atendidoPor: string | null
   notas: string | null
+  clienteNombre: string | null
+  clienteTelefono: string | null
   createdAt: Date
   updatedAt: Date
 }): BitacoraVisita {
@@ -67,6 +72,8 @@ function mapVisita(v: {
     venta_folio: v.ventaFolio,
     atendido_por: v.atendidoPor,
     notas: v.notas,
+    cliente_nombre: v.clienteNombre,
+    cliente_telefono: v.clienteTelefono,
     created_at: v.createdAt.toISOString(),
     updated_at: v.updatedAt.toISOString(),
   }
@@ -127,6 +134,8 @@ export async function responderEncuestaVisita(params: {
   atendidoPor: string
   reparacionFolio?: string
   ventaFolio?: string
+  clienteNombre?: string
+  clienteTelefono?: string
 }): Promise<{ success: boolean; error: string | null }> {
   try {
     const prisma = getPrismaClient()
@@ -140,6 +149,8 @@ export async function responderEncuestaVisita(params: {
         notas: params.notas || null,
         reparacionFolio: params.reparacionFolio || null,
         ventaFolio: params.ventaFolio || null,
+        clienteNombre: params.clienteNombre || null,
+        clienteTelefono: params.clienteTelefono || null,
       },
     })
 
@@ -196,6 +207,47 @@ export async function verificarVisitasPendientesCierre(
     }
   } catch (e) {
     return { puedeCerrar: false, visitasPendientes: 0, error: e instanceof Error ? e.message : "Error al verificar visitas pendientes" }
+  }
+}
+
+export async function getCurrentTallerIdPublic(): Promise<string | null> {
+  try {
+    const tenant = await getCurrentTenant()
+    return tenant?.id ?? null
+  } catch {
+    return null
+  }
+}
+
+export async function registrarVisitaManual(params: {
+  motivoVisita: string
+  motivoOtro?: string
+  notas?: string
+  clienteNombre?: string
+  clienteTelefono?: string
+}): Promise<{ success: boolean; error: string | null; visita: BitacoraVisita | null }> {
+  try {
+    const tenant = await getCurrentTenant()
+    if (!tenant?.id) return { success: false, error: "Sesion invalida", visita: null }
+
+    const prisma = getPrismaClient()
+    const created = await prisma.visita.create({
+      data: {
+        tenantId: tenant.id,
+        eventoTipo: "manual",
+        estado: "pendiente",
+        motivo: params.motivoVisita,
+        motivoOtro: params.motivoOtro || null,
+        notas: params.notas || null,
+        clienteNombre: params.clienteNombre || null,
+        clienteTelefono: params.clienteTelefono || null,
+      },
+    })
+
+    revalidatePath("/dashboard")
+    return { success: true, error: null, visita: mapVisita(created) }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Error al registrar visita", visita: null }
   }
 }
 

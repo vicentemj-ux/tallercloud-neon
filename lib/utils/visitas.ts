@@ -8,14 +8,16 @@ export type MotivoVisita =
   | "reparacion"
   | "cotizacion"
   | "compra"
+  | "venta"
   | "recoger"
   | "personal"
   | "otro"
 
 const MOTIVO_LABELS: Record<MotivoVisita, string> = {
-  reparacion: "Reparacion / Diagnostico",
+  reparacion: "Seguimiento de reparacion",
   cotizacion: "Cotizacion",
   compra: "Comprar producto",
+  venta: "Buscar equipo / accesorio",
   recoger: "Recoger equipo",
   personal: "Personal del negocio",
   otro: "Otro",
