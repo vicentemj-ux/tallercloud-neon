@@ -105,6 +105,7 @@ export async function getEquipoPageData(): Promise<{
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
+    console.log("[getEquipoPageData] tenantId:", tenantId)
 
     // Query única: owner + miembros en paralelo via include
     const tenant = await prisma.tenant.findUnique({
@@ -118,6 +119,7 @@ export async function getEquipoPageData(): Promise<{
         },
       },
     })
+    console.log("[getEquipoPageData] tenant found:", !!tenant, "users count:", tenant?.users?.length ?? 0)
 
     if (!tenant) {
       return { owner: null, miembros: [], roles: [], error: "No se pudo cargar el taller." }
@@ -158,12 +160,17 @@ export async function getEquipoPageData(): Promise<{
 
     return { owner, miembros, roles, error: null }
   } catch (error) {
+    // Don't catch Next.js redirect errors
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error
+    }
     console.error("[getEquipoPageData] fatal:", error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
     return {
       owner: null,
       miembros: [],
       roles: [],
-      error: "Mi Equipo no esta disponible temporalmente. Verifica la configuracion del servidor.",
+      error: `Error: ${errorMessage}`,
     }
   }
 }
