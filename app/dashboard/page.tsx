@@ -12,8 +12,7 @@ import Link from "next/link"
 export const dynamic = "force-dynamic"
 
 /**
- * Metricas (`getDashboardStats`) vienen de la RPC sobre **reparaciones / ventas / caja**, no de la tabla `productos`.
- * El inventario vive en **`productos`**; no existe tabla `inventario` en el esquema usado por la app.
+ * Metricas via `getDashboardMvpData` (Prisma/Neon nativo). No existe tabla `inventario`.
  */
 export default async function DashboardPage() {
   let dashboardData: Awaited<ReturnType<typeof getDashboardMvpData>>

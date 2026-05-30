@@ -32,7 +32,7 @@ import {
   Monitor,
   Projector,
 } from "lucide-react"
-import type { RepairOrder } from "@/lib/actions/repairs"
+import type { RepairOrder } from "@/lib/actions/repairs-prisma"
 
 // ─── Re-export Order as alias for RepairOrder ──────────────────────────────
 export type Order = RepairOrder
