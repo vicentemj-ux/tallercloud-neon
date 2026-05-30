@@ -9,7 +9,7 @@ import { ChatHeader } from '@/components/dashboard/chat/chat-header'
 import { MessageList } from '@/components/dashboard/chat/message-list'
 import { ChatInput } from '@/components/dashboard/chat/chat-input'
 import type { ChatMember, ChatUser, WorkshopMessage } from '@/components/dashboard/chat/types'
-import { getChatCurrentUser, getChatMembers, getWorkshopMessages, sendWorkshopMessage } from '@/lib/actions/chat'
+import { getChatCurrentUser, getChatMembers, getWorkshopMessages, sendWorkshopMessage } from '@/lib/actions/chat-prisma'
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<WorkshopMessage[]>([])

@@ -75,11 +75,11 @@
 |----------------|--------|----------------|--------|
 | `lib/actions/reportes.ts` | 311 | `reportes-prisma.ts` | ✅ Listo para borrar |
 
-### Bitácora de Visitas ⏳ (Fase 4)
+### Bitácora de Visitas ✅ (Fase 4 completada)
 
 | Archivo Legacy | Líneas | Reemplazado por | Estado |
 |----------------|--------|----------------|--------|
-| `lib/actions/bitacora-visitas.ts` | 231 | `bitacora-visitas-prisma.ts` | ⏳ Pendiente |
+| `lib/actions/bitacora-visitas.ts` | 231 | `bitacora-visitas-prisma.ts` | ✅ Listo para borrar |
 | `app/api/visitas/detect/route.ts` | 88 | — | 🔴 API route |
 | `app/api/sse/visitas/route.ts` | 76 | — | 🔴 API route (SSE) |
 | `app/api/alarms/hikvision/[tallerId]/route.ts` | ~200 | — | 🔴 API route |
@@ -154,7 +154,7 @@ Se eliminan solo cuando ningún archivo activo los importe:
 | ✅ Core ya completados | `repairs.ts`, `gastos.ts`, `clients.ts`, `settings.ts`, `servicios.ts` | ~3989 |
 | ✅ Fase 2 — Utilidad | `utilidad.ts` | ~172 |
 | ✅ Fase 3 — Reportes | `reportes.ts` | ~311 |
-| ⏳ Fase 4 — Visitas | `bitacora-visitas.ts` + API routes | ~600 |
+| ✅ Fase 4 — Visitas | `bitacora-visitas.ts` + API routes | ~600 |
 | ⏳ Fase 5 — Chat | `chat.ts` | ~157 |
 | ⏳ Fase 6 — Compras | `compras.ts`, `compras-usado.ts` | ~847 |
 | 🧹 Post-migración | Support files + supabase clients | ~1800 |

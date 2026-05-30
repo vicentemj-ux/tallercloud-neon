@@ -77,6 +77,7 @@ model Tenant {
   gastosOperativos   GastoOperativo[]
   gastosReparacion   GastoReparacion[]
   visitas            Visita[]
+  workshopMessages   WorkshopMessage[]
 }
 
 model User {
@@ -554,4 +555,20 @@ model ReparacionServicio {
   @@map("reparacion_servicios")
   @@index([tenantId])
   @@index([reparacionId])
+}
+
+model WorkshopMessage {
+  id         String   @id @default(cuid())
+  tenantId   String   @map("taller_id")
+  senderId   String?  @map("sender_id")
+  senderName String   @default("Tecnico") @map("sender_name")
+  content    String
+  recipientId String? @map("recipient_id")
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("workshop_messages")
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
 }
