@@ -13,7 +13,7 @@ import {
   type HistorialTipoFiltro,
   type HistorialVentaRow,
   type HistorialVentasTotales,
-} from "@/lib/actions/historial-ventas"
+} from "@/lib/actions/sales-history-prisma"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { HistorialVentaRowCard } from "@/components/dashboard/historial-ventas/HistorialVentaRowCard"
 import { ReporteVentasPeriodoLetter } from "@/components/dashboard/historial-ventas/ReporteVentasPeriodoLetter"

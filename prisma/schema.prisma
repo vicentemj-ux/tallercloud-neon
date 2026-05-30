@@ -69,6 +69,9 @@ model Tenant {
   configuracion      ConfiguracionTaller?
   productos          Producto[]
   historialReparaciones HistorialReparacion[]
+  ventas             Venta[]
+  cajas              Caja[]
+  movimientosCaja    MovimientoCaja[]
 }
 
 model User {
@@ -316,4 +319,122 @@ model Producto {
   @@map("productos")
   @@index([tenantId])
   @@index([tenantId, categoria])
+}
+
+/**
+ * Venta de mostrador (POS).
+ * Tabla legacy creada via raw SQL, nombre lowercase.
+ */
+model Venta {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("taller_id")
+  cajaId             String?  @map("caja_id")
+  folio              String
+  clienteNombre      String?  @map("cliente_nombre")
+  clienteId          String?  @map("cliente_id")
+  clienteTelefono    String?  @map("cliente_telefono")
+  total              Decimal  @default(0) @db.Decimal(12, 2)
+  descuento          Decimal  @default(0) @db.Decimal(12, 2)
+  metodoPago         String   @default("efectivo") @map("metodo_pago")
+  montoEfectivo      Decimal  @default(0) @db.Decimal(12, 2) @map("monto_efectivo")
+  montoTarjeta       Decimal  @default(0) @db.Decimal(12, 2) @map("monto_tarjeta")
+  montoTransferencia Decimal  @default(0) @db.Decimal(12, 2) @map("monto_transferencia")
+  cambio             Decimal  @default(0) @db.Decimal(12, 2)
+  estado             String   @default("activa")
+  vendedorNombre     String?  @map("vendedor_nombre")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  caja     Caja?         @relation(fields: [cajaId], references: [id])
+  detalles DetalleVenta[]
+
+  @@map("ventas")
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+  @@index([cajaId])
+}
+
+/**
+ * Linea individual dentro de una venta de mostrador.
+ */
+model DetalleVenta {
+  id             String   @id @default(cuid())
+  ventaId        String   @map("venta_id")
+  productoId     String?  @map("producto_id")
+  descripcion    String
+  cantidad       Int      @default(1)
+  precioUnitario Decimal  @db.Decimal(12, 2) @map("precio_unitario")
+  costoUnitario  Decimal  @default(0) @db.Decimal(12, 2) @map("costo_unitario")
+  subtotal       Decimal  @default(0) @db.Decimal(12, 2)
+  esEspecial     Boolean  @default(false) @map("es_especial")
+  imeiSerie      String?  @map("imei_serie")
+  color          String?
+  condicion      String?
+  marca          String?
+  modelo         String?
+  categoria      String?
+  procesador     String?
+  ram            String?
+  almacenamiento String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  venta Venta @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+
+  @@map("detalle_ventas")
+  @@index([ventaId])
+}
+
+/**
+ * Caja diaria (corte de caja).
+ * Tabla legacy creada via raw SQL, nombre lowercase.
+ */
+model Caja {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("taller_id")
+  montoInicial       Decimal  @default(0) @db.Decimal(12, 2) @map("monto_inicial")
+  montoCierre        Decimal? @db.Decimal(12, 2) @map("monto_cierre")
+  fechaApertura      DateTime @default(now()) @map("fecha_apertura")
+  fechaCierre        DateTime? @map("fecha_cierre")
+  estado             String   @default("abierta")
+  totalEfectivo      Decimal  @default(0) @db.Decimal(12, 2) @map("total_efectivo")
+  totalTarjeta       Decimal  @default(0) @db.Decimal(12, 2) @map("total_tarjeta")
+  totalTransferencia Decimal  @default(0) @db.Decimal(12, 2) @map("total_transferencia")
+  totalVentas        Int      @default(0) @map("total_ventas")
+  notaCierre         String?  @map("nota_cierre")
+  numeroCorte        Int?     @map("numero_corte")
+
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ventas      Venta[]
+  movimientos MovimientoCaja[]
+
+  @@map("caja")
+  @@index([tenantId])
+  @@index([tenantId, estado])
+}
+
+/**
+ * Movimiento de caja (ventas PDV, abonos reparaciones, gastos).
+ * Tabla legacy creada via raw SQL, nombre lowercase.
+ */
+model MovimientoCaja {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("taller_id")
+  cajaId         String?  @map("caja_id")
+  tipo           String
+  referenciaId   String?  @map("referencia_id")
+  descripcion    String?
+  monto          Decimal  @default(0) @db.Decimal(12, 2)
+  metodoPago     String?  @map("metodo_pago")
+  fecha          DateTime @default(now())
+  folio          String?
+  vendedorNombre String?  @map("vendedor_nombre")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  caja   Caja?  @relation(fields: [cajaId], references: [id], onDelete: SetNull)
+
+  @@map("movimientos_caja")
+  @@index([tenantId])
+  @@index([tenantId, fecha])
+  @@index([cajaId])
+  @@index([tipo])
 }

@@ -96,7 +96,7 @@ export async function addGastoTicket(input: AddGastoTicketInput): Promise<{ data
 
     const actor = await getCurrentActorDisplayName()
     const folioRows = await prisma.$queryRawUnsafe<Array<{ folio: string }>>(
-      "SELECT folio FROM reparaciones WHERE id = $1 AND taller_id = $2 LIMIT 1",
+      "SELECT folio FROM \"Reparacion\" WHERE id = $1 AND \"tenantId\" = $2 LIMIT 1",
       input.reparacion_id,
       tallerId,
     )

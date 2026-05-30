@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Printer, CreditCard, DollarSign, ShoppingBag, Store, TrendingUp, Trash2, Loader2 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import type { HistorialVentaRow } from "@/lib/actions/historial-ventas"
+import type { HistorialVentaRow } from "@/lib/actions/sales-history-prisma"
 import {
   getVentaParaTicket,
   getCobroReparacionParaTicket,

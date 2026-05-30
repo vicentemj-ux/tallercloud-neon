@@ -706,8 +706,8 @@ export async function getRepairDetail(repairId: string): Promise<{ data: RepairD
         creado_por_nombre: string | null
       }>>(
         `SELECT checklist_pro, creado_por_nombre
-         FROM reparaciones
-         WHERE id = $1 AND taller_id = $2
+         FROM "Reparacion"
+         WHERE id = $1 AND "tenantId" = $2
          LIMIT 1`,
         repairId,
         tenantId,

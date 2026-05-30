@@ -822,7 +822,7 @@ export async function getAbonoById(movimientoId: string): Promise<{ data: AbonoP
     const movRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT * FROM movimientos_caja WHERE id=$1 AND taller_id=$2 LIMIT 1", movimientoId, tallerId)
     const mov = movRows[0]
     if (!mov) return { data: null, error: "Movimiento no encontrado." }
-    const repRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT folio, cliente_nombre, cliente_telefono, marca, modelo, tipo_equipo, precio_estimado, anticipo FROM reparaciones WHERE id=$1 AND taller_id=$2 LIMIT 1", String(mov.referencia_id ?? ""), tallerId)
+    const repRows = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT r.folio, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, r.\"equipoMarca\" AS marca, r.\"equipoModelo\" AS modelo, r.\"tipoEquipo\" AS tipo_equipo, r.precio_estimado, r.anticipo FROM \"Reparacion\" r LEFT JOIN \"Cliente\" c ON r.\"clienteId\" = c.id WHERE r.id=$1 AND r.\"tenantId\"=$2 LIMIT 1", String(mov.referencia_id ?? ""), tallerId)
     const rep = repRows[0]
     if (!rep) return { data: null, error: "Reparacion no encontrada." }
 
@@ -961,7 +961,7 @@ export async function getCobroReparacionParaTicket(movimientoId: string): Promis
     let cliente = "-"
     const rid = m.referencia_id == null ? null : String(m.referencia_id)
     if (rid) {
-      const reps = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT folio, cliente_nombre FROM reparaciones WHERE id=$1 AND taller_id=$2 LIMIT 1", rid, tallerId)
+      const reps = await prisma.$queryRawUnsafe<Record<string, unknown>[]>("SELECT r.folio, c.nombre AS cliente_nombre FROM \"Reparacion\" r LEFT JOIN \"Cliente\" c ON r.\"clienteId\" = c.id WHERE r.id=$1 AND r.\"tenantId\"=$2 LIMIT 1", rid, tallerId)
       if (reps[0]) {
         folio = String(reps[0].folio ?? "-")
         cliente = String(reps[0].cliente_nombre ?? "-")

@@ -1,6 +1,6 @@
 "use client"
 
-import type { HistorialVentaRow, HistorialVentasTotales } from "@/lib/actions/historial-ventas"
+import type { HistorialVentaRow, HistorialVentasTotales } from "@/lib/actions/sales-history-prisma"
 import { getPublicAppHostname } from "@/lib/app-public"
 
 export interface ReporteVentasPeriodoLetterProps {
