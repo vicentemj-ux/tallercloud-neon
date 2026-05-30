@@ -190,6 +190,7 @@ model Reparacion {
   checklistIngreso Json?
   checklistPro  Json?      @map("checklist_pro")
   creadoPorNombre String?  @map("creado_por_nombre")
+  costoTotal   Decimal?  @db.Decimal(12, 2) @map("costo_total")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
