@@ -1838,8 +1838,9 @@ export function NuevaReparacionForm({
                 <SelectItem value="Desktop">Desktop</SelectItem>
                 <SelectItem value="Otro">Otro</SelectItem>
               </SelectContent>
-            </Select>
-          </div>
+                </Select>
+                <input type="hidden" name="color" value={colorValue} />
+              </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="brand">Marca</Label>
             <Input id="brand" name="brand" placeholder="Apple, Samsung, etc." />
@@ -1854,7 +1855,7 @@ export function NuevaReparacionForm({
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="color">Color</Label>
-            <Input id="color" name="color" placeholder="Color del dispositivo" />
+            <Input id="color" name="color" placeholder="Color del dispositivo" defaultValue={colorValue} />
           </div>
         </CardContent>
       </Card>
