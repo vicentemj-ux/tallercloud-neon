@@ -9,7 +9,7 @@ import {
   Clock, Package, Trophy, ShoppingCart, CreditCard, Banknote,
   ArrowLeftRight, Search, Printer, Share2,
 } from "lucide-react"
-import { getReportesData, type ReportesData } from "@/lib/actions/reportes"
+import { getReportesData, type ReportesData } from "@/lib/actions/reportes-prisma"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -63,11 +63,11 @@
 
 ## PRO MODULES
 
-### Control de Utilidad 🔄 (Fase 2)
+### Control de Utilidad ✅ (Fase 2 completada)
 
 | Archivo Legacy | Líneas | Reemplazado por | Estado |
 |----------------|--------|----------------|--------|
-| `lib/actions/utilidad.ts` | 172 | `utilidad-prisma.ts` | 🟡 En migración |
+| `lib/actions/utilidad.ts` | 172 | `utilidad-prisma.ts` | ✅ Listo para borrar |
 
 ### Reportes ⏳ (Fase 3)
 
