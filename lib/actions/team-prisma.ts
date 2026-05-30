@@ -5,8 +5,7 @@ import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
 import { TEAM_ROLES, type EquipoMiembroRow, type EquipoOwnerRow, type RolOption } from "@/lib/team-types"
 
-// Re-export for convenience
-export { TEAM_ROLES }
+// Re-export types for convenience (objects must be imported from team-types.ts directly)
 export type { EquipoMiembroRow, EquipoOwnerRow, RolOption }
 
 const MVP_LIMIT = 5
