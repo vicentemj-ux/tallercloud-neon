@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, Wrench } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { createServicio, updateServicio } from "@/lib/actions/servicios"
-import type { Servicio } from "@/lib/actions/servicios"
+import { createServicio, updateServicio } from "@/lib/actions/servicios-prisma"
+import type { Servicio } from "@/lib/actions/servicios-prisma"
 
 interface ServicioModalProps {
   open: boolean

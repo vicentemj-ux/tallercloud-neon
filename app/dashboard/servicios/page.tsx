@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Wrench, Plus, Search, Trash2, Pencil, Loader2, X } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { getServicios, deleteServicio } from "@/lib/actions/servicios"
-import type { Servicio } from "@/lib/actions/servicios"
+import { getServicios, deleteServicio } from "@/lib/actions/servicios-prisma"
+import type { Servicio } from "@/lib/actions/servicios-prisma"
 import { ServicioModal } from "@/components/dashboard/servicios/ServicioModal"
 
 function fmtMoney(n: number) {

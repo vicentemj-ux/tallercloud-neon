@@ -69,6 +69,8 @@ model Tenant {
   configuracion      ConfiguracionTaller?
   productos          Producto[]
   historialReparaciones HistorialReparacion[]
+  catalogoServicios      CatalogoServicio[]
+  serviciosReparacion    ReparacionServicio[]
   ventas             Venta[]
   cajas              Caja[]
   movimientosCaja    MovimientoCaja[]
@@ -196,6 +198,7 @@ model Reparacion {
   archivos Archivo[]
   historial HistorialReparacion[]
   gastosReparacion GastoReparacion[]
+  serviciosReparacion ReparacionServicio[]
 
   @@unique([tenantId, folio])
   @@index([tenantId])
@@ -489,4 +492,37 @@ model GastoReparacion {
   @@map("reparacion_gastos")
   @@index([tenantId])
   @@index([tenantId, reparacionId])
+}
+
+model CatalogoServicio {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("taller_id")
+  nombre      String
+  descripcion String   @default("")
+  precio      Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("catalogo_servicios")
+  @@index([tenantId])
+}
+
+model ReparacionServicio {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("taller_id")
+  reparacionId   String   @map("reparacion_id")
+  servicioId     String?  @map("servicio_id")
+  nombreSnapshot  String   @map("nombre_snapshot")
+  precioSnapshot  Decimal  @db.Decimal(10, 2) @map("precio_snapshot")
+  cantidad       Int      @default(1)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparacion Reparacion @relation(fields: [reparacionId], references: [id], onDelete: Cascade)
+
+  @@map("reparacion_servicios")
+  @@index([tenantId])
+  @@index([reparacionId])
 }
