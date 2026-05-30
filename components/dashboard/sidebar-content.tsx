@@ -34,6 +34,7 @@ import {
 import { useTallerNegocioNombre } from "@/lib/hooks/use-taller-negocio-nombre"
 import { logoutTaller } from "@/lib/actions/auth-prisma"
 import { PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
+import { checkIsPro } from "@/lib/actions/auth-prisma"
 import {
   DndContext,
   type DragEndEvent,
@@ -272,7 +273,7 @@ export function SidebarContent({ pathname, onNavigate }: { pathname: string; onN
       setIsUsuarioPro(false)
       return
     }
-    setIsUsuarioPro(false)
+    checkIsPro().then(setIsUsuarioPro)
   }, [])
 
   const sortedMainItems = useMemo(

@@ -231,6 +231,22 @@ export async function getCurrentOwnerIdentity(): Promise<{
   }
 }
 
+export async function checkIsPro(): Promise<boolean> {
+  try {
+    const tenant = await getCurrentTenant()
+    if (!tenant?.id) return false
+    const prisma = getPrismaClient()
+    const result = await prisma.tenant.findUnique({
+      where: { id: tenant.id },
+      select: { plan: true },
+    })
+    return result?.plan === "PRO"
+  } catch (e) {
+    console.error("[auth-prisma] checkIsPro:", e)
+    return false
+  }
+}
+
 export async function logoutTaller() {
   await clearLegacySessionCookies()
   return { success: true }
