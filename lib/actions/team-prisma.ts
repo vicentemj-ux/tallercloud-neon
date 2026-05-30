@@ -1,7 +1,7 @@
 "use server"
 
 import bcrypt from "bcryptjs"
-import { getCurrentTenant } from "@/lib/auth"
+import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
 
 // ─── Catálogo de Roles de Equipo (constantes, no tabla) ───────────────────────
@@ -77,9 +77,9 @@ export interface RolOption {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
+  const tenantId = await getCurrentTallerId()
+  if (!tenantId) throw new Error("Sesion invalida")
+  return tenantId
 }
 
 function findRoleById(rolId: string) {
