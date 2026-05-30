@@ -220,7 +220,7 @@ export async function getCurrentTallerIdPublic(): Promise<string | null> {
 }
 
 export async function registrarVisitaManual(params: {
-  motivoVisita: string
+  motivoVisita?: string
   motivoOtro?: string
   notas?: string
   clienteNombre?: string
@@ -230,17 +230,21 @@ export async function registrarVisitaManual(params: {
     const tenant = await getCurrentTenant()
     if (!tenant?.id) return { success: false, error: "Sesion invalida", visita: null }
 
+    const { getCurrentActorDisplayName } = await import("@/lib/auth/actor-display-name")
+    const actor = await getCurrentActorDisplayName()
+
     const prisma = getPrismaClient()
     const created = await prisma.visita.create({
       data: {
         tenantId: tenant.id,
         eventoTipo: "manual",
         estado: "pendiente",
-        motivo: params.motivoVisita,
+        motivo: params.motivoVisita || null,
         motivoOtro: params.motivoOtro || null,
         notas: params.notas || null,
         clienteNombre: params.clienteNombre || null,
         clienteTelefono: params.clienteTelefono || null,
+        atendidoPor: actor,
       },
     })
 
@@ -248,6 +252,35 @@ export async function registrarVisitaManual(params: {
     return { success: true, error: null, visita: mapVisita(created) }
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error al registrar visita", visita: null }
+  }
+}
+
+export async function completarAtencionVisita(params: {
+  visitaId: string
+  motivoVisita: string
+  motivoOtro?: string
+  notas?: string
+  clienteNombre?: string
+  clienteTelefono?: string
+}): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const prisma = getPrismaClient()
+    await prisma.visita.update({
+      where: { id: params.visitaId },
+      data: {
+        motivo: params.motivoVisita,
+        motivoOtro: params.motivoOtro || null,
+        notas: params.notas || null,
+        clienteNombre: params.clienteNombre || null,
+        clienteTelefono: params.clienteTelefono || null,
+        estado: "atendido",
+      },
+    })
+
+    revalidatePath("/dashboard")
+    return { success: true, error: null }
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Error al completar atencion" }
   }
 }
 

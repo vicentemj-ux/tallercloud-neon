@@ -1,16 +1,16 @@
 "use client"
 
-import { useEffect, useState, useMemo, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useEffect, useState, useMemo, useCallback } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import {
   Camera,
   Calendar,
   Clock,
+  FilePenLine,
   FileText,
   Loader2,
   MoreHorizontal,
-  PlusCircle,
   Phone,
   Search,
   ShoppingBag,
@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input"
 import {
   getVisitas,
   registrarVisitaManual,
+  completarAtencionVisita,
   getCurrentTallerIdPublic,
   type BitacoraVisita,
 } from "@/lib/actions/bitacora-visitas-prisma"
@@ -73,8 +74,9 @@ const QUICK_PURPOSES: { value: MotivoVisita; label: string; icon: React.ReactNod
   { value: "otro", label: "Otro", icon: <MoreHorizontal className="h-5 w-5" /> },
 ]
 
-export default function BitacoraVisitasPage() {
+function BitacoraVisitasContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [visitas, setVisitas] = useState<BitacoraVisita[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<"todos" | "pendiente" | "atendido" | "se_fue">("todos")
@@ -83,6 +85,8 @@ export default function BitacoraVisitasPage() {
   const [desde, setDesde] = useState("")
   const [hasta, setHasta] = useState("")
   const [photoZoom, setPhotoZoom] = useState<string | null>(null)
+  const [quickRegisterOpen, setQuickRegisterOpen] = useState(false)
+  const [editingVisita, setEditingVisita] = useState<BitacoraVisita | null>(null)
 
   useEffect(() => {
     getCurrentTallerIdPublic().then((id) => {
@@ -119,6 +123,18 @@ export default function BitacoraVisitasPage() {
       }
     }
     void load(tallerId)
+  }, [tallerId, filter, desde, hasta])
+
+  const reloadVisitas = useCallback(() => {
+    if (!tallerId) return
+    const estado = filter === "todos" ? undefined : filter
+    void getVisitas({
+      tallerId,
+      estado,
+      desde: desde ? `${desde}T00:00:00` : undefined,
+      hasta: hasta ? `${hasta}T23:59:59` : undefined,
+      limite: 500,
+    }).then(({ data }) => setVisitas(data))
   }, [tallerId, filter, desde, hasta])
 
   const grouped = useMemo(() => groupByDay(visitas), [visitas])
@@ -158,21 +174,14 @@ export default function BitacoraVisitasPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-              <RegistrarVisitaButton
-                tallerId={tallerId}
-                onRegistrada={() => {
-                  if (tallerId) {
-                    const estado = filter === "todos" ? undefined : filter
-                    void getVisitas({
-                      tallerId,
-                      estado,
-                      desde: desde ? `${desde}T00:00:00` : undefined,
-                      hasta: hasta ? `${hasta}T23:59:59` : undefined,
-                      limite: 500,
-                    }).then(({ data }) => setVisitas(data))
-                  }
-                }}
-              />
+              <Button
+                onClick={() => setQuickRegisterOpen(true)}
+                disabled={!tallerId}
+                className="h-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-wider btn-glow"
+              >
+                <Camera className="h-4 w-4" />
+                Registrar Visita
+              </Button>
               <StatBadge label="Pendientes" value={stats.pendientes} color="red" />
               <StatBadge label="Atendidos" value={stats.atendidos} color="emerald" />
               <StatBadge label="Se fueron" value={stats.seFueron} color="slate" />
@@ -180,7 +189,7 @@ export default function BitacoraVisitasPage() {
           </div>
         </div>
 
-        {/* Filtros: fecha + estado */}
+        {/* Filtros */}
         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-slate-400" />
@@ -221,7 +230,7 @@ export default function BitacoraVisitasPage() {
           </div>
         </div>
 
-        {/* Lista agrupada por dia */}
+        {/* Tabla */}
         <div className="space-y-6">
           {loading ? (
             <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
@@ -233,10 +242,7 @@ export default function BitacoraVisitasPage() {
               <XCircle className="mx-auto h-8 w-8 text-red-400 mb-3" />
               <p className="text-sm font-bold text-slate-700">No se pudo identificar el taller</p>
               <p className="text-xs text-slate-400 mt-1">Asegurate de haber iniciado sesion correctamente.</p>
-              <Button
-                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs"
-                onClick={() => router.push("/dashboard")}
-              >
+              <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs" onClick={() => router.push("/dashboard")}>
                 Volver al inicio
               </Button>
             </div>
@@ -267,7 +273,7 @@ export default function BitacoraVisitasPage() {
                         <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Contacto</th>
                         <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Motivo</th>
                         <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Atendido por</th>
-                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Vinculo</th>
+                        <th className="px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -349,18 +355,15 @@ export default function BitacoraVisitasPage() {
                             </div>
                           </td>
                           <td className="px-5 py-3">
-                            <div className="flex flex-col gap-1">
-                              {v.reparacion_folio && (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-600">
-                                  Rep #{v.reparacion_folio}
-                                </span>
-                              )}
-                              {v.venta_folio && (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
-                                  Venta #{v.venta_folio}
-                                </span>
-                              )}
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setEditingVisita(v)}
+                              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-bold text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                              title={v.estado_atencion === "pendiente" ? "Completar atencion" : "Editar visita"}
+                            >
+                              <FilePenLine className="h-3.5 w-3.5" />
+                              {v.estado_atencion === "pendiente" ? "Atender" : "Editar"}
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -373,94 +376,70 @@ export default function BitacoraVisitasPage() {
         </div>
       </div>
 
-      {/* Lightbox para foto ampliada */}
+      {/* Lightbox foto */}
       {photoZoom && (
-        <div
-          className="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4"
-          onClick={() => setPhotoZoom(null)}
-        >
-          <button
-            type="button"
-            onClick={() => setPhotoZoom(null)}
-            className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-          >
+        <div className="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4" onClick={() => setPhotoZoom(null)}>
+          <button type="button" onClick={() => setPhotoZoom(null)} className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
             <X className="h-6 w-6" />
           </button>
-          <img
-            src={photoZoom}
-            alt="Foto de entrada"
-            className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <img src={photoZoom} alt="Foto de entrada" className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl" onClick={(e) => e.stopPropagation()} />
         </div>
+      )}
+
+      {/* Quick register modal */}
+      {quickRegisterOpen && (
+        <QuickRegisterModal
+          onClose={() => setQuickRegisterOpen(false)}
+          onRegistrada={() => {
+            setQuickRegisterOpen(false)
+            reloadVisitas()
+          }}
+        />
+      )}
+
+      {/* Edit / completar atencion modal */}
+      {editingVisita && (
+        <CompletarAtencionModal
+          visita={editingVisita}
+          onClose={() => setEditingVisita(null)}
+          onCompletada={() => {
+            setEditingVisita(null)
+            reloadVisitas()
+          }}
+        />
       )}
     </div>
   )
 }
 
-/* ─── Registrar Visita Button + Modal ─── */
-
-function RegistrarVisitaButton({
-  tallerId,
-  onRegistrada,
-}: {
-  tallerId: string | null
-  onRegistrada: () => void
-}) {
-  const [open, setOpen] = useState(false)
-
+export default function BitacoraVisitasPage() {
   return (
-    <>
-      <Button
-        onClick={() => setOpen(true)}
-        disabled={!tallerId}
-        className="h-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-wider btn-glow"
-      >
-        <PlusCircle className="h-4 w-4" />
-        Registrar Visita
-      </Button>
-      {open && (
-        <RegistrarVisitaModal
-          onClose={() => setOpen(false)}
-          onRegistrada={() => {
-            setOpen(false)
-            onRegistrada()
-          }}
-        />
-      )}
-    </>
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+      </div>
+    }>
+      <BitacoraVisitasContent />
+    </Suspense>
   )
 }
 
-function RegistrarVisitaModal({
+/* ─── Quick Register Modal (solo nombre + telefono) ─── */
+
+function QuickRegisterModal({
   onClose,
   onRegistrada,
 }: {
   onClose: () => void
   onRegistrada: () => void
 }) {
-  const [motivo, setMotivo] = useState<MotivoVisita | null>(null)
-  const [motivoOtro, setMotivoOtro] = useState("")
   const [clienteNombre, setClienteNombre] = useState("")
   const [clienteTelefono, setClienteTelefono] = useState("")
-  const [notas, setNotas] = useState("")
   const [saving, setSaving] = useState(false)
 
   const handleSubmit = useCallback(async () => {
-    if (!motivo) {
-      toast.error("Selecciona un motivo de visita")
-      return
-    }
-    if (motivo === "otro" && !motivoOtro.trim()) {
-      toast.error("Especifica el motivo")
-      return
-    }
-
     setSaving(true)
-    const { success, error, visita } = await registrarVisitaManual({
-      motivoVisita: motivo,
-      motivoOtro: motivo === "otro" ? motivoOtro : undefined,
-      notas: notas || undefined,
+    const { success, error } = await registrarVisitaManual({
       clienteNombre: clienteNombre.trim() || undefined,
       clienteTelefono: clienteTelefono.trim() || undefined,
     })
@@ -479,7 +458,7 @@ function RegistrarVisitaModal({
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-widest text-white/90">Visita Registrada</p>
           <p className="text-[11px] text-white/60 font-medium">
-            {getMotivoLabel(motivo)}
+            Completa los datos desde la tabla
             {clienteNombre ? ` - ${clienteNombre}` : ""}
           </p>
         </div>
@@ -487,122 +466,242 @@ function RegistrarVisitaModal({
       { duration: 4000 }
     )
 
-    setMotivo(null)
-    setMotivoOtro("")
     setClienteNombre("")
     setClienteTelefono("")
-    setNotas("")
     onRegistrada()
-  }, [motivo, motivoOtro, clienteNombre, clienteTelefono, notas, onRegistrada])
+  }, [clienteNombre, clienteTelefono, onRegistrada])
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+        <div className="relative h-36 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2 text-white/80">
+            <Camera className="h-10 w-10" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Registro rapido</span>
+          </div>
+          <button onClick={onClose} className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <p className="text-xs text-slate-500">
+            La visita queda registrada como pendiente. Usa el boton <strong>Atender</strong> en la tabla para completar los datos.
+          </p>
+
+          <div className="space-y-3">
+            <div className="relative">
+              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={clienteNombre}
+                onChange={(e) => setClienteNombre(e.target.value)}
+                placeholder="Nombre del cliente (opcional)"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+              />
+            </div>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="tel"
+                value={clienteTelefono}
+                onChange={(e) => setClienteTelefono(e.target.value)}
+                placeholder="Telefono (opcional)"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              onClick={() => void handleSubmit()}
+              disabled={saving}
+              className="flex-1 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-xs btn-glow"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Registrar"}
+            </Button>
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="h-11 rounded-xl border-slate-200 text-slate-600 text-xs font-bold"
+            >
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Completar Atencion Modal ─── */
+
+function CompletarAtencionModal({
+  visita,
+  onClose,
+  onCompletada,
+}: {
+  visita: BitacoraVisita
+  onClose: () => void
+  onCompletada: () => void
+}) {
+  const [motivo, setMotivo] = useState<MotivoVisita | null>((visita.motivo_visita as MotivoVisita) || null)
+  const [motivoOtro, setMotivoOtro] = useState(visita.motivo_otro || "")
+  const [clienteNombre, setClienteNombre] = useState(visita.cliente_nombre || "")
+  const [clienteTelefono, setClienteTelefono] = useState(visita.cliente_telefono || "")
+  const [notas, setNotas] = useState(visita.notas || "")
+  const [saving, setSaving] = useState(false)
+
+  const isPendiente = visita.estado_atencion === "pendiente"
+
+  const handleSubmit = useCallback(async () => {
+    if (isPendiente && !motivo) {
+      toast.error("Selecciona el motivo de la visita")
+      return
+    }
+    if (isPendiente && motivo === "otro" && !motivoOtro.trim()) {
+      toast.error("Especifica el motivo")
+      return
+    }
+
+    setSaving(true)
+
+    if (isPendiente) {
+      const { success, error } = await completarAtencionVisita({
+        visitaId: visita.id,
+        motivoVisita: motivo!,
+        motivoOtro: motivo === "otro" ? motivoOtro : undefined,
+        notas: notas || undefined,
+        clienteNombre: clienteNombre.trim() || undefined,
+        clienteTelefono: clienteTelefono.trim() || undefined,
+      })
+      setSaving(false)
+      if (!success) {
+        toast.error(error || "Error al guardar")
+        return
+      }
+      toast.success("Atencion completada")
+    } else {
+      const { success, error } = await registrarVisitaManual({
+        motivoVisita: motivo || undefined,
+        motivoOtro: motivo === "otro" ? motivoOtro : undefined,
+        notas: notas || undefined,
+        clienteNombre: clienteNombre.trim() || undefined,
+        clienteTelefono: clienteTelefono.trim() || undefined,
+      })
+      setSaving(false)
+      if (!success) {
+        toast.error(error || "Error al guardar")
+        return
+      }
+      toast.success("Visita actualizada")
+    }
+
+    onCompletada()
+  }, [isPendiente, motivo, motivoOtro, clienteNombre, clienteTelefono, notas, visita.id, onCompletada])
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200">
-        {/* Header con placeholder */}
-        <div className="relative h-44 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+        <div className="relative h-36 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
           <div className="flex flex-col items-center gap-2 text-white/80">
-            <Camera className="h-12 w-12" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Sin camara</span>
+            <UserCheck className="h-10 w-10" />
+            <span className="text-[10px] font-black uppercase tracking-widest">
+              {isPendiente ? "COMPLETAR ATENCION" : "EDITAR VISITA"}
+            </span>
           </div>
-          <button
-            onClick={onClose}
-            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
-          >
+          <button onClick={onClose} className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors">
             <X className="h-4 w-4" />
           </button>
-          <div className="absolute bottom-3 left-3 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-            NUEVA VISITA MANUAL
-          </div>
         </div>
 
         <div className="p-5 space-y-4">
-          <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
-            Motivo de la visita
-          </h3>
-
-          {/* Quick-purpose buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            {QUICK_PURPOSES.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => setMotivo(p.value)}
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-3 text-xs font-bold transition-all ${
-                  motivo === p.value
-                    ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                }`}
-              >
-                <span className={motivo === p.value ? "text-blue-500" : "text-slate-400"}>{p.icon}</span>
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          {motivo === "otro" && (
-            <input
-              type="text"
-              value={motivoOtro}
-              onChange={(e) => setMotivoOtro(e.target.value)}
-              placeholder="Especifica el motivo..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-            />
+          {isPendiente && (
+            <>
+              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">Motivo de la visita</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {QUICK_PURPOSES.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setMotivo(p.value)}
+                    className={`flex items-center gap-2 rounded-xl border px-3.5 py-3 text-xs font-bold transition-all ${
+                      motivo === p.value
+                        ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className={motivo === p.value ? "text-blue-500" : "text-slate-400"}>{p.icon}</span>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              {motivo === "otro" && (
+                <input
+                  type="text"
+                  value={motivoOtro}
+                  onChange={(e) => setMotivoOtro(e.target.value)}
+                  placeholder="Especifica el motivo..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+                />
+              )}
+            </>
           )}
 
-          {/* Cliente */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
-                Nombre del cliente
-              </label>
+          <div>
+            <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 mb-3">
+              {isPendiente ? "Datos del cliente" : "Editar datos"}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
               <div className="relative">
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   value={clienteNombre}
                   onChange={(e) => setClienteNombre(e.target.value)}
-                  placeholder="Ej: Juan Perez"
+                  placeholder="Nombre"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
                 />
               </div>
-            </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
-                Telefono
-              </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   type="tel"
                   value={clienteTelefono}
                   onChange={(e) => setClienteTelefono(e.target.value)}
-                  placeholder="Ej: 5512345678"
+                  placeholder="Telefono"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
                 />
               </div>
             </div>
           </div>
 
-          {/* Notas */}
           <textarea
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
             rows={2}
-            placeholder="Notas adicionales (opcional)..."
+            placeholder="Notas (opcional)..."
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
           />
 
-          <Button
-            onClick={() => void handleSubmit()}
-            disabled={saving}
-            className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-xs btn-glow"
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Registrar Visita"
-            )}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => void handleSubmit()}
+              disabled={saving}
+              className="flex-1 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-xs btn-glow"
+            >
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isPendiente ? (
+                "Completar atencion"
+              ) : (
+                "Guardar cambios"
+              )}
+            </Button>
+            <Button onClick={onClose} variant="outline" className="h-11 rounded-xl border-slate-200 text-slate-600 text-xs font-bold">
+              Cancelar
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -638,9 +737,7 @@ function EstadoBadge({ estado }: { estado: string }) {
   const config = map[estado] || map.pendiente
 
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${config.classes}`}
-    >
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${config.classes}`}>
       {config.icon}
       {config.text}
     </span>

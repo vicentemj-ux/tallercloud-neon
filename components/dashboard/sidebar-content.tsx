@@ -300,6 +300,16 @@ export function SidebarContent({ pathname, onNavigate }: { pathname: string; onN
       <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5">
         <img src="/images/logo.png" alt="TallerCloud" className="h-8 w-8" />
         <span className="truncate text-lg font-bold text-sidebar-foreground">TallerCloud</span>
+        {isUsuarioPro && (
+          <Link
+            href="/dashboard/bitacora-visitas"
+            onClick={onNavigate}
+            className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/30 hover:bg-blue-500 transition-all"
+            title="Registrar visita en Bitacora (PRO)"
+          >
+            <span className="text-xs font-black leading-none">+</span>
+          </Link>
+        )}
       </div>
 
       <div className="shrink-0 px-3 py-3 lg:hidden">
