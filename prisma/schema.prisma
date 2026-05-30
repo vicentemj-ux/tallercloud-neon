@@ -72,6 +72,8 @@ model Tenant {
   ventas             Venta[]
   cajas              Caja[]
   movimientosCaja    MovimientoCaja[]
+  gastosOperativos   GastoOperativo[]
+  gastosReparacion   GastoReparacion[]
 }
 
 model User {
@@ -191,6 +193,7 @@ model Reparacion {
   cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Restrict)
   archivos Archivo[]
   historial HistorialReparacion[]
+  gastosReparacion GastoReparacion[]
 
   @@unique([tenantId, folio])
   @@index([tenantId])
@@ -436,5 +439,52 @@ model MovimientoCaja {
   @@index([tenantId])
   @@index([tenantId, fecha])
   @@index([cajaId])
-  @@index([tipo])
+   @@index([tipo])
+}
+
+/**
+ * Gasto operativo del taller (Bitácora de Gastos).
+ * Tabla legacy creada via raw SQL en Supabase, ahora gestionada por Prisma.
+ */
+model GastoOperativo {
+  id         String   @id @default(cuid())
+  tenantId   String   @map("taller_id")
+  concepto   String
+  categoria  String   @default("general")
+  monto      Decimal  @db.Decimal(10, 2)
+  metodoPago String   @default("efectivo") @map("metodo_pago")
+  fecha      DateTime
+  notas      String?
+  cajaId     String?  @map("caja_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("bitacora_gastos")
+  @@index([tenantId])
+  @@index([tenantId, fecha])
+}
+
+/**
+ * Gasto asociado a un ticket de reparación (inversión).
+ * Tabla legacy creada via raw SQL en Supabase, ahora gestionada por Prisma.
+ */
+model GastoReparacion {
+  id              String   @id @default(cuid())
+  tenantId        String   @map("taller_id")
+  reparacionId    String   @map("reparacion_id")
+  concepto        String
+  monto           Decimal  @db.Decimal(10, 2)
+  tipo            String
+  productoId      String?  @map("producto_id")
+  mostrarCliente  Boolean  @default(false) @map("mostrar_cliente")
+  creadoPorNombre String?  @map("creado_por_nombre")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparacion Reparacion @relation(fields: [reparacionId], references: [id], onDelete: Cascade)
+
+  @@map("reparacion_gastos")
+  @@index([tenantId])
+  @@index([tenantId, reparacionId])
 }
