@@ -452,6 +452,7 @@ function ConfiguracionContent() {
               settings={settings}
               setSettings={setSettings}
               loginEmail={loginEmail}
+              planTipo={planTipo}
             />
           )}
 
@@ -472,7 +473,7 @@ function ConfiguracionContent() {
           )}
 
           {/* ════ PESTANA HARDWARE ════════════════════════════════════════════ */}
-          {activeTab === "hardware" && <Hardware />}
+          {activeTab === "hardware" && <Hardware planTipo={planTipo} />}
         </div>
       </div>
     </div>

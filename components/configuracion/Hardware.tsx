@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,7 +31,7 @@ interface CamaraHikvisionConfig {
   password: string
 }
 
-export function Hardware() {
+export function Hardware({ planTipo }: { planTipo: string }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [tallerId, setTallerId] = useState<string | null>(null)
@@ -108,7 +109,26 @@ export function Hardware() {
           <p className="text-sm font-bold text-slate-600">Inicia sesion para configurar hardware</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="relative space-y-6">
+          {/* Lock overlay for non-PRO users */}
+          {planTipo !== "activo" && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-3xl bg-white/85 backdrop-blur-[2px]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 shadow-sm">
+                <Lock className="h-7 w-7 text-amber-600" />
+              </div>
+              <div className="text-center px-6">
+                <p className="font-bold text-slate-800">Plan PRO requerido</p>
+                <p className="text-sm text-slate-500 mt-1 max-w-xs">
+                  Activa una suscripcion PRO para configurar dispositivos de hardware y deteccion automatica de visitas.
+                </p>
+              </div>
+              <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl px-5">
+                <Link href="/dashboard/facturacion">Ver planes</Link>
+              </Button>
+            </div>
+          )}
+
+          <div className={planTipo !== "activo" ? "opacity-40 pointer-events-none select-none" : ""}>
           {/* Deteccion de visitas */}
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
@@ -289,6 +309,7 @@ export function Hardware() {
               )}
             </Button>
           </div>
+        </div>
         </div>
       )}
     </div>
