@@ -1,10 +1,8 @@
-"use server"
-
 import bcrypt from "bcryptjs"
 import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
 import { getPrismaClient } from "@/lib/prisma"
 
-// ─── Catálogo de Roles de Equipo (constantes, no tabla) ───────────────────────
+// ── Catálogo de Roles de Equipo (constantes, no tabla) ───────────────────────
 
 /**
  * Roles predefinidos del equipo. Reemplaza la tabla `roles_taller` de Supabase.
@@ -102,6 +100,7 @@ export async function getEquipoPageData(): Promise<{
   roles: RolOption[]
   error: string | null
 }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -185,6 +184,7 @@ export async function createMiembro(input: {
   password: string
   rolId: string
 }): Promise<{ success: boolean; error?: string }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -265,6 +265,7 @@ export async function updateMiembro(input: {
   rolId: string
   password?: string
 }): Promise<{ success: boolean; error?: string }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -330,6 +331,7 @@ export async function updateMiembro(input: {
  * No elimina el registro para mantener integridad referencial con reparaciones asignadas.
  */
 export async function deleteMiembro(miembroId: string): Promise<{ success: boolean; error?: string }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -367,6 +369,7 @@ export async function deleteMiembro(miembroId: string): Promise<{ success: boole
  * Suspender o reactivar un miembro (toggle activo).
  */
 export async function toggleMiembroActivo(miembroId: string): Promise<{ success: boolean; activo?: boolean; error?: string }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
@@ -417,6 +420,7 @@ export async function getAssignableStaff(): Promise<{
   staff: Array<{ id: string; nombre: string; role: string }>
   error: string | null
 }> {
+  "use server"
   try {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
