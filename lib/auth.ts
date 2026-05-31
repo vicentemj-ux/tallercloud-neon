@@ -183,13 +183,34 @@ export const authOptions: NextAuthOptions = {
         return false
       }
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.tenantId = (user as any).tenantId
-        token.tenantName = (user as any).tenantName
-        token.isAdmin = (user as any).isAdmin
-        token.role = (user as any).role
-        token.sessionVersion = (user as any).sessionVersion
+        // Credentials provider: user object has tenant fields directly
+        if ((user as any).tenantId) {
+          token.tenantId = (user as any).tenantId
+          token.tenantName = (user as any).tenantName
+          token.isAdmin = (user as any).isAdmin
+          token.role = (user as any).role
+          token.sessionVersion = (user as any).sessionVersion
+        } else if (user.email) {
+          // OAuth provider: look up our DB user by email
+          try {
+            const prisma = getPrismaClient()
+            const dbUser = await prisma.user.findFirst({
+              where: { email: user.email.toLowerCase().trim() },
+              include: { tenant: { select: { nombre: true } } },
+            })
+            if (dbUser) {
+              token.tenantId = dbUser.tenantId
+              token.tenantName = dbUser.tenant?.nombre || "Mi Taller"
+              token.isAdmin = dbUser.role === "ADMIN"
+              token.role = dbUser.role
+              token.sessionVersion = dbUser.sessionVersion
+            }
+          } catch (e) {
+            console.error("[auth] jwt callback lookup error:", e)
+          }
+        }
       }
       return token
     },
