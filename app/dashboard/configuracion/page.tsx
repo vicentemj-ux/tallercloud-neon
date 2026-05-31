@@ -347,12 +347,28 @@ function ConfiguracionContent() {
   }
 
   // ── Loading ─────────────────────────────────────────────────────────────
-  if (loading || !settings) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex items-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
           Cargando configuracion de tu taller...
+        </div>
+      </div>
+    )
+  }
+
+  if (!settings) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-sm text-red-500">No se pudo cargar la configuracion del taller.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     )
