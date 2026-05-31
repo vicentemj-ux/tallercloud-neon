@@ -813,10 +813,12 @@ export function RepairDetailView({
                     </div>
                     <div className="flex min-h-0 flex-col gap-2">
                       <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        Diagnostico rapido
+                        Pruebas del equipo
                       </Label>
                       <DiagnosisProSummaryCard
                         encendido={detail?.checklistIngreso?.encendido ?? null}
+                        checklistPro={detail?.checklistPro ?? null}
+                        tipoEquipo={detail?.tipo_equipo ?? "Otro"}
                         onOpenDetails={openHealthDetails}
                         className="flex-1"
                       />
@@ -1104,7 +1106,7 @@ export function RepairDetailView({
                                       <span className="text-emerald-700">
                                         {getRepairStatusDisplayLabel(item.anterior)}
                                       </span>
-                                      <span className="mx-1.5 text-gray-300">â†’</span>
+                                      <span className="mx-1.5 text-gray-300">→</span>
                                       <span className="text-[#2563eb]">{getRepairStatusDisplayLabel(item.nuevo)}</span>
                                     </p>
                                   ) : (
@@ -1122,7 +1124,7 @@ export function RepairDetailView({
                                   <p className="text-xs font-bold uppercase text-gray-900">{formatLogTipo(item.tipo)}</p>
                                   {item.tipo === "presupuesto" && (item.valorAnterior != null || item.valorNuevo != null) ? (
                                     <p className="mt-1 text-base font-bold tabular-nums text-gray-900">
-                                      ${Number(item.valorAnterior || 0).toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} <span className="text-gray-400">â†’</span> ${Number(item.valorNuevo || 0).toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                                      ${Number(item.valorAnterior || 0).toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} <span className="text-gray-400">→</span> ${Number(item.valorNuevo || 0).toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                                     </p>
                                   ) : null}
                                   <p className="mt-1 text-sm italic text-gray-600">&ldquo;{item.descripcion}&rdquo;</p>
@@ -1186,6 +1188,11 @@ export function RepairDetailView({
                       <p className="text-xl font-bold text-[#2563eb] sm:text-2xl">
                         {(detail?.deviceModel ?? repair?.deviceModel ?? "").trim() || "—"}
                       </p>
+                      {detail?.color ? (
+                        <p className="mt-0.5 text-base font-semibold text-gray-600">
+                          Color: <span className="text-gray-900">{detail.color}</span>
+                        </p>
+                      ) : null}
                     </div>
                     <dl className="grid grid-cols-1 gap-3 text-sm">
                       <div>
@@ -1212,7 +1219,7 @@ export function RepairDetailView({
                               />
                               {detail.securityValue ? (
                                 <p className="mt-2 font-mono text-xs text-gray-600">
-                                  Secuencia: {detail.securityValue.replace(/-/g, " â†’ ")}
+                                  Secuencia: {detail.securityValue.replace(/-/g, " → ")}
                                 </p>
                               ) : null}
                             </div>
