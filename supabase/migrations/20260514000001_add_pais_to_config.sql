@@ -1,2 +1,0 @@
-ALTER TABLE configuracion_taller
-  ADD COLUMN IF NOT EXISTS pais VARCHAR(100) NOT NULL DEFAULT 'México';
