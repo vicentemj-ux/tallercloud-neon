@@ -17,9 +17,29 @@ export async function checkWizardNeeded(): Promise<boolean> {
   }
 }
 
+export async function getWizardSettings() {
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
+    const cfg = await prisma.configuracionTaller.findUnique({
+      where: { tenantId },
+      select: { nombreComercial: true, telefono: true, timezone: true, pais: true },
+    })
+    return {
+      nombreTaller: cfg?.nombreComercial || "",
+      telefono: cfg?.telefono || "",
+      pais: cfg?.pais || "Mexico",
+      zonaHoraria: cfg?.timezone || "America/Mexico_City",
+    }
+  } catch {
+    return { nombreTaller: "", telefono: "", pais: "Mexico", zonaHoraria: "America/Mexico_City" }
+  }
+}
+
 export async function completeWizard(data: {
   nombreTaller: string
   telefono: string
+  pais: string
   zonaHoraria: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
@@ -41,12 +61,14 @@ export async function completeWizard(data: {
         tenantId,
         nombreComercial: nombre,
         telefono: tel,
+        pais: data.pais,
         timezone: data.zonaHoraria,
         wizardCompletado: true,
       },
       update: {
         nombreComercial: nombre,
         telefono: tel,
+        pais: data.pais,
         timezone: data.zonaHoraria,
         wizardCompletado: true,
       },

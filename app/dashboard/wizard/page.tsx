@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Store, Phone, Globe } from "lucide-react"
-import { checkWizardNeeded, completeWizard } from "@/lib/actions/wizard-prisma"
+import { checkWizardNeeded, completeWizard, getWizardSettings } from "@/lib/actions/wizard-prisma"
+import { PAISES, type PaisInfo } from "@/lib/constants/paises"
 import { toast } from "@/hooks/use-toast"
 
 const TIMEZONES = [
@@ -19,7 +20,6 @@ const TIMEZONES = [
   { value: "America/Hermosillo", label: "Hermosillo (GMT-7)" },
   { value: "America/Mazatlan", label: "Mazatlan (GMT-7)" },
   { value: "America/Merida", label: "Merida (GMT-6)" },
-  { value: "America/Mexico_City", label: "Mexico (GMT-6)" },
   { value: "America/Montevideo", label: "Montevideo (GMT-3)" },
   { value: "America/Buenos_Aires", label: "Buenos Aires (GMT-3)" },
   { value: "America/Bogota", label: "Bogota (GMT-5)" },
@@ -33,17 +33,27 @@ export default function WizardPage() {
   const router = useRouter()
   const [checking, setChecking] = useState(true)
   const [nombreTaller, setNombreTaller] = useState("")
+  const [pais, setPais] = useState("Mexico")
   const [telefono, setTelefono] = useState("")
   const [zonaHoraria, setZonaHoraria] = useState("America/Mexico_City")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    checkWizardNeeded().then((needed) => {
-      if (!needed) router.replace("/dashboard")
-      else setChecking(false)
-    })
+    const init = async () => {
+      const needed = await checkWizardNeeded()
+      if (!needed) { router.replace("/dashboard"); return }
+      const prefill = await getWizardSettings()
+      if (prefill.nombreTaller) setNombreTaller(prefill.nombreTaller)
+      if (prefill.telefono) setTelefono(prefill.telefono)
+      if (prefill.pais) setPais(prefill.pais)
+      if (prefill.zonaHoraria) setZonaHoraria(prefill.zonaHoraria)
+      setChecking(false)
+    }
+    init()
   }, [router])
+
+  const codigoPais = PAISES.find((p) => p.nombre === pais)?.codigoTelefono || "52"
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -51,12 +61,17 @@ export default function WizardPage() {
     if (!telefono.trim()) { setError("El telefono es obligatorio"); return }
     setSaving(true)
     setError("")
-    const result = await completeWizard({ nombreTaller: nombreTaller.trim(), telefono: telefono.trim(), zonaHoraria })
+    const result = await completeWizard({
+      nombreTaller: nombreTaller.trim(),
+      telefono: `${codigoPais}${telefono.trim()}`,
+      pais,
+      zonaHoraria,
+    })
     setSaving(false)
     if (result.success) {
-      toast({ title: "Configuracion guardada", description: "Bienvenido a TallerCloud" })
-      router.push("/dashboard")
-      router.refresh()
+      toast({ title: "Bienvenido a TallerCloud", description: "Configuracion inicial guardada" })
+      // Hard redirect to force full page reload and bypass layout guard timing issues
+      window.location.href = "/dashboard"
     } else {
       setError(result.error || "Error al guardar")
     }
@@ -99,17 +114,44 @@ export default function WizardPage() {
 
           <div className="space-y-2">
             <Label className="text-xs font-black uppercase tracking-wider text-slate-500">
+              <Globe className="h-3.5 w-3.5 inline mr-1" />
+              Pais
+            </Label>
+            <Select value={pais} onValueChange={(v) => { setPais(v); setError("") }}>
+              <SelectTrigger className="h-11 rounded-xl">
+                <SelectValue placeholder="Selecciona tu pais" />
+              </SelectTrigger>
+              <SelectContent>
+                {PAISES.map((p: PaisInfo) => (
+                  <SelectItem key={p.nombre} value={p.nombre}>
+                    {p.nombre} (+{p.codigoTelefono})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-slate-400">Define la region para formatos de telefono y WhatsApp</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-black uppercase tracking-wider text-slate-500">
               <Phone className="h-3.5 w-3.5 inline mr-1" />
               Telefono del taller
             </Label>
-            <Input
-              value={telefono}
-              onChange={(e) => { setTelefono(e.target.value); setError("") }}
-              placeholder="Ej: 5512345678"
-              className="h-11 rounded-xl"
-              type="tel"
-            />
-            <p className="text-[10px] text-slate-400">Numero para WhatsApp y contacto con clientes</p>
+            <div className="flex gap-2">
+              <div className="flex h-11 shrink-0 items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-600">
+                <span>+{codigoPais}</span>
+              </div>
+              <Input
+                value={telefono}
+                onChange={(e) => { setTelefono(e.target.value); setError("") }}
+                placeholder="Ej: 5512345678"
+                className="h-11 rounded-xl flex-1"
+                type="tel"
+              />
+            </div>
+            <p className="text-[10px] text-slate-400">
+              Numero sin el prefijo del pais (el codigo +{codigoPais} se agregara automaticamente)
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -127,7 +169,7 @@ export default function WizardPage() {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-[10px] text-slate-400">Afecta reportes, cortes de caja y plan de suscripcion</p>
+            <p className="text-[10px] text-slate-400">Afecta reportes, cortes de caja y recordatorios</p>
           </div>
 
           {error && (
