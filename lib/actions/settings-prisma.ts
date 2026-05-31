@@ -3,6 +3,7 @@
 import { getCurrentTenant } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
 import { getPublicUrl, sanitizeFileName, uploadFileToR2 } from "@/lib/r2"
+import { decodeIfEncoded } from "@/lib/utils"
 
 export interface TallerSettings {
   id: string
@@ -46,7 +47,7 @@ function toSettings(row: Awaited<ReturnType<typeof getPrismaClient>>["configurac
   return {
     id: row?.id ?? "",
     taller_id: tenantId,
-    nombre_taller: row?.nombreComercial ?? "Mi Taller",
+    nombre_taller: decodeIfEncoded(row?.nombreComercial ?? "Mi Taller"),
     direccion: row?.direccion ?? "",
     telefono: row?.telefono ?? "",
     email_contacto: row?.emailContacto ?? "",

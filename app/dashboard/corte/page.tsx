@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getCajaConDetalle, cerrarCaja, getCajaAbierta } from "@/lib/actions/ventas-prisma"
 import { verificarVisitasPendientesCierre, getCurrentTallerIdPublic } from "@/lib/actions/bitacora-visitas-prisma"
+import { getTallerSettings } from "@/lib/actions/settings-prisma"
+import { CorteExitoModal } from "@/components/dashboard/corte-exito-modal"
 import type { CajaRow, CortePrintData } from "@/lib/actions/ventas-prisma"
 
 function fmt(n: number) {
@@ -32,11 +34,21 @@ export default function CortePage() {
   const [error, setError] = useState("")
   const [fetching, setFetching] = useState(true)
   const [tallerId, setTallerId] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [tallerNombre, setTallerNombre] = useState("Mi Taller")
+  const [tallerTelefono, setTallerTelefono] = useState("")
 
   useEffect(() => {
     async function init() {
       const id = await getCurrentTallerIdPublic()
       setTallerId(id)
+
+      getTallerSettings().then(({ settings }) => {
+        if (settings) {
+          setTallerNombre(settings.nombre_taller)
+          setTallerTelefono(settings.telefono)
+        }
+      })
 
       const { caja: c } = await getCajaAbierta()
       if (!c) {
@@ -93,7 +105,7 @@ export default function CortePage() {
       return
     }
     window.dispatchEvent(new CustomEvent("caja:cerrada"))
-    router.push("/dashboard")
+    setShowSuccess(true)
   }
 
   if (fetching) {
@@ -262,6 +274,17 @@ export default function CortePage() {
           </div>
         </div>
       </div>
+
+      {preview && (
+        <CorteExitoModal
+          open={showSuccess}
+          cortes={preview}
+          tallerNombre={tallerNombre}
+          tallerTelefono={tallerTelefono}
+          montoCierre={parseFloat(montoCierre.replace(",", ".")) || 0}
+          onClose={() => router.push("/dashboard")}
+        />
+      )}
     </div>
   )
 }

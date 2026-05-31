@@ -149,7 +149,7 @@ export function ModalExitoEntrega({
             tallerNombre={tallerConfig.nombre}
             tallerTelefono={tallerConfig.telefono}
             logoUrl={tallerConfig.logoUrl}
-            mensajeDespedida={tallerConfig.mensajeDespedida}
+            mensajeDespedida={tallerConfig.mensajeDespedida ?? undefined}
           />
         </div>
       )}
