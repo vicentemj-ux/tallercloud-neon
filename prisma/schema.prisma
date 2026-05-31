@@ -94,7 +94,7 @@ model User {
   tenantId  String
   email     String   @unique
   nombre    String
-  passwordHash String
+  passwordHash String?
   emailVerified Boolean @default(true)
   sessionVersion Int @default(1)
   verificationToken   String?   @map("verification_token")

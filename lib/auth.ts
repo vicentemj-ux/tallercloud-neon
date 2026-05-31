@@ -1,9 +1,20 @@
 import type { NextAuthOptions } from "next-auth"
 import { getServerSession } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { cookies } from "next/headers"
 import { getPrismaClient } from "@/lib/prisma"
+
+function slugifyName(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50)
+}
 
 function resolveAuthSecret() {
   const explicit = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
@@ -19,6 +30,11 @@ export const authOptions: NextAuthOptions = {
   secret: AUTH_SECRET_FALLBACK,
   session: { strategy: "jwt" },
   providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID || "",
+      clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -57,6 +73,116 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "google") return true
+
+      const email = user.email?.toLowerCase().trim()
+      if (!email) return false
+
+      try {
+        const prisma = getPrismaClient()
+
+        // Already has an account linked? Allow.
+        const existingAccount = await prisma.account.findFirst({
+          where: { providerAccountId: account.providerAccountId, provider: "google" },
+        })
+        if (existingAccount) return true
+
+        // User already exists by email? Link the Google account.
+        const existingUser = await prisma.user.findFirst({
+          where: { email },
+          include: { tenant: true },
+        })
+        if (existingUser) {
+          await prisma.account.create({
+            data: {
+              userId: existingUser.id,
+              tenantId: existingUser.tenantId,
+              type: account.type,
+              provider: "google",
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              id_token: account.id_token,
+              refresh_token: account.refresh_token,
+              token_type: account.token_type,
+              scope: account.scope,
+              session_state: account.session_state,
+            },
+          })
+          return true
+        }
+
+        // New user: create tenant + user + config
+        const displayName = user.name?.trim() || "Mi Taller"
+        const baseSlug = slugifyName(displayName) || "mi-taller"
+        const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+
+        let slug = baseSlug
+        let counter = 1
+        while (await prisma.tenant.findUnique({ where: { slug }, select: { id: true } })) {
+          counter++
+          slug = `${baseSlug}-${counter}`
+        }
+
+        const tenant = await prisma.tenant.create({
+          data: {
+            nombre: displayName,
+            slug,
+            plan: "PRO",
+            trialEndsAt,
+            currency: "MXN",
+            timezone: "America/Mexico_City",
+            paperSize: "80mm",
+            printSettings: {},
+          },
+        })
+
+        const newUser = await prisma.user.create({
+          data: {
+            tenantId: tenant.id,
+            email,
+            nombre: displayName,
+            emailVerified: true,
+            sessionVersion: 1,
+            role: "OWNER",
+          },
+        })
+
+        await prisma.account.create({
+          data: {
+            userId: newUser.id,
+            tenantId: tenant.id,
+            type: account.type,
+            provider: "google",
+            providerAccountId: account.providerAccountId,
+            access_token: account.access_token,
+            expires_at: account.expires_at,
+            id_token: account.id_token,
+            refresh_token: account.refresh_token,
+            token_type: account.token_type,
+            scope: account.scope,
+            session_state: account.session_state,
+          },
+        })
+
+        await prisma.configuracionTaller.create({
+          data: {
+            tenantId: tenant.id,
+            nombreComercial: displayName,
+            moneda: "MXN",
+            timezone: "America/Mexico_City",
+            paperSize: "80mm",
+            printSettings: {},
+          },
+        })
+
+        return true
+      } catch (error) {
+        console.error("[auth] Google signIn error:", error)
+        return false
+      }
+    },
     async jwt({ token, user }) {
       if (user) {
         token.tenantId = (user as any).tenantId

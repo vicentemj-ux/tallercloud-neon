@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { signIn } from "next-auth/react"
 import { Loader2 } from "lucide-react"
 
 function GoogleGlyph({ className }: { className?: string }) {
@@ -21,8 +22,13 @@ export function GoogleSignInButton() {
   const handleGoogle = async () => {
     setError(null)
     setLoading(true)
-    setError("Google OAuth quedo como PRO/FUTURO en esta fase.")
-    setLoading(false)
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" })
+    } catch (e) {
+      setError("Error al iniciar sesion con Google")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

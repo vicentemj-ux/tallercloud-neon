@@ -307,7 +307,7 @@ export async function loginAdmin(
       where: { email: email.toLowerCase().trim(), role: "ADMIN" },
     })
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       return { success: false, error: "Email o contrasena incorrectos" }
     }
 
