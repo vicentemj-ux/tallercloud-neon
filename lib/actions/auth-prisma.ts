@@ -281,12 +281,13 @@ function generateToken(): string {
   return randomBytes(32).toString("hex")
 }
 
+function getSigningSecret(): string {
+  return process.env.TOKEN_SIGNING_SECRET || process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || process.env.SUPABASE_JWT_SECRET || ""
+}
+
 function signToken(token: string): string {
-  const secret = process.env.SUPABASE_JWT_SECRET || ""
-  if (!secret) {
-    console.error("[signToken] SUPABASE_JWT_SECRET no esta configurado")
-    return ""
-  }
+  const secret = getSigningSecret()
+  if (!secret) return ""
   return createHmac("sha256", secret).update(token).digest("hex")
 }
 
@@ -351,9 +352,7 @@ export async function verifyEmailToken(
   token: string,
   signature?: string,
 ): Promise<{ success: boolean; error?: string; message?: string }> {
-  // Signature check is optional — if SUPABASE_JWT_SECRET is not set,
-  // signToken returns "" and we skip the HMAC verification.
-  if (process.env.SUPABASE_JWT_SECRET) {
+  if (getSigningSecret()) {
     const expectedSig = signToken(token)
     if (!expectedSig || signature !== expectedSig) {
       return { success: false, error: "Token invalido o manipulado" }
@@ -380,6 +379,59 @@ export async function verifyEmailToken(
   } catch (error) {
     console.error("[verifyEmailToken]", error)
     return { success: false, error: "Error al verificar email" }
+  }
+}
+
+export async function checkEmailStatus(email: string): Promise<{
+  exists: boolean
+  verified: boolean
+  error?: string
+}> {
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { email: email.toLowerCase().trim() },
+      select: { emailVerified: true, passwordHash: true },
+    })
+    return { exists: !!user, verified: user?.emailVerified ?? false }
+  } catch {
+    return { exists: false, verified: false, error: "Error al verificar email" }
+  }
+}
+
+export async function resendVerificationEmail(email: string): Promise<{
+  success: boolean
+  error?: string
+}> {
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { email: email.toLowerCase().trim(), emailVerified: false },
+      include: { tenant: { select: { nombre: true } } },
+    })
+    if (!user) return { success: false, error: "No hay una cuenta pendiente de verificacion con este email" }
+
+    const verificationToken = randomBytes(32).toString("hex")
+    const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verificationToken, verificationExpiresAt },
+    })
+
+    const sig = getSigningSecret() ? signToken(verificationToken) : undefined
+    await sendVerificationEmail(
+      user.email,
+      user.nombre,
+      user.tenant?.nombre || "tu taller",
+      verificationToken,
+      sig,
+    )
+
+    return { success: true }
+  } catch (e) {
+    console.error("[resendVerificationEmail]", e)
+    return { success: false, error: "Error al reenviar correo de verificacion" }
   }
 }
 
@@ -446,7 +498,7 @@ export async function resetPasswordWithToken(
     return { success: false, error: "La contrasena debe tener al menos 8 caracteres" }
   }
 
-  if (process.env.SUPABASE_JWT_SECRET) {
+  if (getSigningSecret()) {
     const expectedSig = signToken(token)
     if (!expectedSig || signature !== expectedSig) {
       return { success: false, error: "Token invalido o manipulado" }
