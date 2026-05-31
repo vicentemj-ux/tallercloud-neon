@@ -7,7 +7,7 @@ import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { formatPeso } from "@/lib/utils/currency"
 
 /**
- * Abre el dialogo de impresion con un cartel 4Ã—6 (iframe + React).
+ * Abre el dialogo de impresion con un cartel 4x6 (iframe + React).
  */
 export function printCartelExhibicion(
   producto: ProductoRow,

@@ -16,7 +16,7 @@ export interface InventoryExhibitionLabelProps {
 }
 
 /**
- * Etiqueta de exhibicion 50Ã—25 mm (EQUIPO) â€” impresora termica.
+ * Etiqueta de exhibicion 50x25 mm (EQUIPO) â€” impresora termica.
  * Layout flex-col de 3 filas; nombre con line-clamp-2 para nombres largos. Sin IMEI/serie.
  */
 const InventoryExhibitionLabel = forwardRef<HTMLDivElement, InventoryExhibitionLabelProps>(

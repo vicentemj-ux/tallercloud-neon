@@ -1727,7 +1727,7 @@ function InventarioContent() {
                       {formatPeso(importSummary.totalCostoCarga || 0)}
                     </p>
                     <p className="text-[10px] text-slate-500">
-                      suma de costo Ã— stock importado
+                      suma de costo x stock importado
                     </p>
                   </div>
                 </div>
@@ -1909,7 +1909,7 @@ function InventarioContent() {
 
                   {/* Nota de configuracion (esquina inferior derecha) */}
                   <p className="absolute -bottom-4 right-0 text-[10px] text-slate-500 max-w-[320px] text-right">
-                    Asegurate de que tu impresora este configurada en tamano de papel 50Ã—25 mm (2Ã—1 pulg.)
+                    Asegurate de que tu impresora este configurada en tamano de papel 50x25 mm (2x1 pulg.)
                   </p>
                 </div>
               </div>

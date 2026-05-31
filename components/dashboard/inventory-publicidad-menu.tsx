@@ -217,7 +217,7 @@ function InventoryPublicidadMenuInner({
                 </Badge>
               </span>
               <span className="text-[10px] font-normal uppercase tracking-wide text-[#64748b]">
-                4 Ã— 6 pulgadas
+                4 x 6 pulgadas
               </span>
             </span>
           </DropdownMenuItem>
@@ -305,7 +305,7 @@ function InventoryPublicidadMenuInner({
               </Badge>
             </span>
             <span className="text-[10px] font-normal uppercase tracking-wide text-[#64748b]">
-              Cuadrado 1080Ã—1080 o vertical 9:16
+              Cuadrado 1080x1080 o vertical 9:16
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>

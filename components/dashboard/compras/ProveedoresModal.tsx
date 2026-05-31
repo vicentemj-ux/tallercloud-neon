@@ -95,7 +95,7 @@ export function ProveedoresModal({ open, onClose }: { open: boolean; onClose: ()
           <div className="flex-1">
             <DialogHeader className="space-y-0 text-left">
               <DialogTitle className="text-lg font-black italic tracking-tight text-white">
-                GESTIÃ“N DE PROVEEDORES
+                GESTION DE PROVEEDORES
               </DialogTitle>
               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
                 Administra tus fuentes de abastecimiento

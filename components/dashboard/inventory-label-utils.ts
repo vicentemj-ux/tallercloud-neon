@@ -32,7 +32,7 @@ export function getProductoDescripcionEstado(
 const MAX_CARTEL_FEATURES = 10
 
 /**
- * Lista corta de vinetas para el cartel de exhibicion (4Ã—6).
+ * Lista corta de vinetas para el cartel de exhibicion (4x6).
  * Prioriza datos estructurados y parte la descripcion libre en lineas.
  */
 export function buildCartelFeatures(producto: ProductoRow): string[] {

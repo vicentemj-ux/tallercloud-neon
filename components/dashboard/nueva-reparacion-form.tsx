@@ -532,10 +532,8 @@ export function NuevaReparacionForm({
     setRegisterErrorOpen(true)
     toast({
       variant: "destructive",
-      title: "âŒ Error al Registrar",
+      title: "Error al Registrar",
       description: d,
-      className:
-        "max-w-lg border-2 border-red-300 text-base shadow-xl sm:max-w-xl data-[state=open]:sm:slide-in-from-bottom-full",
     })
   }, [])
 
@@ -1648,13 +1646,13 @@ export function NuevaReparacionForm({
                           variant="outline"
                           disabled={compressingPhotos}
                           onClick={() => setCameraOpen(true)}
-                          className="mt-2 h-11 w-full border-slate-200 bg-white text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+                          className="mt-2 h-11 w-full border-slate-200 bg-white text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50 gap-2"
                         >
-                          ðŸ“· Abrir Camara
+                          <Camera className="h-4 w-4" />Abrir Camara
                         </Button>
                       )}
                       {compressingPhotos ? (
-                        <p className="mt-1.5 text-center text-[10px] text-slate-500">Optimizandoâ€¦</p>
+                        <p className="mt-1.5 text-center text-[10px] text-slate-500">Optimizando...</p>
                       ) : null}
                     </div>
                   </div>
@@ -1666,7 +1664,7 @@ export function NuevaReparacionForm({
 
         </div>
         </div>
-        {/* â”€â”€ END scrollable content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── END scrollable content ────────────────────────────────────────── */}
 
         {/* Footer checklist + crear (compacto, oro pulido) */}
         <div className="sticky bottom-0 z-30 min-h-0 shrink-0 border-t border-slate-200 bg-white px-3 py-2 shadow-[0_-1px_6px_rgba(15,23,42,0.04)]">

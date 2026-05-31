@@ -254,7 +254,7 @@ export default function ComprasPage() {
                       <p className="text-[10px] text-slate-400 mt-0.5">{fmtTime(orden.created_at)}</p>
                     </div>
 
-                    {/* ACCIÃ“N */}
+                    {/* ACCION */}
                     <div className="flex items-center justify-end">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 group-hover:bg-white group-hover:text-slate-700 transition-colors">
                         <ArrowRight className="h-4 w-4" />

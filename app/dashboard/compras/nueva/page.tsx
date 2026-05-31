@@ -175,7 +175,7 @@ export default function NuevaOrdenPage() {
           </button>
           <div>
             <h1 className="text-2xl font-black italic tracking-tight text-slate-900 sm:text-3xl">
-              CONFIGURAR PROVISIÃ“N
+              CONFIGURAR PROVISION
             </h1>
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
               Registro de nueva orden de entrada al inventario
@@ -281,7 +281,7 @@ export default function NuevaOrdenPage() {
                     2
                   </div>
                   <h2 className="text-sm font-black italic tracking-tight text-slate-900 uppercase">
-                    SELECCIÃ“N DE ACTIVOS
+                    SELECCION DE ACTIVOS
                   </h2>
                 </div>
                 <Button
@@ -297,7 +297,7 @@ export default function NuevaOrdenPage() {
               <div className="relative mb-5">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
-                  placeholder="FILTRAR POR CÃ“DIGO SKU O DESCRIPTOR..."
+                  placeholder="FILTRAR POR CODIGO SKU O DESCRIPTOR..."
                   value={prodQuery}
                   onChange={(e) => handleProdSearch(e.target.value)}
                   className="h-12 rounded-full border-slate-200 bg-white pl-11 pr-4 text-sm font-medium uppercase tracking-wider text-slate-800 placeholder:text-slate-300 placeholder:font-normal"

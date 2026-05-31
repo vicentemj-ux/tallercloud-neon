@@ -691,7 +691,7 @@ export function RepairDetailView({
           <AlertDialogContent className="max-w-md border-red-200 bg-red-50">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-center text-xl font-bold text-red-800">
-                ATENCIÃ“N
+                ATENCION
               </AlertDialogTitle>
               <AlertDialogDescription className="text-center text-base text-red-800">
                 Estas a punto de borrar permanentemente este folio. Esta accion no se puede deshacer.
@@ -889,7 +889,7 @@ export function RepairDetailView({
                               <Wrench className="h-3.5 w-3.5 text-blue-600" />
                               <span className="font-semibold text-slate-800">{s.nombre_snapshot}</span>
                               {s.cantidad > 1 && (
-                                <span className="text-xs text-slate-500">Ã—{s.cantidad}</span>
+                                <span className="text-xs text-slate-500">x{s.cantidad}</span>
                               )}
                             </div>
                             <span className="font-bold text-slate-900">
