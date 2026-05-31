@@ -81,6 +81,8 @@ model Tenant {
   proveedores        Proveedor[]
   ordenesCompra      OrdenCompra[]
   comprasUsadas      CompraUsada[]
+  cotizaciones       Cotizacion[]
+  cotizacionItems    CotizacionItem[]
 }
 
 model User {
@@ -662,4 +664,55 @@ model CompraUsada {
 
   @@map("compras_usadas")
   @@index([tenantId])
+}
+
+model Cotizacion {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("taller_id")
+  folio           String
+  clienteId       String?  @map("cliente_id")
+  clienteNombre   String   @map("cliente_nombre")
+  clienteTelefono String?  @map("cliente_telefono")
+  equipoTipo      String   @default("Celular") @map("equipo_tipo")
+  marca           String   @default("")
+  modelo          String   @default("")
+  descripcion     String   @default("")
+  observaciones   String?
+  subtotal        Decimal  @db.Decimal(12, 2)
+  descuento       Decimal  @db.Decimal(12, 2)
+  total           Decimal  @db.Decimal(12, 2)
+  estado          String   @default("pendiente")
+  fecha           DateTime @default(now())
+  fechaExpiracion DateTime? @map("fecha_expiracion")
+  creadoPor       String?  @map("creado_por")
+  reparacionId    String?  @map("reparacion_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items  CotizacionItem[]
+
+  @@unique([tenantId, folio])
+  @@map("cotizaciones")
+  @@index([tenantId])
+  @@index([tenantId, estado])
+}
+
+model CotizacionItem {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("taller_id")
+  cotizacionId   String   @map("cotizacion_id")
+  descripcion    String
+  cantidad       Decimal  @db.Decimal(12, 2)
+  precioUnitario Decimal  @db.Decimal(12, 2) @map("precio_unitario")
+  total          Decimal  @db.Decimal(12, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+
+  cotizacion Cotizacion @relation(fields: [cotizacionId], references: [id], onDelete: Cascade)
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("cotizacion_items")
+  @@index([tenantId])
+  @@index([cotizacionId])
 }

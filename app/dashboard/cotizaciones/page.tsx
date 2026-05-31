@@ -38,13 +38,18 @@ export default function CotizacionesPage() {
 
   const loadCotizaciones = async (nextFiltro = filtro, nextSearch = search) => {
     setLoading(true)
-    const { data, error } = await getCotizaciones({ estado: nextFiltro, search: nextSearch })
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: error })
-    } else {
-      setCotizaciones(data)
+    try {
+      const { data, error } = await getCotizaciones({ estado: nextFiltro, search: nextSearch })
+      if (error) {
+        toast({ variant: "destructive", title: "Error", description: error })
+      } else {
+        setCotizaciones(data)
+      }
+    } catch {
+      toast({ variant: "destructive", title: "Error", description: "Error inesperado al cargar cotizaciones." })
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {

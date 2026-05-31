@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FileText, Plus, Search, Trash2, UserRound } from "lucide-react"
 import type { Cotizacion, CotizacionInput, CotizacionItemInput } from "@/lib/actions/cotizaciones"
-import { searchClients, type Client } from "@/lib/actions/clients"
+import { searchClients, type Client } from "@/lib/actions/clients-prisma"
 
 interface CotizacionFormProps {
   open: boolean
