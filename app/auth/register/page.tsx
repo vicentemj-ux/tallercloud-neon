@@ -55,7 +55,7 @@ export default function RegisterPage() {
       })
 
       if (result.success) {
-        router.push("/auth/login?registered=true")
+        router.push(`/auth/verify-email?email=${encodeURIComponent(formData.email)}`)
       } else {
         setError(result.error || "Error al registrar")
       }

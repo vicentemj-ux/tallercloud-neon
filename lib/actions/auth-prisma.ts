@@ -66,6 +66,10 @@ export async function registerWithPrisma(data: {
   const trialEndsAt = new Date()
   trialEndsAt.setDate(trialEndsAt.getDate() + 30)
 
+  // Generate verification token
+  const verificationToken = randomBytes(32).toString("hex")
+  const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
   const baseSlug = slugify(data.nombreTaller) || "taller"
 
   const result = await prisma.$transaction(async (tx: TxClient) => {
@@ -95,7 +99,9 @@ export async function registerWithPrisma(data: {
         email,
         nombre: data.nombrePropietario.trim(),
         passwordHash,
-        emailVerified: true,
+        emailVerified: false,
+        verificationToken,
+        verificationExpiresAt,
         sessionVersion: 1,
         role: "OWNER",
       },
@@ -115,9 +121,23 @@ export async function registerWithPrisma(data: {
     return { tenantId: tenant.id, userId: user.id }
   })
 
+  // Send verification email (async, don't block registration on email failure)
+  try {
+    const sig = signToken(verificationToken)
+    await sendVerificationEmail(
+      email,
+      data.nombrePropietario.trim(),
+      data.nombreTaller.trim(),
+      verificationToken,
+      sig,
+    )
+  } catch (emailError) {
+    console.error("[registerWithPrisma] Failed to send verification email:", emailError)
+  }
+
   return {
     success: true,
-    message: "Registro exitoso.",
+    message: "Registro exitoso. Revisa tu correo para verificar tu cuenta.",
     data: result,
   }
 }

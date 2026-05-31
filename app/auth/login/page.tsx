@@ -48,7 +48,7 @@ function LoginPageContent() {
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
-      setSuccessMsg("Cuenta creada exitosamente. Inicia sesion con tus credenciales.")
+      setSuccessMsg("Cuenta creada exitosamente. Debes verificar tu correo antes de iniciar sesion. Revisa tu bandeja de entrada o spam.")
     }
   }, [searchParams])
 
