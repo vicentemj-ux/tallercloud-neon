@@ -15,7 +15,16 @@ const PLAN_BASE = {
   name: "PLAN CORE",
   tagline: "Digitalizacion esencial",
   price: 189,
-  bullets: ["Reparaciones ilimitadas", "Base de clientes", "Inventario"],
+  bullets: [
+    "POS / Ventas con ticket",
+    "Modulo de reparaciones",
+    "Inventario y productos",
+    "Historial de ventas",
+    "Base de clientes",
+    "Bitacora de gastos",
+    "Gestion de equipo (hasta 3 miembros)",
+    "Dashboard y configuracion",
+  ],
 } as const
 
 const PLAN_ORO = {
@@ -24,10 +33,16 @@ const PLAN_ORO = {
   tagline: "Operacion blindada",
   price: 299,
   bullets: [
-    "Todo lo de PLAN CORE",
+    "Todo lo de PLAN CORE (miembros ilimitados)",
+    "Bitacora de visitas",
+    "Chat interno del taller",
+    "Compras y ordenes de compra",
+    "Control de utilidad",
+    "Reportes avanzados",
+    "Catalogo de servicios",
     "Firma digital QR",
     "Evidencia fotografica",
-    "Health Check PRO",
+    "Health Check PRO (checklist de ingreso)",
   ],
 } as const
 
@@ -279,18 +294,18 @@ function FacturacionContent() {
                   variant="outline"
                   className="border-blue-600/40 bg-blue-600 text-[9px] font-bold uppercase tracking-wider text-white"
                 >
-                  Empieza aqui
+                  Operacion diaria
                 </Badge>
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-                  Digitalizacion Esencial
+                  Gestion completa
                 </span>
               </div>
               <CardTitle className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
                 {PLAN_BASE.name}
               </CardTitle>
-              <p className="text-[11px] leading-snug text-slate-700 sm:text-xs">
-                Operacion diaria clara: tickets, clientes e inventario sin friccion.
-              </p>
+               <p className="text-[11px] leading-snug text-slate-700 sm:text-xs">
+                 Gestion completa del taller: reparaciones, ventas, inventario y equipo.
+               </p>
               <p className="pt-0.5 text-4xl font-black tabular-nums tracking-tight text-slate-900 sm:text-5xl">
                 ${PLAN_BASE.price}
                 <span className="text-base font-bold text-slate-600 sm:text-lg"> MXN</span>
@@ -328,20 +343,20 @@ function FacturacionContent() {
             <div className="absolute right-2 top-2 sm:right-3 sm:top-2.5">
               <span className="inline-flex items-center gap-1 rounded-md border-2 border-amber-800/30 bg-amber-950 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-50 shadow-md">
                 <Sparkles className="h-3 w-3 text-amber-200" aria-hidden />
-                PARA CRECER
-              </span>
+                 ESCALA TU NEGOCIO
+               </span>
             </div>
             <CardHeader className="space-y-1 px-3 pb-1.5 pt-7 sm:px-4 sm:pt-8">
               <p className="text-[10px] font-bold uppercase tracking-widest text-amber-950/90">
-                Blindaje Total
-              </p>
+                Automatiza tu operacion
+               </p>
               <CardTitle className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
                 {PLAN_ORO.name}
               </CardTitle>
-              <p className="text-[11px] font-medium leading-snug text-slate-800 sm:text-xs">
-                Todo lo de PLAN CORE, mas herramientas que elevan la confianza del cliente y blindan tu
-                operacion.
-              </p>
+               <p className="text-[11px] font-medium leading-snug text-slate-800 sm:text-xs">
+                 Todo lo de PLAN CORE mas herramientas avanzadas: visitas, compras, reportes, utilidad y
+                 mas.
+               </p>
               <p className="pt-0.5 text-4xl font-black tabular-nums tracking-tight text-amber-950 sm:text-5xl">
                 ${PLAN_ORO.price}
                 <span className="text-base font-bold text-amber-900/90 sm:text-lg"> MXN</span>
