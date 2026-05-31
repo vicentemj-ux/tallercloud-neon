@@ -1,6 +1,6 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 export interface AjustesTallerFlujoPro {
@@ -13,12 +13,6 @@ const DEFAULTS: AjustesTallerFlujoPro = {
   health_check_required: false,
   firma_required: false,
   fotos_required: false,
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 function mapRow(row: { healthCheckRequired: boolean; firmaRequired: boolean; fotosRequired: boolean } | null): AjustesTallerFlujoPro {

@@ -1,6 +1,6 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 import { getPublicUrl, sanitizeFileName, uploadFileToR2 } from "@/lib/r2"
 import { decodeIfEncoded } from "@/lib/utils"
@@ -79,12 +79,6 @@ function toSettings(row: Awaited<ReturnType<typeof getPrismaClient>>["configurac
     tiktok: row?.tiktok ?? null,
     whatsapp: row?.whatsapp ?? null,
   }
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 function buildUpdatePayload(updates: Partial<TallerSettings>, logoUrl?: string | null, logoStorageKey?: string | null): Record<string, unknown> {

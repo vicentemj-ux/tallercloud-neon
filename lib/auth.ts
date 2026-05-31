@@ -85,8 +85,12 @@ export const authOptions: NextAuthOptions = {
         // Already has an account linked? Allow.
         const existingAccount = await prisma.account.findFirst({
           where: { providerAccountId: account.providerAccountId, provider: "google" },
+          include: { user: { select: { tenantId: true } } },
         })
-        if (existingAccount) return true
+        if (existingAccount) {
+          ;(user as any).tenantId = existingAccount.user.tenantId
+          return true
+        }
 
         // User already exists by email? Link the Google account.
         const existingUser = await prisma.user.findFirst({
@@ -110,6 +114,8 @@ export const authOptions: NextAuthOptions = {
               session_state: account.session_state,
             },
           })
+          ;(user as any).tenantId = existingUser.tenantId
+          ;(user as any).tenantName = existingUser.tenant?.nombre || "Mi Taller"
           return true
         }
 
@@ -178,6 +184,10 @@ export const authOptions: NextAuthOptions = {
           },
         })
 
+        // Pass tenantId to JWT callback via user object (avoids DB lookup in jwt callback)
+        ;(user as any).tenantId = tenant.id
+        ;(user as any).tenantName = displayName
+
         return true
       } catch (error) {
         console.error("[auth] Google signIn error:", error)
@@ -186,15 +196,16 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account }) {
       if (user) {
-        // Credentials provider: user object has tenant fields directly
+        // Both Credentials and OAuth providers pass tenantId on user object
+        // (signIn callback sets it for OAuth, authorize sets it for Credentials)
         if ((user as any).tenantId) {
           token.tenantId = (user as any).tenantId
           token.tenantName = (user as any).tenantName
           token.isAdmin = (user as any).isAdmin
           token.role = (user as any).role
-          token.sessionVersion = (user as any).sessionVersion
+          token.sessionVersion = (user as any).sessionVersion ?? 1
         } else if (user.email) {
-          // OAuth provider: look up our DB user by email
+          // Fallback: look up our DB user by email if tenantId wasn't set
           try {
             const prisma = getPrismaClient()
             const dbUser = await prisma.user.findFirst({

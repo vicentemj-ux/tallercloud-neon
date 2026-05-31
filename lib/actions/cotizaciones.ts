@@ -1,8 +1,9 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentTenant, getCurrentUser } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 import { createRepair } from "@/lib/actions/repairs-prisma"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
@@ -53,12 +54,6 @@ export interface CotizacionItem extends CotizacionItemInput {
   total: number
   created_at: string
   updated_at: string
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 function sanitizeItems(items: CotizacionItemInput[]): CotizacionItemInput[] {

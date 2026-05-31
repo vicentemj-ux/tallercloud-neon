@@ -1,6 +1,6 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
 import { getPrismaClient } from "@/lib/prisma"
 import {
@@ -75,12 +75,6 @@ export interface RepairChangeHistoryRow {
 }
 
 // ─── Helpers de Historial (defensivos: nunca tumban el flujo principal) ───────
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
-}
 
 /**
  * Registra una entrada en el historial de una reparación.

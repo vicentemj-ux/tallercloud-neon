@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 function sanitizeImportField(value: unknown): string {
@@ -12,9 +12,13 @@ function sanitizeImportField(value: unknown): string {
   return str
 }
 
+async function getTenantIdForImport(): Promise<string | null> {
+  try { return await getTenantIdOrThrow() } catch { return null }
+}
+
 export async function uploadToStaging(data: any[], batchId: string) {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) return { success: false, error: "No autenticado" }
+  const tenantId = await getTenantIdForImport()
+  if (!tenantId) return { success: false, error: "No autenticado" }
 
   try {
     const prisma = getPrismaClient()
@@ -25,7 +29,7 @@ export async function uploadToStaging(data: any[], batchId: string) {
       await prisma.stagingImportReparacion.createMany({
         data: chunk.map((row) => ({
           importBatchId: batchId,
-          tenantId: tenant.id,
+          tenantId,
           folio: sanitizeImportField(row.folio) || "S/F",
           clienteNombre: sanitizeImportField(row.cliente_nombre) || "Cliente Importado",
           clienteTelefono: sanitizeImportField(row.cliente_telefono) || "",
@@ -49,14 +53,14 @@ export async function uploadToStaging(data: any[], batchId: string) {
 }
 
 export async function processStagingToFinal(batchId: string) {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) return { success: false, error: "No autenticado" }
+  const tenantId = await getTenantIdForImport()
+  if (!tenantId) return { success: false, error: "No autenticado" }
 
   try {
     const prisma = getPrismaClient()
 
     const stagingRecords = await prisma.stagingImportReparacion.findMany({
-      where: { importBatchId: batchId, procesado: false, tenantId: tenant.id },
+      where: { importBatchId: batchId, procesado: false, tenantId },
     })
 
     if (stagingRecords.length === 0) return { success: true, processed: 0 }
@@ -68,7 +72,7 @@ export async function processStagingToFinal(batchId: string) {
 
       if (record.clienteTelefono) {
         const existingClient = await prisma.cliente.findFirst({
-          where: { tenantId: tenant.id, telefono: record.clienteTelefono },
+          where: { tenantId, telefono: record.clienteTelefono },
           select: { id: true },
         })
         if (existingClient) {
@@ -79,7 +83,7 @@ export async function processStagingToFinal(batchId: string) {
       if (!finalClienteId) {
         const newClient = await prisma.cliente.create({
           data: {
-            tenantId: tenant.id,
+            tenantId,
             nombre: record.clienteNombre,
             telefono: record.clienteTelefono || "",
           },
@@ -91,7 +95,7 @@ export async function processStagingToFinal(batchId: string) {
       try {
         await prisma.reparacion.create({
           data: {
-            tenantId: tenant.id,
+            tenantId,
             clienteId: finalClienteId,
             folio: record.folio,
             estado: record.estatusOriginal || "Entregado",
@@ -119,13 +123,13 @@ export async function processStagingToFinal(batchId: string) {
 }
 
 export async function clearProcessedStaging(batchId: string) {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) return { success: false, error: "No autenticado" }
+  const tenantId = await getTenantIdForImport()
+  if (!tenantId) return { success: false, error: "No autenticado" }
 
   try {
     const prisma = getPrismaClient()
     await prisma.stagingImportReparacion.deleteMany({
-      where: { tenantId: tenant.id, importBatchId: batchId, procesado: true },
+      where: { tenantId, importBatchId: batchId, procesado: true },
     })
     return { success: true }
   } catch (error: any) {

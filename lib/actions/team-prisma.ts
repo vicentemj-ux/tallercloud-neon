@@ -1,7 +1,7 @@
 "use server"
 
 import bcrypt from "bcryptjs"
-import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 import { TEAM_ROLES, type EquipoMiembroRow, type EquipoOwnerRow, type RolOption } from "@/lib/team-types"
 
@@ -9,12 +9,6 @@ const MVP_LIMIT = 5
 const MVP_LIMIT_MSG = `Has alcanzado el limite de ${MVP_LIMIT} usuarios para la fase MVP. Contacta a soporte para mas detalles.`
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function getTenantIdOrThrow() {
-  const tenantId = await getCurrentTallerId()
-  if (!tenantId) throw new Error("Sesion invalida")
-  return tenantId
-}
 
 function findRoleById(rolId: string) {
   return TEAM_ROLES.find((r) => r.id === rolId) ?? null

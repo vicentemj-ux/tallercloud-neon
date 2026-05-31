@@ -1,6 +1,6 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 export interface FlujoEstatus {
@@ -54,12 +54,6 @@ export interface ReportesData {
 const MESES_CORTO = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"]
 const ESTATUS_ACTIVOS = ["Recibido", "Diagnostico", "En Reparacion", "Listo"]
 const FALLA_SKIP = new Set(["sin asignar", "no aplica", "n/a", "ninguna", "pendiente", ""])
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
-}
 
 export async function getReportesData(
   desde: string,

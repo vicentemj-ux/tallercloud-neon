@@ -1,6 +1,6 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 export interface TransaccionItem {
@@ -26,12 +26,6 @@ export interface UtilidadData {
   costoDeVenta: number
   margenBruto: number
   utilidadNeta: number
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 export async function getUtilidadData(

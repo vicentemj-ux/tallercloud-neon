@@ -1,15 +1,14 @@
 "use server"
 
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 export async function checkWizardNeeded(): Promise<boolean> {
   try {
-    const tenant = await getCurrentTenant()
-    if (!tenant?.id) return false
     const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
     const cfg = await prisma.configuracionTaller.findUnique({
-      where: { tenantId: tenant.id },
+      where: { tenantId },
       select: { wizardCompletado: true },
     })
     return cfg?.wizardCompletado === false
@@ -24,8 +23,8 @@ export async function completeWizard(data: {
   zonaHoraria: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const tenant = await getCurrentTenant()
-    if (!tenant?.id) return { success: false, error: "Sesion invalida" }
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
 
     const nombre = data.nombreTaller.trim()
     if (!nombre || nombre.length < 2) {
@@ -36,11 +35,10 @@ export async function completeWizard(data: {
       return { success: false, error: "El telefono es obligatorio" }
     }
 
-    const prisma = getPrismaClient()
     await prisma.configuracionTaller.upsert({
-      where: { tenantId: tenant.id },
+      where: { tenantId },
       create: {
-        tenantId: tenant.id,
+        tenantId,
         nombreComercial: nombre,
         telefono: tel,
         timezone: data.zonaHoraria,

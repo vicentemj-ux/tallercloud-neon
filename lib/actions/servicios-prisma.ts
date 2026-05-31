@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 
 export interface Servicio {
@@ -27,12 +27,6 @@ export interface CreateServicioInput {
   nombre: string
   descripcion: string
   precio: number
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 function mapServicio(r: { id: string; nombre: string; descripcion: string; precio: any; createdAt: Date; updatedAt: Date }): Servicio {

@@ -1,15 +1,10 @@
 "use server"
 
-import { getCurrentTenant, getCurrentUser } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getCurrentActorDisplayName } from "@/lib/auth/actor-display-name"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 import type { ChatMember, ChatUser, WorkshopMessage } from "@/components/dashboard/chat/types"
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
-}
 
 function roleLabel(role: string, teamRole: string | null): string {
   if (role === "OWNER") return "Propietario"

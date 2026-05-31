@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { getCurrentTenant } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 
 export interface BitacoraVisita {
   id: string
@@ -77,12 +78,6 @@ function mapVisita(v: {
     created_at: v.createdAt.toISOString(),
     updated_at: v.updatedAt.toISOString(),
   }
-}
-
-async function getTenantIdOrThrow() {
-  const tenant = await getCurrentTenant()
-  if (!tenant?.id) throw new Error("Sesion invalida")
-  return tenant.id
 }
 
 export async function getVisitas(params: {

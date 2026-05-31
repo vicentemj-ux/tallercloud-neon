@@ -1,7 +1,8 @@
 ﻿"use server"
 
 import { randomInt } from "crypto"
-import { getCurrentUser, getCurrentTenant } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getPrismaClient } from "@/lib/prisma"
 import { sendMemberVerificationPinEmail } from "@/lib/email/send"
 
@@ -95,8 +96,8 @@ export async function resendCurrentUserVerificationPin(): Promise<{ success: boo
     if (!user) return { success: false, error: "Sesion no valida para reenviar codigo." }
 
     const userId = (user as any).id
-    const tenant = await getCurrentTenant()
-    if (!userId || !tenant?.id) return { success: false, error: "Sesion no valida." }
+    let tallerId: string
+    try { tallerId = await getTenantIdOrThrow() } catch { return { success: false, error: "Sesion no valida." } }
 
     const prisma = getPrismaClient()
     const member = await prisma.user.findUnique({
@@ -110,7 +111,7 @@ export async function resendCurrentUserVerificationPin(): Promise<{ success: boo
 
     return issueMemberVerificationPin({
       userId,
-      tallerId: tenant.id,
+      tallerId,
       email: member.email?.trim() || "",
       nombre: member.nombre?.trim() || "Usuario",
     })
@@ -131,14 +132,14 @@ export async function verifyCurrentUserPin(pin: string): Promise<{ success: bool
     if (!user) return { success: false, error: "Sesion no valida para verificar codigo." }
 
     const userId = (user as any).id
-    const tenant = await getCurrentTenant()
-    if (!userId || !tenant?.id) return { success: false, error: "Sesion no valida." }
+    let tallerId: string
+    try { tallerId = await getTenantIdOrThrow() } catch { return { success: false, error: "Sesion no valida." } }
 
     const prisma = getPrismaClient()
     const record = await prisma.verificationPin.findFirst({
       where: {
         userId,
-        tenantId: tenant.id,
+        tenantId: tallerId,
         pin: normalizedPin,
         expiraAt: { gt: new Date() },
       },

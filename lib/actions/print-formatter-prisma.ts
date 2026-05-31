@@ -1,7 +1,7 @@
 "use server"
 
 import { getPrismaClient } from "@/lib/prisma"
-import { getCurrentTenant } from "@/lib/auth"
+import { getTenantIdOrThrow } from "@/lib/auth/tenant-utils"
 import { getInventoryPublicUrl } from "@/lib/storage"
 import { parseChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
 import type { ChecklistIngreso } from "@/lib/reparaciones/checklist-ingreso"
@@ -103,8 +103,7 @@ function normalizePhone(phone: string | null | undefined): string {
 }
 
 async function getTenantId(): Promise<string | null> {
-  const tenant = await getCurrentTenant()
-  return tenant?.id ?? null
+  try { return await getTenantIdOrThrow() } catch { return null }
 }
 
 async function getTallerSettings(prisma: ReturnType<typeof getPrismaClient>, tenantId: string) {
