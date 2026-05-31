@@ -375,13 +375,14 @@ function ConfiguracionContent() {
   }
 
   // ── Tabs config ─────────────────────────────────────────────────────────
+  const PRO_TABS: Tab[] = ["flujo-pro", "hardware", "alertas"]
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: "taller",  label: "Taller",    icon: <Store className="h-3.5 w-3.5" /> },
-    { id: "cuenta",  label: "Mi Cuenta", icon: <User  className="h-3.5 w-3.5" /> },
-    { id: "alertas", label: "Reportes y Alertas", icon: <BellRing className="h-3.5 w-3.5" /> },
-    { id: "flujo-pro", label: "Flujo PRO", icon: <Sparkles className="h-3.5 w-3.5" /> },
-    { id: "imprenta", label: "Imprenta", icon: <Printer className="h-3.5 w-3.5" /> },
-    { id: "hardware", label: "Hardware", icon: <Cpu className="h-3.5 w-3.5" /> },
+    { id: "taller",    label: "Taller",             icon: <Store className="h-3.5 w-3.5" /> },
+    { id: "cuenta",    label: "Mi Cuenta",           icon: <User  className="h-3.5 w-3.5" /> },
+    { id: "imprenta",  label: "Imprenta",            icon: <Printer className="h-3.5 w-3.5" /> },
+    { id: "flujo-pro", label: "Flujo PRO",           icon: <Sparkles className="h-3.5 w-3.5" /> },
+    { id: "hardware",  label: "Hardware",            icon: <Cpu className="h-3.5 w-3.5" /> },
+    { id: "alertas",   label: "Reportes y Alertas",  icon: <BellRing className="h-3.5 w-3.5" /> },
   ]
 
   return (
@@ -408,17 +409,21 @@ function ConfiguracionContent() {
               }}
               disabled={PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-blue-600 text-blue-600"
-                  : PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)
-                    ? "border-transparent text-slate-400 cursor-not-allowed"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+                PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)
+                  ? "border-transparent text-slate-400 cursor-not-allowed"
+                  : activeTab === tab.id
+                    ? PRO_TABS.includes(tab.id)
+                      ? "border-amber-500 text-amber-700"
+                      : "border-blue-600 text-blue-600"
+                    : PRO_TABS.includes(tab.id)
+                      ? "border-transparent text-slate-500 hover:text-amber-600"
+                      : "border-transparent text-slate-500 hover:text-slate-700"
               }`}
             >
               {tab.icon}
               {tab.label}
-              {PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id) ? (
-                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold uppercase text-purple-700">
+              {PRO_TABS.includes(tab.id) ? (
+                <span className="rounded-full bg-gradient-to-r from-amber-200 to-amber-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-950 shadow-sm">
                   Pro
                 </span>
               ) : null}
