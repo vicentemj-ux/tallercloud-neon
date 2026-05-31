@@ -1284,6 +1284,7 @@ export function NuevaReparacionForm({
                   onChange={(e) => setImeiValue(e.target.value)}
                 />
                 <Select
+                  name="color"
                   value={colorValue}
                   onValueChange={(v) => setColorValue(v)}
                 >
