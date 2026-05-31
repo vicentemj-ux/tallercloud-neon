@@ -165,7 +165,7 @@ export default function PrintTicketDynamicPage() {
   }
 
   return (
-    <div ref={ticketRef} className="print-ticket-only flex items-center justify-center bg-white">
+    <div ref={ticketRef} className="print-ticket-only bg-white">
       <ReceiptTicket
         data={data}
         businessName={business.name}

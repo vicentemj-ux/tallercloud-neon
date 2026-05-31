@@ -140,7 +140,8 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
     }, [data.repairId])
 
     const faultText = resolveReportedFault(data)
-    const total  = data.estimatedPrice ? parseFloat(data.estimatedPrice) : 0
+    const serviciosTotal = (servicios ?? []).reduce((sum, s) => sum + s.precio * s.cantidad, 0)
+    const total  = Math.max(parseFloat(data.estimatedPrice ?? "0") || 0, serviciosTotal)
     const pagado = data.deposit        ? parseFloat(data.deposit)        : 0
     const resta  = Math.max(0, total - pagado)
     const fmtMXN = (n: number) =>
