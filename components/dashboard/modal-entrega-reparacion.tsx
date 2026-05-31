@@ -45,6 +45,7 @@ function montosUnico(metodo: Metodo, total: number) {
 export type EntregaCompletadaPayload = {
   /** Monto cobrado en esta operacion de entrega (liquidacion o sin reparacion) */
   pagoFinal: number
+  metodoPago: "efectivo" | "tarjeta" | "transferencia"
 }
 
 export interface ModalEntregaReparacionProps {
@@ -141,7 +142,7 @@ export function ModalEntregaReparacion({
       }
       toast({ title: "Entrega registrada", description: "Historial actualizado; caja y venta si aplica." })
       onOpenChange(false)
-      await onCompleted({ pagoFinal: tieneSaldo ? saldo : 0 })
+      await onCompleted({ pagoFinal: tieneSaldo ? saldo : 0, metodoPago })
     } finally {
       setSaving(false)
     }
@@ -178,7 +179,7 @@ export function ModalEntregaReparacion({
         toast({ title: "Entrega sin reparacion", description: "Orden cerrada." })
       }
       onOpenChange(false)
-      await onCompleted({ pagoFinal: hayCargoExtra ? cargoExtra : 0 })
+      await onCompleted({ pagoFinal: hayCargoExtra ? cargoExtra : 0, metodoPago: cargoExtraMontos.metodoPago })
     } finally {
       setSavingSinRep(false)
     }

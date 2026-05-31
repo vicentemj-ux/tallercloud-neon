@@ -147,6 +147,7 @@ export function RepairDetailView({
   const [exitoEntregaSnapshot, setExitoEntregaSnapshot] = useState<{
     pagoFinal: number
     anticiposPrevios: number
+    metodoPago: string
     detail: RepairDetail | null
   } | null>(null)
 
@@ -1324,6 +1325,7 @@ export function RepairDetailView({
               setExitoEntregaSnapshot({
                 pagoFinal: payload.pagoFinal,
                 anticiposPrevios: anticipoAntesEntregaRef.current,
+                metodoPago: payload.metodoPago,
                 detail: page.detail ?? null,
               })
               setExitoEntregaOpen(true)
@@ -1389,6 +1391,7 @@ export function RepairDetailView({
           }
           anticiposPrevios={exitoEntregaSnapshot.anticiposPrevios}
           pagoFinal={exitoEntregaSnapshot.pagoFinal}
+          metodoPago={exitoEntregaSnapshot.metodoPago}
         />
       ) : null}
 
