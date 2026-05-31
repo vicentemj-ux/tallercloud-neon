@@ -1,9 +1,7 @@
 "use server"
 
-import { createCurrentTenantClient } from "@/lib/supabase/tenant-client"
-import { getCurrentTallerId } from "@/lib/auth/get-current-taller"
-
-const createClient = async () => (await createCurrentTenantClient()).supabase
+import { getCurrentTenant } from "@/lib/auth"
+import { getPrismaClient } from "@/lib/prisma"
 
 export interface AjustesTallerFlujoPro {
   health_check_required: boolean
@@ -17,58 +15,67 @@ const DEFAULTS: AjustesTallerFlujoPro = {
   fotos_required: false,
 }
 
+async function getTenantIdOrThrow() {
+  const tenant = await getCurrentTenant()
+  if (!tenant?.id) throw new Error("Sesion invalida")
+  return tenant.id
+}
+
+function mapRow(row: { healthCheckRequired: boolean; firmaRequired: boolean; fotosRequired: boolean } | null): AjustesTallerFlujoPro {
+  if (!row) return { ...DEFAULTS }
+  return {
+    health_check_required: row.healthCheckRequired,
+    firma_required: row.firmaRequired,
+    fotos_required: row.fotosRequired,
+  }
+}
+
 export async function getAjustesTallerFlujoPro(): Promise<{
   ajustes: AjustesTallerFlujoPro
   error: string | null
 }> {
-  const supabase = await createClient()
-  const tallerId = await getCurrentTallerId()
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
 
-  const { data, error } = await supabase
-    .from("ajustes_taller")
-    .select("health_check_required, firma_required, fotos_required")
-    .eq("taller_id", tallerId)
-    .maybeSingle()
+    const row = await prisma.ajustesTaller.findUnique({
+      where: { tenantId },
+      select: { healthCheckRequired: true, firmaRequired: true, fotosRequired: true },
+    })
 
-  if (error) {
-    console.error("getAjustesTallerFlujoPro:", error)
-    return { ajustes: { ...DEFAULTS }, error: error.message }
-  }
-
-  if (!data) {
-    return { ajustes: { ...DEFAULTS }, error: null }
-  }
-
-  const row = data as Record<string, unknown>
-  return {
-    ajustes: {
-      health_check_required: Boolean(row.health_check_required),
-      firma_required: Boolean(row.firma_required),
-      fotos_required: Boolean(row.fotos_required),
-    },
-    error: null,
+    return { ajustes: mapRow(row), error: null }
+  } catch (e) {
+    console.error("getAjustesTallerFlujoPro:", e)
+    return { ajustes: { ...DEFAULTS }, error: e instanceof Error ? e.message : "Error al cargar ajustes" }
   }
 }
 
 export async function updateAjustesTallerFlujoPro(
   input: Partial<AjustesTallerFlujoPro>
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient()
-  const tallerId = await getCurrentTallerId()
+  try {
+    const prisma = getPrismaClient()
+    const tenantId = await getTenantIdOrThrow()
 
-  const payload: Record<string, unknown> = {
-    taller_id: tallerId,
-    updated_at: new Date().toISOString(),
+    const data: any = {}
+    if (input.health_check_required !== undefined) data.healthCheckRequired = input.health_check_required
+    if (input.firma_required !== undefined) data.firmaRequired = input.firma_required
+    if (input.fotos_required !== undefined) data.fotosRequired = input.fotos_required
+
+    await prisma.ajustesTaller.upsert({
+      where: { tenantId },
+      create: {
+        tenantId,
+        healthCheckRequired: data.healthCheckRequired ?? DEFAULTS.health_check_required,
+        firmaRequired: data.firmaRequired ?? DEFAULTS.firma_required,
+        fotosRequired: data.fotosRequired ?? DEFAULTS.fotos_required,
+      },
+      update: data,
+    })
+
+    return { success: true }
+  } catch (e) {
+    console.error("updateAjustesTallerFlujoPro:", e)
+    return { success: false, error: e instanceof Error ? e.message : "Error al guardar ajustes" }
   }
-  if (input.health_check_required !== undefined) payload.health_check_required = input.health_check_required
-  if (input.firma_required !== undefined) payload.firma_required = input.firma_required
-  if (input.fotos_required !== undefined) payload.fotos_required = input.fotos_required
-
-  const { error } = await supabase.from("ajustes_taller").upsert(payload, { onConflict: "taller_id" })
-
-  if (error) {
-    console.error("updateAjustesTallerFlujoPro:", error)
-    return { success: false, error: error.message }
-  }
-  return { success: true }
 }

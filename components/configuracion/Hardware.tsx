@@ -44,13 +44,16 @@ export function Hardware({ planTipo }: { planTipo: string }) {
   })
 
   useEffect(() => {
+    let cancelled = false
     getCurrentTallerIdPublic().then((id) => {
+      if (cancelled) return
       setTallerId(id)
       if (!id) {
         setLoading(false)
         return
       }
       getCamaraConfig(id).then(({ config: c }) => {
+        if (cancelled) return
         const hv = (c?.hikvision as CamaraHikvisionConfig) || {}
         setConfig({
           enabled: hv.enabled ?? false,
@@ -62,6 +65,7 @@ export function Hardware({ planTipo }: { planTipo: string }) {
         setLoading(false)
       })
     })
+    return () => { cancelled = true }
   }, [])
 
   async function handleSave() {

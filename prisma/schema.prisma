@@ -83,6 +83,7 @@ model Tenant {
   comprasUsadas      CompraUsada[]
   cotizaciones       Cotizacion[]
   cotizacionItems    CotizacionItem[]
+  ajustesTaller      AjustesTaller?
 }
 
 model User {
@@ -302,6 +303,18 @@ model ConfiguracionTaller {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+}
+
+model AjustesTaller {
+  tenantId            String   @id @map("taller_id")
+  healthCheckRequired Boolean  @default(false) @map("health_check_required")
+  firmaRequired       Boolean  @default(false) @map("firma_required")
+  fotosRequired       Boolean  @default(false) @map("fotos_required")
+  updatedAt           DateTime @default(now()) @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("ajustes_taller")
 }
 
 model Producto {

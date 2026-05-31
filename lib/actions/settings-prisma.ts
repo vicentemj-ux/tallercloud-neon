@@ -86,6 +86,36 @@ async function getTenantIdOrThrow() {
   return tenant.id
 }
 
+function buildUpdatePayload(updates: Partial<TallerSettings>, logoUrl?: string | null, logoStorageKey?: string | null): Record<string, unknown> {
+  const u: Record<string, unknown> = {}
+  if (updates.nombre_taller !== undefined) u.nombreComercial = updates.nombre_taller
+  if (updates.direccion !== undefined) u.direccion = updates.direccion
+  if (updates.telefono !== undefined) u.telefono = updates.telefono
+  if (updates.email_contacto !== undefined) u.emailContacto = updates.email_contacto
+  if (updates.ciudad !== undefined) u.ciudad = updates.ciudad
+  if (updates.estado !== undefined) u.estado = updates.estado
+  if (updates.pais !== undefined) u.pais = updates.pais
+  if (updates.zona_horaria !== undefined) u.timezone = updates.zona_horaria
+  if (logoUrl !== undefined) u.logoUrl = logoUrl ?? null
+  if (logoStorageKey !== undefined) u.logoStorageKey = logoStorageKey ?? null
+  if (updates.whatsapp !== undefined) u.whatsapp = updates.whatsapp
+  if (updates.tamano_papel !== undefined) u.paperSize = updates.tamano_papel
+  if (updates.label_size !== undefined) u.labelSize = updates.label_size
+  if (updates.impresion_config !== undefined) u.printSettings = (updates.impresion_config as object | null) ?? {}
+  if (updates.terminos_garantia !== undefined) u.terminosGarantia = updates.terminos_garantia
+  if (updates.dias_garantia !== undefined) u.diasGarantia = updates.dias_garantia
+  if (updates.mensaje_despedida !== undefined) u.mensajeDespedida = updates.mensaje_despedida
+  if (updates.alertas_stock_bajo !== undefined) u.alertasStockBajo = updates.alertas_stock_bajo
+  if (updates.reportes_cierre_caja !== undefined) u.reportesCierreCaja = updates.reportes_cierre_caja
+  if (updates.alerta_urgentes !== undefined) u.alertaUrgentes = updates.alerta_urgentes
+  if (updates.prefijo_folio !== undefined) u.prefijoFolio = updates.prefijo_folio
+  if (updates.siguiente_folio !== undefined) u.siguienteFolio = updates.siguiente_folio
+  if (updates.facebook !== undefined) u.facebook = updates.facebook
+  if (updates.instagram !== undefined) u.instagram = updates.instagram
+  if (updates.tiktok !== undefined) u.tiktok = updates.tiktok
+  return u
+}
+
 function parseDataUrlImage(dataUrl: string): { bytes: Buffer; mimeType: string; ext: string } | null {
   const m = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/)
   if (!m) return null
@@ -176,33 +206,7 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
         instagram: updates.instagram ?? null,
         tiktok: updates.tiktok ?? null,
       },
-      update: {
-        ...(updates.nombre_taller !== undefined ? { nombreComercial: updates.nombre_taller } : {}),
-        ...(updates.direccion !== undefined ? { direccion: updates.direccion } : {}),
-        ...(updates.telefono !== undefined ? { telefono: updates.telefono } : {}),
-        ...(updates.email_contacto !== undefined ? { emailContacto: updates.email_contacto } : {}),
-        ...(updates.ciudad !== undefined ? { ciudad: updates.ciudad } : {}),
-        ...(updates.estado !== undefined ? { estado: updates.estado } : {}),
-        ...(updates.pais !== undefined ? { pais: updates.pais } : {}),
-        ...(updates.zona_horaria !== undefined ? { timezone: updates.zona_horaria } : {}),
-        ...(logoUrl !== undefined ? { logoUrl: logoUrl ?? null } : {}),
-        ...(logoStorageKey !== undefined ? { logoStorageKey: logoStorageKey ?? null } : {}),
-        ...(updates.whatsapp !== undefined ? { whatsapp: updates.whatsapp } : {}),
-        ...(updates.tamano_papel !== undefined ? { paperSize: updates.tamano_papel } : {}),
-        ...(updates.label_size !== undefined ? { labelSize: updates.label_size } : {}),
-        ...(updates.impresion_config !== undefined ? { printSettings: (updates.impresion_config as object | null) ?? {} } : {}),
-        ...(updates.terminos_garantia !== undefined ? { terminosGarantia: updates.terminos_garantia } : {}),
-        ...(updates.dias_garantia !== undefined ? { diasGarantia: updates.dias_garantia } : {}),
-        ...(updates.mensaje_despedida !== undefined ? { mensajeDespedida: updates.mensaje_despedida } : {}),
-        ...(updates.alertas_stock_bajo !== undefined ? { alertasStockBajo: updates.alertas_stock_bajo } : {}),
-        ...(updates.reportes_cierre_caja !== undefined ? { reportesCierreCaja: updates.reportes_cierre_caja } : {}),
-        ...(updates.alerta_urgentes !== undefined ? { alertaUrgentes: updates.alerta_urgentes } : {}),
-        ...(updates.prefijo_folio !== undefined ? { prefijoFolio: updates.prefijo_folio } : {}),
-        ...(updates.siguiente_folio !== undefined ? { siguienteFolio: updates.siguiente_folio } : {}),
-        ...(updates.facebook !== undefined ? { facebook: updates.facebook } : {}),
-        ...(updates.instagram !== undefined ? { instagram: updates.instagram } : {}),
-        ...(updates.tiktok !== undefined ? { tiktok: updates.tiktok } : {}),
-      },
+      update: buildUpdatePayload(updates, logoUrl, logoStorageKey),
     })
 
     return { settings: toSettings(row, tenantId), error: null as string | null }
