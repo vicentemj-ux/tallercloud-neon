@@ -74,6 +74,7 @@ IndexedDB at `lib/offline/` stores repair drafts and sync queue. Fails silently 
 - JWT expires in 1 hour, regenerated per request
 - Rate limiting on 5 auth endpoints
 - All tenant-scoped queries MUST include `taller_id` filter
+- Google OAuth auto-provisions tenant+user+configuracionTaller in `signIn` callback (`lib/auth.ts`)
 
 ## Env Vars Required
 
@@ -84,6 +85,8 @@ SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_JWT_SECRET
 RESEND_API_KEY
 NEXT_PUBLIC_SUPABASE_INVENTORY_BUCKET (default: "inventario")
+AUTH_GOOGLE_ID               # Google OAuth client ID (for Google sign-in)
+AUTH_GOOGLE_SECRET           # Google OAuth client secret
 ```
 
 ---
