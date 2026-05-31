@@ -174,6 +174,7 @@ export const authOptions: NextAuthOptions = {
             timezone: "America/Mexico_City",
             paperSize: "80mm",
             printSettings: {},
+            wizardCompletado: false,
           },
         })
 

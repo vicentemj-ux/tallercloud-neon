@@ -306,6 +306,7 @@ model ConfiguracionTaller {
   facebook             String?
   instagram            String?
   tiktok               String?
+  wizardCompletado     Boolean? @default(false) @map("wizard_completado")
   camaraConfig         Json?    @map("camara_config")
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt

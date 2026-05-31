@@ -168,6 +168,26 @@ export async function updateTallerSettings(updates: Partial<TallerSettings>) {
     const prisma = getPrismaClient()
     const tenantId = await getTenantIdOrThrow()
 
+    // Candado: evitar que siguiente_folio se setee a un numero menor o igual
+    // al folio maximo existente en reparaciones (evita duplicados).
+    if (updates.siguiente_folio != null) {
+      const maxFolioRow = await prisma.$queryRaw<Array<{ max_folio_num: number }>>`
+        SELECT COALESCE(
+          MAX(CAST(NULLIF(regexp_replace("folio", '[^0-9]', '', 'g'), '') AS INTEGER)),
+          0
+        ) AS max_folio_num
+        FROM "Reparacion"
+        WHERE "tenantId" = ${tenantId} AND "folio" IS NOT NULL AND "folio" != ''
+      `
+      const maxExisting = Number(maxFolioRow?.[0]?.max_folio_num ?? 0)
+      if (updates.siguiente_folio <= maxExisting) {
+        return {
+          settings: null,
+          error: `El folio debe ser mayor al ultimo registrado (${String(maxExisting).padStart(3, "0")}). No se puede retroceder.`,
+        }
+      }
+    }
+
     let logoUrl = updates.logo_url
     let logoStorageKey = updates.logo_storage_key
     if (typeof updates.logo_url === "string" && updates.logo_url.startsWith("data:image")) {

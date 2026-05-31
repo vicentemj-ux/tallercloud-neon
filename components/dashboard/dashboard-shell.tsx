@@ -6,6 +6,7 @@ import dynamic from "next/dynamic"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import { PRO_DISABLED_ROUTES, PRO_FEATURES_TEMP_DISABLED } from "@/lib/runtime-flags"
+import { checkWizardNeeded } from "@/lib/actions/wizard-prisma"
 
 // Lazy-load sidebar con DnD (~100-150KB ahorrados en bundle inicial)
 const SidebarContent = dynamic(
@@ -66,6 +67,15 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     if (blocked) {
       router.replace("/dashboard")
     }
+  }, [pathname, router])
+
+  useEffect(() => {
+    if (pathname.startsWith("/dashboard/wizard") || pathname.startsWith("/onboarding")) return
+    let cancelled = false
+    checkWizardNeeded().then((needed) => {
+      if (!cancelled && needed) router.replace("/dashboard/wizard")
+    })
+    return () => { cancelled = true }
   }, [pathname, router])
 
   return (
