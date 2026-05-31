@@ -7,11 +7,22 @@ const r2PublicBaseUrl = process.env.R2_PUBLIC_BASE_URL || ""
 const r2PublicHost = r2PublicBaseUrl.replace(/^https?:\/\//, "").split("/")[0] || ""
 
 // Content Security Policy
-// 'unsafe-inline' y 'unsafe-eval' requeridos por Next.js App Router (hidratación + estilos).
-// Se agregan permisos explícitos para imágenes desde el host de Supabase y el propio dominio.
+// 'unsafe-inline' requerido por Next.js App Router (scripts de bootstrap/hidratación).
+// Nonce/hash no es viable porque Next.js no soporta nonces en sus scripts inline del App Router.
+//
+// 'unsafe-eval': necesario en desarrollo para React Fast Refresh.
+// En producción se omite por defecto (seguridad). Si al generar PDFs, tickets
+// o reportes observas errores de CSP en consola, activa la variable de entorno:
+//
+//   CSP_ALLOW_UNSAFE_EVAL=true
+//
+// Sin necesidad de tocar código ni redeployar con cambios de configuración.
+const unsafeEval = process.env.CSP_ALLOW_UNSAFE_EVAL === 'true' || process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ""
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net",
+  "object-src 'none'",
+  `script-src 'self' ${unsafeEval} 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net`.replace(/\s+/g, ' ').trim(),
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   `img-src 'self' blob: data: https://${supabaseHost} https://*.supabase.co${r2PublicHost ? ` https://${r2PublicHost} https://*.r2.dev` : ""}`,
