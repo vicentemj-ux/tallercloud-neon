@@ -88,16 +88,19 @@ export function Hardware({ planTipo }: { planTipo: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Banner */}
-      <div className="rounded-3xl border-2 border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80 p-6 sm:p-8 shadow-sm">
+      {/* Banner de PRO */}
+      <div className="rounded-3xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-amber-50/80 to-amber-50 p-6 sm:p-8 shadow-sm ring-1 ring-amber-100">
         <div className="flex items-start gap-4">
-          <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 shadow-md">
+          <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-200 to-amber-300 text-amber-900 shadow-md">
             <Cpu className="h-7 w-7" aria-hidden />
           </div>
           <div className="min-w-0">
+            <div className="mb-1 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-300 to-amber-400 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-950 shadow-sm">
+              Premium
+            </div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Hardware</h1>
             <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-              Configuracion de dispositivos fisicos para deteccion automatica de visitas y captura de imagenes.
+              Conecta camaras IP y dispositivos fisicos para deteccion automatica de visitas, captura de evidencias y control de acceso al taller. Automatiza tu recepcion con tecnologia de vision y mantén un registro confiable de cada persona que ingresa.
             </p>
           </div>
         </div>
