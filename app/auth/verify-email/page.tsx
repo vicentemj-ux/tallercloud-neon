@@ -133,8 +133,18 @@ function VerifyEmailContent() {
         </Card>
 
         {/* Footer */}
-        <div className="text-center text-sm text-slate-500 mt-6">
-          <p>TallerCloud © 2024</p>
+        <div className="text-center text-sm text-slate-500 mt-6 leading-relaxed">
+          <p>TallerCloud © 2024–2026 · Software de gestion para talleres</p>
+          <p className="mt-1">
+            <a
+              href="https://api.whatsapp.com/send?phone=526681227393"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              Soporte tecnico via WhatsApp
+            </a>
+          </p>
         </div>
       </div>
     </div>

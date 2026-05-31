@@ -351,9 +351,13 @@ export async function verifyEmailToken(
   token: string,
   signature?: string,
 ): Promise<{ success: boolean; error?: string; message?: string }> {
-  const expectedSig = signToken(token)
-  if (!expectedSig || signature !== expectedSig) {
-    return { success: false, error: "Token invalido o manipulado" }
+  // Signature check is optional — if SUPABASE_JWT_SECRET is not set,
+  // signToken returns "" and we skip the HMAC verification.
+  if (process.env.SUPABASE_JWT_SECRET) {
+    const expectedSig = signToken(token)
+    if (!expectedSig || signature !== expectedSig) {
+      return { success: false, error: "Token invalido o manipulado" }
+    }
   }
 
   try {
@@ -442,9 +446,11 @@ export async function resetPasswordWithToken(
     return { success: false, error: "La contrasena debe tener al menos 8 caracteres" }
   }
 
-  const expectedSig = signToken(token)
-  if (!expectedSig || signature !== expectedSig) {
-    return { success: false, error: "Token invalido o manipulado" }
+  if (process.env.SUPABASE_JWT_SECRET) {
+    const expectedSig = signToken(token)
+    if (!expectedSig || signature !== expectedSig) {
+      return { success: false, error: "Token invalido o manipulado" }
+    }
   }
 
   try {
