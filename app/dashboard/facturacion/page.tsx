@@ -22,6 +22,7 @@ const PLAN_BASE = {
     "Historial de ventas",
     "Base de clientes",
     "Bitacora de gastos",
+    "REVISION RAPIDA (Checklist basico)",
     "Gestion de equipo (hasta 3 miembros)",
     "Dashboard y configuracion",
   ],
@@ -41,8 +42,7 @@ const PLAN_ORO = {
     "Reportes avanzados",
     "Catalogo de servicios",
     "Firma digital QR",
-    "Evidencia fotografica",
-    "Health Check PRO (checklist de ingreso)",
+    "Health Check PRO (Checklist de 10 puntos)",
   ],
 } as const
 

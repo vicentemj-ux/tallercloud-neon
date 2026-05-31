@@ -15,23 +15,27 @@ const ANNUAL_SAVINGS_CORE = PRICE_CORE_MONTHLY * 12 - PRICE_CORE_ANNUAL
 const ANNUAL_SAVINGS_PRO = PRICE_PRO_MONTHLY * 12 - PRICE_PRO_ANNUAL
 
 const includedCore = [
-  "Folios digitales ilimitados",
-  "Tracking por WhatsApp para clientes",
-  "Punto de venta con caja integrada",
-  "Control de inventario con IMEI/Serie",
-  "Historial completo de clientes",
-  "Impresion termica 58mm y 80mm",
-  "Etiquetas termicas 2x1\"",
-  "Tu equipo en la app (MVP: hasta 5 miembros)",
-  "Actualizaciones gratuitas",
-  "Soporte por WhatsApp",
+  "POS / Ventas con ticket",
+  "Modulo de reparaciones",
+  "Inventario y productos",
+  "Historial de ventas",
+  "Base de clientes",
+  "Bitacora de gastos",
+  "REVISION RAPIDA (Checklist basico)",
+  "Gestion de equipo (hasta 3 miembros)",
+  "Dashboard y configuracion",
 ]
 
 const includedPro = [
-  "Todo lo de PLAN CORE",
-  "Firma digital con QR en tickets",
-  "Evidencia fotografica en reparaciones",
-  "Health Check PRO en flujo de taller",
+  "Todo lo de PLAN CORE (miembros ilimitados)",
+  "Bitacora de visitas",
+  "Chat interno del taller",
+  "Compras y ordenes de compra",
+  "Control de utilidad",
+  "Reportes avanzados",
+  "Catalogo de servicios",
+  "Firma digital QR",
+  "Health Check PRO (Checklist de 10 puntos)",
 ]
 
 export function PricingSection() {
@@ -48,7 +52,7 @@ export function PricingSection() {
             Simple y transparente
           </h2>
           <p className="max-w-xl text-pretty leading-relaxed text-muted-foreground">
-            PLAN CORE para operar con claridad; PLAN PRO cuando quieras elevar confianza y cumplimiento.
+            PLAN CORE para la operacion diaria; PLAN PRO para escalar con herramientas avanzadas.
           </p>
 
           <div className="mt-2 flex items-center gap-1 rounded-full border border-border bg-background p-1">
