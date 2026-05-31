@@ -2,11 +2,11 @@
 
 import { useParams } from "next/navigation"
 import { useMemo, useRef, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 import {
   TicketSalidaGarantia,
   warrantyDaysFromTerminos,
 } from "@/components/dashboard/ticket-salida-garantia"
+import { getWarrantyPrintData } from "@/lib/actions/print-formatter-prisma"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -144,23 +144,34 @@ export default function GarantiaDigitalPage() {
     setLoading(true)
     setError(null)
     try {
-      const supabase = createClient()
-      const { data: row, error: rpcError } = await supabase
-        .rpc("get_garantia_ticket", {
-          p_ticket_id: ticketId,
-          p_last4: last4.trim(),
-        })
-        .maybeSingle()
+      const result = await getWarrantyPrintData(ticketId, last4.trim())
 
-      if (rpcError) throw rpcError
-      if (!row) {
+      if (result.error || !result.data) {
         setError(
           "No se encontro el comprobante. Verifica el enlace o los ultimos 4 digitos del telefono registrado.",
         )
         setData(null)
         return
       }
-      setData(row as GarantiaRow)
+
+      const w = result.data
+      setData({
+        folio: w.folio,
+        marca: w.marca,
+        modelo: w.modelo,
+        numero_serie: w.numeroSerie,
+        falla: w.falla,
+        costo_total: w.costoTotal,
+        anticipo: w.anticipo,
+        fecha_entrega: w.fechaEntrega,
+        nombre_taller: w.nombreTaller,
+        logo_url: w.logoUrl,
+        direccion: w.direccion,
+        telefono: w.telefono,
+        terminos_garantia: w.terminosGarantia,
+        pie_pagina: w.piePagina,
+        tamano_papel: w.tamanoPapel,
+      })
     } catch (err) {
       console.error(err)
       setError("No se pudo cargar la garantia. Intenta de nuevo mas tarde.")

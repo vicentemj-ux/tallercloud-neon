@@ -3,10 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import { ReceiptTicket, type ReceiptData } from "@/components/dashboard/receipt-ticket"
-import { getRepairByFolio } from "@/lib/actions/repairs-prisma"
-import { getTallerSettings } from "@/lib/actions/settings-prisma"
-import { getServiciosReparacion } from "@/lib/actions/servicios-prisma"
-import { getAjustesTallerFlujoPro } from "@/lib/actions/flujo-pro"
+import { getRepairTicketPrintData } from "@/lib/actions/print-formatter-prisma"
 import { usePrintWindowClose } from "@/hooks/use-print-window-close"
 import { toast } from "@/hooks/use-toast"
 
@@ -14,18 +11,16 @@ const isTauriDesktop = async () => false
 const printEscposImage = async (..._args: unknown[]) => {}
 const domToPngBase64 = async (..._args: unknown[]) => ""
 
-interface BusinessSettings {
-  name: string
-  phone: string
-  logoUrl: string | null
-  terminosGarantia: string
-  mensajeDespedida: string
-}
-
 export default function PrintTicketDynamicPage() {
   const { id } = useParams<{ id: string }>()
   const [data, setData] = useState<ReceiptData | null>(null)
-  const [business, setBusiness] = useState<BusinessSettings | null>(null)
+  const [business, setBusiness] = useState<{
+    name: string
+    phone: string
+    logoUrl: string | null
+    terminosGarantia: string
+    mensajeDespedida: string
+  } | null>(null)
   const [servicios, setServicios] = useState<{ nombre: string; precio: number; cantidad: number }[]>([])
   const [showHealthCheckFuncional, setShowHealthCheckFuncional] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -37,61 +32,40 @@ export default function PrintTicketDynamicPage() {
 
     const load = async () => {
       try {
-        const [repResult, settingsResult, flujoResult] = await Promise.all([
-          getRepairByFolio(decodeURIComponent(id)),
-          getTallerSettings(),
-          getAjustesTallerFlujoPro().catch(() => ({ ajustes: { health_check_required: false } })),
-        ])
+        const result = await getRepairTicketPrintData(decodeURIComponent(id))
 
-        const svcResult = repResult.data?.id
-          ? await getServiciosReparacion(repResult.data.id)
-          : { data: [], error: null }
-
-        if (repResult.error || !repResult.data) {
-          setLoadError(repResult.error ?? "Reparacion no encontrada.")
+        if (result.error || !result.data) {
+          setLoadError(result.error ?? "Reparacion no encontrada.")
           return
         }
 
-        const rep = repResult.data
-        const cfg = settingsResult.settings
-
-        const terminosRep = cfg?.terminos_garantia ?? ""
+        const { repair, business: biz, servicios: svcs, showHealthCheckFuncional: showHc } = result.data
 
         setData({
-          folio: rep.folio,
-          customerName: rep.clienteName,
-          customerPhone: rep.clientePhone,
-          deviceModel: rep.deviceModel,
-          deviceBrand: rep.deviceBrand,
-          tipo_equipo: rep.tipo_equipo ?? undefined,
-          imei: rep.imei ?? undefined,
-          color: rep.color ?? undefined,
-          reportedFault: rep.falla ?? "",
-          estimatedPrice: rep.estimatedPrice != null ? String(rep.estimatedPrice) : undefined,
-          deposit: rep.anticipo != null ? String(rep.anticipo) : undefined,
-          date: rep.createdAtRaw ?? "",
-          repairId: rep.id,
-          checklistIngreso: rep.checklistIngreso ?? undefined,
+          folio: repair.folio,
+          customerName: repair.customerName,
+          customerPhone: repair.customerPhone,
+          deviceModel: repair.deviceModel ?? "N/A",
+          deviceBrand: repair.deviceBrand ?? "N/A",
+          tipo_equipo: repair.tipoEquipo ?? undefined,
+          imei: repair.imei ?? undefined,
+          color: repair.color ?? undefined,
+          reportedFault: repair.reportedFault ?? "",
+          estimatedPrice: repair.estimatedPrice != null ? String(repair.estimatedPrice) : undefined,
+          deposit: repair.deposit != null ? String(repair.deposit) : undefined,
+          date: repair.createdAt ?? "",
+          repairId: repair.id,
+          checklistIngreso: repair.checklistIngreso,
         })
 
-        setServicios(
-          (svcResult.data ?? []).map((s) => ({
-            nombre: s.nombre_snapshot,
-            precio: s.precio_snapshot,
-            cantidad: s.cantidad,
-          }))
-        )
-
-        setShowHealthCheckFuncional(
-          flujoResult.ajustes.health_check_required === true && rep.checklistIngreso != null
-        )
-
+        setServicios(svcs)
+        setShowHealthCheckFuncional(showHc)
         setBusiness({
-          name: cfg?.nombre_taller || "Mi Taller",
-          phone: cfg?.telefono || "",
-          logoUrl: cfg?.logo_url ?? null,
-          terminosGarantia: terminosRep,
-          mensajeDespedida: cfg?.mensaje_despedida || "",
+          name: biz.name,
+          phone: biz.phone,
+          logoUrl: biz.logoUrl,
+          terminosGarantia: biz.terminosGarantia,
+          mensajeDespedida: biz.mensajeDespedida,
         })
       } catch (err) {
         console.error("[print-ticket/[id]] error:", err)
@@ -108,12 +82,12 @@ export default function PrintTicketDynamicPage() {
     const runPrint = async () => {
       if (await isTauriDesktop()) {
         try {
-          const { settings } = await getTallerSettings()
-          const printerName = settings?.impresora_ticket?.trim()
-          if (!printerName) {
+          const prnt = await import("@/lib/actions/print-formatter-prisma")
+          const result = await prnt.getRepairTicketPrintData(decodeURIComponent(id!))
+          if (!result.data) {
             toast({
-              title: "Impresora no configurada",
-              description: "Ve a Configuracion > Hardware y selecciona la impresora de tickets.",
+              title: "Error",
+              description: "No se pudieron cargar los datos del ticket.",
               variant: "destructive",
             })
             return
@@ -121,7 +95,7 @@ export default function PrintTicketDynamicPage() {
           await new Promise<void>((resolve) => setTimeout(resolve, 300))
           if (ticketRef.current) {
             const base64 = await domToPngBase64(ticketRef.current, { pixelRatio: 2 })
-            await printEscposImage(printerName, base64)
+            await printEscposImage(result.data.business.name, base64)
             toast({ title: "Ticket enviado a impresora" })
           }
         } catch (e) {
@@ -146,6 +120,7 @@ export default function PrintTicketDynamicPage() {
       document.body.classList.remove("print-ticket-mode")
       document.getElementById("print-ticket-page-style")?.remove()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, business])
 
   if (loadError) {
