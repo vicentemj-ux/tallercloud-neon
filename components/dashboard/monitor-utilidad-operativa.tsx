@@ -109,7 +109,7 @@ export function MonitorUtilidadOperativa({
           setAddError(result.error)
           toast({
             variant: "destructive",
-            title: "âŒ Error al registrar gasto",
+            title: "Error al registrar gasto",
             description: result.error,
           })
           return
@@ -122,7 +122,7 @@ export function MonitorUtilidadOperativa({
             return [...filtered, result.data!] as GastoWithCreator[]
           })
           toast({
-            title: "âœ... Gasto registrado exitosamente",
+            title: "Gasto registrado exitosamente",
             description: `${categoriaLabel(categoria)} - $${montoNum.toLocaleString("es-MX")} | Revisado en caja`,
           })
           // Reset form
@@ -153,16 +153,16 @@ export function MonitorUtilidadOperativa({
         
         const result = await deleteGastoTicket(gastoToDelete.id)
         if (result.error) {
-          toast({ variant: "destructive", title: "âŒ No se pudo eliminar el gasto", description: result.error })
+          toast({ variant: "destructive", title: "No se pudo eliminar el gasto", description: result.error })
           void loadGastos()
         } else {
           toast({
-            title: "âœ... Gasto eliminado y caja revertida",
+            title: "Gasto eliminado y caja revertida",
             description: `Se elimino: ${gastoToDelete.concepto}`,
           })
         }
       } catch {
-        toast({ variant: "destructive", title: "âŒ No se pudo eliminar el gasto", description: "Error inesperado. Intenta de nuevo." })
+        toast({ variant: "destructive", title: "No se pudo eliminar el gasto", description: "Error inesperado. Intenta de nuevo." })
       }
     })
   }, [gastoToDelete])
@@ -202,7 +202,7 @@ export function MonitorUtilidadOperativa({
                 </Badge>
               </div>
               <p className="text-[10px] text-slate-500 mt-0.5">
-                Folio #{folio} â€¢ Control financiero
+                Folio #{folio} • Control financiero
               </p>
             </div>
           </div>
@@ -270,7 +270,7 @@ export function MonitorUtilidadOperativa({
               </div>
               {isLowMargin && !isNegative && (
                 <p className="mt-1.5 text-[9px] text-center text-amber-600 font-medium">
-                  âš ï¸ La utilidad esta por debajo del 20%
+                  La utilidad esta por debajo del 20%
                 </p>
               )}
             </div>
@@ -431,7 +431,7 @@ export function MonitorUtilidadOperativa({
         <AlertDialogContent className="max-w-sm rounded-xl border-slate-200 bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base text-slate-900">
-              Â¿Eliminar este gasto?
+              Eliminar este gasto
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2 text-sm text-slate-600">
               <p className="font-medium text-slate-800">"{gastoToDelete?.concepto}"</p>

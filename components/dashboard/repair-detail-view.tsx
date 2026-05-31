@@ -167,18 +167,18 @@ export function RepairDetailView({
   const [isCancelling, setIsCancelling] = useState(false)
   const [healthSheetOpen, setHealthSheetOpen] = useState(false)
 
-  // â”€â”€ Inline quick-edit state â”€â”€
+  // ── Inline quick-edit state ──
   const [editingObservaciones, setEditingObservaciones] = useState(false)
   const [observacionesDraft, setObservacionesDraft] = useState("")
   const [editingNotas, setEditingNotas] = useState(false)
   const [notasDraft, setNotasDraft] = useState("")
   const [savingQuickNotes, setSavingQuickNotes] = useState(false)
 
-  // â”€â”€ Modal reparacion no exitosa â”€â”€
+  // ── Modal reparacion no exitosa ──
   const [noExitosaOpen, setNoExitosaOpen] = useState(false)
   const [noExitosaTipo, setNoExitosaTipo] = useState<"sin_reparar" | "cancelar">("sin_reparar")
 
-  // â”€â”€ Modal decision LISTO (exitosa / no exitosa) â”€â”€
+  // ── Modal decision LISTO (exitosa / no exitosa) ──
   const [listoDecisionOpen, setListoDecisionOpen] = useState(false)
 
   const [checklistProDraft, setChecklistProDraft] = useState<ChecklistProData>({
@@ -269,7 +269,7 @@ export function RepairDetailView({
         if (settingsRes.settings?.nombre_taller) setNombreTallerSetting(settingsRes.settings.nombre_taller)
         if (settingsRes.settings?.terminos_garantia?.trim()) {
           const t = settingsRes.settings.terminos_garantia.trim()
-          setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}â€¦` : t)
+          setWarrantyHint(t.length > 48 ? `${t.slice(0, 45)}...` : t)
         }
         const data = page.detail
         setDetail(data ?? null)
@@ -309,7 +309,7 @@ export function RepairDetailView({
     }
   }
 
-  // â”€â”€ Inline quick-edit handlers â”€â”€
+  // ── Inline quick-edit handlers ──
   const startEditObservaciones = useCallback(() => {
     setObservacionesDraft(detail?.checklistIngreso?.observacionesEsteticas ?? "")
     setEditingObservaciones(true)
@@ -953,7 +953,7 @@ export function RepairDetailView({
                     })()
                   ) : null}
 
-                  {/* â”€â”€ Observaciones esteticas â”€â”€ */}
+                  {/* ── Observaciones esteticas ── */}
                   <div className="mt-6">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
@@ -1016,7 +1016,7 @@ export function RepairDetailView({
                     )}
                   </div>
 
-                  {/* â”€â”€ Notas internas â”€â”€ */}
+                  {/* ── Notas internas ── */}
                   <div className="mt-5">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
@@ -1040,7 +1040,7 @@ export function RepairDetailView({
                         <Textarea
                           value={notasDraft}
                           onChange={(e) => setNotasDraft(e.target.value)}
-                          placeholder="Notas solo para el tallerâ€¦"
+                          placeholder="Notas solo para el taller..."
                           className="min-h-[72px] resize-y rounded-lg border-amber-200 bg-white text-sm"
                           disabled={savingQuickNotes}
                         />
@@ -1324,6 +1324,7 @@ export function RepairDetailView({
             setHistory(page.changes ?? [])
             setHistorialAudit(page.historialAudit ?? [])
             setGastos(page.gastos ?? [])
+            setServicios(page.servicios ?? [])
             onRepairUpdated({ ...repair, status: "Entregado" })
 
             // Solo mostrar ticket de salida para entregas exitosas (no para Sin Reparacion/Cancelado)
@@ -1352,7 +1353,7 @@ export function RepairDetailView({
       <Dialog open={listoDecisionOpen} onOpenChange={setListoDecisionOpen}>
         <DialogContent className="max-w-sm gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 shadow-lg">
           <DialogHeader className="shrink-0 border-b border-slate-100 px-5 pb-4 pt-5 text-left">
-            <DialogTitle className="text-base font-bold text-slate-900">Â¿Reparacion exitosa?</DialogTitle>
+            <DialogTitle className="text-base font-bold text-slate-900">Reparacion exitosa?</DialogTitle>
             <DialogDescription className="text-sm text-slate-500">
               Define el resultado antes de marcar como finalizado.
             </DialogDescription>
@@ -1399,6 +1400,7 @@ export function RepairDetailView({
           anticiposPrevios={exitoEntregaSnapshot.anticiposPrevios}
           pagoFinal={exitoEntregaSnapshot.pagoFinal}
           metodoPago={exitoEntregaSnapshot.metodoPago}
+          servicios={servicios}
         />
       ) : null}
 

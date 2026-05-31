@@ -31,6 +31,7 @@ export interface TicketCobroReparacionTemplateProps {
   tamanoPapel?: string
   mensajeDespedida?: string
   servicios?: { nombre: string; precio: number; cantidad: number }[]
+  terminosGarantia?: string
 }
 
 const FONT = "'Arial Black', 'Helvetica Neue', Arial, sans-serif"
@@ -59,6 +60,7 @@ export function TicketCobroReparacionTemplate({
   logoUrl,
   mensajeDespedida,
   servicios,
+  terminosGarantia,
 }: TicketCobroReparacionTemplateProps) {
   const titulo = data.tipoMov === "liquidacion" ? "Liquidacion de reparacion" : "Anticipo de reparacion"
   const metodo = (data.metodo_pago || "").toLowerCase()
@@ -145,6 +147,19 @@ export function TicketCobroReparacionTemplate({
           ))}
         </>
       )}
+
+      {/* ── Terminos de Garantia ── */}
+      {terminosGarantia ? (
+        <>
+          <Divider />
+          <div style={{ ...SHARP, fontFamily: FONT, fontSize: "8px", fontWeight: 700, lineHeight: 1.2, wordBreak: "break-word" }}>
+            <span style={{ fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              Garantia:
+            </span>{" "}
+            {terminosGarantia}
+          </div>
+        </>
+      ) : null}
 
       <Divider />
 

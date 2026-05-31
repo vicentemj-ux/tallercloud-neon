@@ -166,6 +166,11 @@ export async function addGastoTicket(input: AddGastoTicketInput): Promise<{ data
       },
     })
 
+    await prisma.caja.update({
+      where: { id: cajaId },
+      data: { totalEfectivo: { decrement: input.monto } },
+    })
+
     revalidatePath(`/dashboard/reparaciones/${input.reparacion_id}`)
     revalidatePath("/dashboard/ventas")
 
@@ -282,6 +287,10 @@ export async function addGastoOperativo(input: AddGastoOperativoInput): Promise<
           fecha: new Date(input.fecha),
           vendedorNombre: actor || "Sistema",
         },
+      })
+      await prisma.caja.update({
+        where: { id: cajaId },
+        data: { totalEfectivo: { decrement: input.monto } },
       })
       cajaAplicada = true
     }

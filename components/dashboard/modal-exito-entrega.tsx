@@ -2,14 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { useReactToPrint } from "react-to-print"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Loader2, MessageCircle, Printer } from "lucide-react"
+import { CheckCircle2, Loader2, MessageCircle, Printer } from "lucide-react"
 import type { RepairDetail } from "@/lib/actions/repairs-prisma"
+import type { ReparacionServicio } from "@/lib/actions/servicios-prisma"
 import { normalizePhoneForWhatsApp } from "@/lib/whatsapp-utils"
-import { toast } from "@/hooks/use-toast"
 import { getTallerSettings } from "@/lib/actions/settings-prisma"
 import { TicketCobroReparacionTemplate } from "@/components/print-templates"
+import { cn } from "@/lib/utils"
 
 export interface ModalExitoEntregaProps {
   open: boolean
@@ -23,6 +24,7 @@ export interface ModalExitoEntregaProps {
   anticiposPrevios: number
   pagoFinal: number
   metodoPago: string
+  servicios?: ReparacionServicio[]
 }
 
 interface TallerConfig {
@@ -30,12 +32,17 @@ interface TallerConfig {
   telefono: string
   logoUrl: string | null
   mensajeDespedida: string | null
+  terminosGarantia: string
 }
 
 const METODOS_LABEL: Record<string, string> = {
   efectivo: "Efectivo",
   tarjeta: "Tarjeta",
   transferencia: "Transferencia",
+}
+
+function fmt(n: number) {
+  return n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 function garantiaUrl(repairId: string) {
@@ -54,6 +61,7 @@ export function ModalExitoEntrega({
   anticiposPrevios,
   pagoFinal,
   metodoPago,
+  servicios,
 }: ModalExitoEntregaProps) {
   const printRef = useRef<HTMLDivElement>(null)
   const [tallerConfig, setTallerConfig] = useState<TallerConfig | null>(null)
@@ -68,6 +76,7 @@ export function ModalExitoEntrega({
             telefono: res.settings.telefono || "",
             logoUrl: res.settings.logo_url || null,
             mensajeDespedida: res.settings.mensaje_despedida || null,
+            terminosGarantia: res.settings.terminos_garantia || "Garantia de 30 dias en reparaciones",
           })
         }
       })
@@ -89,6 +98,9 @@ export function ModalExitoEntrega({
     }, 100)
   }, [handlePrint])
 
+  const total = pagoFinal + anticiposPrevios
+  const metodoLabel = METODOS_LABEL[metodoPago] || metodoPago
+
   const cobroData = useMemo(() => {
     if (!tallerConfig) return null
     return {
@@ -97,10 +109,10 @@ export function ModalExitoEntrega({
       folio,
       fechaIso: new Date().toISOString(),
       conceptos: equipoLabel,
-      monto: pagoFinal + anticiposPrevios,
-      metodo_pago: METODOS_LABEL[metodoPago] || metodoPago,
+      monto: total,
+      metodo_pago: metodoLabel,
     }
-  }, [tallerConfig, clienteNombre, folio, equipoLabel, pagoFinal, anticiposPrevios, metodoPago])
+  }, [tallerConfig, clienteNombre, folio, equipoLabel, total, metodoLabel])
 
   const waUrl = useMemo(() => {
     const digits = normalizePhoneForWhatsApp(clientePhone)
@@ -111,45 +123,116 @@ export function ModalExitoEntrega({
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Equipo entregado</DialogTitle>
-          <DialogDescription>Folio #{folio}</DialogDescription>
+      <DialogContent className="max-h-[min(90vh,680px)] w-[calc(100%-1.5rem)] max-w-lg overflow-y-auto border border-slate-200 bg-white p-0 shadow-lg sm:w-full">
+        <DialogHeader className="border-b border-slate-100 px-5 pb-4 pt-5 text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600" aria-hidden />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-semibold text-slate-900">Equipo entregado</DialogTitle>
+              <p className="text-sm text-slate-500">Folio #{folio}</p>
+            </div>
+          </div>
         </DialogHeader>
-        <div className="flex flex-col gap-2">
-          <Button
-            onClick={handleImprimir}
-            disabled={loadingPrint || !tallerConfig}
-            className="bg-slate-900 text-white hover:bg-slate-800"
-          >
-            {loadingPrint ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Printer className="mr-2 h-4 w-4" />
+
+        <div className="space-y-4 px-5 py-4">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
+              Resumen financiero
+            </p>
+            <div className="mt-2 space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-600">Total reparacion</span>
+                <span className="font-bold text-slate-900">${fmt(total)}</span>
+              </div>
+              {anticiposPrevios > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600">Anticipo(s)</span>
+                  <span className="font-medium text-slate-700">-${fmt(anticiposPrevios)}</span>
+                </div>
+              )}
+              <div className="border-t border-emerald-200 pt-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-slate-700">Cobro final</span>
+                  <span className="text-base font-bold text-emerald-700">${fmt(pagoFinal)}</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span>Metodo de pago</span>
+                <span className="font-semibold uppercase">{metodoLabel}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className={cn("flex flex-col gap-2", !servicios?.length && "hidden")}>
+            {servicios && servicios.length > 0 && (
+              <div className="space-y-1.5">
+                {servicios.map((s) => (
+                  <div key={s.id} className="flex items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2 text-sm">
+                    <span className="text-slate-700">
+                      {s.nombre_snapshot}{s.cantidad > 1 ? ` x${s.cantidad}` : ""}
+                    </span>
+                    <span className="font-semibold text-slate-900">${fmt(s.precio_snapshot * s.cantidad)}</span>
+                  </div>
+                ))}
+              </div>
             )}
-            IMPRIMIR TICKET
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => waUrl && window.open(waUrl, "_blank", "noopener,noreferrer")}
-            disabled={!waUrl}
-          >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            ENVIAR POR WHATSAPP
-          </Button>
-          <Button variant="secondary" onClick={onClose}>CERRAR</Button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={handleImprimir}
+              disabled={loadingPrint || !tallerConfig}
+              className="btn-glow w-full gap-2 bg-blue-600 text-sm font-bold uppercase tracking-wider text-white hover:bg-blue-700"
+            >
+              {loadingPrint ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Printer className="h-4 w-4" />
+              )}
+              Imprimir ticket
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => waUrl && window.open(waUrl, "_blank", "noopener,noreferrer")}
+              disabled={!waUrl}
+              className="w-full gap-2 border-emerald-300 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Enviar por WhatsApp
+            </Button>
+            <Button variant="ghost" onClick={onClose} className="w-full text-sm text-slate-500">
+              Cerrar
+            </Button>
+          </div>
         </div>
       </DialogContent>
 
-      {/* Hidden printable ticket */}
+      {/* Hidden printable ticket — offscreen, not display:none, para react-to-print */}
       {tallerConfig && cobroData && (
-        <div ref={printRef} className="hidden-print-area" style={{ display: "none" }}>
+        <div
+          ref={printRef}
+          className="hidden-print-area"
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            top: 0,
+            width: "72mm",
+          }}
+        >
           <TicketCobroReparacionTemplate
             data={cobroData}
             tallerNombre={tallerConfig.nombre}
             tallerTelefono={tallerConfig.telefono}
             logoUrl={tallerConfig.logoUrl}
             mensajeDespedida={tallerConfig.mensajeDespedida ?? undefined}
+            servicios={servicios?.map((s) => ({
+              nombre: s.nombre_snapshot,
+              precio: s.precio_snapshot,
+              cantidad: s.cantidad,
+            }))}
+            terminosGarantia={tallerConfig.terminosGarantia}
           />
         </div>
       )}
