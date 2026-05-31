@@ -91,6 +91,10 @@ export function ReparacionEditDialog({
     const metodoPagoAnticipo = (formData.get("metodo-pago-anticipo") as string) || "efectivo"
     const email = (formData.get("customer-email") as string) || ""
     const notasInternas = (formData.get("notas-internas") as string) || ""
+    const serviciosRaw = (formData.get("servicios") as string) || ""
+    const servicios: { servicio_id: string; cantidad?: number }[] = serviciosRaw
+      ? JSON.parse(serviciosRaw)
+      : []
 
     const photosBase64: string[] = []
     let photoIndex = 0
@@ -143,6 +147,7 @@ export function ReparacionEditDialog({
         removedPhotos,
         keptPhotos,
         notasInternas: notasInternas || undefined,
+        servicios: servicios,
         ...(checklistParsed !== undefined ? { checklistIngreso: checklistParsed } : {}),
       })
 
@@ -170,6 +175,7 @@ export function ReparacionEditDialog({
       securityType,
       securityValue,
       photos: photosBase64,
+      servicios: servicios,
       notasInternas: notasInternas || undefined,
       checklistIngreso: checklistParsed ?? null,
       checklist_pro: checklistProParsed,

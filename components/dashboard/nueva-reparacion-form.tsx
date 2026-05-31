@@ -946,6 +946,16 @@ export function NuevaReparacionForm({
         formData.set("checklist-pro-json", JSON.stringify(checklistProHealth))
       }
 
+      // Incluir servicios del catalogo en formData + total estimado
+      if (serviciosProEnabled) {
+        formData.set("servicios", JSON.stringify(
+          selectedServices.map((s) => ({ servicio_id: s.servicio_id, cantidad: s.cantidad }))
+        ))
+        const currentEst = parseFloat(formData.get("estimated-price") as string || "0")
+        const totalConServicios = serviciosTotal + (isNaN(currentEst) ? 0 : currentEst)
+        formData.set("estimated-price", String(totalConServicios))
+      }
+
       if (onSubmitProp) {
         const out = await onSubmitProp(formData)
         setSaving(false)

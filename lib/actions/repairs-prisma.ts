@@ -12,7 +12,7 @@ import {
 import type { ChecklistProData } from "@/lib/reparaciones/checklist-pro"
 import type { SecurityTab } from "@/lib/reparaciones/security"
 import { getGastosTicket, type ReparacionGasto } from "@/lib/actions/gastos-prisma"
-import { getServiciosReparacion, type ReparacionServicio } from "@/lib/actions/servicios-prisma"
+import { getServiciosReparacion, setServiciosReparacion, type ReparacionServicio } from "@/lib/actions/servicios-prisma"
 import {
   getPublicTrackPhotoKey,
   getR2BucketName,
@@ -574,6 +574,10 @@ export async function createRepair(input: CreateRepairInput) {
 
     const actorNombre = await getCurrentActorDisplayName()
 
+    if (input.servicios) {
+      await setServiciosReparacion(result.id, input.servicios)
+    }
+
     await logHistorial({
       reparacionId: result.id,
       tenantId,
@@ -816,6 +820,7 @@ export async function updateRepairFull(input: {
   keptPhotos?: string[]
   notasInternas?: string
   checklistIngreso?: ChecklistIngreso | null
+  servicios?: { servicio_id: string; cantidad?: number }[]
 }) {
   try {
     const prisma = getPrismaClient()
@@ -863,6 +868,11 @@ export async function updateRepairFull(input: {
         },
       })
     })
+
+    if (input.servicios) {
+      await setServiciosReparacion(input.repairId, input.servicios)
+    }
+
     return { success: true }
   } catch (e) {
     console.error("updateRepairFull prisma:", e)
