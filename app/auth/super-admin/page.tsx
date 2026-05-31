@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Lock, AlertCircle } from "lucide-react"
-import { loginAdmin } from "@/lib/actions/auth"
+import { loginAdmin } from "@/lib/actions/auth-prisma"
 
 export default function SuperAdminLoginPage() {
   const router = useRouter()

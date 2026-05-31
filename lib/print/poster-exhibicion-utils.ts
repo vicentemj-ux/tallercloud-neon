@@ -1,4 +1,4 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { getInventoryPublicUrl } from "@/lib/storage"
 import { buildWhatsAppSendUrl } from "@/lib/whatsapp-send-url"
 

@@ -5,7 +5,7 @@ import { forwardRef, useMemo } from "react"
 import Image from "next/image"
 import { Cpu, HardDrive, MemoryStick, Award } from "lucide-react"
 const QRCodeSVG = dynamic(() => import("qrcode.react").then(m => m.QRCodeSVG), { ssr: false })
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { cn } from "@/lib/utils"
 import { formatPosterMoney } from "@/lib/utils/currency"
 import {

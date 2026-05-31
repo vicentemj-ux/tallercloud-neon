@@ -84,6 +84,9 @@ model Tenant {
   cotizaciones       Cotizacion[]
   cotizacionItems    CotizacionItem[]
   ajustesTaller      AjustesTaller?
+  firmaDigitalTokens      FirmaDigitalToken[]
+  verificationPins        VerificationPin[]
+  stagingImportReparaciones StagingImportReparacion[]
 }
 
 model User {
@@ -94,6 +97,10 @@ model User {
   passwordHash String
   emailVerified Boolean @default(true)
   sessionVersion Int @default(1)
+  verificationToken   String?   @map("verification_token")
+  verificationExpiresAt DateTime? @map("verification_expires_at")
+  resetToken          String?   @map("reset_token")
+  resetExpiresAt      DateTime? @map("reset_expires_at")
   role      UserRole @default(STAFF)
   /** Rol de equipo para gestión de miembros (Mi Equipo). */
   teamRole  TeamRole?
@@ -104,6 +111,7 @@ model User {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   accounts Account[]
   sessions Session[]
+  verificationPins VerificationPin[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -199,6 +207,7 @@ model Reparacion {
   checklistPro  Json?      @map("checklist_pro")
   creadoPorNombre String?  @map("creado_por_nombre")
   costoTotal   Decimal?  @db.Decimal(12, 2) @map("costo_total")
+  firmaIngresoPath String? @map("firma_ingreso_path")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -208,6 +217,7 @@ model Reparacion {
   historial HistorialReparacion[]
   gastosReparacion GastoReparacion[]
   serviciosReparacion ReparacionServicio[]
+  firmaDigitalTokens FirmaDigitalToken[]
 
   @@unique([tenantId, folio])
   @@index([tenantId])
@@ -728,4 +738,63 @@ model CotizacionItem {
   @@map("cotizacion_items")
   @@index([tenantId])
   @@index([cotizacionId])
+}
+
+model FirmaDigitalToken {
+  id           String    @id @default(cuid())
+  tenantId     String    @map("taller_id")
+  reparacionId String    @map("reparacion_id")
+  token        String    @unique
+  expiresAt    DateTime  @map("expires_at")
+  usedAt       DateTime? @map("used_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reparacion Reparacion @relation(fields: [reparacionId], references: [id], onDelete: Cascade)
+
+  @@map("firma_digital_tokens")
+  @@index([tenantId])
+  @@index([reparacionId])
+  @@index([token])
+}
+
+model VerificationPin {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tenantId  String   @map("taller_id")
+  pin       String
+  expiraAt  DateTime @map("expira_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verificaciones_email")
+  @@index([tenantId])
+  @@index([userId])
+}
+
+model StagingImportReparacion {
+  id                    String    @id @default(cuid())
+  importBatchId         String    @map("import_batch_id")
+  tenantId              String    @map("taller_id")
+  folio                 String    @default("S/F")
+  clienteNombre         String    @default("Cliente Importado") @map("cliente_nombre")
+  clienteTelefono       String    @default("") @map("cliente_telefono")
+  marca                 String?
+  modelo                String?
+  falla                 String?
+  costoTotal            Float     @default(0) @map("costo_total")
+  fechaRecepcionOriginal DateTime? @map("fecha_recepcion_original")
+  fechaEntregaOriginal  DateTime? @map("fecha_entrega_original")
+  estatusOriginal       String    @default("Entregado") @map("estatus_original")
+  tecnicoOriginal       String?   @map("tecnico_original")
+  procesado             Boolean   @default(false)
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("staging_import_reparaciones")
+  @@index([tenantId])
+  @@index([importBatchId])
 }

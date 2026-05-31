@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { Suspense, useState } from "react"
 import { AlertTriangle, MessageCircle, LogOut, RefreshCw } from "lucide-react"
 import { buildWhatsAppSendUrl, TALLERCLOUD_WHATSAPP_SUPPORT_DIGITS } from "@/lib/whatsapp-send-url"
-import { logoutTaller } from "@/lib/actions/auth"
+import { logoutTaller } from "@/lib/actions/auth-prisma"
 
 function AccesoSuspendidoContent() {
   const params = useSearchParams()

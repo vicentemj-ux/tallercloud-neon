@@ -9,7 +9,7 @@ import {
   type TallerForAdmin,
   type AdminStats,
 } from "@/lib/actions/admin"
-import { logoutTaller } from "@/lib/actions/auth"
+import { logoutTaller } from "@/lib/actions/auth-prisma"
 import { ManagementPanel } from "@/components/admin/management-panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

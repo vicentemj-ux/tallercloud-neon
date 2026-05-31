@@ -3,10 +3,12 @@
 import bcrypt from "bcryptjs"
 import { cookies } from "next/headers"
 import { headers } from "next/headers"
+import { createHmac, randomBytes } from "crypto"
 import { z } from "zod"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
 import { clearLegacySessionCookies, getCurrentTenant, getCurrentUser } from "@/lib/auth"
 import { getPrismaClient } from "@/lib/prisma"
+import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email/send"
 
 type TxClient = Parameters<Parameters<ReturnType<typeof getPrismaClient>["$transaction"]>[0]>[0]
 
@@ -250,4 +252,201 @@ export async function checkIsPro(): Promise<boolean> {
 export async function logoutTaller() {
   await clearLegacySessionCookies()
   return { success: true }
+}
+
+// ─── Token helpers ─────────────────────────────────────────────────────────────
+
+function generateToken(): string {
+  return randomBytes(32).toString("hex")
+}
+
+function signToken(token: string): string {
+  const secret = process.env.SUPABASE_JWT_SECRET || ""
+  if (!secret) {
+    console.error("[signToken] SUPABASE_JWT_SECRET no esta configurado")
+    return ""
+  }
+  return createHmac("sha256", secret).update(token).digest("hex")
+}
+
+// ─── Admin login ───────────────────────────────────────────────────────────────
+
+export async function loginAdmin(
+  email: string,
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  const ip = await getClientIp()
+  const rl = await checkRateLimit(ip, "login_admin")
+  if (!rl.allowed) {
+    return { success: false, error: `Demasiados intentos. Espera ${rl.retryAfterMinutes} minutos.` }
+  }
+
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { email: email.toLowerCase().trim(), role: "ADMIN" },
+    })
+
+    if (!user) {
+      return { success: false, error: "Email o contrasena incorrectos" }
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash)
+    if (!passwordMatch) {
+      return { success: false, error: "Email o contrasena incorrectos" }
+    }
+
+    const cookieStore = await cookies()
+    cookieStore.set("tallerId", user.id, {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+    cookieStore.set("tallerName", encodeURIComponent(user.nombre), {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+    cookieStore.set("isAdmin", "true", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[loginAdmin]", error instanceof Error ? error.message : String(error))
+    return { success: false, error: "Error interno. Contacta soporte." }
+  }
+}
+
+// ─── Email verification ─────────────────────────────────────────────────────────
+
+export async function verifyEmailToken(
+  token: string,
+  signature?: string,
+): Promise<{ success: boolean; error?: string; message?: string }> {
+  const expectedSig = signToken(token)
+  if (!expectedSig || signature !== expectedSig) {
+    return { success: false, error: "Token invalido o manipulado" }
+  }
+
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { verificationToken: token, verificationExpiresAt: { gt: new Date() } },
+      select: { id: true },
+    })
+
+    if (!user) {
+      return { success: false, error: "Token invalido o expirado" }
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: true, verificationToken: null, verificationExpiresAt: null },
+    })
+
+    return { success: true, message: "Email verificado correctamente" }
+  } catch (error) {
+    console.error("[verifyEmailToken]", error)
+    return { success: false, error: "Error al verificar email" }
+  }
+}
+
+// ─── Password reset ─────────────────────────────────────────────────────────────
+
+export async function requestPasswordReset(
+  email: string,
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  const ip = await getClientIp()
+  const rl = await checkRateLimit(ip, "reset")
+  if (!rl.allowed) {
+    return { success: false, error: `Demasiados intentos. Espera ${rl.retryAfterMinutes} minutos.` }
+  }
+
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { email: email.toLowerCase().trim() },
+      select: { id: true, email: true, nombre: true },
+    })
+
+    if (!user) {
+      return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
+    }
+
+    const resetToken = generateToken()
+    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken, resetExpiresAt: tokenExpiry },
+    })
+
+    const tenant = await prisma.tenant.findFirst({
+      where: { users: { some: { id: user.id } } },
+      select: { nombre: true },
+    })
+
+    const emailResult = await sendPasswordResetEmail(
+      user.email,
+      user.nombre,
+      tenant?.nombre || "tu taller",
+      resetToken,
+      signToken(resetToken),
+    )
+
+    if (!emailResult.success) {
+      console.error("[requestPasswordReset] error sending email:", emailResult.error)
+    }
+
+    return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
+  } catch (error) {
+    console.error("[requestPasswordReset]", error)
+    return { success: true, message: "Si el email existe, recibiras un correo de recuperacion" }
+  }
+}
+
+export async function resetPasswordWithToken(
+  token: string,
+  newPassword: string,
+  signature?: string,
+): Promise<{ success: boolean; error?: string; message?: string }> {
+  if (!newPassword || newPassword.length < 8) {
+    return { success: false, error: "La contrasena debe tener al menos 8 caracteres" }
+  }
+
+  const expectedSig = signToken(token)
+  if (!expectedSig || signature !== expectedSig) {
+    return { success: false, error: "Token invalido o manipulado" }
+  }
+
+  try {
+    const prisma = getPrismaClient()
+    const user = await prisma.user.findFirst({
+      where: { resetToken: token, resetExpiresAt: { gt: new Date() } },
+      select: { id: true },
+    })
+
+    if (!user) {
+      return { success: false, error: "Token invalido o expirado" }
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash, resetToken: null, resetExpiresAt: null },
+    })
+
+    return { success: true, message: "Contrasena restablecida correctamente" }
+  } catch (error) {
+    console.error("[resetPasswordWithToken]", error)
+    return { success: false, error: "Error al restablecer contrasena" }
+  }
 }

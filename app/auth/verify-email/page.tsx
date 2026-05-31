@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
-import { verifyEmailToken } from "@/lib/actions/auth"
+import { verifyEmailToken } from "@/lib/actions/auth-prisma"
 
 export default function VerifyEmailPage() {
   return (

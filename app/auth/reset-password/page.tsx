@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
-import { resetPasswordWithToken } from "@/lib/actions/auth"
+import { resetPasswordWithToken } from "@/lib/actions/auth-prisma"
 
 export default function ResetPasswordPage() {
   return (

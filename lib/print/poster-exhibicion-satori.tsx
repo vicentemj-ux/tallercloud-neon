@@ -1,4 +1,4 @@
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { formatPosterMoney } from "@/lib/utils/currency"
 import {
   computePrecioMayoreo,

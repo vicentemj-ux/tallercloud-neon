@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import satori from "satori"
 import { Resvg } from "@resvg/resvg-js"
-import type { ProductoRow } from "@/lib/actions/productos"
+import type { ProductoRow } from "@/lib/actions/productos-prisma"
 import { createTenantClient } from "@/lib/supabase/tenant-client"
 import {
   PosterExhibicionSatoriTemplate,
