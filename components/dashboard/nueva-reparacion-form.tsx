@@ -1326,7 +1326,7 @@ export function NuevaReparacionForm({
                 <div className="mb-1 flex items-center gap-2 border-b border-slate-100 pb-2">
                   <Wrench className="h-3.5 w-3.5 shrink-0 text-slate-400" aria-hidden />
                   <h2 className="text-[11px] font-semibold italic tracking-wide text-slate-800">
-                    DIAGNÃ“STICO TÃ‰CNICO
+                    DIAGNOSTICO TECNICO
                   </h2>
                 </div>
 
@@ -1384,11 +1384,11 @@ export function NuevaReparacionForm({
 
               <div className="space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/40 p-2.5">
                 <Label className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                  Observaciones esteticas
+                  OBSERVACIONES Y ACCESORIOS
                 </Label>
                 <Textarea
                   id="obs-est-modal"
-                  placeholder="Golpes, rayones, piezas faltantesâ€¦"
+                  placeholder="Golpes, rayones o accesorios"
                   className="min-h-[72px] resize-y rounded-lg border-slate-200 bg-white py-2 text-base md:text-sm"
                   value={checklistIngreso.observacionesEsteticas}
                   onChange={(e) =>
@@ -1503,7 +1503,7 @@ export function NuevaReparacionForm({
                             type="number"
                             step="0.01"
                             min="0"
-                            placeholder="Mano de obra, refaccionesâ€¦"
+                            placeholder="Mano de obra, refacciones"
                             value={estimatedPrice}
                             onChange={(e) => setEstimatedPrice(e.target.value)}
                             disabled={ingresoACotizar}

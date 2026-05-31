@@ -276,12 +276,12 @@ const TicketRecepcionTemplate = forwardRef<HTMLDivElement, TicketRecepcionTempla
           </>
         )}
 
-        {/* ── OBSERVACIONES ESTETICAS (solo si tiene contenido) ── */}
+        {/* ── OBSERVACIONES Y ACCESORIOS (solo si tiene contenido) ── */}
         {obsEsteticas && (
           <>
             <Divider />
             <div style={{ ...w900, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "1px" }}>
-              Observaciones esteticas:
+              OBSERVACIONES Y ACCESORIOS:
             </div>
             <div style={{ ...w700, fontSize: "10px", lineHeight: "1.3", wordBreak: "break-word" }}>
               {obsEsteticas}

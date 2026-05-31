@@ -956,7 +956,7 @@ export function RepairDetailView({
                       <div className="flex items-center gap-1.5">
                         <Eye className="h-4 w-4 text-slate-400" aria-hidden />
                         <Label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                          Observaciones esteticas al ingreso
+                          OBSERVACIONES Y ACCESORIOS al ingreso
                         </Label>
                       </div>
                       <button
@@ -974,7 +974,7 @@ export function RepairDetailView({
                         <Textarea
                           value={observacionesDraft}
                           onChange={(e) => setObservacionesDraft(e.target.value)}
-                          placeholder="Golpes, rayones, piezas faltantesâ€¦"
+                          placeholder="Golpes, rayones o accesorios"
                           className="min-h-[72px] resize-y rounded-lg border-slate-200 bg-white text-sm"
                           disabled={savingQuickNotes}
                         />
