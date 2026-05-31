@@ -36,12 +36,6 @@ export default function ChatPage() {
     const run = async () => {
       setLoading(true)
 
-      const tallerId = document.cookie.split('tallerId=')[1]?.split(';')[0]
-      if (!tallerId) {
-        setLoading(false)
-        return
-      }
-
       const [messagesRes, membersRes, meRes] = await Promise.all([
         getWorkshopMessages(null),
         getChatMembers(),

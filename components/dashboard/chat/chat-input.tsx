@@ -25,12 +25,6 @@ export function ChatInput({ value, onChange, onSend, inputRef }: ChatInputProps)
           type="text"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault()
-              onSend()
-            }
-          }}
           placeholder="Escribe un mensaje para tu equipo..."
           className="h-14 flex-1 rounded-full border-slate-200 bg-white text-sm shadow-sm placeholder:text-slate-400 sm:text-base"
         />

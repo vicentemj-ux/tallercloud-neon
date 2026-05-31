@@ -1,4 +1,4 @@
-import { MessageCircle, Wifi } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 interface ChatHeaderProps {
@@ -26,10 +26,6 @@ export function ChatHeader({ currentUserName, modeLabel }: ChatHeaderProps) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Badge className="hidden border-emerald-200 bg-emerald-50 text-emerald-700 sm:inline-flex">
-            <Wifi className="mr-1 h-3.5 w-3.5" aria-hidden />
-            Cloud Online
-          </Badge>
           {currentUserName ? (
             <Badge className="border-blue-200 bg-blue-50 text-blue-700">{currentUserName}</Badge>
           ) : null}
