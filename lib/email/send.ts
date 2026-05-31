@@ -12,6 +12,8 @@ function getResendClient() {
   return new Resend(apiKey)
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://tallercloud.net")
+
 export async function sendVerificationEmail(
   email: string,
   userName: string,
@@ -19,7 +21,7 @@ export async function sendVerificationEmail(
   verificationToken: string,
   signature?: string
 ) {
-  const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-email?token=${verificationToken}${signature ? `&sig=${signature}` : ""}`
+  const verificationLink = `${BASE_URL}/auth/verify-email?token=${verificationToken}${signature ? `&sig=${signature}` : ""}`
 
   try {
     const resend = getResendClient()
@@ -51,7 +53,7 @@ export async function sendPasswordResetEmail(
   resetToken: string,
   signature?: string
 ) {
-  const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${resetToken}${signature ? `&sig=${signature}` : ""}`
+  const resetLink = `${BASE_URL}/auth/reset-password?token=${resetToken}${signature ? `&sig=${signature}` : ""}`
 
   try {
     const resend = getResendClient()
@@ -112,8 +114,8 @@ export async function sendWelcomeEmail(
                 <div class="content">
                   <p>Hola ${userName},</p>
                   <p>Tu taller <strong>${tallerName}</strong> esta listo para usar TallerCloud.</p>
-                  <p>Accede a tu dashboard en <a href="${process.env.NEXT_PUBLIC_APP_URL}">TallerCloud</a> para comenzar a gestionar tus reparaciones.</p>
-                  <p>Si tienes preguntas, no dudes en contactarnos.</p>
+<p>Accede a tu dashboard en <a href="${BASE_URL}">TallerCloud</a> para comenzar a gestionar tus reparaciones.</p>
+          <p>Si tienes preguntas, no dudes en contactarnos.</p>
                 </div>
                 <div class="footer">
                   <p>© 2024 TallerCloud. Todos los derechos reservados.</p>
