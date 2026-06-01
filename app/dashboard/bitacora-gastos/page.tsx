@@ -39,6 +39,7 @@ import {
   CalendarDays,
   Tag,
   Banknote,
+  X,
 } from "lucide-react"
 import {
   getGastosOperativos,
@@ -219,27 +220,28 @@ export default function BitacoraGastosPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 flex flex-col gap-8">
-      {/* Header */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/15">
-            <Wallet className="h-6 w-6 text-red-600" />
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 shrink-0">
+              <Wallet className="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">GASTOS OPERATIVOS</h1>
+              <p className="text-[10px] tracking-widest text-slate-500 font-semibold">CONTROL DE EGRESOS Y COSTOS FIJOS</p>
+              <p className="mt-1 text-sm tracking-tight text-slate-500">Control de egresos y costos fijos del taller.</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-black italic tracking-tight text-slate-900">GASTOS OPERATIVOS</h1>
-            <p className="text-sm tracking-tight text-slate-500">Control de egresos y costos fijos</p>
-          </div>
+          <Button
+            onClick={handleOpenDialog}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold uppercase tracking-tight gap-2 px-8 rounded-2xl h-11 whitespace-nowrap btn-glow"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Registrar Gasto</span>
+          </Button>
         </div>
-        <Button
-          onClick={handleOpenDialog}
-          className="bg-red-600 hover:bg-red-700 text-white font-semibold uppercase tracking-tight gap-2 px-8 py-3 rounded-2xl h-11 whitespace-nowrap"
-        >
-          <Plus className="h-5 w-5" />
-          <span>Registrar Gasto</span>
-        </Button>
-      </div>
       </div>
 
       {/* Metric Cards */}
@@ -268,37 +270,47 @@ export default function BitacoraGastosPage() {
         </Card>
       </div>
 
-      {/* Table Section */}
-      <Card className="gap-0 py-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-border px-6 py-5">
+      {/* ── Table ──────────────────────────────────────────────────────── */}
+      <Card className="gap-0 py-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 px-5 py-5 sm:px-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingDown className="h-5 w-5 text-red-600" />
-            <h2 className="text-lg font-black italic text-foreground">HISTORIAL DE EGRESOS</h2>
+            <h2 className="text-base font-extrabold italic tracking-tight text-slate-900 sm:text-lg">HISTORIAL DE EGRESOS</h2>
           </div>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 z-10 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <Input
               placeholder="Buscar gasto..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-11 rounded-2xl bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm"
+              className="h-11 rounded-xl border-slate-200 bg-slate-50 pl-9 pr-8 text-base placeholder:text-slate-400 transition-colors focus:bg-white md:text-sm"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                aria-label="Limpiar busqueda"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="w-full overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="hidden md:table-header-group bg-slate-50">
               <TableRow className="hover:bg-transparent border-b border-slate-200">
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Concepto</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Categoria</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Metodo</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Fecha</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-widest text-slate-500">Monto</TableHead>
-                <TableHead className="text-right text-xs font-semibold uppercase tracking-widest text-slate-500">Accion</TableHead>
+                <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Concepto</TableHead>
+                <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Categoria</TableHead>
+                <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Metodo</TableHead>
+                <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Fecha</TableHead>
+                <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Monto</TableHead>
+                <TableHead className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Accion</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="hidden md:table-row-group">
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={6} className="py-16 text-center">
@@ -354,6 +366,52 @@ export default function BitacoraGastosPage() {
                 ))
               )}
             </TableBody>
+
+            {/* ── Mobile cards ── */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2 py-16 text-slate-500">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Cargando gastos...
+                </div>
+              ) : filtered.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-slate-500 italic">NO SE ENCONTRARON GASTOS</p>
+                </div>
+              ) : (
+                filtered.map((g) => (
+                  <div key={g.id} className="flex flex-col gap-3 px-5 py-5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-slate-900">{g.concepto}</p>
+                        {g.notas && <p className="text-xs text-slate-500 mt-0.5">{g.notas}</p>}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => setDeleteId(g.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex rounded px-2 py-0.5 text-[11px] font-semibold ${CATEGORIA_COLORS[g.categoria] ?? CATEGORIA_COLORS.otro}`}>
+                        {categoriaLabel(g.categoria)}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-slate-500">
+                        <Banknote className="h-3 w-3" />
+                        {metodoLabel(g.metodo_pago)}
+                      </span>
+                      <span className="text-xs text-slate-400">{formatFecha(g.fecha)}</span>
+                    </div>
+                    <p className="text-lg font-bold text-red-600">
+                      -${g.monto.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
           </Table>
         </div>
       </Card>
