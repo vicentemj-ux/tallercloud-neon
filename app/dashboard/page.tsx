@@ -79,20 +79,28 @@ export default async function DashboardPage() {
   const pctEnProceso = Math.round((stats.enProceso / totalOps) * 100)
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 
-        {/* ── HEADER ── */}
-        <header className="flex min-w-0 items-center justify-between">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-black italic tracking-tight text-slate-900 sm:text-4xl">
-              VISTA <span className="text-blue-600">GENERAL</span>
-            </h1>
-            <p className="mt-1 max-w-full text-sm leading-snug text-slate-500">
-              Panorama en tiempo real de operaciones, tickets y desempeno del taller.
-            </p>
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
+              <TrendingUp className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                VISTA <span className="text-blue-600">GENERAL</span>
+              </h1>
+              <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                PANORAMA OPERATIVO DEL TALLER
+              </p>
+              <p className="mt-1 text-sm tracking-tight text-slate-500">
+                Panorama en tiempo real de operaciones, tickets y desempeno del taller.
+              </p>
+            </div>
           </div>
-        </header>
+        </div>
 
         {/* ── Banners de cuenta (suscripcion / zona horaria) ── */}
         {(showSubscriptionUrgencyBanner || showTimezoneBanner) && (
