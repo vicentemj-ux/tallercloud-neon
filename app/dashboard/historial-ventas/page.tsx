@@ -7,7 +7,7 @@ import { useReactToPrint } from 'react-to-print'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Clock, Printer, DollarSign, CreditCard, TrendingUp, ShoppingBag, Calendar, Loader2, Store } from "lucide-react"
+import { Clock, Printer, DollarSign, CreditCard, TrendingUp, ShoppingBag, Calendar, Loader2, Store, Search, X } from "lucide-react"
 import {
   getHistorialVentas,
   type HistorialTipoFiltro,
@@ -188,52 +188,61 @@ export default function HistorialVentasPage() {
         />
       </div>
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/10">
-              <Clock className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-black italic text-slate-900">HISTORIAL DE VENTAS</h1>
-              <p className="text-sm text-slate-500">Consulta todas las transacciones de mostrador y reparaciones.</p>
-            </div>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
+            <Clock className="h-6 w-6 text-blue-600" />
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-lg border border-slate-200 hover:bg-slate-100"
-            disabled={loading}
-            title="Reporte de ventas del periodo (Carta)"
-            onClick={() => void handlePrintReport()}
-          >
-            {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-500" /> : <Printer className="h-5 w-5 text-slate-500" />}
-          </Button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                  HISTORIAL DE VENTAS
+                </h1>
+                <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                  CONSULTA Y REPORTE DE TRANSACCIONES
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-11 w-11 shrink-0 rounded-xl border border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                disabled={loading}
+                title="Reporte de ventas del periodo (Carta)"
+                onClick={() => void handlePrintReport()}
+              >
+                {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-500" /> : <Printer className="h-5 w-5 text-slate-500" />}
+              </Button>
+            </div>
+            <p className="mt-1 text-sm tracking-tight text-slate-500">
+              Consulta todas las transacciones de mostrador y reparaciones.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
           {/* Date Range */}
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-slate-500" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2">
+            <Calendar className="hidden sm:block h-4 w-4 text-slate-500 shrink-0" />
             <div className="flex flex-wrap items-center gap-2">
               <Input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-auto min-w-[10rem] border-slate-200 bg-white text-sm text-slate-900"
+                className="w-auto min-w-[10rem] h-11 rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-900 transition-colors focus:bg-white"
               />
-              <span className="text-slate-500">â€"</span>
+              <span className="text-slate-400">—</span>
               <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-auto min-w-[10rem] border-slate-200 bg-white text-sm text-slate-900"
+                className="w-auto min-w-[10rem] h-11 rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-900 transition-colors focus:bg-white"
               />
             </div>
           </div>
@@ -243,33 +252,33 @@ export default function HistorialVentasPage() {
             <Button
               type="button"
               onClick={() => setFilterType('todos')}
-              className={`${
+              className={`h-10 rounded-xl px-4 text-xs font-bold uppercase tracking-wider ${
                 filterType === 'todos'
                   ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              } font-semibold uppercase tracking-wider`}
+              }`}
             >
               Todos
             </Button>
             <Button
               type="button"
               onClick={() => setFilterType('mostrador')}
-              className={`${
+              className={`h-10 rounded-xl px-4 text-xs font-bold uppercase tracking-wider ${
                 filterType === 'mostrador'
                   ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              } font-semibold uppercase tracking-wider`}
+              }`}
             >
               Mostrador
             </Button>
             <Button
               type="button"
               onClick={() => setFilterType('reparaciones')}
-              className={`${
+              className={`h-10 rounded-xl px-4 text-xs font-bold uppercase tracking-wider ${
                 filterType === 'reparaciones'
                   ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              } font-semibold uppercase tracking-wider`}
+              }`}
             >
               Reparaciones
             </Button>
@@ -278,15 +287,23 @@ export default function HistorialVentasPage() {
           {/* Search */}
           <div className="flex-1 lg:ml-auto">
             <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
               <Input
                 placeholder="Buscar folio o cliente..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-slate-200 bg-white pl-10 text-sm text-slate-900 placeholder:text-slate-400"
+                className="h-11 rounded-xl border-slate-200 bg-slate-50 pl-9 pr-8 text-base placeholder:text-slate-400 transition-colors focus:bg-white md:text-sm"
               />
-              <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label="Limpiar busqueda"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
