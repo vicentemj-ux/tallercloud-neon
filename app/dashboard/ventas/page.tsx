@@ -553,7 +553,7 @@ function VentasPageContent() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className={`max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 flex flex-col gap-8 ${activeTab !== "historial" && bottomTab === "inventario" && cartItems.length > 0 ? "pb-24 lg:pb-10" : ""}`}>
+      <div className={`mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${activeTab !== "historial" && bottomTab === "inventario" && cartItems.length > 0 ? "pb-24 lg:pb-10" : ""}`}>
       {/* HEADER */}
       {activeTab === "historial" ? (
         <div className="flex flex-col gap-5">
@@ -595,7 +595,7 @@ function VentasPageContent() {
           </div>
 
           {/* Filtros */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2 flex items-center gap-1.5">
