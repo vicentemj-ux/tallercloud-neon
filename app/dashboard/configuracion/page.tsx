@@ -349,10 +349,12 @@ function ConfiguracionContent() {
   // ── Loading ─────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-sm text-slate-500">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Cargando configuracion de tu taller...
+      <div className="min-h-screen bg-slate-50">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:rounded-3xl sm:p-8">
+            <Loader2 className="mx-auto h-5 w-5 animate-spin text-blue-600" />
+            <p className="mt-3 text-sm text-slate-500">Cargando configuracion de tu taller...</p>
+          </div>
         </div>
       </div>
     )
@@ -360,15 +362,17 @@ function ConfiguracionContent() {
 
   if (!settings) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-sm text-red-500">No se pudo cargar la configuracion del taller.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-          >
-            Reintentar
-          </button>
+      <div className="min-h-screen bg-slate-50">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:rounded-3xl sm:p-8">
+            <p className="text-sm text-red-500">No se pudo cargar la configuracion del taller.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            >
+              Reintentar
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -399,7 +403,7 @@ function ConfiguracionContent() {
         />
 
         {/* Tabs */}
-        <div className="flex space-x-1 overflow-x-auto border-b border-slate-200">
+        <div className="flex gap-1 overflow-x-auto border-b border-slate-200 pb-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -408,7 +412,7 @@ function ConfiguracionContent() {
                 setActiveTab(tab.id)
               }}
               disabled={PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
                 PRO_FEATURES_TEMP_DISABLED && TEMP_DISABLED_TABS.includes(tab.id)
                   ? "border-transparent text-slate-400 cursor-not-allowed"
                   : activeTab === tab.id

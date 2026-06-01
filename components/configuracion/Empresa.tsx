@@ -125,13 +125,13 @@ export function Empresa({
           </p>
         </div>
         <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <FieldWrap field="pais" label="Pais" errors={fieldErrors}>
               <Select
                 value={settings?.pais || ""}
                 onValueChange={(v) => settings && setSettings({ ...settings, pais: v, estado: "" })}
               >
-                <SelectTrigger className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
+                <SelectTrigger className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
                   <SelectValue placeholder="Selecciona" />
                 </SelectTrigger>
                 <SelectContent>
@@ -149,7 +149,7 @@ export function Empresa({
                   value={settings?.estado || ""}
                   onValueChange={(v) => settings && setSettings({ ...settings, estado: v })}
                 >
-                  <SelectTrigger className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
+                  <SelectTrigger className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
                     <SelectValue placeholder="Selecciona" />
                   </SelectTrigger>
                   <SelectContent>
@@ -165,7 +165,7 @@ export function Empresa({
                   value={settings?.estado || ""}
                   onChange={(e) => settings && setSettings({ ...settings, estado: e.target.value })}
                   placeholder="Ej. Montevideo"
-                  className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
+                  className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
                 />
               )}
             </FieldWrap>
@@ -174,7 +174,7 @@ export function Empresa({
                 value={settings?.ciudad || ""}
                 onChange={(e) => settings && setSettings({ ...settings, ciudad: e.target.value })}
                 placeholder="Ej. Montevideo"
-                className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
+                className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
             <FieldWrap field="direccion" label="Direccion (opcional)" errors={fieldErrors}>
@@ -182,7 +182,7 @@ export function Empresa({
                 value={settings?.direccion || ""}
                 onChange={(e) => settings && setSettings({ ...settings, direccion: e.target.value })}
                 placeholder="Calle, numero, colonia"
-                className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
+                className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
           </div>
@@ -204,7 +204,7 @@ export function Empresa({
                 value={settings?.zona_horaria || "UTC"}
                 onValueChange={(v) => settings && setSettings({ ...settings, zona_horaria: v })}
               >
-                <SelectTrigger className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
+                <SelectTrigger className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500">
                   <SelectValue placeholder="Selecciona zona horaria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -230,7 +230,7 @@ export function Empresa({
                   const num = Math.max(1, parseInt(e.target.value) || 1)
                   settings && setSettings({ ...settings, siguiente_folio: num })
                 }}
-                className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
+                className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
               />
             </FieldWrap>
           </div>
@@ -246,7 +246,7 @@ export function Empresa({
                     const num = Math.max(1, Math.min(365, parseInt(e.target.value) || 30))
                     settings && setSettings({ ...settings, dias_garantia: num })
                   }}
-                  className="h-10 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
+                  className="h-11 border-slate-200 focus:ring-blue-500 focus:border-blue-500"
                 />
               </FieldWrap>
             </div>
@@ -271,8 +271,8 @@ export function Empresa({
           <Link href="/dashboard/configuracion/importacion">
             <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="shrink-0">
                     <DatabaseBackup className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="flex-1">
@@ -283,7 +283,7 @@ export function Empresa({
                       Carga archivos Excel o CSV para migrar datos de otros sistemas.
                     </p>
                   </div>
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0 self-start sm:self-auto">
                     <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
                       Configurar â†'
                     </Button>
@@ -296,11 +296,11 @@ export function Empresa({
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-6 border-t border-slate-200">
+      <div className="flex justify-end border-t border-slate-200 pt-6">
         <Button
           onClick={handleSaveTaller}
           disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm"
+          className="h-11 w-full rounded-xl bg-blue-600 px-6 py-2 text-white shadow-sm hover:bg-blue-700 sm:w-auto btn-glow"
         >
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           Guardar cambios

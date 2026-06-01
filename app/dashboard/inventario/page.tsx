@@ -1015,8 +1015,8 @@ function InventarioContent() {
           </div>
 
           {/* Right: search + action buttons */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-56 lg:w-72">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+            <div className="relative basis-full sm:basis-auto sm:w-56 lg:w-72">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
                 aria-hidden
@@ -1054,7 +1054,7 @@ function InventarioContent() {
             <Button
               onClick={handleExport}
               variant="outline"
-              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight max-[420px]:flex-1 sm:flex-none"
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Exportar</span>
@@ -1062,14 +1062,14 @@ function InventarioContent() {
             <Button
               onClick={openImportModal}
               variant="outline"
-              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight max-[420px]:flex-1 sm:flex-none"
             >
               <Upload className="h-4 w-4" />
               <span className="hidden sm:inline">Importar</span>
             </Button>
             <Button
               onClick={openModal}
-              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight max-[420px]:flex-1 sm:flex-none"
             >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Nuevo Producto</span>
