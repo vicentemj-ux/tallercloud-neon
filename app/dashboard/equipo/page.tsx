@@ -294,65 +294,60 @@ export default function EquipoPage() {
   }
 
   return (
-    <div className="min-h-full bg-gray-50">
-      <div className="max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 flex flex-col gap-8">
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
       {loadError ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           Mi Equipo esta temporalmente degradado: {loadError}
         </div>
       ) : null}
-      {/* HEADER SUPERIOR */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <div className="flex flex-col gap-4">
-        {/* Titulo y subtitulo */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 shrink-0">
-              <Users className="h-6 w-6 text-primary" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
+              <Users className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-4xl font-black italic tracking-tight text-slate-900">Mi Equipo</h1>
-              <p className="inline-flex mt-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                {memberCards.length} / 5 Miembros activos
+              <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">MI EQUIPO</h1>
+              <p className="text-[10px] tracking-widest text-slate-500 font-semibold">GESTION DE USUARIOS Y PERMISOS</p>
+              <p className="mt-1 flex items-center gap-2 text-sm tracking-tight text-slate-500">
+                <span>{memberCards.length} de 5 miembros activos</span>
               </p>
             </div>
           </div>
 
-          {/* Botones de accion */}
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={openCreateModal}
-              disabled={Boolean(loadError)}
-              className="gap-2 text-xs font-bold uppercase tracking-tight bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3 h-11 flex-1 sm:flex-none"
-            >
-              <Plus className="h-4 w-4" />
-              <span>+ NUEVO MIEMBRO</span>
-            </Button>
-          </div>
+          <Button
+            onClick={openCreateModal}
+            disabled={Boolean(loadError)}
+            className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight btn-glow"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Nuevo Miembro</span>
+          </Button>
         </div>
-      </div>
       </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {loading ? (
-            <div className="col-span-full flex items-center justify-center rounded-2xl border border-gray-200 bg-white py-20 text-slate-500 shadow-sm">
+            <div className="col-span-full flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 text-slate-500 shadow-sm">
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Cargando...
             </div>
           ) : memberCards.length === 0 ? (
-            <div className="col-span-full rounded-2xl border border-gray-200 bg-white py-14 text-center text-slate-500 shadow-sm">
+            <div className="col-span-full rounded-2xl border border-slate-200 bg-white py-14 text-center text-slate-500 shadow-sm">
               No hay miembros disponibles.
             </div>
           ) : (
             memberCards.map((member) => (
-              <article key={member.key} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <article key={member.key} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 min-w-0">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
                       {member.initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate text-base font-bold text-gray-900">{member.nombre}</p>
+                      <p className="truncate text-base font-bold text-slate-900">{member.nombre}</p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         <Badge
                           className={
@@ -376,7 +371,7 @@ export default function EquipoPage() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="text-gray-400 transition-colors hover:text-blue-600"
+                        className="text-slate-400 transition-colors hover:text-blue-600"
                         aria-label={`Editar ${member.nombre}`}
                         onClick={() => openEditModal(member)}
                       >
@@ -384,7 +379,7 @@ export default function EquipoPage() {
                       </button>
                       <button
                         type="button"
-                        className="text-gray-400 transition-colors hover:text-red-600"
+                        className="text-slate-400 transition-colors hover:text-red-600"
                         aria-label={`Eliminar ${member.nombre}`}
                         onClick={() => openDeleteDialog(member)}
                       >
@@ -394,13 +389,13 @@ export default function EquipoPage() {
                   )}
                 </div>
 
-                <div className="mt-4 rounded-lg bg-gray-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Email de acceso</p>
-                  <p className="mt-1 truncate text-sm text-gray-800">{member.email || "-"}</p>
+                <div className="mt-4 rounded-lg bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Email de acceso</p>
+                  <p className="mt-1 truncate text-sm text-slate-800">{member.email || "-"}</p>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Estado</span>
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Estado</span>
                   <span className="flex items-center gap-1 text-xs font-bold text-green-600">
                     <span className="h-2 w-2 rounded-full bg-green-500" />
                     {member.estado}
@@ -413,52 +408,52 @@ export default function EquipoPage() {
       </div>
 
       <Dialog open={createOpen} onOpenChange={(o) => !isSubmitting && setCreateOpen(o)}>
-        <DialogContent showCloseButton={false} className="max-w-md border-gray-200 bg-white p-0 text-gray-900 sm:rounded-2xl">
-          <DialogHeader className="space-y-1 border-b border-gray-200 px-6 pb-4 pt-6">
+        <DialogContent showCloseButton={false} className="max-w-md border-slate-200 bg-white p-0 text-slate-900 sm:rounded-2xl">
+          <DialogHeader className="space-y-1 border-b border-slate-200 px-6 pb-4 pt-6">
             <div className="flex items-start justify-between gap-2">
-              <DialogTitle className="text-left text-xl font-bold text-gray-900">Nuevo Miembro</DialogTitle>
+              <DialogTitle className="text-left text-xl font-bold text-slate-900">Nuevo Miembro</DialogTitle>
               <button
                 type="button"
                 onClick={() => !isSubmitting && setCreateOpen(false)}
-                className="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
                 aria-label="Cerrar"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-left text-sm text-gray-500">Agrega un tecnico o administrador a tu equipo.</p>
+            <p className="text-left text-sm text-slate-500">Agrega un tecnico o administrador a tu equipo.</p>
           </DialogHeader>
 
           <div className="space-y-4 px-6 pb-6 pt-2">
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Nombre</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Nombre</Label>
               <Input
                 value={nombreMiembro}
                 onChange={(e) => setNombreMiembro(e.target.value)}
                 placeholder="Nombre completo"
-                className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
+                className="h-12 rounded-xl border-slate-200 bg-white text-slate-900"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Email</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Email</Label>
               <Input
                 type="email"
                 value={emailMiembro}
                 onChange={(e) => setEmailMiembro(e.target.value)}
                 placeholder="correo@ejemplo.com"
-                className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
+                className="h-12 rounded-xl border-slate-200 bg-white text-slate-900"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Puesto / rol del miembro</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Puesto / rol del miembro</Label>
               <Select value={rolIdMiembro} onValueChange={setRolIdMiembro}>
-                <SelectTrigger className="h-12 rounded-xl border-gray-200 bg-white text-left text-gray-900">
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-white text-left text-slate-900">
                   <SelectValue placeholder="Selecciona un rol" />
                 </SelectTrigger>
-                <SelectContent className="border-gray-200 bg-white text-gray-900">
+                <SelectContent className="border-slate-200 bg-white text-slate-900">
                   {rolesEstandar.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estandar</SelectLabel>
+                      <SelectLabel className="text-xs font-bold text-slate-800">Roles estandar</SelectLabel>
                       {rolesEstandar.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -466,7 +461,7 @@ export default function EquipoPage() {
                   )}
                   {rolesEspecial.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="pt-2 text-xs font-bold text-gray-800">Roles con permisos especiales</SelectLabel>
+                      <SelectLabel className="pt-2 text-xs font-bold text-slate-800">Roles con permisos especiales</SelectLabel>
                       {rolesEspecial.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -476,13 +471,13 @@ export default function EquipoPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contrasena</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Contrasena</Label>
               <Input
                 type="password"
                 value={passwordMiembro}
                 onChange={(e) => setPasswordMiembro(e.target.value)}
                 placeholder="********"
-                className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
+                className="h-12 rounded-xl border-slate-200 bg-white text-slate-900"
               />
             </div>
 
@@ -506,50 +501,50 @@ export default function EquipoPage() {
       </Dialog>
 
       <Dialog open={editOpen} onOpenChange={(o) => !isSubmitting && setEditOpen(o)}>
-        <DialogContent showCloseButton={false} className="max-w-md border-gray-200 bg-white p-0 text-gray-900 sm:rounded-2xl">
-          <DialogHeader className="space-y-1 border-b border-gray-200 px-6 pb-4 pt-6">
+        <DialogContent showCloseButton={false} className="max-w-md border-slate-200 bg-white p-0 text-slate-900 sm:rounded-2xl">
+          <DialogHeader className="space-y-1 border-b border-slate-200 px-6 pb-4 pt-6">
             <div className="flex items-start justify-between gap-2">
-              <DialogTitle className="text-left text-xl font-bold text-gray-900">Editar Miembro</DialogTitle>
+              <DialogTitle className="text-left text-xl font-bold text-slate-900">Editar Miembro</DialogTitle>
               <button
                 type="button"
                 onClick={() => !isSubmitting && setEditOpen(false)}
-                className="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
                 aria-label="Cerrar"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-left text-sm text-gray-500">Actualiza los datos y permisos del miembro.</p>
+            <p className="text-left text-sm text-slate-500">Actualiza los datos y permisos del miembro.</p>
           </DialogHeader>
 
           <div className="space-y-4 px-6 pb-6 pt-2">
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Nombre</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Nombre</Label>
               <Input
                 value={editNombre}
                 onChange={(e) => setEditNombre(e.target.value)}
-                className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
+                className="h-12 rounded-xl border-slate-200 bg-white text-slate-900"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Email</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Email</Label>
               <Input
                 type="email"
                 value={editEmail}
                 disabled
-                className="h-12 rounded-xl border-gray-200 bg-gray-100 text-gray-500"
+                className="h-12 rounded-xl border-slate-200 bg-slate-100 text-slate-500"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Puesto / rol del miembro</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Puesto / rol del miembro</Label>
               <Select value={editRolId} onValueChange={setEditRolId}>
-                <SelectTrigger className="h-12 rounded-xl border-gray-200 bg-white text-left text-gray-900">
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-white text-left text-slate-900">
                   <SelectValue placeholder="Selecciona un rol" />
                 </SelectTrigger>
-                <SelectContent className="border-gray-200 bg-white text-gray-900">
+                <SelectContent className="border-slate-200 bg-white text-slate-900">
                   {rolesEstandar.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-bold text-gray-800">Roles estandar</SelectLabel>
+                      <SelectLabel className="text-xs font-bold text-slate-800">Roles estandar</SelectLabel>
                       {rolesEstandar.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -557,7 +552,7 @@ export default function EquipoPage() {
                   )}
                   {rolesEspecial.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel className="pt-2 text-xs font-bold text-gray-800">Roles con permisos especiales</SelectLabel>
+                      <SelectLabel className="pt-2 text-xs font-bold text-slate-800">Roles con permisos especiales</SelectLabel>
                       {rolesEspecial.map((r) => (
                         <SelectItem key={r.id} value={r.id}>{r.nombre}</SelectItem>
                       ))}
@@ -567,13 +562,13 @@ export default function EquipoPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Contrasena</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Contrasena</Label>
               <Input
                 type="password"
                 value={editPassword}
                 onChange={(e) => setEditPassword(e.target.value)}
                 placeholder="Dejar vacio para no cambiar"
-                className="h-12 rounded-xl border-gray-200 bg-white text-gray-900"
+                className="h-12 rounded-xl border-slate-200 bg-white text-slate-900"
               />
             </div>
 
@@ -597,15 +592,15 @@ export default function EquipoPage() {
       </Dialog>
 
       <AlertDialog open={deleteOpen} onOpenChange={(o) => !isSubmitting && setDeleteOpen(o)}>
-        <AlertDialogContent className="rounded-3xl border-gray-200 bg-white text-gray-900">
+        <AlertDialogContent className="rounded-3xl border-slate-200 bg-white text-slate-900">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900">Eliminar Miembro</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogTitle className="text-slate-900">Eliminar Miembro</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
               ¿Estas seguro de que deseas eliminar a {deleteMemberName || "este miembro"}? Esta accion revocara su acceso al sistema de TallerCloud de forma permanente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-gray-200 bg-white text-gray-700 hover:bg-gray-50">
+            <AlertDialogCancel className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
