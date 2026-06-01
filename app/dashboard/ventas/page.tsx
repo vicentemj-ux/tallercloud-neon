@@ -25,11 +25,7 @@ import {
   Plus,
   RefreshCw,
   Search,
-  ShoppingBag,
-  Smartphone,
-  User,
-  Wrench,
-  X,
+  ShoppingBag, Smartphone, User, Wrench, X,
 } from "lucide-react"
 import { getInventoryCanonicalImageUrl } from "@/lib/storage"
 import {
@@ -554,42 +550,48 @@ function VentasPageContent() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className={`mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${activeTab !== "historial" && bottomTab === "inventario" && cartItems.length > 0 ? "pb-24 lg:pb-10" : ""}`}>
-      {/* HEADER */}
+      {/* ── Header ───────────────────────────────────────────────────────── */}
       {activeTab === "historial" ? (
         <div className="flex flex-col gap-5">
-          {/* Header historial */}
-          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-            <div>
-              <button
-                onClick={() => setActiveTab("pos")}
-                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 hover:text-blue-700 transition-colors mb-1"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Punto de Venta
-              </button>
-              <h1 className="text-3xl font-black italic uppercase tracking-tight text-slate-900">
-                Historial de <span className="text-blue-600">Cortes</span>
-              </h1>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-                Auditoria centralizada y conciliacion bancaria
-              </p>
-            </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setActiveTab("pos")}
+                  className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-600 hover:text-blue-700 transition-colors mb-1 sm:mb-0"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Punto de Venta
+                </button>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
+                  <Clock className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                    Historial de <span className="text-blue-600">Cortes</span>
+                  </h1>
+                  <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                    AUDITORIA CENTRALIZADA Y CONCILIACION BANCARIA
+                  </p>
+                </div>
+              </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                variant="outline"
-                className="rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-bold uppercase gap-2 text-xs h-11 px-4 shadow-sm"
-              >
-                <Download className="h-4 w-4" />
-                Exportar CSV
-              </Button>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar en notas o cajero..."
-                  className="h-11 w-full sm:w-64 rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 shadow-sm"
-                />
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-11 gap-2 rounded-xl border-slate-200 px-4 font-semibold tracking-tight"
+                >
+                  <Download className="h-4 w-4" />
+                  Exportar CSV
+                </Button>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar en notas o cajero..."
+                    className="h-11 w-full sm:w-56 rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 text-sm text-slate-700 placeholder:text-slate-400 transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -635,15 +637,24 @@ function VentasPageContent() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-black italic uppercase tracking-tight text-slate-900">
-              PUNTO DE VENTA
-            </h1>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-              ACCESORIOS Y REPUESTOS
-            </p>
-          </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
+                <ShoppingBag className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                  PUNTO DE VENTA
+                </h1>
+                <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                  ACCESORIOS Y REPUESTOS
+                </p>
+                <p className="mt-1 text-sm tracking-tight text-slate-500">
+                  Facturacion rapida, carrito y cobro en mostrador.
+                </p>
+              </div>
+            </div>
 
           {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2">
@@ -703,6 +714,7 @@ function VentasPageContent() {
               <X className="h-4 w-4" />
               Corte
             </Button>
+          </div>
           </div>
         </div>
       )}
