@@ -40,7 +40,7 @@ export function ModuleHeader({
   className,
 }: ModuleHeaderProps) {
   return (
-    <section className={cn("rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8", className)}>
+    <section className={cn("rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8", className)}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
@@ -48,7 +48,7 @@ export function ModuleHeader({
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-extrabold italic tracking-tight text-slate-900">
+              <h1 className="text-xl font-extrabold italic tracking-tight text-slate-900 sm:text-2xl">
                 {title}
               </h1>
               {badge ? (
