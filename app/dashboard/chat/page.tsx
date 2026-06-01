@@ -95,7 +95,7 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex h-[calc(100vh-4rem)] w-full max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[calc(100vh-4rem)] w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <ModuleHeader
           icon={MessageSquare}
           title="CHAT TALLER PRO"
