@@ -53,6 +53,7 @@ import { isEquipoExhibitionCategory } from "@/components/dashboard/inventory-lab
 import { buildInventoryLabelPrintDocument } from "@/lib/inventory/inventory-label-print-html"
 import { printCartelExhibicion } from "@/components/dashboard/print-cartel-exhibicion"
 import { formatPeso, formatMoney } from "@/lib/utils/currency"
+import { cn } from "@/lib/utils"
 import { InventoryPublicidadMenu } from "@/components/dashboard/inventory-publicidad-menu"
 import { NuevoProductoModal } from "@/components/dashboard/inventario/NuevoProductoModal"
 // PERF-12: imageCompression se carga bajo demanda al importar imagenes.
@@ -135,6 +136,7 @@ function InventarioContent() {
   const searchTerm = searchParams.get(SEARCH_PARAM) ?? ""
   const categoryFilter = searchParams.get(CATEGORY_PARAM) ?? ""
   const statusFilter = searchParams.get(STATUS_PARAM) ?? ""
+  const hasActiveFilter = !!searchTerm || !!categoryFilter || !!statusFilter
   const [searchInput, setSearchInput] = useState(searchTerm)
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -985,29 +987,40 @@ function InventarioContent() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
-      {/* HEADER SUPERIOR */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <div className="flex flex-col gap-5">
-        {/* Titulo, buscador y botones */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4 shrink-0">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+        <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Left: icon + title */}
+          <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
               <Box className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-4xl font-black italic tracking-tight text-slate-900">INVENTARIO</h1>
-              <p className="text-xs uppercase tracking-widest text-slate-500">
-                Control automatizado de stock y almacen
+              <div className="flex items-center gap-3">
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                  INVENTARIO
+                </h1>
+                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-sm font-bold text-slate-600 tabular-nums">
+                  {totalProductos.toLocaleString("es-MX")} productos
+                </span>
+              </div>
+              <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                CONTROL AUTOMATIZADO DE STOCK Y ALMACEN
+              </p>
+              <p className="mt-1 text-sm tracking-tight text-slate-500">
+                Gestiona tu inventario con control de existencias, categorias y precios.
               </p>
             </div>
           </div>
 
-          {/* Buscador + Botones de accion */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-            {/* Buscador inline */}
+          {/* Right: search + action buttons */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-56 lg:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+                aria-hidden
+              />
               <Input
                 value={searchInput}
                 onChange={(e) => {
@@ -1022,7 +1035,7 @@ function InventarioContent() {
                   }, 400)
                 }}
                 placeholder="Buscar: nombre, SKU..."
-                className="pl-9 h-10 rounded-xl bg-slate-50 border-slate-200 text-sm placeholder:text-slate-400 focus-visible:ring-blue-400"
+                className="h-11 rounded-xl border-slate-200 bg-slate-50 pl-9 pr-8 text-base placeholder:text-slate-400 transition-colors focus:bg-white md:text-sm"
               />
               {searchInput && (
                 <button
@@ -1031,7 +1044,7 @@ function InventarioContent() {
                     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
                     updateSearchParams({ q: "" })
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600 transition-colors"
                   aria-label="Limpiar busqueda"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -1041,142 +1054,178 @@ function InventarioContent() {
             <Button
               onClick={handleExport}
               variant="outline"
-              className="gap-2 text-xs font-bold uppercase tracking-tight rounded-2xl shrink-0"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Exportar</span>
             </Button>
             <Button
               onClick={openImportModal}
-              className="gap-2 text-xs font-bold uppercase tracking-tight border border-blue-200 bg-white text-slate-900 hover:bg-blue-50 rounded-2xl shrink-0"
               variant="outline"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
             >
               <Upload className="h-4 w-4" />
               <span className="hidden sm:inline">Importar</span>
             </Button>
             <Button
               onClick={openModal}
-              className="gap-2 text-xs font-bold uppercase tracking-tight bg-primary hover:bg-primary text-primary-foreground rounded-2xl shrink-0"
+              className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
             >
               <Plus className="h-4 w-4" />
-              <span>Nuevo</span>
+              <span className="hidden sm:inline">Nuevo Producto</span>
+              <span className="sm:hidden">Nuevo</span>
             </Button>
           </div>
         </div>
       </div>
-      </div>
 
-        {/* MICRO-INDICADORES */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+        {/* ── KPI Cards ──────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {/* Total */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: "" })}
-            className={[
-              "group flex flex-col gap-0.5 rounded-2xl border p-3 text-left transition-all duration-300 cursor-pointer",
-              "hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(59,130,246,0.18)]",
+            className={cn(
+              "group flex flex-col gap-2.5 rounded-2xl border bg-white p-4 text-left shadow-sm",
+              "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
               !statusFilter
-                ? "ring-2 ring-blue-400 bg-blue-50 border-blue-200"
-                : "bg-white border-slate-200 hover:border-blue-200",
-            ].join(" ")}
+                ? "ring-2 ring-slate-400 border-slate-300 bg-slate-50"
+                : "border-slate-200 hover:border-slate-300"
+            )}
           >
-            <div className="flex items-center gap-1.5">
-              <Box className="h-3.5 w-3.5 text-blue-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Total</span>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+              <Box className="h-4 w-4 text-slate-600 transition-transform duration-200 group-hover:scale-110" aria-hidden />
             </div>
-            <p className="text-xl font-black tabular-nums leading-none text-slate-900 mt-0.5">{totalProductos}</p>
+            <p className={cn("text-2xl font-bold tabular-nums tracking-tight transition-colors", "text-slate-900")}>
+              {totalProductos}
+            </p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 leading-none">Total</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-400">Todos los productos</p>
+            </div>
+            {!statusFilter && (
+              <span className="self-start rounded-md bg-white/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500 ring-1 ring-slate-200">Activo</span>
+            )}
           </button>
 
-          {/* Stock Critico */}
+          {/* Critico */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: statusFilter === "critical" ? "" : "critical" })}
-            className={[
-              "group flex flex-col gap-0.5 rounded-2xl border p-3 text-left transition-all duration-300 cursor-pointer",
-              "hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(245,158,11,0.22)]",
+            className={cn(
+              "group flex flex-col gap-2.5 rounded-2xl border bg-white p-4 text-left shadow-sm",
+              "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
               statusFilter === "critical"
-                ? "ring-2 ring-amber-400 bg-amber-50 border-amber-200"
-                : "bg-white border-slate-200 hover:border-amber-200",
-            ].join(" ")}
+                ? "ring-2 ring-amber-400 border-amber-300 bg-amber-50/60"
+                : "border-slate-200 hover:border-amber-300"
+            )}
           >
-            <div className="flex items-center gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Critico</span>
-              {statusFilter === "critical" && (
-                <span className="ml-auto text-[9px] font-bold text-amber-600 bg-amber-100 rounded px-1 leading-tight">Activo</span>
-              )}
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100">
+              <AlertTriangle className="h-4 w-4 text-amber-600 transition-transform duration-200 group-hover:scale-110" aria-hidden />
             </div>
-            <p className={["text-xl font-black tabular-nums leading-none mt-0.5", kpis.stockCritico > 0 ? "text-amber-600" : "text-slate-900"].join(" ")}>
+            <p className={cn("text-2xl font-bold tabular-nums tracking-tight transition-colors", kpis.stockCritico > 0 ? "text-amber-600" : "text-slate-900")}>
               {kpis.stockCritico}
             </p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 leading-none">Critico</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-400">Stock por debajo del minimo</p>
+            </div>
+            {statusFilter === "critical" && (
+              <span className="self-start rounded-md bg-white/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500 ring-1 ring-slate-200">Activo</span>
+            )}
           </button>
 
-          {/* Valor en Riesgo */}
+          {/* En Riesgo */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: statusFilter === "critical" ? "" : "critical" })}
-            className={[
-              "group flex flex-col gap-0.5 rounded-2xl border p-3 text-left transition-all duration-300 cursor-pointer",
-              "hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(244,63,94,0.18)]",
+            className={cn(
+              "group flex flex-col gap-2.5 rounded-2xl border bg-white p-4 text-left shadow-sm",
+              "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
               statusFilter === "critical"
-                ? "ring-2 ring-rose-400 bg-rose-50 border-rose-200"
-                : "bg-white border-slate-200 hover:border-rose-200",
-            ].join(" ")}
+                ? "ring-2 ring-rose-400 border-rose-300 bg-rose-50/60"
+                : "border-slate-200 hover:border-rose-300"
+            )}
           >
-            <div className="flex items-center gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5 text-rose-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">En Riesgo</span>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-100">
+              <AlertTriangle className="h-4 w-4 text-rose-600 transition-transform duration-200 group-hover:scale-110" aria-hidden />
             </div>
-            <p className="text-xl font-black tabular-nums leading-none text-rose-700 mt-0.5 truncate">
+            <p className="text-2xl font-bold tabular-nums tracking-tight text-rose-700 truncate">
               {formatMoney(operationalKpis.valorEnRiesgo)}
             </p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 leading-none">En Riesgo</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-400">Valor total en riesgo</p>
+            </div>
           </button>
 
-          {/* Sin Existencia */}
+          {/* Sin Stock */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: statusFilter === "agotado" ? "" : "agotado" })}
-            className={[
-              "group flex flex-col gap-0.5 rounded-2xl border p-3 text-left transition-all duration-300 cursor-pointer",
-              "hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(100,116,139,0.18)]",
+            className={cn(
+              "group flex flex-col gap-2.5 rounded-2xl border bg-white p-4 text-left shadow-sm",
+              "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
               statusFilter === "agotado"
-                ? "ring-2 ring-slate-400 bg-slate-100 border-slate-300"
-                : "bg-white border-slate-200 hover:border-slate-300",
-            ].join(" ")}
+                ? "ring-2 ring-slate-400 border-slate-300 bg-slate-100"
+                : "border-slate-200 hover:border-slate-300"
+            )}
           >
-            <div className="flex items-center gap-1.5">
-              <Package className="h-3.5 w-3.5 text-slate-400 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Sin Stock</span>
-              {statusFilter === "agotado" && (
-                <span className="ml-auto text-[9px] font-bold text-slate-600 bg-slate-200 rounded px-1 leading-tight">Activo</span>
-              )}
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+              <Package className="h-4 w-4 text-slate-500 transition-transform duration-200 group-hover:scale-110" aria-hidden />
             </div>
-            <p className={["text-xl font-black tabular-nums leading-none mt-0.5", kpis.sinExistencia > 0 ? "text-slate-700" : "text-slate-900"].join(" ")}>
+            <p className={cn("text-2xl font-bold tabular-nums tracking-tight transition-colors", kpis.sinExistencia > 0 ? "text-slate-700" : "text-slate-900")}>
               {kpis.sinExistencia}
             </p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 leading-none">Sin Stock</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-400">Productos agotados</p>
+            </div>
+            {statusFilter === "agotado" && (
+              <span className="self-start rounded-md bg-white/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500 ring-1 ring-slate-200">Activo</span>
+            )}
           </button>
 
-          {/* Alta Rotacion */}
+          {/* Rotacion */}
           <button
             type="button"
             onClick={() => updateSearchParams({ status: "" })}
-            className={[
-              "group flex flex-col gap-0.5 rounded-2xl border p-3 text-left transition-all duration-300 cursor-pointer",
-              "hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(16,185,129,0.18)]",
-              "bg-white border-slate-200 hover:border-emerald-200",
-            ].join(" ")}
+            className={cn(
+              "group flex flex-col gap-2.5 rounded-2xl border bg-white p-4 text-left shadow-sm",
+              "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
+              "border-slate-200 hover:border-emerald-300"
+            )}
           >
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-500 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-none">Rotacion</span>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100">
+              <TrendingUp className="h-4 w-4 text-emerald-600 transition-transform duration-200 group-hover:scale-110" aria-hidden />
             </div>
-            <p className="text-xl font-black tabular-nums leading-none text-emerald-700 mt-0.5 truncate">
+            <p className="text-2xl font-bold tabular-nums tracking-tight text-emerald-700 truncate">
               {formatRotacionDias(operationalKpis.rotacionDias)}
             </p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 leading-none">Rotacion</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-slate-400">Dias de rotacion promedio</p>
+            </div>
           </button>
         </div>
 
-      {/* TABLA DE PRODUCTOS */}
+        {/* ── Reset filter hint ──────────────────────────────────────────── */}
+        {!loadingProductos && hasActiveFilter && (
+          <div className="flex items-center gap-2 -mt-4 text-xs text-slate-400">
+            <span>
+              {sortedProductos.length} resultado{sortedProductos.length !== 1 ? "s" : ""}
+            </span>
+            <button
+              type="button"
+              onClick={() => { updateSearchParams({ q: "", cat: "", status: "" }) }}
+              className="flex items-center gap-1 rounded-md px-2 py-0.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors font-medium"
+            >
+              <X className="h-3 w-3" /> Limpiar filtros
+            </button>
+          </div>
+        )}
+
+      {/* ── Table ──────────────────────────────────────────────────────── */}
       <Card className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="w-full overflow-x-auto pb-4">
           <Table>
@@ -1459,19 +1508,20 @@ function InventarioContent() {
               )}
             </TableBody>
           </Table>
-          {/* Paginacion inventario */}
+          {/* ── Pagination ────────────────────────────────────────────────── */}
           {totalProductos > PAGE_SIZE_PRODUCTOS && (
-            <div className="flex items-center justify-between px-4 py-3 text-sm text-muted-foreground border-t">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
               <span>
                 Mostrando {pageProductos * PAGE_SIZE_PRODUCTOS + 1}â€“{Math.min((pageProductos + 1) * PAGE_SIZE_PRODUCTOS, totalProductos)} de {totalProductos}
               </span>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={pageProductos === 0} onClick={() => setPageProductos((p) => p - 1)}>
+                <Button variant="outline" size="sm" className="rounded-2xl border-slate-200" disabled={pageProductos === 0} onClick={() => setPageProductos((p) => p - 1)}>
                   Anterior
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-2xl border-slate-200"
                   disabled={(pageProductos + 1) * PAGE_SIZE_PRODUCTOS >= totalProductos}
                   onClick={() => setPageProductos((p) => p + 1)}
                 >
