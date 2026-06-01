@@ -148,9 +148,9 @@ function BitacoraVisitasContent() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         {/* Header */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
@@ -158,7 +158,7 @@ function BitacoraVisitasContent() {
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-extrabold italic tracking-tight text-slate-900">
+                  <h1 className="text-xl font-extrabold italic tracking-tight text-slate-900 sm:text-2xl">
                     BITACORA DE VISITAS
                   </h1>
                   <span className="rounded-full bg-slate-100 px-3 py-0.5 text-sm font-bold text-slate-600 tabular-nums">
@@ -233,12 +233,12 @@ function BitacoraVisitasContent() {
         {/* Tabla */}
         <div className="space-y-6">
           {loading ? (
-            <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
+            <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-12 text-center">
               <Loader2 className="mx-auto h-6 w-6 animate-spin text-blue-600" />
               <p className="text-sm text-slate-400 mt-3 font-medium">Cargando visitas...</p>
             </div>
           ) : tallerIdError ? (
-            <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
+            <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-12 text-center">
               <XCircle className="mx-auto h-8 w-8 text-red-400 mb-3" />
               <p className="text-sm font-bold text-slate-700">No se pudo identificar el taller</p>
               <p className="text-xs text-slate-400 mt-1">Asegurate de haber iniciado sesion correctamente.</p>
@@ -247,13 +247,13 @@ function BitacoraVisitasContent() {
               </Button>
             </div>
           ) : visitas.length === 0 ? (
-            <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-12 text-center">
+            <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-12 text-center">
               <Search className="mx-auto h-8 w-8 text-slate-300 mb-3" />
               <p className="text-sm font-medium text-slate-400">No hay registros de visitas en este periodo</p>
             </div>
           ) : (
             Array.from(grouped.entries()).map(([day, dayVisitas]) => (
-              <div key={day} className="rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden">
+              <div key={day} className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
                   <h2 className="text-sm font-black uppercase tracking-tight text-slate-700">
                     {fmtDateFull(`${day}T12:00:00`)}
