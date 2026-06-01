@@ -134,7 +134,7 @@ export default function CotizacionesPage() {
   if (!isPro) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
           <CotizacionesHeader onCreate={() => {}} />
           <section className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
@@ -155,7 +155,7 @@ export default function CotizacionesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <CotizacionesHeader
           onCreate={() => {
             setEditing(null)
