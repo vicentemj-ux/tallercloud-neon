@@ -67,16 +67,16 @@ export default function ClientesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-10 py-10 space-y-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
       {/* Header */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 shrink-0">
             <Users className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-          <h1 className="italic font-extrabold text-2xl tracking-tight text-slate-900">CLIENTES</h1>
+          <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">CLIENTES</h1>
           <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
             DIRECTORIO Y EXPEDIENTE DE REPARACIONES
           </p>
