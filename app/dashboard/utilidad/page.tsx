@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { getUtilidadData, type UtilidadData, type TransaccionItem } from "@/lib/actions/utilidad-prisma"
@@ -51,66 +52,50 @@ export default function UtilidadPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 
-        {/* Header */}
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15">
-              <svg className="h-6 w-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-                <polyline points="16 7 22 7 22 13" />
-              </svg>
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50">
+                <svg className="h-6 w-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">CONTROL DE UTILIDAD</h1>
+                <p className="text-[10px] tracking-widest text-slate-500 font-semibold">DASHBOARD FINANCIERO DE OPERACION</p>
+                <p className="mt-1 text-sm tracking-tight text-slate-500">Dashboard Financiero de Operacion</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-black italic text-slate-900">CONTROL DE UTILIDAD</h1>
-              <p className="text-sm text-slate-500">Dashboard Financiero de Operacion</p>
-            </div>
-          </div>
 
-          {/* Date Filters */}
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-32 border-0 bg-transparent p-0 text-sm text-slate-700 font-medium"
-              />
-              <svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-32 border-0 bg-transparent p-0 text-sm text-slate-700 font-medium"
-              />
-              <svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1">
+                <CalendarDays className="h-4 w-4 text-slate-400" />
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="h-9 w-32 border-0 bg-transparent p-0 text-sm text-slate-700 font-medium"
+                />
+                <span className="text-slate-400">-</span>
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="h-9 w-32 border-0 bg-transparent p-0 text-sm text-slate-700 font-medium"
+                />
+              </div>
+              <Button
+                onClick={() => fetchData(dateFrom, dateTo)}
+                disabled={loading}
+                className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight btn-glow"
+              >
+                {loading ? "Cargando..." : "Actualizar"}
+              </Button>
             </div>
-            <Button
-              onClick={() => fetchData(dateFrom, dateTo)}
-              disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase tracking-wider rounded-xl px-6"
-            >
-              {loading ? "Cargando..." : "Actualizar"}
-            </Button>
-            <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-slate-600 shadow-sm">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -187,7 +172,7 @@ export default function UtilidadPage() {
         <div className="grid gap-6 lg:grid-cols-2">
 
           {/* Relacion Ingresos */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50">
                 <span className="text-lg font-bold text-emerald-600">$</span>
@@ -239,7 +224,7 @@ export default function UtilidadPage() {
           </div>
 
           {/* Relacion Egresos */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50">
                 <svg className="h-5 w-5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
