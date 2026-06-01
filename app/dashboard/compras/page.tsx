@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import {
   Truck, Search, Plus, Package, Users, Smartphone, ArrowRight,
-  FileText, AlertTriangle,
+  FileText, AlertTriangle, X,
 } from "lucide-react"
 import {
   getOrdenes,
@@ -85,67 +85,82 @@ export default function ComprasPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 
-        {/* â”€â”€ HEADER â”€â”€ */}
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100">
-              <Truck className="h-6 w-6 text-emerald-600" />
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50">
+                <Truck className="h-6 w-6 text-emerald-600" />
+              </div>
+              <div>
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                  CADENA DE SUMINISTRO
+                </h1>
+                <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                  LOGISTICA GLOBAL Y ABASTECIMIENTO DE ACTIVOS
+                </p>
+                <p className="mt-1 text-sm tracking-tight text-slate-500">
+                  Ordenes de compra, proveedores y recepcion de mercancia.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-black italic tracking-tight text-slate-900 sm:text-4xl">
-                CADENA DE SUMINISTRO
-              </h1>
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-0.5">
-                Logistica global y abastecimiento de activos
-              </p>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/inventario")}
+                className="h-9 gap-2 rounded-xl border-emerald-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-emerald-700 hover:bg-emerald-50 shadow-sm"
+              >
+                <Package className="h-3.5 w-3.5" /> Inventario critico
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowProvModal(true)}
+                className="h-9 gap-2 rounded-xl border-blue-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-blue-700 hover:bg-blue-50 shadow-sm"
+              >
+                <Users className="h-3.5 w-3.5" /> Directorio proveedores
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/compras/usados")}
+                className="h-9 gap-2 rounded-xl border-fuchsia-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-fuchsia-700 hover:bg-fuchsia-50 shadow-sm"
+              >
+                <Smartphone className="h-3.5 w-3.5" /> Equipos usados
+              </Button>
+              <Button
+                onClick={() => router.push("/dashboard/compras/nueva")}
+                className="h-10 gap-2 rounded-xl bg-blue-600 px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-blue-700 shadow-sm btn-glow"
+              >
+                <Plus className="h-4 w-4" /> Generar orden
+              </Button>
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => router.push("/dashboard/inventario")}
-              className="h-9 gap-2 rounded-full border-emerald-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-emerald-700 hover:bg-emerald-50 shadow-sm"
-            >
-              <Package className="h-3.5 w-3.5" /> Inventario critico
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowProvModal(true)}
-              className="h-9 gap-2 rounded-full border-blue-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-blue-700 hover:bg-blue-50 shadow-sm"
-            >
-              <Users className="h-3.5 w-3.5" /> Directorio proveedores
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/dashboard/compras/usados")}
-              className="h-9 gap-2 rounded-full border-fuchsia-200 bg-white px-4 text-xs font-bold uppercase tracking-wider text-fuchsia-700 hover:bg-fuchsia-50 shadow-sm"
-            >
-              <Smartphone className="h-3.5 w-3.5" /> Equipos usados
-            </Button>
-            <Button
-              onClick={() => router.push("/dashboard/compras/nueva")}
-              className="h-10 gap-2 rounded-full bg-blue-600 px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-blue-700 shadow-sm btn-glow"
-            >
-              <Plus className="h-4 w-4" /> Generar orden
-            </Button>
-          </div>
-        </header>
+        </div>
 
         {/* â”€â”€ Buscador + Filtros â”€â”€ */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
             <Input
-              placeholder="BUSCAR EN EL ARCHIVO LOGISTICO (ORDEN #, PROVEEDOR...)"
-              className="h-12 rounded-full border-slate-200 bg-white pl-11 pr-4 text-sm font-medium uppercase tracking-wider text-slate-800 placeholder:text-slate-300 placeholder:font-normal shadow-sm"
+              placeholder="Buscar orden, proveedor..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 bg-slate-50 pl-9 pr-8 text-base placeholder:text-slate-400 transition-colors focus:bg-white md:text-sm"
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => { setSearch(""); fetchOrdenes() }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                aria-label="Limpiar busqueda"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             {estatusOptions.map((opt) => (
               <button
                 key={opt.value}
@@ -162,8 +177,7 @@ export default function ComprasPage() {
           </div>
         </div>
 
-        {/* â”€â”€ Tabla de ordenes â”€â”€ */}
-        <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           {/* Header de tabla */}
           <div className="hidden sm:grid grid-cols-[1.2fr_1.2fr_140px_1fr_140px_48px] gap-4 px-6 py-4 border-b border-slate-100">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
