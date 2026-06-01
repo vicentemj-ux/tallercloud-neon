@@ -291,7 +291,7 @@ function ReparacionesContent() {
                   setEditingRepairId(null)
                   setShowNewTicketModal(true)
                 }}
-                className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight"
+                className="h-11 shrink-0 gap-2 rounded-xl px-4 font-semibold tracking-tight btn-glow"
               >
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Nuevo Ticket</span>
@@ -369,7 +369,7 @@ function ReparacionesContent() {
 
         {/* ── Table / Loading ───────────────────────────────────────────────── */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white py-16 gap-3 shadow-sm">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 gap-3 shadow-sm">
             <Loader2 className="h-8 w-8 animate-spin text-slate-500" />
             <p className="text-sm tracking-tight text-slate-500">Cargando reparaciones...</p>
           </div>
