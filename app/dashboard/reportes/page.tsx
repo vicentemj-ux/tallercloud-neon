@@ -176,26 +176,27 @@ export default function ReportesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 
-        {/* ── HEADER TACTICO ── */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
-          {/* Izquierda: Branding */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-500/40">
-              <BarChart3 className="h-6 w-6 text-white" />
-              <div className="absolute inset-0 rounded-xl ring-2 ring-blue-400/30" />
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
+                <BarChart3 className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="italic font-extrabold text-xl tracking-tight text-slate-900 sm:text-2xl">
+                  REPORTES <span className="text-blue-600">PRO</span>
+                </h1>
+                <p className="text-[10px] tracking-widest text-slate-500 font-semibold">
+                  VISION FINANCIERA Y OPERATIVA INTEGRADA DEL TALLER
+                </p>
+                <p className="mt-1 text-sm tracking-tight text-slate-500">
+                  Vision Financiera y Operativa Integrada del Taller
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-black tracking-tight text-slate-900">
-                REPORTES <span className="text-blue-600">PRO</span>
-              </h1>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                Vision Financiera y Operativa Integrada del Taller
-              </p>
-            </div>
-          </div>
 
           {/* Centro: Busqueda + Period Tabs */}
           <div className="flex flex-1 items-center justify-center gap-3 lg:max-w-xl">
@@ -245,6 +246,7 @@ export default function ReportesPage() {
               <Share2 className="h-3.5 w-3.5" />
               Compartir
             </Button>
+          </div>
           </div>
         </div>
 
